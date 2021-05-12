@@ -7,9 +7,18 @@
     "preview": "svelte-kit preview"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^4.0.3",
+    "@sveltejs/adapter-node": "^1.0.0-next.20",
     "@sveltejs/kit": "next",
+    "@tailwindcss/forms": "^0.3.2",
+    "cssnano": "^5.0.2",
+    "postcss": "^8.2.15",
+    "postcss-import": "^14.0.2",
+    "postcss-load-config": "^3.0.1",
+    "postcss-preset-env": "^6.7.0",
     "svelte": "^3.34.0",
     "svelte-preprocess": "^4.0.0",
+    "tailwindcss": "^2.1.2",
     "tslib": "^2.0.0",
     "typescript": "^4.0.0"
   },
