@@ -8,3 +8,15 @@ The University of Nottingham, 2021.
 
 Status: just starting
 
+## Build
+
+Note, requires docker and docker-compose.
+(e.g. `vagrant up` - see [Vagrantfile](Vagrantfile))
+
+```
+sudo docker-compose build server
+sudo docker-compose up -d mongo
+sudo docker-compose up server
+```
+Open [http://localhost:3000](http://localhost:3000)
+
