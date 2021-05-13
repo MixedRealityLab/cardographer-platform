@@ -2,8 +2,17 @@
 	import type {Load} from '@sveltejs/kit';
 	
 	export async function load({ page, fetch, session, context }): Load {
+		const token = session.user?.token;
+		if (!token) {
+			console.log(`note, no user token`, session);
+			return {
+				props: { decks: [] } 
+			}
+		}
 		const url = `/api/user/decks.json`;
-		const res = await fetch(url);
+		const res = await fetch(url, {
+			headers: { authorization: `Bearer ${token}` }
+		});
 
 		if (res.ok) {
 			return {

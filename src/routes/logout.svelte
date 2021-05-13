@@ -1,0 +1,39 @@
+<script type="ts">
+import {session} from '$app/stores';
+
+let statusCode = "";
+let working = false;
+
+async function handleSubmit() {
+	const response = await fetch(`/api/user/logout`, {
+		method:'POST',
+		headers: { 'content-type': 'application/json' },
+		body: JSON.stringify({})
+	});
+	statusCode = response.status;
+	working = false;
+	if (statusCode == 200) {
+		const user:UserSession = {
+			authenticated: false
+		};
+		$session.user = user;
+		console.log(`logged out`);
+	}
+}
+
+</script>
+
+<div class="px-2">
+
+<h1>Log out</h1>
+
+<form on:submit|preventDefault={handleSubmit}>
+  <div class="grid grid-cols-1 gap-2">
+    <input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit' value='Log out'>
+</form>
+
+{#if statusCode}
+<p>Status: {statusCode}</p>
+{/if}
+
+</div>

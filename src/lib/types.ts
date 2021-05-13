@@ -1,4 +1,4 @@
-// types
+// cardographer types
 export interface CardDeckSummary {
   _id: string;
   name: string;
