@@ -20,3 +20,11 @@ sudo docker-compose up server
 ```
 Open [http://localhost:3000](http://localhost:3000)
 
+Notes:
+- had troube with Mongodb client using node:alpine base (error
+  about require of mongodb-client-encryption; tried to install but
+  that failed).
+
+### Test Data
+
+see [docs/test.md](docs/test.md)

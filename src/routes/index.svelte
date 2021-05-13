@@ -1,2 +1,7 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<div class="px-4">
+
+  <h1>Cardographer</h1>
+  <div class="flex space-x-3 mb-4 text-sm font-medium py-2">
+    <a class="flex rounded-md py-2 px-4 border border-gray-300" href="user">User</a>
+  </div>
+</div>

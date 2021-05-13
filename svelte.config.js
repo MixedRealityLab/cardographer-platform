@@ -12,6 +12,10 @@ const config = {
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
+		paths: {          
+			base: '', // '/' - not working for client nav?
+			assets: ''                  
+		},                                  
 		adapter: adapter({
 			// default options are shown
 			out: 'build'
