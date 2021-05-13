@@ -8,7 +8,7 @@ interface UserToken {
 const cookieSecret = "something2";
 const jwtSecret = "somethingelse";
 
-// TODO convert to JWT
+const debug = false;
 
 export async function checkUserToken(rawToken:string) : UserToken {
 	if (!rawToken) {
@@ -19,14 +19,14 @@ export async function checkUserToken(rawToken:string) : UserToken {
 	return new Promise<UserToken>((resolve, reject) => {
 		jwt.verify(rawToken, jwtSecret, (err, decoded) => {
 			if (err) {
-				console.log(`invalid token: ${err}`);
+				if (debug) console.log(`invalid token: ${err}`);
 				resolve({ valid: false });
 			}
 			if (!decoded.email) {
-				console.log(`jwt missing email`, decoded);
+				if (debug) console.log(`jwt missing email`, decoded);
 				resolve({ valid: false });
 			}
-			console.log(`valid token for ${decoded.email}`);
+			if (debug) console.log(`valid token for ${decoded.email}`);
 			resolve({
 				valid: true,
 				email: decoded.email
@@ -59,10 +59,10 @@ export function getAuthorizationToken(header:string): string {
  	const regex = /Bearer ([^ ]+)/;
 	const match = regex.exec(header);
 	if (match !== null) {
-		console.log(`authorization matches: ${match[1]}`);
+		//console.log(`authorization matches: ${match[1]}`);
 		return match[1];
 	}
-	console.log(`authorization not found (${header})`);
+	if (debug) console.log(`authorization not found (${header})`);
 	return ''
 }
 	

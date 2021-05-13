@@ -1,7 +1,6 @@
 <script type="ts">
 import LoginForm from '$lib/ui/LoginForm.svelte';
 import {session} from '$app/stores';
-console.log(`session`, $session);
 
 </script>
 

@@ -3,18 +3,20 @@ import type {CardDeckSummary} from '$lib/types.ts';
 import type {RequestHandler} from '@sveltejs/kit';
 import type {ServerLocals} from '$lib/systemtypes.ts';
 
+const debug = false;
+
 export async function get(request): RequestHandler {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
-		console.log(`locals`, locals);
+		if (debug) console.log(`locals`, locals);
 		return { status: 403 }
 	}
-	console.log(`get decks`);
+	if (debug) console.log(`get decks`);
 	const db = await getDb();
 	const decks = await db.collection('CardDeckSummaries').find({
 		owners: locals.email 
 	}).toArray() as CardDeckSummary[];
-	console.log(decks);
+	if (debug) console.log(`decks for ${locals.email}`, decks);
 	return {
 		body: {
 			decks: decks

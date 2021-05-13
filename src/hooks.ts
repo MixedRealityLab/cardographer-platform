@@ -7,9 +7,11 @@ import { checkUserToken, getCookieName, getAuthorizationToken } from '$lib/secur
 const USER_PATH = "/user";
 const API_PATH = "/api";
 
+const debug = false;
+
 export const handle: Handle = async ({ request, render }) => {
 
-	console.log(`handle ${request.path}`, request.headers)
+	if (debug) console.log(`handle ${request.path}`, request.headers)
 
 	// just a cookie for now (and not a proper one either...)
 	const cookies = cookie.parse(request.headers.cookie || '');
@@ -43,7 +45,7 @@ export const getSession : GetSession = (request) => {
 		authenticated: locals.authenticated,
 		token: locals.userToken
 	}
-	console.log(`locals -> token ${user.token}`, locals);
+	if (debug) console.log(`locals -> token ${user.token}`, locals);
 	return {
 		user: user
 	}

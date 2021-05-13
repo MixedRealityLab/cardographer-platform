@@ -14,7 +14,7 @@ export async function post(request): RequestHandler {
 	const ok:LoginResponse = {
 		token: token
 	};
-	console.log(`login ${login.email}: ${token}`);
+	console.log(`login ${login.email}`); // ${token}
 	// as cookie (for now)
 	return {
 		status: 200,
