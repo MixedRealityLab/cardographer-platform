@@ -20,7 +20,7 @@ Deck authoring:
 
 - [x] `api/user/decks.json` GET (auth. JWT email) -> 
   CardDeckSummary[] with email in owners.
-- [ ] `api/user/decks/[deckid]/revisions.json` GET (auth. JWT email) ->
+- [x] `api/user/decks/[deckid]/revisions.json` GET (auth. JWT email) ->
   CardDeckRevisionSummary[] 
 - [ ] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
   or revision isPublic) -> CardDeckRevision

@@ -43,9 +43,9 @@
 <div class="px-2">
 
   <p>{decks.length} decks:</p>
-  <div>
+  <div class="w-full grid grid-cols-1 space-x-3 mb-4 text-sm font-medium py-2">
 {#each decks as deck}
-    <div><a href="decks/{deck._id}">{deck.name} - {deck.description}</a></div>
+    <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="decks/{deck._id}">{deck.name} - {deck.description}</a>
 {/each}
   </div>
 
