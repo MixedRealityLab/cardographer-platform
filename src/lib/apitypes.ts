@@ -6,4 +6,11 @@ export interface LoginRequest {
 export interface LoginResponse {
 	token: string
 }
+export interface PostDeckResponse {
+	deckId: string;
+	revision: number;
+}
+export interface PostRevisionResponse {
+	revision: number;
+}
 

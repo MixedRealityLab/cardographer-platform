@@ -6,7 +6,12 @@ That's the theory, anyway.
 
 The University of Nottingham, 2021.
 
-Status: just starting
+Status: initial skeleton
+
+See
+- [docs/datamodel.md](docs/datamodel.md)
+- [docs/todo.md](docs/todo.md)
+- [docs/api.md](docs/api.md)
 
 ## Build
 
