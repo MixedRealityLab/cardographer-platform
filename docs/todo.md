@@ -10,7 +10,12 @@ basic
 deck
 - [x] list decks
 - [x] decks filter by user
-- [ ] add deck
+- [x] edit revision
+- [ ] download cards spreadsheet
+- [ ] upoad cards spreadsheet
+- [ ] edit deck (public, owners)
+- [ ] new revison of deck
+- [ ] revision -> new deck
 - [ ] upload deck assets
 - [ ] run card generator
 - [ ] deck url/export for card.online

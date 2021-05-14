@@ -34,25 +34,39 @@
 import AppBar from '$lib/ui/AppBar.svelte';
 import UserTabs from '$lib/ui/UserTabs.svelte';
 import type {CardDeckRevision} from '$lib/types.ts';
+import { page, session } from '$app/stores';
 
 export let revision : CardDeckRevision;
 let working = false;
+let error = '';
+let message = '';
 
 async function handleSubmit() {
-	console.log(`IMPLEMENT ME: submit`, revision);
+	console.log(`submit`, revision);
+	message = '';
+	error = '';
+	
+	const token = $session.user?.token;
+	if (!token) {
+		error = "Sorry, you don't seem to be logged in";
+		return;
+	}
 	working = true;
-	// TODO
-/*
-        const response = await fetch(`/api/user/login`, {
-                method:'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify(request)
-        });
-        statusCode = response.status;
-        working = false;
-        if (statusCode == 200) {
-        }
-*/
+
+	const {deckid, revid} = $page.params;
+	const url = `/api/user/decks/${deckid}/revisions/${revid}`;
+	const res = await fetch(url, {
+		method: 'POST',
+		headers: { authorization: `Bearer ${token}`,
+			'content-type': 'application/json' },
+		body: JSON.stringify(revision)
+	});
+	working = false;
+	if (res.ok) {
+		message = "Updated";
+	} else {
+		error = `Sorry, there was a problem (${res.statusText})`;
+	}
 }
 
 </script>
@@ -106,6 +120,14 @@ async function handleSubmit() {
                 <span class="ml-2">Template</span>
         </label>
 	</div>
+
+{#if error}
+<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
+{/if}
+{#if message}
+<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
+{/if}
+
 
         <input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working}" type='submit' value='Save'>
 </div>

@@ -19,18 +19,23 @@ Authentication (placeholder):
 Deck authoring:
 
 - [x] `api/user/decks.json` GET (auth. JWT email) -> 
-  CardDeckSummary[] with email in owners.
+  {decks:CardDeckSummary[]} with email in owners.
 - [x] `api/user/decks/[deckid]/revisions.json` GET (auth. JWT email) ->
-  CardDeckRevisionSummary[] 
-- [ ] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
+  {revisions:CardDeckRevisionSummary[],deck:CardDeckSummary} 
+- [x] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
   or revision isPublic) -> CardDeckRevision
 - [ ] `api/user/decks` POST CardDeckRevision (auth) -> {deckid,revid=1}
 - [ ] `api/user/decks/[deckid]/revisions` POST CardDeckRevision (auth.)
   -> {revid}
 - [ ] `api/user/decks/[deckid]` POST CardDeckSummary {owners, isPublic}
   (auth.) -> ()
-- [ ] `api/user/decks/[deckid]/revisions/[revid]` POST CardDeckRevision
+- [x] `api/user/decks/[deckid]/revisions/[revid]` POST CardDeckRevision
   (auth.) -> ()
+- [ ] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` GET 
+  ?allColumns&withDefault (auth) -> .CSV file of card metadata
+- [ ] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` PUT 
+  ?addColumns&withDefault (auth) .CSV file of card metadata -> 
+  () or CardDeckRevision?
 
 Files (TBC):
 
