@@ -33,17 +33,19 @@ export interface CardDeckRevisionSummary {
 // full revision data
 export interface CardDeckRevision extends CardDeckRevisionSummary {
 	propertyDefs: CardPropertyDef[];
+	defaults: CardInfo;
 	cards: CardInfo[];
 	build?: DeckBuild;
 	output?: DeckOutput;
 }
 
 // card property metadata
-export interface CartPropertyDef {
+export interface CardPropertyDef {
 	use: CardPropertyUse;
 	customFieldName?: string;
 	title?: string;
 	description?: string;
+	defaultExport?: boolean;
 	sortBy?: number;
 }
 
@@ -81,6 +83,10 @@ export enum CardPropertyUse {
 	BackHeight = "backHeight"
 }
 
+export type CustomFields = {
+	[key:string] : string;
+}
+
 // single Card or deck default
 export interface CardInfo {
 
@@ -105,7 +111,7 @@ export interface CardInfo {
 	categody?: string;
 	subtype?: string; // default subtype
 	attriute?: string; // default attribute
-	custom?: [key: string]:string; // also custom assetFile or content
+	custom?: CustomFields; // also custom assetFile or content
 
 	// card generation
 	assetFile?: string; // filename?

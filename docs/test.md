@@ -35,3 +35,10 @@ db.CardDeckRevisions.insertOne({
 });
 ```
 
+See test data, [data/databox-health.csv](data/databox-health.csv).
+
+Select Deck & Revision, 
+Upload sample CSV file to set/update propertyDefs, defaults and create cards.
+
+See also [authoring.md](authoring.md) for spreadsheet format.
+

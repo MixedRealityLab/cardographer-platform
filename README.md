@@ -6,9 +6,10 @@ That's the theory, anyway.
 
 The University of Nottingham, 2021.
 
-Status: initial skeleton
+Status: revision editing but that's all
 
 See
+- [docs/authoring.md](docs/authoring.md)
 - [docs/datamodel.md](docs/datamodel.md)
 - [docs/todo.md](docs/todo.md)
 - [docs/api.md](docs/api.md)
@@ -26,7 +27,7 @@ sudo docker-compose up server
 Open [http://localhost:3000](http://localhost:3000)
 
 Notes:
-- had troube with Mongodb client using node:alpine base (error
+- had trouble with Mongodb client using node:alpine base (error
   about require of mongodb-client-encryption; tried to install but
   that failed).
 

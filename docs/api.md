@@ -31,10 +31,10 @@ Deck authoring:
   (auth.) -> ()
 - [x] `api/user/decks/[deckid]/revisions/[revid]` POST CardDeckRevision
   (auth.) -> ()
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` GET 
-  ?allColumns&withDefault (auth) -> .CSV file of card metadata
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` PUT 
-  ?addColumns&withDefault (auth) .CSV file of card metadata -> 
+- [x] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` GET 
+  ?allColumns&withRowTypes (auth) -> .CSV file of card metadata
+- [x] `api/user/decks/[deckid]/revisions/[revid]/cards` PUT (auth.) 
+  PutCardsRequest {addColumns, .CSV file of card metadata} -> 
   () or CardDeckRevision?
 
 Files (TBC):

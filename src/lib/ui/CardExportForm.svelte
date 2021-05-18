@@ -1,0 +1,80 @@
+<script lang="ts">
+import type {CardDeckRevision} from '$lib/types.ts';
+import { page, session } from '$app/stores';
+
+export let revision : CardDeckRevision;
+let allColumns = false;
+let withRowTypes = false;
+let working = false;
+let error = '';
+let message = '';
+
+//https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
+function download(filename, text) {
+	var element = document.createElement('a');
+	element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
+	element.setAttribute('download', filename);
+
+	element.style.display = 'none';
+	document.body.appendChild(element);
+
+	element.click();
+
+	document.body.removeChild(element);
+}
+
+async function exportCsv() {
+	console.log(`export...`);
+	message = error = '';
+	const token = $session.user?.token;
+	if (!token) {
+		error = "Sorry, you don't seem to be logged in";
+		return;
+	}
+	working = true;
+	const {deckid, revid} = $page.params;
+	let url = `/api/user/decks/${deckid}/revisions/${revid}/cards.csv`;
+	let sep = '?';
+	if (allColumns) {
+		url = url + sep + 'allColumns';
+		sep = '&';
+	}
+	if (withRowTypes) {
+		url = url + sep + 'withRowTypes';
+	}
+	const res = await fetch(url, {
+                headers: { authorization: `Bearer ${token}` },
+        });
+        working = false;
+        if (res.ok) {
+		const text = await res.text();
+		let filename = (revision.slug ? revision.slug : (revision.title+revision.revision))+'.csv';
+		download(filename, text);
+        } else {
+                error = `Sorry, there was a problem (${res.statusText})`;
+        }
+
+}
+
+</script>
+
+<div class="py-2 grid grid-cols-1 gap-2">
+        <label class="block">
+                <input type="checkbox" class="form-checkbox" bind:checked="{allColumns}">
+                <span class="ml-2">Include hidden columns</span>
+        </label>
+        <label class="block">
+                <input type="checkbox" class="form-checkbox" bind:checked="{withRowTypes}">
+                <span class="ml-2">Include column metadata</span>
+        </label>
+
+{#if error}
+<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
+{/if}
+{#if message}
+<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
+{/if}
+    
+    <button disabled={working} class:text-gray-400="{working}" class="rounded-md mt-1 block w-full bg-gray-300 py-2" on:click="{exportCsv}">Export CSV</button>
+
+</div>

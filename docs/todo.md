@@ -11,8 +11,8 @@ deck
 - [x] list decks
 - [x] decks filter by user
 - [x] edit revision
-- [ ] download cards spreadsheet
-- [ ] upoad cards spreadsheet
+- [x] download cards spreadsheet
+- [x] upoad cards spreadsheet
 - [ ] edit deck (public, owners)
 - [ ] new revison of deck
 - [ ] revision -> new deck

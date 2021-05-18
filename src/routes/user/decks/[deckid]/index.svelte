@@ -49,10 +49,10 @@
     <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="{revision.deckId}/revisions/{revision.revision}">
       <div class="flex flex-row gap-1">
 	<div>{revision.deckName} ({revision.revisionName ? revision.revisionName : revision.revision})</div>
-	<div class="px-1 rounded-md bg-gray-200">{#if !revision.isUsable}Don't use{/if}</div>
-	<div class="px-1 rounded-md bg-gray-200">{#if revision.isLocked}Locked{/if}</div>
-	<div class="px-1 rounded-md bg-gray-200">{#if revision.isPublic}Public{/if}</div>
-	<div class="px-1 rounded-md bg-gray-200">{#if revision.isTemplate}Template{/if}</div>
+	{#if !revision.isUsable}<div class="px-1 rounded-md bg-gray-200">Don't use</div>{/if}
+	{#if revision.isLocked}<div class="px-1 rounded-md bg-gray-200">Locked</div>{/if}
+	{#if revision.isPublic}<div class="px-1 rounded-md bg-gray-200">Public</div>{/if}
+	{#if revision.isTemplate}<div class="px-1 rounded-md bg-gray-200">Template</div>{/if}
       </div>
       <div class="text-sm font-light">{revision.revisionDescription}</div>
     </a>

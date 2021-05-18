@@ -45,6 +45,7 @@ Each metadata field on a card is defined by a `CardPropertyDef`, with:
 - `customFieldname` (string, optional) - programming-style name, used as field name, defaults to value of `use` (if not specified) and generally only needed if multiple subtypes, attributes etc are required.
 - `title` (string) - spreadsheet column title
 - `description` (string)
+- `defaultExport` (boolean) - include in default export
 - `sortBy` (number) - to sort e.g. columns
 
 `CardInfo`, has fields to match `use` values (below), plus:

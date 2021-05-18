@@ -14,3 +14,8 @@ export interface PostRevisionResponse {
 	revision: number;
 }
 
+export interface PutCardsRequest {
+	addColumns: boolean;
+	csvFile: string;
+}
+

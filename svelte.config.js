@@ -20,6 +20,12 @@ const config = {
 			// default options are shown
 			out: 'build'
 		})
+	},
+
+	vite: {
+		optimizeDeps: {
+			include: ["csv"]
+		}
 	}
 };
 
