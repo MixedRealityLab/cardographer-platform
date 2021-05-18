@@ -35,3 +35,13 @@ services:
             - ./static:/app/static/:ro
             - uploads:/app/uploads
             - sessions:/app/sessions
+
+    squib:
+        build:
+            context: workers/squib
+            dockerfile: Dockerfile
+        ports:
+            - 3001
+        volumes:
+            - uploads:/root/work/uploads
+
