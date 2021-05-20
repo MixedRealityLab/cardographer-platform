@@ -38,10 +38,12 @@ import { page, session } from '$app/stores';
 import RevisionEditForm from '$lib/ui/RevisionEditForm.svelte';
 import CardUploadForm from '$lib/ui/CardUploadForm.svelte';
 import CardExportForm from '$lib/ui/CardExportForm.svelte';
+import RevisionBuildForm from '$lib/ui/RevisionBuildForm.svelte';
 
 export let revision : CardDeckRevision;
 let showform = false;
 let showcards = false;
+let showbuild = false;
 
 function toggleShowform() {
 	showform = !showform;
@@ -49,7 +51,9 @@ function toggleShowform() {
 function toggleShowcards() {
 	showcards = !showcards;
 }
-
+function toggleShowbuild() {
+	showbuild = !showbuild;
+}
 </script>
 
 <AppBar title="Cardographer" backpage=".."/>
@@ -82,3 +86,18 @@ function toggleShowcards() {
 
 </div><!-- hideable form -->
 </div><!-- cards section -->
+
+<div class="px-2 py-2 border">
+ <div class="w-full" on:click="{toggleShowbuild}">
+  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showcards}-{:else}+{/if}</span></div>
+  <span>Build</span>
+ </div>
+
+<div class:hidden="{!showbuild}" class="px-2 py-2">
+
+<RevisionBuildForm revision="{revision}"/>
+
+</div><!-- hideable form -->
+</div><!-- cards section -->
+
+

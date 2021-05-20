@@ -13,3 +13,15 @@ export interface ServerLocals {
         authenticated: boolean;
 	userToken?: string;
 }
+
+export interface BuilderConfig {
+	baseUrl: string;
+	filePath: string;
+	// custom
+}
+
+export interface BuildRequest {
+        revision: CardDeckRevision;
+        config: BuilderConfig
+}
+

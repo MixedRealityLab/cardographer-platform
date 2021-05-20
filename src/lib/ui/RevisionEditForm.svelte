@@ -66,22 +66,29 @@ async function handleSubmit() {
                 <input class="mt-1 block w-full" id="slug" type="text" bind:value="{revision.slug}" />
         </label>
 	<div class="">
-        <label class="inline-flex">
+        <label class="inline-flex py-1">
                 <input type="checkbox" class="form-checkbox" bind:checked="{revision.isUsable}">
 		<span class="ml-2">Usable</span>
         </label>
-        <label class="inline-flex ml-6">
+        <label class="inline-flex ml-6 py-1">
                 <input type="checkbox" class="form-checkbox" bind:checked="{revision.isPublic}">
                 <span class="ml-2">Public</span>
         </label>
-        <label class="inline-flex ml-6">
+        <label class="inline-flex ml-6 py-1">
                 <input type="checkbox" class="form-checkbox" bind:checked="{revision.isLocked}">
                 <span class="ml-2">Locked</span>
         </label>
-        <label class="inline-flex ml-6">
+        <label class="inline-flex ml-6 py-1">
                 <input type="checkbox" class="form-checkbox" bind:checked="{revision.isTemplate}">
                 <span class="ml-2">Template</span>
         </label>
+{#if revision?.build}
+	<label class="inline-flex ml-6 py-1">
+		<input type="checkbox" class="form-checkbox" bind:checked="{revision.build.isDisabled}">
+                <span class="ml-2">Disable re-build</span>
+        </label>
+{/if}
+
 	</div>
 
 {#if error}

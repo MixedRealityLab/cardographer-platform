@@ -6,7 +6,7 @@ That's the theory, anyway.
 
 The University of Nottingham, 2021.
 
-Status: revision editing but that's all
+Status: revision editing and initial card generation
 
 See
 - [docs/authoring.md](docs/authoring.md)

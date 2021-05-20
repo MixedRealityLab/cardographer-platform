@@ -17,7 +17,7 @@ deck
 - [ ] new revison of deck
 - [ ] revision -> new deck
 - [ ] upload deck assets
-- [ ] run card generator
+- [x] run card generator
 - [ ] deck url/export for card.online
 
 session

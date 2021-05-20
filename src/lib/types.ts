@@ -135,7 +135,8 @@ export interface CardInfo {
 // deck build info - to be refined
 export interface DeckBuild {
 	files?: FileInfo[];
-	buildType: string;
+	builderId: string;
+	builderName: string;
 	config?: any; // TBD
 	lastBuilt?: string; // ISODate
 	status: DeckBuildStatus;

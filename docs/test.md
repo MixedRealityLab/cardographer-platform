@@ -33,6 +33,12 @@ db.CardDeckRevisions.insertOne({
   ],
   cards:[]
 });
+db.CardDeckRevisions.updateOne({_id:"609d13dfd045c0786d2557bf:1"},{$set:{
+  build: {
+    builderId:"squib", builderName:"Squib", config: {}, status: "unbuilt",
+    isDisabled: false
+  }
+}})
 ```
 
 See test data, [data/databox-health.csv](data/databox-health.csv).

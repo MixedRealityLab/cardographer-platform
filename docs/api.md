@@ -36,6 +36,8 @@ Deck authoring:
 - [x] `api/user/decks/[deckid]/revisions/[revid]/cards` PUT (auth.) 
   PutCardsRequest {addColumns, .CSV file of card metadata} -> 
   () or CardDeckRevision?
+- [x] `api/user/decks/[deckid]/revisions/[revid]/build` POST (auth.)
+  () -> BuildResponse
 
 Files (TBC):
 
@@ -62,6 +64,10 @@ Deck use:
   or isPublic) -> subset? of CardDeckRevision
 - [ ] `api/client/decks/[deckid]/revisions/[revid]/outputfiles/[filename]`
   GET (auth or isPublic) -> file content
+
+Images:
+- [x] `api/cards/images/[deckid]/[revid]/[...file]` GET -> file
+  from _output (only application/octet-stream atm - sveltekit issue)
 
 ## Sessions
 
