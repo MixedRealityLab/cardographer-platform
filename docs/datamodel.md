@@ -35,6 +35,7 @@ There is a `CardDeckRevision` for each revision, with:
 - `propertyDefs` (CardPropertyDef[]) - card metadata definitions (see below)
 - `defaults` (CardInfo) - default metadata for all cards in this revision
 - `cards` (CardInfo[]) - metadata for each card in this revision
+- `back` (CardInfo) - metadata for card back (generation)
 - `build` (DeckBuild) - configuration/assets for deck generation (see below)
 - `output` (DeckOutput) - final/usable deck images
 
@@ -115,6 +116,7 @@ Each builder will need an interface, at least
 - `cards` (CardInfo[]) - extra information for the cards
 
 `BuilderConfig` will need at least:
+- `filePath` (string) - uploads file path
 - `baseUrl` (string) - public URL base for serving generated files
 
 ### Deck Output

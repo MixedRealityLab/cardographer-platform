@@ -17,8 +17,8 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 	if (debug) console.log(`squib build ${revision.deckId} ${revision.revision} ...`);
 	const revPath = `${revision.deckId}/${revision.revision}`;
 	const filePath = `${config.filePath}/${revPath}`;
-	// export cards to .../card-data.csv (not all columns, no row types)
-	const csv = await exportCardsAsCsv( revision, false, false );
+	// export cards to .../card-data.csv (not all columns, no row types, with back)
+	const csv = await exportCardsAsCsv( revision, false, false, true );
 	const csvFile = `${filePath}/card-data.csv`;
 	if (debug) console.log(`write cards to ${csvFile}`);
 	await writeFile(csvFile, csv);

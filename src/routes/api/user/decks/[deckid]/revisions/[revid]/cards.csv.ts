@@ -34,7 +34,7 @@ export async function get(request): RequestHandler {
 	}
 	const allColumns = request.query.has('allColumns');
 	const withRowTypes = request.query.has('withRowTypes');
-	const csv = await exportCardsAsCsv( revision, allColumns, withRowTypes );
+	const csv = await exportCardsAsCsv( revision, allColumns, withRowTypes, false );
 	return {
 		headers: { 'content-type': 'text/csv; charset=utf-8' },
 		body: csv

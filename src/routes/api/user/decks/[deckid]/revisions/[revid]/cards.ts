@@ -62,6 +62,7 @@ export async function put(request): RequestHandler {
 		lastModified: now,
 		cardCount: newRevision.cards.length,
 		defaults: newRevision.defaults,
+		back: newRevision.back,
 		cards: newRevision.cards,
 		propertyDefs: newRevision.propertyDefs,
 	}});

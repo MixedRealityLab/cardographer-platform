@@ -20,6 +20,7 @@ The row types are (NB lower case and including the ":"):
   export (unless blank, "0", "n..." or "f...")
 - "default:" - row values are defaults for all cards
 - "card:" - row represents a normal card.
+- "back:" - row represents information for card back
 
 A regular (non-typed) spreadsheet always has the title row first, then
 all remaining rows are considered to be card rows.
