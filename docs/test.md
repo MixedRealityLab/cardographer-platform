@@ -42,3 +42,35 @@ Upload sample CSV file to set/update propertyDefs, defaults and create cards.
 
 See also [authoring.md](authoring.md) for spreadsheet format.
 
+## Squib worker test
+
+```
+sudo docker-compose up squib
+```
+(change name(s) 'vagrant_...' as appropriate)
+```
+sudo docker exec -it vagrant_squib_1 /bin/sh
+```
+```
+cd uploads
+mkdir -p 609d13dfd045c0786d2557bf/1
+cd 609d13dfd045c0786d2557bf/1
+wget https://github.com/cgreenhalgh/databox-health-cards/archive/refs/heads/master.zip
+unzip master.zip
+(cd databox-health-cards-master; mv deck.rb layout.yml config.yml icons ..)
+cp databox-health-cards-master/card-data.csv card-data.csv
+rm -rf databox-health-cards-master
+mkdir -p _output
+```
+
+```
+sudo docker inspect --format='{{.NetworkSettings.Networks.vagrant_default.IPAddress}}' vagrant_squib_1
+```
+=> IP
+```
+telnet IP 3001
+```
+```
+rundeck/1 609d13dfd045c0786d2557bf/1
+```
+

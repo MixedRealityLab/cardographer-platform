@@ -22,6 +22,7 @@ Note, requires docker and docker-compose.
 ```
 sudo docker-compose build server
 sudo docker-compose up -d mongo
+sudo docker-compose up -d squib
 sudo docker-compose up server
 ```
 Open [http://localhost:3000](http://localhost:3000)

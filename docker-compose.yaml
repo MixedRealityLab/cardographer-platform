@@ -44,4 +44,5 @@ services:
             - 3001
         volumes:
             - uploads:/root/work/uploads
+        restart: unless-stopped
 
