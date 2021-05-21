@@ -63,6 +63,11 @@ function compareRevisions(a,b) {
       </div>
       <div class="text-sm font-light">{revision.revisionDescription}</div>
     </a>
+
+{#if revision.isCurrent && revisions.length>1}
+<p class="pt-4">Old revisions:</p>
+{/if}
+
 {/each}
   </div>
 

@@ -35,6 +35,7 @@ export async function post(request): RequestHandler {
 	revision.isPublic = false;
 	revision.isLocked = false;
 	revision.isTemplate = false;
+	delete revision.isCurrent;
 	if (oldRevision) {
 		if (debug) console.log(`copying build from existing revision ${oldRevisionId}`);
 		revision.build = await copyBuild( oldRevision, revision );
