@@ -17,7 +17,7 @@
 		if (res.ok) {
 			return {
 				props: {
-					decks: (await res.json()).decks
+					decks: (await res.json()).decks.sort(compareDecks)
 				}
 			};
 		}
@@ -27,6 +27,13 @@
 			error: new Error(`Could not load ${url}`)
 		};
 	}
+
+function compareDecks(a,b) {
+	const aname = `${a.name} ${a._id}`;
+	const bname = `${b.name} ${b._id}`;
+	return String(aname).localeCompare(bname);
+}
+
 </script>
 
 <script lang="ts">
@@ -37,13 +44,13 @@
   export let decks : CardDeckSummary[];
 </script>
 
-<AppBar title="Cardographer" backpage="/user"/>
+<AppBar title="Cardographer" backpage=""/>
 <UserTabs page="decks"/>
 
 <div class="px-2">
 
   <p>{decks.length} decks:</p>
-  <div class="w-full grid grid-cols-1 space-x-3 mb-4 text-sm font-medium py-2">
+  <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
 {#each decks as deck}
     <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="decks/{deck._id}">{deck.name} - {deck.description}</a>
 {/each}

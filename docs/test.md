@@ -13,7 +13,8 @@ use cardographer-platform-1
 db.CardDeckSummaries.insertOne({
   _id:"609d13dfd045c0786d2557bf",
   name:"Databox", description: "chris test cards",
-  isPublic: true, owners:["chris.greenhalgh@nottingham.ac.uk"]
+  isPublic: true, owners:["chris.greenhalgh@nottingham.ac.uk"],
+  currentRevision: 1
 });
 db.CardDeckRevisions.insertOne({
   _id:"609d13dfd045c0786d2557bf:1", deckId:"609d13dfd045c0786d2557bf",

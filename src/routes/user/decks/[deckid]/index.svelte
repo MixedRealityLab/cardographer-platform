@@ -44,7 +44,7 @@
 <div class="px-2">
 
   <p>{revisions.length} revisions:</p>
-  <div class="w-full grid grid-cols-1 space-x-3 mb-4 text-sm font-medium py-2">
+  <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
 {#each revisions as revision}
     <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="{revision.deckId}/revisions/{revision.revision}">
       <div class="flex flex-row gap-1">

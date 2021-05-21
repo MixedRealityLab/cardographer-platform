@@ -26,3 +26,8 @@ export interface BuildResponse {
 	cards?: CardInfo[];
 }
 
+export interface PostUserDecksResponse {
+	deckid: string;
+	revid: number;
+}
+

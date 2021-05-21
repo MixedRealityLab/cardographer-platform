@@ -15,7 +15,8 @@ deck
 - [x] upoad cards spreadsheet
 - [ ] edit deck (public, owners)
 - [ ] new revison of deck
-- [ ] revision -> new deck
+- [x] list templates
+- [x] template -> new deck
 - [ ] upload deck assets
 - [x] run card generator
 - [ ] deck url/export for card.online

@@ -14,7 +14,7 @@ const config = {
 		target: '#svelte',
 		paths: {          
 			base: '', // '/' - not working for client nav?
-			assets: ''                  
+			//assets: ''                  
 		},                                  
 		adapter: adapter({
 			// default options are shown

@@ -48,7 +48,7 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		newCard[frontUrlPropName] = `${config.baseUrl}${revPath}/${fileName}`;
 		cards.push(newCard);
 	}
-	if(debug) console.log(`cards`, cards);
+	//if(debug) console.log(`cards`, cards);
 	return {
 		messages: messages,
 		cards: cards

@@ -59,6 +59,12 @@ function toggleShowbuild() {
 <AppBar title="Cardographer" backpage=".."/>
 <!-- <UserTabs/> -->
 
+{#if revision}
+<div class="px-2 py-2">
+	<div>{revision.deckName} ({revision.revisionName ? revision.revisionName : revision.revision})</div>
+</div>
+{/if}
+
 <div class="px-2 py-2 border">
  <div class="w-full" on:click="{toggleShowform}">
   <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showform}-{:else}+{/if}</span></div>

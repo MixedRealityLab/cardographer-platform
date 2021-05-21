@@ -24,7 +24,7 @@ Deck authoring:
   {revisions:CardDeckRevisionSummary[],deck:CardDeckSummary} 
 - [x] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
   or revision isPublic) -> CardDeckRevision
-- [ ] `api/user/decks` POST CardDeckRevision (auth) -> {deckid,revid=1}
+- [x] `api/user/decks` POST CardDeckRevision (auth) -> {deckid,revid=1}
 - [ ] `api/user/decks/[deckid]/revisions` POST CardDeckRevision (auth.)
   -> {revid}
 - [ ] `api/user/decks/[deckid]` POST CardDeckSummary {owners, isPublic}
@@ -52,11 +52,13 @@ Files (TBC):
 
 Ditto for `.../buildfiles...`
 
-Public decks:
+Public decks & templates:
+- [x] `api/public/templates.json` GET -> 
+  {values:CardDeckRevisionSummary[]} with isPublic & isTemplate
 - [ ] `api/public/decks.json` GET -> CardDeckSummary[] with isPublic
 - [ ] `api/public/decks/[deckid]/revisions.json` GET ->
   CardDeckRevisionSummary[] (if deck isPublic and revision isPublic)
-- [ ] `api/public/decks/[deckid]/revisions/[revid].json` GET 
+- [x] `api/public/decks/[deckid]/revisions/[revid].json` GET 
   (revision isPublic) -> CardDeckRevision
 
 Deck use:

@@ -48,7 +48,7 @@ async function exportCsv() {
         working = false;
         if (res.ok) {
 		const text = await res.text();
-		let filename = (revision.slug ? revision.slug : (revision.title+revision.revision))+'.csv';
+		let filename = (revision.slug ? revision.slug : `${revision.deckName}_${revision.revision}`)+'.csv';
 		download(filename, text);
         } else {
                 error = `Sorry, there was a problem (${res.statusText})`;

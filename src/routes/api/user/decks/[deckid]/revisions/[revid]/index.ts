@@ -51,6 +51,17 @@ export async function put(request): RequestHandler {
 		if (debug) console.log(`revision ${revid} not matched for deck ${deckid}`, upd);
 		return { status: 404 };
 	}
+	// update deck summary
+	const upd2 = await db.collection('CardDeckSummaries').updateOne({
+		_id: deckid
+        }, { $set: {
+		name: revision.deckName,
+		description: revision.deckDescription,
+		credits: revision.deckCredits,
+	}});
+	if (!upd2.matchedCount) {
+		if (debug) console.log(`deck ${deckid} update failed`, upd);
+	}
 	return {
 		body: {}
 	}

@@ -1,5 +1,5 @@
 // database
-import {MongoClient} from "mongodb";
+import {MongoClient,ObjectID} from "mongodb";
 import type {MongoClient,Db} from 'mongodb';
 
 const {MONGODB} = process.env;
@@ -28,3 +28,7 @@ export async function getDb() : Db {
   return db;
 }
 // other or later errors?
+
+export function getNewId() : string {
+	return new ObjectID().toHexString();
+}

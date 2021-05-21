@@ -9,6 +9,7 @@ export interface CardDeckSummary {
 	credits?: string;
 	isPublic: boolean;
 	owners: string[];
+	currentRevision: number; // integer
 }
 
 // summary is returned for list all revisions
@@ -29,6 +30,8 @@ export interface CardDeckRevisionSummary {
 	isLocked: boolean;
 	isTemplate: boolean;
 	cardCount: number; // summary only
+	// API only
+	isCurrent?: boolean;
 }
 // full revision data
 export interface CardDeckRevision extends CardDeckRevisionSummary {

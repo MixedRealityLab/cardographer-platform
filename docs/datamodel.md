@@ -10,6 +10,7 @@ There is a `CardDeckSummary` for each deck, with:
 - `credits` (string) - denorm from latest revision
 - `isPublic` (boolean)
 - `owners` (string[]) - emails (or similar unique IDs of owners of the deck for RBAC)
+- `currentRevision` (number) - from CardDeckRevision.revision
 
 ### Card Deck Revision
 
@@ -38,6 +39,9 @@ There is a `CardDeckRevision` for each revision, with:
 - `back` (CardInfo) - metadata for card back (generation)
 - `build` (DeckBuild) - configuration/assets for deck generation (see below)
 - `output` (DeckOutput) - final/usable deck images
+
+Not part of the database, but the API may return the following:
+- `isCurrent` (boolean) - from CardDeckSummary.currentRevision == revision
 
 ### Card Info / Card Properties
 
