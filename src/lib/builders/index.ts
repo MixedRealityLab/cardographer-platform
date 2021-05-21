@@ -1,4 +1,4 @@
-import type { BuildResponse } from '$lib/apitypes.ts';
+import type { BuildResponse, FileInfo } from '$lib/apitypes.ts';
 import type { CardDeckRevision, DeckBuild } from '$lib/types.ts';
 import { DeckBuildStatus } from '$lib/types.ts';
 import type { BuilderConfig } from '$lib/systemtypes.ts';
@@ -89,3 +89,26 @@ async function copyDir(oldPath:string, newPath:string, recurse:boolean) {
 	}
 }
 
+export async function getFileInfo(deckid:string, revid:string, path:string): FileInfo[] {
+	const relPath = `${FILE_PATH}/${deckid}/${revid}/${path}`;
+	const stats = await fsPromises.stat(relPath);
+	if (stats.isFile()) {
+		if (debug) console.log(`getDirInfo for file ${relPath}`);
+		return [{ relPath: relPath, isDirectory:false }];
+	}
+	if (!stats.isDirectory()) {
+		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
+		return [];
+	}
+        const files = await fsPromises.readdir(relPath,{withFileTypes:true});
+ 	let fis:FileInfo[] = [];
+ 	for (const file of files) {
+		if (file.isDirectory() || file.isFile()) {
+			fis.push({
+				name: file.name,
+				isDirectory: file.isDirectory()
+			});
+		}
+	}
+	return fis;
+}

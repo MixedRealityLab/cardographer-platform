@@ -41,16 +41,14 @@ Deck authoring:
 
 Files (TBC):
 
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/outputfiles` GET 
-  (auth) -> file info []
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/outputfiles/[filename]`
-  GET (auth) -> file content
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/outputfiles/[filename]` 
+- [.] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` GET 
+  (auth) -> file info [] or file content
+- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` 
   PUT (auth) file content -> ()
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/outputfiles/[filename]`
+- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`       
+  POST (auth) file info -> mkdir
+- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`
   DELETE (auth) -> ()
-
-Ditto for `.../buildfiles...`
 
 Public decks & templates:
 - [x] `api/public/templates.json` GET -> 

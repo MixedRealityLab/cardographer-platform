@@ -37,4 +37,9 @@ export interface PostUserDecksResponse {
 export interface PostUserRevisionResponse {
 	revid: number;
 }
+export interface FileInfo {
+	name: string;
+	isDirectory: boolean;
+	relPath?: string; // internal?
+}
 

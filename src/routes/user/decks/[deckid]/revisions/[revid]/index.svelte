@@ -102,6 +102,12 @@ onMount(() => { console.log(`onMount revision`); });
 </div><!-- cards section -->
 
 <div class="px-2 py-2 border">
+ <a class="w-full" href="{revision.revision}/files">
+  <span>Files...</span>
+ </a>
+</div>
+
+<div class="px-2 py-2 border">
  <div class="w-full" on:click="{toggleShowbuild}">
   <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showbuild}-{:else}+{/if}</span></div>
   <span>Build</span>
