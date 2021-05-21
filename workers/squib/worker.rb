@@ -17,11 +17,14 @@ while connection = server.accept
   when "rundeck/1"
     puts "do rundeck/1 in #{path}"
     connection.write "<RUNNING\n"
-    output = `ruby deck.rb`
-    puts output
-    puts "done"
+    f = IO.popen(["ruby","deck.rb",:err=>[:child, :out]])
+    output = f.readlines
+    f.close
+    puts output.join("")
+    puts "done, status #{$? >> 8}"
     connection.write output
-    connection.write "<DONE\n"
+    connection.write "<DONE\n" if ( $? >> 8 ) == 0
+    connection.write "<ERROR #{$? >> 8}\n" if ( $? >> 8 ) != 0
   else
     puts "unknown command: #{command}"
     connection.write "<ERROR: unknown command\n"

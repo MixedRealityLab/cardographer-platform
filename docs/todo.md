@@ -19,6 +19,7 @@ deck
 - [x] template -> new deck
 - [ ] upload deck assets
 - [x] run card generator
+- [x] deck build error reporting
 - [ ] deck url/export for card.online
 
 session

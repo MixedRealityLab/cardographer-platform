@@ -23,7 +23,10 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 	if (debug) console.log(`write cards to ${csvFile}`);
 	await writeFile(csvFile, csv);
 	const { ok, error, output } = await callWorker( revPath );
-	const messages = output ? output.split('\n') : [];
+	let messages = output ? output.split('\n') : [];
+	try {
+		messages = JSON.parse(output);
+	} catch (err) { }
 	if (!ok) {
 		return { 
 			messages: messages,
@@ -71,11 +74,12 @@ interface CallRes {
 	output?: string;
 }
 enum WState {
-	AWAIT_CONNECT, AWAIT_CONNECTED, AWAIT_RUNNING, AWAIT_DONE, DONE
+	AWAIT_CONNECT, AWAIT_CONNECTED, AWAIT_RUNNING, AWAIT_DONE, DONE, ERROR
 };
 const WORKER_CONNECTED = "<CONNECTED 1";
 const WORKER_RUNNING = "<RUNNING";
 const WORKER_DONE = "<DONE";
+const WORKER_ERROR = "<ERROR";
 const WORKER_TIMEOUT = 30000;
 
 async function callWorker( revPath: string ) : CallRes {
@@ -85,7 +89,7 @@ return new Promise<CallRes>((resolve,reject) => {
 	let sock = new net.Socket();
 	let timeout = setTimeout(() => {
 		if (debug) console.log('socket timeout');
-		if (state != WState.DONE) {
+		if (state != WState.DONE && state != WState.ERROR) {
 			resolve({ok:false, error: 'Took too long'});
 		}
 		sock.destroy();
@@ -117,7 +121,9 @@ return new Promise<CallRes>((resolve,reject) => {
 			if (debug) console.log(`running...`);
 		}
 		if (state == WState.AWAIT_DONE) {
-			const ix = text.indexOf(WORKER_DONE);
+			let ix = text.indexOf(WORKER_DONE);
+			const ix2 = text.indexOf(WORKER_ERROR);
+			if (ix2>=0 && ix<0) { ix = ix2; }
 			if (ix < 0) {
 				output.push(text);
 			} else {
@@ -126,22 +132,29 @@ return new Promise<CallRes>((resolve,reject) => {
 				if (debug) console.log(`done!`);
 				sock.destroy();
 				clearTimeout(timeout);
-				state = WState.DONE;
-				resolve({ ok: true, output: output.join('') });
+				if (ix2<0) {
+					if (debug) console.log(`done!`);
+					state = WState.DONE;
+					resolve({ ok: true, output: output.join('') });
+				} else {
+					if (debug) console.log(`error!`);
+					state= WState.ERROR;
+					resolve({ ok: false, error: 'There was an error generating the cards; please check the build messags', output: output.join('') });
+				}
 				return;
 			}
 		}
 	});
 	sock.on('end', () => {
 		if (debug) console.log(`connection closed`);
-		if (state != WState.DONE) {
+		if (state != WState.DONE  && state != WState.ERROR) {
 			resolve({ ok: false, error: 'worker connection closed' });
 		}
 		clearTimeout(timeout);
 	});
 	sock.on('error', (err) => {
 		if (debug) console.log(`error: ${err}`);
-		if (state != WState.DONE) {
+		if (state != WState.DONE  && state != WState.ERROR) {
 			resolve({ ok: false, error: err.message });
 		}
 		clearTimeout(timeout);
