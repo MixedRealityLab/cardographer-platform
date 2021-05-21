@@ -18,7 +18,7 @@
 		if (res.ok) {
 			return {
 				props: {
-					revisions: (await res.json()).revisions
+					revisions: (await res.json()).revisions.sort(compareRevisions)
 				}
 			};
 		}
@@ -28,6 +28,9 @@
 			error: new Error(`Could not load ${url}`)
 		};
 	}
+function compareRevisions(a,b) {
+	return b.revision - a.revision;
+}
 </script>
 
 <script lang="ts">
@@ -43,12 +46,16 @@
 
 <div class="px-2">
 
-  <p>{revisions.length} revisions:</p>
+
   <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
 {#each revisions as revision}
+{#if revision.isCurrent}
+<p>Current revision:</p>
+{/if}
     <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="{revision.deckId}/revisions/{revision.revision}">
+      <div>{revision.deckName} (rev.{revision.revision}{revision.revisionName ? ' '+revision.revisionName : ''})</div>
       <div class="flex flex-row gap-1">
-	<div>{revision.deckName} ({revision.revisionName ? revision.revisionName : revision.revision})</div>
+
 	{#if !revision.isUsable}<div class="px-1 rounded-md bg-gray-200">Don't use</div>{/if}
 	{#if revision.isLocked}<div class="px-1 rounded-md bg-gray-200">Locked</div>{/if}
 	{#if revision.isPublic}<div class="px-1 rounded-md bg-gray-200">Public</div>{/if}

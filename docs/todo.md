@@ -14,7 +14,7 @@ deck
 - [x] download cards spreadsheet
 - [x] upoad cards spreadsheet
 - [ ] edit deck (public, owners)
-- [ ] new revison of deck
+- [x] new revison of deck
 - [x] list templates
 - [x] template -> new deck
 - [ ] upload deck assets

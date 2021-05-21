@@ -31,6 +31,7 @@ export async function get(request): RequestHandler {
 		if (debug) console.log(`revision ${revid} not found for deck ${deckid}`);
 		return { status: 404 };
 	}
+	revision.isCurrent = revision.revision == deck.currentRevision;
 	return {
 		body: revision
 	}

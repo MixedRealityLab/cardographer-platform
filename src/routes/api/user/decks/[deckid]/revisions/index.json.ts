@@ -32,6 +32,10 @@ export async function get(request): RequestHandler {
 		revisionDescription: true, isUsable: true, isPublic: true,
 		isLocked: true, isTemplate: true, cardCount: true
 	}).toArray() as CardDeckRevisionSummary[];
+	const current = revisions.find((r) => r.revision == deck.currentRevision);
+	if (current) {
+		current.isCurrent = true;
+	}
 	if (debug) console.log(`found ${revisions.length} revisions for ${deckid}`);
 	return {
 		body: {

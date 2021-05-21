@@ -166,4 +166,12 @@ export interface DeckOutput {
 	isUserModified: boolean;
 }
 
+// simple internal user account
+export interface User {
+	email: string;
+	password: string; // hashed...
+	disabled: boolean;
+	created: string;
+}
+
 //EOF

@@ -39,11 +39,14 @@ import RevisionEditForm from '$lib/ui/RevisionEditForm.svelte';
 import CardUploadForm from '$lib/ui/CardUploadForm.svelte';
 import CardExportForm from '$lib/ui/CardExportForm.svelte';
 import RevisionBuildForm from '$lib/ui/RevisionBuildForm.svelte';
+import NewRevisionForm from '$lib/ui/NewRevisionForm.svelte';
+import { onMount } from 'svelte';
 
 export let revision : CardDeckRevision;
 let showform = false;
 let showcards = false;
 let showbuild = false;
+let shownew = false;
 
 function toggleShowform() {
 	showform = !showform;
@@ -54,6 +57,11 @@ function toggleShowcards() {
 function toggleShowbuild() {
 	showbuild = !showbuild;
 }
+function toggleShownew() {
+	shownew = !shownew;
+}
+
+onMount(() => { console.log(`onMount revision`); });
 </script>
 
 <AppBar title="Cardographer" backpage=".."/>
@@ -61,7 +69,7 @@ function toggleShowbuild() {
 
 {#if revision}
 <div class="px-2 py-2">
-	<div>{revision.deckName} ({revision.revisionName ? revision.revisionName : revision.revision})</div>
+	<div>{revision.deckName} (rev.{revision.revision}{revision.revisionName ? ' '+revision.revisionName : ''})</div>
 </div>
 {/if}
 
@@ -106,4 +114,17 @@ function toggleShowbuild() {
 </div><!-- hideable form -->
 </div><!-- cards section -->
 
+{#if revision.isCurrent}
+<div class="px-2 py-2 border">
+ <div class="w-full" on:click="{toggleShownew}">
+  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if shownew}-{:else}+{/if}</span></div>
+  <span>New Revision</span>
+ </div>
 
+<div class:hidden="{!shownew}" class="px-2 py-2">
+
+<NewRevisionForm revision="{revision}"/>
+
+</div><!-- hideable form -->
+</div><!-- new section -->
+{/if}

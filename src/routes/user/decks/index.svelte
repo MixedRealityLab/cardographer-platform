@@ -52,7 +52,10 @@ function compareDecks(a,b) {
   <p>{decks.length} decks:</p>
   <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
 {#each decks as deck}
-    <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="decks/{deck._id}">{deck.name} - {deck.description}</a>
+    <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="decks/{deck._id}">
+      <div>{deck.name}</div>
+      <div class="text-sm font-light">{deck.description}</div>
+     </a>
 {/each}
   </div>
 

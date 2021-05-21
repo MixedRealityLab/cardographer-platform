@@ -2,10 +2,11 @@
 import type { CardInfo } from '$lib/types.ts';
 
 export interface LoginRequest {
-	email: string
+	email: string;
+	password: string;
 }
 export interface LoginResponse {
-	token: string
+	token: string;
 }
 export interface PostDeckResponse {
 	deckId: string;
@@ -28,6 +29,9 @@ export interface BuildResponse {
 
 export interface PostUserDecksResponse {
 	deckid: string;
+	revid: number;
+}
+export interface PostUserRevisionResponse {
 	revid: number;
 }
 

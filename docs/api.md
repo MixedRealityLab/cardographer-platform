@@ -25,7 +25,7 @@ Deck authoring:
 - [x] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
   or revision isPublic) -> CardDeckRevision
 - [x] `api/user/decks` POST CardDeckRevision (auth) -> {deckid,revid=1}
-- [ ] `api/user/decks/[deckid]/revisions` POST CardDeckRevision (auth.)
+- [x] `api/user/decks/[deckid]/revisions` POST CardDeckRevision (auth.)
   -> {revid}
 - [ ] `api/user/decks/[deckid]` POST CardDeckSummary {owners, isPublic}
   (auth.) -> ()

@@ -10,10 +10,14 @@ sudo docker exec -it vagrant_mongo_1 mongo
 A card deck summary:
 ```
 use cardographer-platform-1
+db.Users.insertOne({
+  email: "testuser",
+  password: "password", disabled: false, created: "2021-05-14T14:48:00"
+});
 db.CardDeckSummaries.insertOne({
   _id:"609d13dfd045c0786d2557bf",
   name:"Databox", description: "chris test cards",
-  isPublic: true, owners:["chris.greenhalgh@nottingham.ac.uk"],
+  isPublic: true, owners:["testuseru"],
   currentRevision: 1
 });
 db.CardDeckRevisions.insertOne({

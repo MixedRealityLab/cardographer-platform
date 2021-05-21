@@ -4,7 +4,9 @@ import type {UserSession} from '$lib/systemtypes.ts';
 import {session} from '$app/stores';
 
 let email:string;
+let password:string;
 let statusCode = "";
+let error = '';
 let working = false;
 
 async function handleSubmit() {
@@ -12,14 +14,15 @@ async function handleSubmit() {
 		return;
 	}
 	const request:LoginRequest = {
-		email: email
+		email: email,
+		password: password
 	};
 	const response = await fetch(`/api/user/login`, {
 		method:'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify(request)
 	});
-	statusCode = response.status;
+	let statusCode = response.status;
 	working = false;
 	if (statusCode == 200) {
 		const login = await response.json() as LoginResponse;
@@ -30,6 +33,8 @@ async function handleSubmit() {
 		};
 		$session.user = user;
 		console.log(`logged in as ${email} with ${user.token}`);
+	} else {
+		error = 'Sorry, there was a problem loggin in with those details. Please try again or contact the system administrator for help.';
 	}
 }
 
@@ -45,11 +50,16 @@ async function handleSubmit() {
       <span>Email</span>
       <input class="mt-1 block w-full" required id="email" type="text" bind:value="{email}" />
     </label>
+    <label class="block">
+      <span>Password</span>
+      <input class="mt-1 block w-full" required id="password" type="password" bind:value="{password}" />
+    </label>
+
+{#if error}
+<div class="m-2 p-2 bg-red-300 rounded-lg text-center">{error}</div>
+{/if}
+
     <input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit' value='Log in'>
 </form>
-
-{#if statusCode}
-<p>Status: {statusCode}</p>
-{/if}
 
 </div>

@@ -75,7 +75,8 @@ async function handleSubmit() {
 	const template = await revres.json() as CardDeckRevision;
 	template.revisionDescription = `Copy of ${template.deckName} revision ${template.revision} (${template.revisionName})`
 	template.deckName = 'New deck';
-	
+	template.slug = '';
+
 	const posturl = `/api/user/decks`;
 	const postres = await fetch(posturl, {
 		method: 'POST',
