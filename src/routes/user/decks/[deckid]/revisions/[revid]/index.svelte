@@ -103,7 +103,7 @@ onMount(() => { console.log(`onMount revision`); });
 
 <div class="px-2 py-2 border">
  <div class="w-full" on:click="{toggleShowbuild}">
-  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showcards}-{:else}+{/if}</span></div>
+  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showbuild}-{:else}+{/if}</span></div>
   <span>Build</span>
  </div>
 
@@ -112,7 +112,7 @@ onMount(() => { console.log(`onMount revision`); });
 <RevisionBuildForm revision="{revision}"/>
 
 </div><!-- hideable form -->
-</div><!-- cards section -->
+</div><!-- build section -->
 
 {#if revision.isCurrent}
 <div class="px-2 py-2 border">
