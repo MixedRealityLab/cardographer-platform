@@ -74,9 +74,9 @@ export async function post(request): RequestHandler {
 }
 async function hashPassword(password:string) : string {
 	return new Promise<string>((resolve,reject) => {
-		scrypt(password, "90oisa", 64, (err, derivedKey) => {
+		scrypt(password, "90oisa", 32, (err, derivedKey) => {
 			if (err) reject(err);
-			else resolve(derivedKey);
+			else resolve(derivedKey.toString('hex'));
 		});
 	});
 }

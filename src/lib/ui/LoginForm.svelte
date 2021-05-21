@@ -30,6 +30,10 @@ async function handleSubmit() {
 	working = false;
 	if (statusCode == 200) {
 		const login = await response.json() as LoginResponse;
+		if (login.error) {
+			error = login.error;
+			return;
+		}
 		const user:UserSession = {
 			email: email,
 			authenticated: true,
