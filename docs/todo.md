@@ -5,7 +5,7 @@ basic
 - [x] mongodb db
 - [x] dummy authentication (user email)
 - [ ] base url (proxy deployment)
-- [ ] real authentication
+- [x] real authentication
 
 deck
 - [x] list decks

@@ -10,14 +10,10 @@ sudo docker exec -it vagrant_mongo_1 mongo
 A card deck summary:
 ```
 use cardographer-platform-1
-db.Users.insertOne({
-  email: "testuser",
-  password: "password", disabled: false, created: "2021-05-14T14:48:00"
-});
 db.CardDeckSummaries.insertOne({
   _id:"609d13dfd045c0786d2557bf",
   name:"Databox", description: "chris test cards",
-  isPublic: true, owners:["testuseru"],
+  isPublic: true, owners:["testuser"],
   currentRevision: 1
 });
 db.CardDeckRevisions.insertOne({
@@ -45,6 +41,9 @@ db.CardDeckRevisions.updateOne({_id:"609d13dfd045c0786d2557bf:1"},{$set:{
   }
 }})
 ```
+
+You need to register "testuser" - make sure `REGISTER_CODE` is
+set in `server.env`.
 
 See test data, [data/databox-health.csv](data/databox-health.csv).
 

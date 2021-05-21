@@ -4,9 +4,12 @@ import type { CardInfo } from '$lib/types.ts';
 export interface LoginRequest {
 	email: string;
 	password: string;
+	register: boolean;
+	code?: string;
 }
 export interface LoginResponse {
-	token: string;
+	token?: string;
+	error?: string;
 }
 export interface PostDeckResponse {
 	deckId: string;

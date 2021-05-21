@@ -19,6 +19,9 @@ See
 Note, requires docker and docker-compose.
 (e.g. `vagrant up` - see [Vagrantfile](Vagrantfile))
 
+Copy server.env to server.env.local and change REGISTER_CODE
+(for site sign-up).
+
 ```
 sudo docker-compose build server
 sudo docker-compose up -d mongo
@@ -32,6 +35,7 @@ Notes:
   about require of mongodb-client-encryption; tried to install but
   that failed).
 
-### Test Data
+### Bootstrap Data
 
 see [docs/test.md](docs/test.md)
+

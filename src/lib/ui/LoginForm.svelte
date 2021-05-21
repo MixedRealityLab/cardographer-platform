@@ -5,9 +5,11 @@ import {session} from '$app/stores';
 
 let email:string;
 let password:string;
+let code:string;
 let statusCode = "";
 let error = '';
 let working = false;
+let register = false;
 
 async function handleSubmit() {
 	if (!email) {
@@ -15,7 +17,9 @@ async function handleSubmit() {
 	}
 	const request:LoginRequest = {
 		email: email,
-		password: password
+		password: password,
+		register: register,
+		code: code
 	};
 	const response = await fetch(`/api/user/login`, {
 		method:'POST',
@@ -42,7 +46,7 @@ async function handleSubmit() {
 
 <div class="px-2">
 
-<h1>Log in</h1>
+<h1>{register ? 'Register' : 'Log in'}</h1>
 
 <form on:submit|preventDefault={handleSubmit}>
   <div class="grid grid-cols-1 gap-2">
@@ -55,11 +59,23 @@ async function handleSubmit() {
       <input class="mt-1 block w-full" required id="password" type="password" bind:value="{password}" />
     </label>
 
+    <label class="block">
+      <input type="checkbox" class="form-checkbox" bind:checked="{register}">
+      <span class="ml-2">Register as a new user</span>
+    </label>
+{#if register}
+    <label class="block">
+      <span>Registration code</span>
+      <input class="mt-1 block w-full" required id="code" type="password" bind:value="{code}" />
+    </label>
+
+{/if}
+
 {#if error}
 <div class="m-2 p-2 bg-red-300 rounded-lg text-center">{error}</div>
 {/if}
 
-    <input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit' value='Log in'>
+    <input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit' value='{register ? "Register" : "Log in"}'>
 </form>
 
 </div>

@@ -21,6 +21,9 @@ services:
         build:
             context: .
             dockerfile: dev.Dockerfile
+        env_file:
+            - server.env
+            - server.env.local
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
         restart: unless-stopped
