@@ -2,6 +2,9 @@
 import { createEventDispatcher } from 'svelte';
 import { page, session } from '$app/stores';
 import type { PostFilesRequest } from '$lib/apitypes.ts';
+import type { CardDeckRevision } from '$lib/type.ts';
+
+export let revision : CardDeckRevision;
 
 const dispatch = createEventDispatcher();
 
@@ -88,7 +91,7 @@ async function handleSubmit() {
 <div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 {/if}
 
-	<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working}" type='submit' value='Upload'>
+	<input disabled={working || revision?.isLocked} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working || revision?.isLocked}" type='submit' value='Upload'>
 </div>
 
 </form>

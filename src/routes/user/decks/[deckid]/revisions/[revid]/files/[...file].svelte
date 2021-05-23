@@ -81,6 +81,7 @@ async function refresh() {
 {#if !showUpload}
     <button class="mx-2 rounded-md py-1 px-2 border boder-grey-300" on:click="{toggleUpload}">Upload</button>
 {:else}
+<!-- TODO: stop if revision isLocked -->
 <FileUploadForm on:close={toggleUpload} on:refresh={refresh}/>
 
 {/if}

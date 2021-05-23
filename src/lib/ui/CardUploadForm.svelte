@@ -71,7 +71,7 @@ async function handleSubmit() {
 {/if}
 
 
-	<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working}" type='submit' value='Upload'>
+	<input disabled="{working || revision?.isLocked}" class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working || revision?.isLocked}" type='submit' value='Upload'>
 </div>
 
 </form>

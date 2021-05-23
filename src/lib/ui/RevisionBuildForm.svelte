@@ -74,7 +74,7 @@ async function handleSubmit() {
 {#if message}
 <div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 {/if}
-        <input disabled={working || revision.build.isDisabled} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working || revision.build.isDisabled}" type='submit' value='Build'>
+        <input disabled={working || revision.build.isDisabled || revision?.isLocked} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working || revision.build.isDisabled || revision?.isLocked}" type='submit' value='Build'>
 </div>
 </form>
 {:else}
