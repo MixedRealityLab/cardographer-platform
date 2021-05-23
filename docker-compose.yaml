@@ -38,6 +38,7 @@ services:
             - ./static:/app/static/:ro
             - uploads:/app/uploads
             - sessions:/app/sessions
+            - uploads:/app/static/uploads/:ro
 
     squib:
         build:

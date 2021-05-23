@@ -112,3 +112,9 @@ export async function getFileInfo(deckid:string, revid:string, path:string): Fil
 	}
 	return fis;
 }
+export async function writeFile(deckid:string, revid:string, path:string, name:string, base64:string)  {
+	const relPath = `${FILE_PATH}/${deckid}/${revid}/${path}/${name}`;
+	const data = Buffer.from(base64, 'base64');
+	await fsPromises.writeFile(relPath, data);
+}
+

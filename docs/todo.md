@@ -17,7 +17,9 @@ deck
 - [x] new revison of deck
 - [x] list templates
 - [x] template -> new deck
-- [ ] upload deck assets
+- [x] upload deck assets
+- [ ] delete deck assets
+- [ ] mkdir for assets
 - [x] run card generator
 - [x] deck build error reporting
 - [ ] deck url/export for card.online

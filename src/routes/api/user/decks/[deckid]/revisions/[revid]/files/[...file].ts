@@ -3,11 +3,14 @@ import type {CardDeckSummary,CardDeckRevision}
   from '$lib/types.ts';
 import type {RequestHandler} from '@sveltejs/kit';
 import type {ServerLocals} from '$lib/systemtypes.ts';
-import {getFileInfo} from '$lib/builders/index.ts';
+import {getFileInfo, writeFile} from '$lib/builders/index.ts';
+import type {PostFilesRequest} from '$lib/apitypes.ts';
 
 const debug = true;
-
-export async function get(request): RequestHandler {
+/**
+ * @type {import('@sveltejs/kit').RequestHandler}
+ */
+export async function get(request) {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
@@ -35,3 +38,45 @@ export async function get(request): RequestHandler {
 	}
 }
   
+/**
+ * @type {import('@sveltejs/kit').RequestHandler}
+ */
+export async function post(request) {
+	const locals = request.locals as ServerLocals;
+	if (!locals.authenticated) {
+		if (debug) console.log(`locals`, locals);
+		return { status: 403 }
+	}
+	const req = await request.body as PostFilesRequest;
+	const {deckid,revid} = request.params;
+	const path = request.params.file;
+	const db = await getDb();
+	// permission check
+	const deck = await db.collection('CardDeckSummaries').findOne({
+		_id: deckid, owners: locals.email 
+	}) as CardDeckSummary;
+	if (!deck) {
+		if (debug) console.log(`deck ${deckid} not found for ${locals.email}`);
+		return { status: 404 };
+	}
+	// revision
+	const revision = await db.collection('CardDeckRevisions').findOne({
+		deckId: deckid, revision: Number(revid)
+	}) as CardDeckRevision;
+	if (!revision) {
+		if (debug) console.log(`revision ${revid} not found for deck ${deckid}`);
+		return { status: 404 };
+	}
+	if (revision.isLocked) {
+		if (debug) console.log(`revision ${revid} for ${deckid} locked`)
+;
+		return { status: 403 };
+	}
+	for (let file of req.files) {
+		if (debug) console.log(`upload ${file.name}`);
+		await writeFile(deckid, revid, path, file.name, file.content);
+	}
+	return {
+		body: {}
+	}
+}

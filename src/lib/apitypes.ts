@@ -42,4 +42,13 @@ export interface FileInfo {
 	isDirectory: boolean;
 	relPath?: string; // internal?
 }
+export interface UploadFile {
+	name: string;
+	//	isDirectory: boolean;
+	content: string; // base64
+}
+export interface PostFilesRequest {
+	files: UploadFile[];
+}
 
+	

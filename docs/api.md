@@ -41,12 +41,10 @@ Deck authoring:
 
 Files (TBC):
 
-- [.] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` GET 
-  (auth) -> file info [] or file content
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` 
-  PUT (auth) file content -> ()
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`       
-  POST (auth) file info -> mkdir
+- [x] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` GET 
+  (auth) -> file info [] (for dir)
+- [x] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`       
+  POST (auth) (form-ish) PostFilesRequest -> upload/mkdir
 - [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`
   DELETE (auth) -> ()
 
