@@ -4,7 +4,7 @@ basic
 - [x] tailwind support
 - [x] mongodb db
 - [x] dummy authentication (user email)
-- [ ] base url (proxy deployment)
+- [x] base url (proxy deployment)
 - [x] real authentication
 
 deck
