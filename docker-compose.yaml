@@ -40,6 +40,22 @@ services:
             - sessions:/app/sessions
             - uploads:/app/static/uploads/:ro
 
+    prod:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        env_file:
+            - server.env
+            - server.env.local
+        restart: unless-stopped
+        depends_on:
+            - 'mongo'
+        ports:
+            - "3000:3000"
+        volumes:
+            - uploads:/app/uploads
+            - uploads:/app/static/uploads/:ro
+
     squib:
         build:
             context: workers/squib

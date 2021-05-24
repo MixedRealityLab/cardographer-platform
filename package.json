@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "svelte-kit dev --host=0.0.0.0",
     "build": "svelte-kit build",
-    "preview": "svelte-kit preview"
+    "preview": "svelte-kit preview --host=0.0.0.0"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.0.3",

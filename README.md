@@ -22,6 +22,8 @@ Note, requires docker and docker-compose.
 Copy server.env to server.env.local and change REGISTER_CODE
 (for site sign-up).
 
+### Dev
+
 ```
 sudo docker-compose build server
 sudo docker-compose up -d mongo
@@ -38,4 +40,16 @@ Notes:
 ### Bootstrap Data
 
 see [docs/test.md](docs/test.md)
+
+### Production
+
+
+(or equivalent)
+```
+sudo docker-compose build prod
+sudo docker-compose up -d prod
+```
+
+Still runs on :3000 by default.
+
 

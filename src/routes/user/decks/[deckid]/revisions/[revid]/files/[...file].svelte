@@ -45,7 +45,7 @@ onMount(async () => { });
 function open(file:string) {
 	const { deckid, revid } = $page.params;
 	let path = $page.params.file;
-	window.open(`/uploads/${deckid}/${revid}/${path}/${file}`, '_blank');
+	window.open(`/uploads/${deckid}/${revid}/${path.length>0 ? path+'/': ''}${file}`, '_blank');
 }
 let showUpload = false;
 function toggleUpload() {

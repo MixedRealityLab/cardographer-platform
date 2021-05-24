@@ -1,5 +1,7 @@
 // database
-import {MongoClient,ObjectID} from "mongodb";
+import mongodb from "mongodb";
+// commonjs workaround? (build for node complains)
+let {MongoClient,ObjectID} = mongodb;
 import type {MongoClient,Db} from 'mongodb';
 
 const {MONGODB} = process.env;

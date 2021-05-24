@@ -11,4 +11,9 @@
     @apply text-xl font-bold;
   }
 }
+
+#svelte-announcer {
+  display: none;
+}
+
 </style>

@@ -4,6 +4,10 @@ import {session} from '$app/stores';
 
 </script>
 
+<svelte:head>
+  <title>Cardographer</title>
+</svelte:head>
+
 {#if $session.user?.authenticated}
 <slot></slot>
 
