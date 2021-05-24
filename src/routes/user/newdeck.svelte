@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import type {Load} from '@sveltejs/kit';
+	import { base } from '$lib/paths';
 	
 	export async function load({ page, fetch, session, context }): Load {
 		const token = session.user?.token;
@@ -9,7 +10,7 @@
 				props: { decks: [] } 
 			}
 		}
-		const url = `/api/public/templates.json`;
+		const url = `${base}/api/public/templates.json`;
 		const res = await fetch(url, {
 		});
 
@@ -65,7 +66,7 @@ async function handleSubmit() {
 	}
 	working = true;
 	// get full revision
-	const geturl = `/api/public/decks/${selected.deckId}/revisions/${selected.revision}.json`;
+	const geturl = `${base}/api/public/decks/${selected.deckId}/revisions/${selected.revision}.json`;
 	const revres = await fetch(geturl);
 	if  (!revres.ok) {
 		error = `Sorry, there was a problem getting the template (${revres.statusText})`;
@@ -77,7 +78,7 @@ async function handleSubmit() {
 	template.deckName = 'New deck';
 	template.slug = '';
 
-	const posturl = `/api/user/decks`;
+	const posturl = `${base}/api/user/decks`;
 	const postres = await fetch(posturl, {
 		method: 'POST',
 		headers: { authorization: `Bearer ${token}`,

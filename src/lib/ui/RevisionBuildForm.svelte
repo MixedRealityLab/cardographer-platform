@@ -2,6 +2,7 @@
 import type {CardDeckRevision} from '$lib/types.ts';
 import { page, session } from '$app/stores';
 import type { BuildResponse } from '$lib/apitypes.ts';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 
@@ -20,7 +21,7 @@ async function handleSubmit() {
 	}
 	working = true;
         const {deckid, revid} = $page.params;
-	const url = `/api/user/decks/${deckid}/revisions/${revid}/build`;
+	const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/build`;
 	revision.build.status = 'building';
 	const res = await fetch(url, {
 		method: 'POST',

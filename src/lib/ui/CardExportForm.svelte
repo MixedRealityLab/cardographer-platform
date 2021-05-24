@@ -1,6 +1,7 @@
 <script lang="ts">
 import type {CardDeckRevision} from '$lib/types.ts';
 import { page, session } from '$app/stores';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 let allColumns = false;
@@ -33,7 +34,7 @@ async function exportCsv() {
 	}
 	working = true;
 	const {deckid, revid} = $page.params;
-	let url = `/api/user/decks/${deckid}/revisions/${revid}/cards.csv`;
+	let url = `${base}/api/user/decks/${deckid}/revisions/${revid}/cards.csv`;
 	let sep = '?';
 	if (allColumns) {
 		url = url + sep + 'allColumns';

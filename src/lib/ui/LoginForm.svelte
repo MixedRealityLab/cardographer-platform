@@ -2,6 +2,7 @@
 import type {LoginRequest, LoginResponse} from '$lib/apitypes.ts';
 import type {UserSession} from '$lib/systemtypes.ts';
 import {session} from '$app/stores';
+import { base } from '$lib/paths';
 
 let email:string;
 let password:string;
@@ -21,7 +22,7 @@ async function handleSubmit() {
 		register: register,
 		code: code
 	};
-	const response = await fetch(`/api/user/login`, {
+	const response = await fetch(`${base}/api/user/login`, {
 		method:'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify(request)

@@ -1,6 +1,7 @@
 <script lang="ts">
 import type {CardDeckRevision} from '$lib/types.ts';
 import { page, session } from '$app/stores';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 let working = false;
@@ -22,7 +23,7 @@ async function handleSubmit() {
 	working = true;
 
 	const {deckid, revid} = $page.params;
-	const url = `/api/user/decks/${deckid}/revisions/${revid}`;
+	const url = `${base}/api/user/decks/${deckid}/revisions/${revid}`;
 	const res = await fetch(url, {
 		method: 'PUT',
 		headers: { authorization: `Bearer ${token}`,

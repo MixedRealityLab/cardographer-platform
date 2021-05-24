@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import type {Load} from '@sveltejs/kit';
+	import { base } from '$lib/paths.ts';
 	
 	export async function load({ page, fetch, session, context }): Load {
 		const token = session.user?.token;
@@ -9,7 +10,7 @@
 				props: { decks: [] } 
 			}
 		}
-		const url = `/api/user/decks.json`;
+		const url = `${base}/api/user/decks.json`;
 		const res = await fetch(url, {
 			headers: { authorization: `Bearer ${token}` }
 		});

@@ -3,6 +3,7 @@ import { createEventDispatcher } from 'svelte';
 import { page, session } from '$app/stores';
 import type { PostFilesRequest } from '$lib/apitypes.ts';
 import type { CardDeckRevision } from '$lib/type.ts';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 
@@ -55,7 +56,7 @@ async function handleSubmit() {
 			content: content
 		});
 	}
-	const url = `/api/user/decks/${deckid}/revisions/${revid}/files${file.length==0 ? '' : '/'+file}`;
+	const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/files${file.length==0 ? '' : '/'+file}`;
 	//console.log(`upload to ${url}`);
 	const res = await fetch(url, {
 		method: 'POST',

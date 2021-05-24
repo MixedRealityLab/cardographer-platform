@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import type {Load} from '@sveltejs/kit';
+	import { base } from '$lib/paths';
 	
 	export async function load({ page, fetch, session, context }): Load {
 		const token = session.user?.token;
@@ -10,7 +11,7 @@
 			}
 		}
 		const {deckid} = page.params;
-		const url = `/api/user/decks/${deckid}/revisions.json`;
+		const url = `${base}/api/user/decks/${deckid}/revisions.json`;
 		const res = await fetch(url, {
 			headers: { authorization: `Bearer ${token}` }
 		});
@@ -41,7 +42,7 @@ function compareRevisions(a,b) {
   export let revisions : CardDeckRevisionSummary[];
 </script>
 
-<AppBar title="Cardographer" backpage="."/>
+<AppBar title="Cardographer" backpage="{base}/user/decks"/>
 <!-- <UserTabs/> -->
 
 <div class="px-2">

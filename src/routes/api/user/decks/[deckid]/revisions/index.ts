@@ -66,7 +66,7 @@ export async function post(request): RequestHandler {
 	},{ $set: {
 		currentRevision: deck.currentRevision
 	}});
-	if (!result.updatedCount) {
+	if (!result.modifiedCount) {
 		console.log(`Error updating deck ${deck._id} on new revision`);
 	}
 	return {

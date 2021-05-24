@@ -12,5 +12,6 @@ RUN npm run build
 EXPOSE 3000
 VOLUME /app/static/uploads
 
-CMD ["npm", "run", "preview"]
+#CMD ["npm", "run", "preview"]
+CMD ["node", "build"]
 #CMD ["/bin/sh"]

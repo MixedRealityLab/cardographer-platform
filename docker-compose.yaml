@@ -54,7 +54,7 @@ services:
             - "3000:3000"
         volumes:
             - uploads:/app/uploads
-            - uploads:/app/static/uploads/:ro
+            # Note, /uploads/... needs to be served - see nginx
 
     squib:
         build:
@@ -65,4 +65,12 @@ services:
         volumes:
             - uploads:/root/work/uploads
         restart: unless-stopped
+
+    nginx:
+        image: nginx
+        volumes: 
+          - ./nginx/templates:/etc/nginx/templates
+          - uploads:/usr/share/nginx/cardographer2/uploads
+        ports: 
+          - 8080:80
 

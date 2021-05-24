@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
 import type {Load} from '@sveltejs/kit';
 import type {FileInfo} from '$lib/apitypes.ts';
+import { base } from '$lib/paths';
 
 export async function load({ page, fetch, session, context }): Load {
 	const token = session.user?.token;
@@ -11,7 +12,7 @@ export async function load({ page, fetch, session, context }): Load {
 		}
 	}
 	const {deckid, revid, file} = page.params;
-	const url = `/api/user/decks/${deckid}/revisions/${revid}/files/${file}`;
+	const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/files${file.length==0 ? '' : '/'+file}`;
 	const res = await fetch(url, {
 		headers: { authorization: `Bearer ${token}` }
 	});
@@ -36,16 +37,18 @@ import AppBar from '$lib/ui/AppBar.svelte';
 import { page, session } from '$app/stores';
 import { onMount } from 'svelte';
 import FileUploadForm from '$lib/ui/FileUploadForm.svelte';
+// build adapter fails on import base, but not set in browser
+import { base as base2} from '$lib/paths';
  
 export let files;
 export let error = "";
 
-onMount(async () => { });
+onMount(async () => { console.log(`base=${base}, base2=${base2}`); });
 
 function open(file:string) {
 	const { deckid, revid } = $page.params;
 	let path = $page.params.file;
-	window.open(`/uploads/${deckid}/${revid}/${path.length>0 ? path+'/': ''}${file}`, '_blank');
+	window.open(`${base2}/uploads/${deckid}/${revid}/${path.length>0 ? path+'/': ''}${file}`, '_blank');
 }
 let showUpload = false;
 function toggleUpload() {
@@ -59,7 +62,7 @@ async function refresh() {
 		return;
 	}
 	const {deckid, revid, file} = $page.params;
-	const url = `/api/user/decks/${deckid}/revisions/${revid}/files/${file}`;
+	const url = `${base2}/api/user/decks/${deckid}/revisions/${revid}/files${file.length>0 ? '/':''}${file}`;
 	const res = await fetch(url, {
 		headers: { authorization: `Bearer ${token}` }
 	});
@@ -73,7 +76,8 @@ async function refresh() {
 
 </script>
 
-<AppBar title="Cardographer" backpage="."/>
+<!-- ?? .. problem - ${base}/user/decks/{$page.params.deckid}/revisions/{$page.params.revid} -->
+<AppBar title="Cardographer" backpage="{base}/user/decks/{$page.params.deckid}/revisions/{$page.params.revid}"/>
 
 <div class="px-2 py-2">
   <div class="text-lg font-bold">Files {$page.params.file}/:</div>

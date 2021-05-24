@@ -2,6 +2,7 @@
 import type {CardDeckRevision} from '$lib/types.ts';
 import type {PutCardsRequest} from '$lib/apitypes.ts';
 import { page, session } from '$app/stores';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 let working = false;
@@ -34,7 +35,7 @@ async function handleSubmit() {
 		addColumns: addUnknown,
 		csvFile: csvdata
 	}
-        const url = `/api/user/decks/${deckid}/revisions/${revid}/cards`;
+        const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/cards`;
         const res = await fetch(url, {
                 method: 'PUT',
                 headers: { authorization: `Bearer ${token}`,

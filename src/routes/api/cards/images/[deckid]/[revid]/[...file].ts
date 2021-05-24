@@ -1,3 +1,6 @@
+// DEPRECATED
+// Should be obtained from (static)/uploads/...
+
 import {getDb} from '$lib/db.ts';
 import type {CardDeckSummary,CardDeckRevision} 
   from '$lib/types.ts';

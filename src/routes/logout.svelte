@@ -1,11 +1,12 @@
 <script type="ts">
 import {session} from '$app/stores';
+import { base } from '$lib/paths';
 
 let statusCode = "";
 let working = false;
 
 async function handleSubmit() {
-	const response = await fetch(`/api/user/logout`, {
+	const response = await fetch(`${base}/api/user/logout`, {
 		method:'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({})

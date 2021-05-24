@@ -7,8 +7,4 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
   ],
-  future: {
-      removeDeprecatedGapUtilities: true,
-      purgeLayersByDefault: true,
-  },
 }

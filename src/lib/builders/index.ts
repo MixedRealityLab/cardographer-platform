@@ -4,6 +4,7 @@ import { DeckBuildStatus } from '$lib/types.ts';
 import type { BuilderConfig } from '$lib/systemtypes.ts';
 import fs from 'fs';
 const fsPromises = fs.promises;
+import { base } from '$lib/paths';
 
 import { build as squibBuild } from './squib.ts';
 
@@ -31,7 +32,7 @@ export async function buildRevision( revision: CardDeckRevision ) : BuildReponse
 	}
 	// ??
 	let config : BuilderConfig = {
-		baseUrl: '/api/cards/images/',
+		baseUrl: `${base}/uploads`,
 		filePath: FILE_PATH,
 	};
 	return builder(revision, config);

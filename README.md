@@ -43,13 +43,37 @@ see [docs/test.md](docs/test.md)
 
 ### Production
 
+Note, set PRODUCTION_BASE to '' in svelte.config.js
+for direct use.
 
-(or equivalent)
 ```
 sudo docker-compose build prod
 sudo docker-compose up -d prod
 ```
+(or equivalent)
 
 Still runs on :3000 by default.
 
+### With nginx
+
+Note, set PRODUCTION_USE to 'cardographer2' (or whatever)
+in svelte.config.js (note, nginx config has to match).
+```
+sudo docker-compose up -d nginx
+```
+
+try localhost:8080/cardographer2/
+
+Note, there seem to be problems with base handling, at least with the 
+node adapter.
+I've hacked in a fix in src/lib/paths.ts which works atm for running
+the built server directly.
+But I've seen different outcomes running it via preview.
+Generally the issue(s) are 404s in the client navigation and/or
+server vs client fetches.
+Having troube with '.' and '..' paths in node-adapter version 
+(losing base).
+Also, built verion won't serve new files from static - configure front-end
+to serve .../uploads/... directly!
+Having any base set with sveltekit dev doesn't seem to work atm (1.0.0).
 

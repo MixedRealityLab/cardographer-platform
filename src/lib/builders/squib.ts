@@ -48,7 +48,7 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		};		
 		const fileName = `card_${Math.floor(cix/10)}${cix % 10}.png`;
 		newCard[frontFilePropName] = fileName;
-		newCard[frontUrlPropName] = `${config.baseUrl}${revPath}/${fileName}`;
+		newCard[frontUrlPropName] = `${config.baseUrl}${revPath}/_output/${fileName}`;
 		cards.push(newCard);
 	}
 	//if(debug) console.log(`cards`, cards);

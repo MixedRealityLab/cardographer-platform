@@ -3,6 +3,7 @@ import type {CardDeckRevision} from '$lib/types.ts';
 import { page, session } from '$app/stores';
 import type { PostUserRevisionResponse } from '$lib/apitypes.ts';
 import { goto } from '$app/navigation';
+import { base } from '$lib/paths';
 
 export let revision : CardDeckRevision;
 
@@ -19,7 +20,7 @@ async function handleSubmit() {
 	}
 	working = true;
 	// get latest value
-	const getres = await fetch(`/api/user/decks/${revision.deckId}/revisions/${revision.revision}.json`) as CardDeckRevision;
+	const getres = await fetch(`${base}/api/user/decks/${revision.deckId}/revisions/${revision.revision}.json`) as CardDeckRevision;
 	if (!getres.ok) {
 		error = `Sorry, couldn't get the latest version of this revision (${getres.statusText})`;
 		working = false;
@@ -30,7 +31,7 @@ async function handleSubmit() {
 	newRevision.revisionName = 'New revision';
 	newRevision.revisionDescription = `Based on revision ${revision.revision} of ${revision.deckName}`;
 	newRevision.slug = '';
-	const url = `/api/user/decks/${deckid}/revisions`;
+	const url = `${base}/api/user/decks/${deckid}/revisions`;
 	const res = await fetch(url, {
 		method: 'POST',
 		headers: { authorization: `Bearer ${token}`,

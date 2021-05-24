@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import type {Load} from '@sveltejs/kit';
+	import { base } from '$lib/paths';
 	
 	export async function load({ page, fetch, session, context }): Load {
 		const token = session.user?.token;
@@ -10,7 +11,7 @@
 			}
 		}
 		const {deckid, revid} = page.params;
-		const url = `/api/user/decks/${deckid}/revisions/${revid}.json`;
+		const url = `${base}/api/user/decks/${deckid}/revisions/${revid}.json`;
 		const res = await fetch(url, {
 			headers: { authorization: `Bearer ${token}` }
 		});
@@ -63,8 +64,8 @@ function toggleShownew() {
 
 onMount(() => { console.log(`onMount revision`); });
 </script>
-
-<AppBar title="Cardographer" backpage=".."/>
+<!-- ?? .. problem - ${base}/user/decks/{$page.params.deckid}/revisions/{$page.params.revid} -->
+<AppBar title="Cardographer" backpage="{base}/user/decks/{$page.params.deckid}"/>
 <!-- <UserTabs/> -->
 
 {#if revision}
