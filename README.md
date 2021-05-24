@@ -24,6 +24,9 @@ Copy server.env to server.env.local and change REGISTER_CODE
 
 ### Dev
 
+copy server.env to server.env.local and set REGISTER_CODE 
+with secret registration code for new users.
+
 ```
 sudo docker-compose build server
 sudo docker-compose up -d mongo

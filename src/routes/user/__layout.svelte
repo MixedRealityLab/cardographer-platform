@@ -8,6 +8,8 @@ import {session} from '$app/stores';
   <title>Cardographer</title>
 </svelte:head>
 
+<div class="max-w-md mx-auto bg-white min-h-screen">
+
 {#if $session.user?.authenticated}
 <slot></slot>
 
@@ -18,3 +20,5 @@ import {session} from '$app/stores';
 <LoginForm/>
 
 {/if}
+
+</div>
