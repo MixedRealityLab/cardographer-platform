@@ -22,18 +22,22 @@ deck
 - [ ] mkdir for assets
 - [x] run card generator
 - [x] deck build error reporting
-- [ ] deck url/export for card.online
+- [ ] deck build output (atlas) metadata
+- [ ] deck url/export for unity client
 
 session
-- [ ] list sessions & templates
-- [ ] session -> template
+- [ ] templates
 - [ ] template -> new session
-- [ ] continue session
-- [ ] miro link
-- [ ] miro import
-- [ ] miro export ?
-- [ ] card.online export
-- [ ] card.online import
+- [ ] list sessions
+- [ ] edit session
+- [ ] session -> template
+- [ ] edit session stage/decks
+- [ ] deck info url/export for unity client
+- [ ] schedule session
+- [ ] unity session support... (schedule, config, save state, continue)
+- [ ] miro session support... (link, add state, export??)
+- [ ] add session state
+- [ ] board + region support
 
 analytics
 - [ ] basic card use export

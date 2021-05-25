@@ -39,7 +39,7 @@ Deck authoring:
 - [x] `api/user/decks/[deckid]/revisions/[revid]/build` POST (auth.)
   () -> BuildResponse
 
-Files (TBC):
+Files:
 
 - [x] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` GET 
   (auth) -> file info [] (for dir)
@@ -63,11 +63,35 @@ Deck use:
 - [ ] `api/client/decks/[deckid]/revisions/[revid]/outputfiles/[filename]`
   GET (auth or isPublic) -> file content
 
-Images:
+Images - Deprecated - switching to direct URLs:
 - [x] `api/cards/images/[deckid]/[revid]/[...file]` GET -> file
   from _output (only application/octet-stream atm - sveltekit issue)
 
 ## Sessions
 
-To do
- 
+Public templates:
+- [ ] `api/public/sessionTemplates.json` GET -> 
+  {values:Session[]} with isPublic & isTemplate
+
+Session authoring:
+- [ ] `api/user/sessions.json` GET (auth) -> {values:Session[]} with
+  email in owners
+- [ ] `api/user/sessions/[sessid].json` GET (auth) -> Session
+- [ ] `api/user/sessions` POST Session (auth) -> {sessid}
+- [ ] `api/user/sessions/[sessid]` PUT Session (auth) -> (), note allow
+  partial updates, e.g. for stages/decks?
+
+Session scheduling:
+- [ ] `api/user/scheduled.json` GET (auth) -> 
+  {values:ScheduledSession[]} with email in Session owners
+- [ ] `api/user/scheduled` POST ScheduledSession (auth) ->
+  {ssid}
+- [ ] `api/user/scheduled/[ssid].json` GET (auth) -> ScheduledSession
+- [ ] `api/user/scheduled/[ssid]` POST ScheduledSession (auth) -> ()
+
+Session play:
+- [ ] `api/client/sessions/[sessid]/stage/[stage]/deckInfo.json` GET 
+  (auth or public) -> {values:DeckInfo[]} for unity
+
+TODO: Session snapshots, etc.
+

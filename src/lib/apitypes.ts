@@ -51,4 +51,14 @@ export interface PostFilesRequest {
 	files: UploadFile[];
 }
 
+// Unity client DeckInfo, subject to change (2021-05-25)
+export interface DeckInfo {
+	name: string;
+	atlasCount: number; // same as atlas length?
+	atlasURLs: string[];
+	cardCount: number; // including back?
+	cardX: number;
+	cardY: number;
+	cardInfo: string[]; // per card
+}
 	

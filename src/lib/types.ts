@@ -174,4 +174,69 @@ export interface User {
 	created: string;
 }
 
+// session
+export interface Session {
+	_id: string; // mongo-style
+	name: string;
+	description?: string;
+	credits?: string;
+	owners: string[]; // User emails
+	stages: SessionStage[]; // just one for now...
+	currentStage: number; // index
+	created: string; // ISO date
+	lastModified: string; // ISO date
+	isPublic: boolean;
+	isTemplate: boolean;
+	isArchived: boolean;
+	sessionType: string; // enum-ish
+	players?: PlayerInfo[];
+	playerTemplates?: PlayerInfo[];
+}
+
+// in Session, a stage plan
+export interface SessionStage {
+	decks: SessionDeck[]; 
+}
+
+// in SessionStage, a deck to use
+export interface SessionDeck {
+	deckId: string; // (FK,
+	revision: number; // FK)
+	deckName: string; 
+	deckCredits?: string;
+}
+
+// in Session, a Player
+export interface PlayerInfo {
+	screenName?: string;
+	role?: string;
+}
+
+// a scheduled session
+export interface ScheduledSession {
+	_id: string; // mongo-style
+	sessionId: string; // FK
+	sessionName: string;
+	sessionDecription?: string;
+	eventName?: string; // for this
+	eventDecription?: string;
+	created: string; // ISO date
+	lastModified: string; // ISO date
+	initialStage?: number;
+	startTime: string; // ISO date
+	durationMinutes: number;
+	maxSeats: number;
+	isCancelled: boolean;
+}
+
+// snapshot
+export interface SessionSnapshot {
+	_id: string; // mongo-style
+	sessionId: string; // FK
+	sessionName: string;
+	sessionType: string;
+	created: string; // ISO date
+	sessionStage: number; 
+}
+
 //EOF
