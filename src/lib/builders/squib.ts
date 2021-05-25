@@ -5,6 +5,7 @@ import { CardPropertyUse } from '$lib/types.ts';
 import type { BuilderConfig } from '$lib/systemtypes.ts';
 import { exportCardsAsCsv } from '$lib/csvutils.ts';
 import fs from 'fs';
+const fsPromises = fs.promises;
 import net from 'net';
 
 const debug = true;
@@ -22,6 +23,8 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 	const csvFile = `${filePath}/card-data.csv`;
 	if (debug) console.log(`write cards to ${csvFile}`);
 	await writeFile(csvFile, csv);
+	// delete old files (go to _output)
+	await rmAll(`${filePath}/_output`);
 	const { ok, error, output } = await callWorker( revPath );
 	let messages = output ? output.split('\n') : [];
 	try {
@@ -161,4 +164,17 @@ return new Promise<CallRes>((resolve,reject) => {
 	});
 })}//return new Promise
 
+export async function rmAll(path:string) { 
+	const files = await fsPromises.readdir(path,{withFileTypes:true});
+	for (const file of files) {
+		if (file.isFile()) {
+			const fpath = `${path}/${file.name}`;
+			try {
+				await fsPromises.rm(fpath);
+			} catch(err) {
+				console.log(`could not delete old output ${fpath}: ${err.message}`);
+			}
+		}
+	}
+}
 

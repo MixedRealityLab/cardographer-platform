@@ -24,7 +24,7 @@ async function handleSubmit() {
 
 </script>
 
-<div class="px-2">
+<div class="p-2 max-w-md mx-auto bg-white min-h-screen">
 
 <h1>Log out</h1>
 
