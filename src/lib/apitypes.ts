@@ -1,5 +1,5 @@
 // extra API types, e.g. messages
-import type { CardInfo } from '$lib/types.ts';
+import type { CardInfo, AtlasInfo } from '$lib/types.ts';
 
 export interface LoginRequest {
 	email: string;
@@ -28,6 +28,7 @@ export interface BuildResponse {
 	messages: string[];
 	error?: string;
 	cards?: CardInfo[];
+	atlases?: AtlasInfo[];
 }
 
 export interface PostUserDecksResponse {

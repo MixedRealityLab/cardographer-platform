@@ -11,13 +11,13 @@ while connection = server.accept
   puts "accepted new connection"
   connection.write "<CONNECTED 1\n"
   request = connection.gets
-  command, path = request.split(' ')
+  command, path, options = request.split(' ')
   Dir.chdir ( "#{workdir}/uploads/#{path}" )
   case command
-  when "rundeck/1"
-    puts "do rundeck/1 in #{path}"
+  when "rundeck/2"
+    puts "do rundeck/2 in #{path} with #{options}"
     connection.write "<RUNNING\n"
-    f = IO.popen(["ruby","deck.rb",:err=>[:child, :out]])
+    f = IO.popen(["ruby","deck.rb",options,:err=>[:child, :out]])
     output = f.readlines
     f.close
     puts output.join("")

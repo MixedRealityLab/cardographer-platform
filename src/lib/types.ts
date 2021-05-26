@@ -67,6 +67,7 @@ export enum CardPropertyUse {
 	Height = "height",
 	SizeName = "sizeName",
 	SortBy = "sortBy",
+	Back = "back",
 	Category = "category",
 	Subtype = "subtype",
 	Attribute = "attribute",
@@ -94,7 +95,7 @@ export type CustomFields = {
 export interface CardInfo {
 
 	// standard metadata
-	id: string;
+	id: string; // NB "back:..." for a card back
 	revision: number; // integer
 	link?: string; // URL
 	name?: string;
@@ -115,6 +116,7 @@ export interface CardInfo {
 	subtype?: string; // default subtype
 	attriute?: string; // default attribute
 	custom?: CustomFields; // also custom assetFile or content
+	back?: string;
 
 	// card generation
 	assetFile?: string; // filename?
@@ -137,7 +139,7 @@ export interface CardInfo {
 
 // deck build info - to be refined
 export interface DeckBuild {
-	files?: FileInfo[];
+	//not required? files?: FileInfo[];
 	builderId: string;
 	builderName: string;
 	config?: any; // TBD
@@ -162,8 +164,19 @@ export interface FileInfo {
 
 // output - to be refined
 export interface DeckOutput {
-	files: FileInfo[];
+	//not required? files: FileInfo[];
 	isUserModified: boolean;
+	atlases?: AtlasInfo[];
+}
+
+// atlas info - like unity DeckInfo
+export interface AtlasInfo {
+	atlasURLs: string[];
+	countX: number;
+	countY: number;
+	cardCount: number;
+	cardInfo: string[];
+	builderId?: string;
 }
 
 // simple internal user account

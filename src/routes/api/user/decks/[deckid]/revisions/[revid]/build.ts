@@ -65,7 +65,10 @@ export async function post(request): RequestHandler {
 		'build.messages': result.messages,
 		'build.status': (result.error ? 'failed' : 'built'),
 		'build.lastBuilt': now,
-
+		output: { 
+			isUserModified: false,
+			atlases: result.atlases
+		}
 	}});
 	if (!upd.matchedCount) {
 		if (debug) console.log(`revision ${revid} not matched for deck ${deckid}`, upd);

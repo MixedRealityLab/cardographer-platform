@@ -9,7 +9,7 @@ const ROWTYPE_DEFAULT = 'default:';
 const ROWTYPE_CARD = 'card:';
 const ROWTYPE_EXPORT = 'export:';
 const ROWTYPE_DESCRIPTION = 'description:';
-const ROWTYPE_BACK = 'back:';
+const PREFIX_BACK = 'back:';
 
 const debug = true;
 
@@ -37,8 +37,6 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 	const hasExport = exportRow >= 0;
 	const descriptionRow = hasRowtype ? cells.findIndex((cs) => cs.length>0 && cs[0] == ROWTYPE_DESCRIPTION) : -1;
 	const hasDescription = descriptionRow >= 0;
-	const backRow = hasRowtype ? cells.findIndex((cs) => cs.length>0 && cs[0] == ROWTYPE_BACK) : -1;
-	const hasBack = backRow >= 0;
 	//if (debug) console.log(`rows: default ${defaultRow} export ${exportRow} description ${descriptionRow} use ${useRow}`);
 
 	let columns: CardPropertyDef[] = [];
@@ -104,18 +102,6 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 		}
 		defaults = updateCardInfo(defaults, cells[defaultRow], columns);
 	}
-	// back
-	if (hasBack) {
-		if(!back) {
-			back = {
-				id: "back:",
-				revision: 1,
-				created: now,
-				lastModfied: now
-			}
-		}
-		back = updateCardInfo(back, cells[backRow], columns);
-	}
 	let newCards: CardInfo[] = [];
 	// cards
         // explicit ID?
@@ -145,7 +131,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 	}
 	if (debug) console.log(`${newCards.length} new cards`);
 
-	return { ...revision, defaults, back, propertyDefs: propDefs, cards: newCards, cardCount: newCards.length }
+	return { ...revision, defaults, propertyDefs: propDefs, cards: newCards, cardCount: newCards.length }
 
 }
 function updateCustomFieldNames( props: CardPropertyDef[] ) {
@@ -223,6 +209,8 @@ function guessUse(name: string) : CardPropertyUse
 		return CardPropertyUse.Subtype;
 	if (CardPropertyUse.Attribute == s)
 		return CardPropertyUse.Attribute;
+	if (CardPropertyUse.Back == s)
+		return CardPropertyUse.Back;
 	if (CardPropertyUse.AssetFile == s)
 		return CardPropertyUse.AssetFile;
 	if (CardPropertyUse.Content == s) 
@@ -257,7 +245,7 @@ function fixSortBy(i?: number) : number {
 	return i;
 }
 
-export async function exportCardsAsCsv( revision: CardDeckRevision, allColumns: boolean, withRowTypes: boolean, withBack: boolean) : string {
+export async function exportCardsAsCsv( revision: CardDeckRevision, allColumns: boolean, withRowTypes: boolean, cards: CardInfo[] ) : string {
 	let rows:string[][] = [];
 	let columns = revision.propertyDefs.slice();
 	if (!allColumns) {
@@ -316,8 +304,11 @@ export async function exportCardsAsCsv( revision: CardDeckRevision, allColumns: 
 		rows.push(row);
 	}
 	// cards
-	for (let c = 0; c < revision.cards.length; c++) {
-		const card = revision.cards[c];
+	if (!cards) {
+		cards = revision.cards;
+	}
+	for (let c = 0; c < cards.length; c++) {
+		const card = cards[c];
 		let row = [];
 		if (withRowTypes) {
 			row.push(ROWTYPE_CARD);
@@ -332,25 +323,7 @@ export async function exportCardsAsCsv( revision: CardDeckRevision, allColumns: 
 		}
 		rows.push(row);
 	}
-	// back
-	if (withRowTypes || withBack) {
-		row = [];
-		if (withRowTypes) {
-			row.push(ROWTYPE_BACK);
-		}
-		for (let i=0; i<columns.length; i++) {
-			const column = columns[i];
-			if (!revision.back) {
-				row.push('');
-			} else if (column.customFieldName) {
-				row.push( revision.back.custom[column.customFieldName] );
-			} else {
-				row.push( revision.back[column.use] );
-			}
-		}
-		rows.push(row);
-	}
-	// CSV
+	// to CSV
 	return arrayToCsv( rows );
 }
 

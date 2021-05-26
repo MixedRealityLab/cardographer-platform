@@ -11,6 +11,7 @@ let message = '';
 let showform = false;
 let files;
 let addUnknown = false;
+let fileinput;
 
 // submit form
 async function handleSubmit() {
@@ -35,6 +36,8 @@ async function handleSubmit() {
 		addColumns: addUnknown,
 		csvFile: csvdata
 	}
+	// reset
+	fileinput.value = '';
         const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/cards`;
         const res = await fetch(url, {
                 method: 'PUT',
@@ -57,7 +60,7 @@ async function handleSubmit() {
 <div class="grid grid-cols-1 gap-2">
 	<label class="block">
 		<span>Card CSV File:</span>
-		<input class="mt-1 block w-full" required id="file" type="file" bind:files accept=".csv,text/csv"/>
+		<input class="mt-1 block w-full" required id="file" type="file" bind:files accept=".csv,text/csv" bind:this={fileinput}/>
 	</label>
         <label class="block">
 		<input type="checkbox" class="form-checkbox" bind:checked="{addUnknown}">

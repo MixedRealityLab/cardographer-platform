@@ -48,6 +48,7 @@ let showform = false;
 let showcards = false;
 let showbuild = false;
 let shownew = false;
+let showtesting = false;
 
 function toggleShowform() {
 	showform = !showform;
@@ -60,6 +61,9 @@ function toggleShowbuild() {
 }
 function toggleShownew() {
 	shownew = !shownew;
+}
+function toggleShowtesting() {
+	showtesting = !showtesting;
 }
 
 onMount(() => { console.log(`onMount revision`); });
@@ -135,3 +139,19 @@ onMount(() => { console.log(`onMount revision`); });
 </div><!-- hideable form -->
 </div><!-- new section -->
 {/if}
+
+<!-- showtesting -->
+<div class="px-2 py-2 border">
+ <div class="w-full" on:click="{toggleShowtesting}">
+  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showtesting}-{:else}+{/if}</span></div>
+  <span>Testing</span>
+ </div>
+
+<div class:hidden="{!showtesting}" class="px-2 py-2">
+
+ <a class="w-full" href="{base}/api/client/decks/{$page.params.deckid}/revisions/{$page.params.revid}/deckInfo.json" target="_blank">
+  <span>Unity deck info file</span>
+ </a>
+
+</div>
+</div>

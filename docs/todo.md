@@ -22,9 +22,10 @@ deck
 - [ ] mkdir for assets
 - [x] run card generator
 - [x] deck build error reporting
-- [ ] multi-back support - see below
-- [ ] deck build output (atlas) metadata
-- [ ] deck url/export for unity client
+- [x] multi-back support - see below
+- [x] deck build output (atlas) metadata
+- [x] deck url/export for unity client
+- [ ] full URLs in deck export for unity client
 
 session
 - [ ] templates
@@ -44,30 +45,5 @@ analytics
 - [ ] basic card use export
 - [ ] gephy-compatible basic output
 - [ ] card suggestion
-
-## multi-back support
-
-some quick notes...
-
-often a deck has several 'categories' (or similar) and often each
-has a different back design.
-
-For the unity client, each category will have to be in its own atlas
-(as each atlas has a single back). So a single deck will have several
-atlases.
-
-So:
-- add a new column type 'back', unique values indicating different backs
-  (also potentially used elsewhere as metadata/content control)
-- card ids starting 'back:' define backs, and can be included in the 
-  main CSV export/import (and 'back:' is the default back)
-- probably a hidden column/value 'isBack' (and remove singleton .back)
-- deck.rb will need to handle each 'back' separately; do the worker
-  run it separately with different output filenames or does it do it
-  itself? May be easier to run it separately with different filename
-  prefixes for each... (new parameter for run and deck.rb)
-
-questions:
-- what about category slugs or equivalent?
 
 
