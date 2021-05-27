@@ -81,15 +81,15 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 			};
 		}
 		cards.push(backcard);
-		// back-specific filename prefix
-		const prefix = back.length>0 ? back+'_' : '';
+		// back-specific filename prefix, map ' ' -> '_'
+		const prefix = back.length>0 ? (back.split(' ').join('_'))+'_' : '';
 		// export cards to .../...card-data.csv (not all columns, no row types, with back)
 		const csv = await exportCardsAsCsv( revision, false, false, cards );
 		const csvFile = `${filePath}/${prefix}card-data.csv`;
 		if (debug) console.log(`write cards to ${csvFile}`);
 		await writeFile(csvFile, csv);
 		// generate options file
-		const backOptionsFile = (back.length>0 ? back : '')+'_'+DEFAULT_OPTIONS_FILE;
+		const backOptionsFile = prefix+DEFAULT_OPTIONS_FILE;
 		let localopts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
 		localopts.png = {...options.png, prefix: prefix+'card_', count_format:'%02d'};
 		localopts.sheet = {...options.sheet, prefix: prefix+'Atlas_', count_format: '%d'};

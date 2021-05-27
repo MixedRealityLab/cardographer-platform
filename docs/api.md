@@ -91,7 +91,9 @@ Session scheduling:
 
 Session play:
 - [ ] `api/client/sessions/[sessid]/stage/[stage]/deckInfo.json` GET 
-  (auth or public) -> {values:DeckInfo[]} for unity
+  (auth or public) -> DeckInfo[] for unity
+- [x] `api/client/decks/[deckid]/revision/[revid]/deckInfo.json` GET
+  (auth or public) -> DeckInfo[] for unity (Note, just for testing/dev)
 
 TODO: Session snapshots, etc.
 

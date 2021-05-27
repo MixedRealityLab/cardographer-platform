@@ -25,7 +25,7 @@ deck
 - [x] multi-back support - see below
 - [x] deck build output (atlas) metadata
 - [x] deck url/export for unity client
-- [ ] full URLs in deck export for unity client
+- [x] full URLs in deck export for unity client
 
 session
 - [ ] templates

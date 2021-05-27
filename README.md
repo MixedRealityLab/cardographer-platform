@@ -22,6 +22,10 @@ Note, requires docker and docker-compose.
 Copy server.env to server.env.local and change REGISTER_CODE
 (for site sign-up).
 
+(for production) set EXTERNAL_SERVER_URL to the external (frontend)
+URL for the hosting server (not including any path element which is
+set in svelte base). e.g. "https://myserver.com"
+
 ### Dev
 
 copy server.env to server.env.local and set REGISTER_CODE 
@@ -61,6 +65,8 @@ Still runs on :3000 by default.
 
 Note, set PRODUCTION_USE to 'cardographer2' (or whatever)
 in svelte.config.js (note, nginx config has to match).
+Set EXETRNAL_SERVER_URL in server.env.local to
+'http://localhost:8080' (or whatever).
 ```
 sudo docker-compose up -d nginx
 ```
