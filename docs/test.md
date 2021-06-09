@@ -39,9 +39,17 @@ db.CardDeckRevisions.updateOne({_id:"609d13dfd045c0786d2557bf:1"},{$set:{
     builderId:"squib", builderName:"Squib", config: {}, status: "unbuilt",
     isDisabled: false
   }
-}})
+}});
+db.Sessions.insertOne({_id:"60c10a1ab9bd3011741d2606",
+  name:"Empty unity session", description:"An empty unity session",
+  credits:"", owners:["testuser"], 
+  stages:[{decks:[]}],
+  currentStage:0, created:"2021-06-09T18:38:00Z",
+  lastModified:"2021-06-09T18:38:00Z",
+  isPublic:true, isTemplate:true, isArchived:false,
+  sessionType:"unity", players:[], playerTemplates:[]
+});
 ```
-
 You need to register "testuser" - make sure `REGISTER_CODE` is
 set in `server.env`.
 

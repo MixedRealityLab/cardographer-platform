@@ -70,15 +70,15 @@ Images - Deprecated - switching to direct URLs:
 ## Sessions
 
 Public templates:
-- [ ] `api/public/sessionTemplates.json` GET -> 
+- [x] `api/public/sessionTemplates.json` GET -> 
   {values:Session[]} with isPublic & isTemplate
 
 Session authoring:
-- [ ] `api/user/sessions.json` GET (auth) -> {values:Session[]} with
+- [x] `api/user/sessions.json` GET (auth) -> {values:Session[]} with
   email in owners
-- [ ] `api/user/sessions/[sessid].json` GET (auth) -> Session
-- [ ] `api/user/sessions` POST Session (auth) -> {sessid}
-- [ ] `api/user/sessions/[sessid]` PUT Session (auth) -> (), note allow
+- [x] `api/user/sessions/[sessid].json` GET (auth) -> Session
+- [x] `api/user/sessions/copy` POST {sessid} (auth) -> {sessid}
+- [x] `api/user/sessions/[sessid]` PUT Session (auth) -> (), note allow
   partial updates, e.g. for stages/decks?
 
 Session scheduling:

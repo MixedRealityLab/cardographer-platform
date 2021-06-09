@@ -7,4 +7,6 @@ export let page; // chats, rewards, settings, resources
 <div class="w-full pt-1 pb-0 bg-gray-700 text-white rid grid-cols-4 gap-1 text-center">
   <a href="{base}/user/decks" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='decks'}">My Decks</div></a>
 	<a href="{base}/user/newdeck" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='newdeck'}">New Deck</div></a>
+	<a href="{base}/user/sessions" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='sessions'}">My Sessions</div></a>
+	<a href="{base}/user/newsession" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='newsession'}">New Session</div></a>
 </div>

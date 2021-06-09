@@ -62,4 +62,11 @@ export interface DeckInfo {
 	cardY: number;
 	cardInfo: string[]; // per card
 }
-	
+
+export interface CopySessionRequest {
+	sessid: string;
+}
+export interface CopySessionResponse {
+	sessid: string;
+}
+

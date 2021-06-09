@@ -26,13 +26,14 @@ deck
 - [x] deck build output (atlas) metadata
 - [x] deck url/export for unity client
 - [x] full URLs in deck export for unity client
+- [ ] manual builder and atlas metadata entry
 
 session
-- [ ] templates
-- [ ] template -> new session
-- [ ] list sessions
-- [ ] edit session
-- [ ] session -> template
+- [x] templates
+- [x] template -> new session
+- [x] list sessions
+- [x] edit session
+- [x] session -> template
 - [ ] edit session stage/decks
 - [ ] deck info url/export for unity client
 - [ ] schedule session
