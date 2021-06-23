@@ -100,6 +100,7 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		await fsPromises.writeFile(`${filePath}/${backOptionsFile}`, opts);
 		const { ok, error, output } = await callWorker( revPath, backOptionsFile );
 		let messages = output ? output.split('\n') : [];
+		//console.log(`messages[${messages.length}]`);
 		try {
 			messages = JSON.parse(output);
 		} catch (err) { }
@@ -124,6 +125,8 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 			allCards.push(newCard);
 		}
 		// atlas
+		let countX = Number(localopts.sheet.columns);
+		let countY = Number(localopts.sheet.rows);
 		let atlas:AtlasInfo = {
 			name: `${revision.deckName}${back.length>0 ? ' - ':''}${back}`,
 			atlasURLs: [],
@@ -135,14 +138,14 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		};
 		// Warning: this may not be reliable: with up to columns
 		// card it output 1 row; with more it outputs rows rows
-		const sheets = Math.ceil(cards.length / (atlas.countX*atlas.countY));
+		const sheets = Math.ceil(cards.length / (countX*countY));
 		for (let i=0; i<sheets; i++) {
 			const fileName = `${localopts.sheet.prefix}${i}.png`;
 			atlas.atlasURLs.push(`${config.baseUrl}/${revPath}/${localopts.output}/${fileName}`);
-			atlas.countX.push(Number(localopts.sheet.columns));
-			atlas.countY.push(Number(localopts.sheet.rows));
+			atlas.countX.push(countX);
+			atlas.countY.push(countY);
 		}
-		if (sheets==1 && atlas.cardCount<=atlas.countX) {
+		if (sheets==1 && atlas.cardCount<=countX) {
 			atlas.countY[0] = 1;
 		}
 		// needed?
