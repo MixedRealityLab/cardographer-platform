@@ -127,8 +127,8 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		let atlas:AtlasInfo = {
 			name: `${revision.deckName}${back.length>0 ? ' - ':''}${back}`,
 			atlasURLs: [],
-			countX: Number(localopts.sheet.columns),
-			countY: Number(localopts.sheet.rows),
+			countX: [], //Number(localopts.sheet.columns),
+			countY: [], //Number(localopts.sheet.rows),
 			cardCount: cards.length, // includes back
 			cardInfo: cards.map((c) => c.id),
 			builderId: 'squib'
@@ -136,12 +136,14 @@ export async function build( revision: CardDeckRevision, config: BuilderConfig) 
 		// Warning: this may not be reliable: with up to columns
 		// card it output 1 row; with more it outputs rows rows
 		const sheets = Math.ceil(cards.length / (atlas.countX*atlas.countY));
-		if (sheets==1 && atlas.cardCount<=atlas.countX) {
-			atlas.countY = 1;
-		}
 		for (let i=0; i<sheets; i++) {
 			const fileName = `${localopts.sheet.prefix}${i}.png`;
 			atlas.atlasURLs.push(`${config.baseUrl}/${revPath}/${localopts.output}/${fileName}`);
+			atlas.countX.push(Number(localopts.sheet.columns));
+			atlas.countY.push(Number(localopts.sheet.rows));
+		}
+		if (sheets==1 && atlas.cardCount<=atlas.countX) {
+			atlas.countY[0] = 1;
 		}
 		// needed?
 		atlas.atlasCount = atlas.atlasURLs.length;

@@ -80,6 +80,7 @@ Session authoring:
 - [x] `api/user/sessions/copy` POST {sessid} (auth) -> {sessid}
 - [x] `api/user/sessions/[sessid]` PUT Session (auth) -> (), note allow
   partial updates, e.g. for stages/decks?
+- [ ] `api/user/sessions/import` POST array of old-dumps (auth) -> {message}
 
 Session scheduling:
 - [ ] `api/user/scheduled.json` GET (auth) -> 
@@ -95,5 +96,19 @@ Session play:
 - [x] `api/client/decks/[deckid]/revision/[revid]/deckInfo.json` GET
   (auth or public) -> DeckInfo[] for unity (Note, just for testing/dev)
 
-TODO: Session snapshots, etc.
+Session snapshots:
+- [ ] `api/user/sessions/[sessid]/snapshots.json` GET (auth) -> 
+  {values:SessionSnapshot[]}
+- [ ] `api/user/sessions/[sessid]/snapshots/[snapid]` PUT {snapshotDescription,
+  sessionStage,isPublic,isNotForAnalysis} -> () note, partial update
+- [ ] `api/user/snapshots.json` GET (auth) -> {values:SessionSnapshotSummary}
+  available for analysis (and owned or public)
 
+Analysis:
+- [ ] `api/user/analyses.json` GET (auth) -> {values:Analysis[]}
+- [ ] `api/user/analyses` POST Analysis (auth) -> {analid}
+- [ ] `api/user/analyses/[analid].json` GET () (auth) -> Analysis
+- [ ] `api/user/analyses/[analid]` POST Analysis -> () partial?!
+- [ ] `api/user/analyses/[analid]/gephy.csv` GET (auth) -> basic gephy CSV 
+
+TODO: ...??

@@ -39,12 +39,18 @@ session
 - [ ] schedule session
 - [ ] unity session support... (schedule, config, save state, continue)
 - [ ] miro session support... (link, add state, export??)
-- [ ] add session state
+- [ ] import legacy sessions
+- [ ] list/edit session states
 - [ ] board + region support
 
 analytics
-- [ ] basic card use export
+- [ ] add analysis
+- [ ] list analyses
+- [ ] basic card use from miro export
+- [ ] basic card use from legacy app
+- [ ] basic card use from unity
 - [ ] gephy-compatible basic output
+- [ ] advanced output...
 - [ ] card suggestion
 
 

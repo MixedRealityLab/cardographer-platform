@@ -172,8 +172,8 @@ export interface DeckOutput {
 // atlas info - like unity DeckInfo
 export interface AtlasInfo {
 	atlasURLs: string[];
-	countX: number;
-	countY: number;
+	countX: number[];
+	countY: number[];
 	cardCount: number;
 	cardInfo: string[];
 	builderId?: string;
@@ -204,6 +204,11 @@ export interface Session {
 	sessionType: string; // enum-ish
 	players?: PlayerInfo[];
 	playerTemplates?: PlayerInfo[];
+// miro
+	miroId?: string;
+	miroUrl?: string;
+	miroClaimed?: string; // ISO date
+	miroIsDefault: boolean;
 }
 
 // in Session, a stage plan
@@ -243,13 +248,39 @@ export interface ScheduledSession {
 }
 
 // snapshot
-export interface SessionSnapshot {
+export interface SessionSnapshotSummary {
 	_id: string; // mongo-style
 	sessionId: string; // FK
 	sessionName: string;
+	sessionDescription?: string;
+	sessionCredits?: string;
 	sessionType: string;
+        originallyCreated: string; // ISO date
+        snapshotDescription?: string;
+}
+export interface SessionSnapshot extends SessionSnapshotSummary {
+	owners: string[];
 	created: string; // ISO date
-	sessionStage: number; 
+	sessionStage?: number;
+	isPublic: boolean;
+	isNotForAnalysis: boolean;
+
+	legacyId?: string;
+	miroId?: string;
+	miroData?: string;
+	appv1Data?: string;
+}
+
+export interface Analysis {
+	_id: string;
+	name: string;
+	description?: string;
+	credits?: string;
+	created: string; // ISO date
+	lastModified: string; // ISO date
+	owners: string[];
+	isPublic: boolean;
+	snapshots: SessionSnapshotSummary[];
 }
 
 //EOF
