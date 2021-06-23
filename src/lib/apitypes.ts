@@ -70,3 +70,7 @@ export interface CopySessionResponse {
 	sessid: string;
 }
 
+export interface ImportSessionResponse {
+	message: string;
+}
+

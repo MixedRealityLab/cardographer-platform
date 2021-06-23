@@ -64,7 +64,7 @@ onMount(() => { console.log(`onMount session`); });
 <div class="px-2 py-2 border">
  <div class="w-full" on:click="{toggleShowform}">
   <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showform}-{:else}+{/if}</span></div>
-  <span>Deck</span>
+  <span>Session</span>
  </div>
 
 <div class:hidden="{!showform}" class="px-2 py-2">

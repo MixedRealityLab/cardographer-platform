@@ -80,7 +80,7 @@ Session authoring:
 - [x] `api/user/sessions/copy` POST {sessid} (auth) -> {sessid}
 - [x] `api/user/sessions/[sessid]` PUT Session (auth) -> (), note allow
   partial updates, e.g. for stages/decks?
-- [ ] `api/user/sessions/import` POST array of old-dumps (auth) -> {message}
+- [x] `api/user/sessions/import` POST array of old-dumps (auth) -> {message}
 
 Session scheduling:
 - [ ] `api/user/scheduled.json` GET (auth) -> 

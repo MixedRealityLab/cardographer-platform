@@ -73,4 +73,6 @@ function compareSessions(a,b) {
 {/each}
   </div>
 
+<a class="rounded-md mt-1 px-2 inline-block bg-gray-300 py-2" href="importsessions">Import sessions...</a>
+
 </div>

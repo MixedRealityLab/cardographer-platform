@@ -39,7 +39,8 @@ session
 - [ ] schedule session
 - [ ] unity session support... (schedule, config, save state, continue)
 - [ ] miro session support... (link, add state, export??)
-- [ ] import legacy sessions
+- [x] import legacy sessions
+- [ ] import miro session
 - [ ] list/edit session states
 - [ ] board + region support
 
