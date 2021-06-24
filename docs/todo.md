@@ -47,7 +47,7 @@ session
 analytics
 - [x] add analysis
 - [x] list analyses
-- [ ] add snapshots to analysis
+- [x] add snapshots to analysis
 - [ ] basic card use from miro export
 - [ ] basic card use from legacy app
 - [ ] basic card use from unity

@@ -101,7 +101,7 @@ Session snapshots:
   {values:SessionSnapshot[]}
 - [ ] `api/user/sessions/[sessid]/snapshots/[snapid]` PUT {snapshotDescription,
   sessionStage,isPublic,isNotForAnalysis} -> () note, partial update
-- [ ] `api/user/snapshots.json` GET (auth) -> {values:SessionSnapshotSummary}
+- [x] `api/user/snapshots.json` GET (auth) -> {values:SessionSnapshotSummary}
   available for analysis (and owned or public)
 
 Analysis:
