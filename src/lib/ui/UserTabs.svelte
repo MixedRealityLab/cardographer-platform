@@ -9,4 +9,6 @@ export let page; // chats, rewards, settings, resources
 	<a href="{base}/user/newdeck" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='newdeck'}">New Deck</div></a>
 	<a href="{base}/user/sessions" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='sessions'}">My Sessions</div></a>
 	<a href="{base}/user/newsession" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='newsession'}">New Session</div></a>
+	<a href="{base}/user/analyses" class="inline-block"><div class="px-2 py-1 cursor-pointer" class:bg-gray-400="{page=='analyses'}">My Analyses</div></a>
+
 </div>

@@ -73,4 +73,7 @@ export interface CopySessionResponse {
 export interface ImportSessionResponse {
 	message: string;
 }
+export interface PostAnalysisResponse {
+	analid: string;
+}
 

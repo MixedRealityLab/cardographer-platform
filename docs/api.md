@@ -105,10 +105,10 @@ Session snapshots:
   available for analysis (and owned or public)
 
 Analysis:
-- [ ] `api/user/analyses.json` GET (auth) -> {values:Analysis[]}
-- [ ] `api/user/analyses` POST Analysis (auth) -> {analid}
-- [ ] `api/user/analyses/[analid].json` GET () (auth) -> Analysis
-- [ ] `api/user/analyses/[analid]` POST Analysis -> () partial?!
+- [x] `api/user/analyses.json` GET (auth) -> {values:Analysis[]}
+- [x] `api/user/analyses` POST Analysis (auth) -> {analid}
+- [x] `api/user/analyses/[analid].json` GET () (auth) -> Analysis
+- [x] `api/user/analyses/[analid]` POST Analysis -> () partial?!
 - [ ] `api/user/analyses/[analid]/gephy.csv` GET (auth) -> basic gephy CSV 
 
 TODO: ...??

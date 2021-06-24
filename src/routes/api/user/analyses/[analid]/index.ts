@@ -1,5 +1,5 @@
 import {getDb} from '$lib/db.ts';
-import type {Session} 
+import type {Analysis} 
   from '$lib/types.ts';
 import type {RequestHandler} from '@sveltejs/kit';
 import type {ServerLocals} from '$lib/systemtypes.ts';
@@ -12,38 +12,36 @@ export async function put(request): RequestHandler {
 		if (debug) console.log(`locals`, locals);
 		return { status: 403 }
 	}
-	const sess = request.body as Session;
-	const {sessid} = request.params;
-	if (sessid != sess._id) {
+	const analysis = request.body as Analysis;
+	const {analid} = request.params;
+	if (analid != analysis._id) {
 		if (debug) console.log(`session doesnt match url`, sess);
 		return { status: 400 };
 	}
 	const db = await getDb();
 	// permission check
-	const oldSession = await db.collection('Sessions').findOne({
-		_id: sessid, owners: locals.email 
-	}) as Session;
-	if (!oldSession) {
-		if (debug) console.log(`session ${sessid} not found for ${locals.email}`);
+	const oldAnalysis = await db.collection('Analyses').findOne({
+		_id: analid, owners: locals.email 
+	}) as Analysis;
+	if (!oldAnalysis) {
+		if (debug) console.log(`analysis ${analid} not found for ${locals.email}`);
 		return { status: 404 };
 	}
-	// update session
+	// update analysis
 	const now = new Date().toISOString();
-	const upd = await db.collection('Sessions').updateOne({
-                _id: sessid
+	const upd = await db.collection('Analyses').updateOne({
+                _id: analid
         }, { $set: {
 		// project changes
-		name: sess.name,
-		description: sess.description,
-		credits: sess.credits,
+		name: analysis.name,
+		description: analysis.description,
+		credits: analysis.credits,
 		lastModified: now,
-		isPublic: sess.isPublic,
-		isArchived: sess.isArchived,
-		isTemplate: sess.isTemplate,
-		// others should get set in other ways
+		isPublic: analysis.isPublic,
+		snapshots: analysis.snapshots, //?
 	}});
 	if (!upd.matchedCount) {
-		if (debug) console.log(`session ${sessid} not matched`, upd);
+		if (debug) console.log(`analysis ${analid} not matched`, upd);
 		return { status: 404 };
 	}
 	return {
