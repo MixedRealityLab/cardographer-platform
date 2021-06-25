@@ -1,6 +1,7 @@
 // appv1 = vuforia app, pre2021
 import { Client } from './types.ts';
 import type {Session,SessionSnapshot} from '$lib/types.ts';
+import type {SnapshotInfo,BoardInfo,CardInfo} from '$lib/analysistypes.ts';
 
 // dump data
 export interface Appv1Data {
@@ -79,5 +80,33 @@ export class Appv1 extends Client {
 			appv1Data: data,
 		};
 		return snapshot;
+	}
+	getSnapshotInfo(snapshot:SessionSnapshot): SnapshotInfo {
+		let board:BoardInfo = {
+			id:"",//default
+			cards:[],
+			comments:[],
+		};
+		let info:SnapshotInfo = {
+			boards: [board],
+		};
+		let data = snapshot.appv1Data;
+		if (!data) {
+			console.log(`no appv1Data found in snapshot ${snapshot._i}`);
+			return info;
+
+		}
+		let cards = data.design_cards;
+		if (!cards) {
+			console.log(`no cards in appv1 snapshot ${snapshot._id}`);
+			return info;
+		}
+		for (let card of cards) {
+			let ci:CardInfo = {
+				id: card.card_id,
+			}
+			board.cards.push(ci);
+		}
+		return info;
 	}
 }

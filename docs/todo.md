@@ -49,7 +49,7 @@ analytics
 - [x] list analyses
 - [x] add snapshots to analysis
 - [ ] basic card use from miro export
-- [ ] basic card use from legacy app
+- [x] basic card use from legacy app
 - [ ] basic card use from unity
 - [ ] gephy-compatible basic output
 - [ ] advanced output...

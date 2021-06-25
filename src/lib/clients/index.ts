@@ -1,5 +1,6 @@
 import { Appv1 } from './appv1';
 import type { Client } from './types';
+
 const clients: Client[] = [
 	new Appv1(),
 ];
@@ -13,7 +14,7 @@ export function guessSessionType(data : any): boolean {
 	}
 	return null;
 }
-function getClient(sessionType:string): Client {
+export function getClient(sessionType:string): Client {
 	for (let c of clients) {
 		if (c.sessionType() == sessionType) {
 			return c;
@@ -29,5 +30,4 @@ export function  makeSessionSnapshot(sessionType:string, data: any): SessionSnap
 	const client = getClient(sessionType);
 	return client.makeSessionSnapshot(data);
 }
-
 

@@ -327,7 +327,7 @@ export async function exportCardsAsCsv( revision: CardDeckRevision, allColumns: 
 	return arrayToCsv( rows );
 }
 
-async function arrayToCsv( rows : string[][] ) : string {
+export async function arrayToCsv( rows : string[][] ) : string {
 return new Promise<string>((resolve,reject) => {
 	const stringifier = stringify({});
 	const data = []
