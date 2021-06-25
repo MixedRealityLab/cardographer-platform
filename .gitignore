@@ -5,3 +5,4 @@ node_modules
 /functions
 .vagrant
 server.env.local
+.swp
