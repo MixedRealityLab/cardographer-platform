@@ -31,3 +31,11 @@ export interface CardScale {
 	value: number;
 }
 
+export enum AnalysisExportTypes {
+	CARD_USE = "card_use",
+	CARD_ADJACENCY = "card_adjacency",
+//	CARD_NODES = "card_nodes",
+//	DESIGN_ADJACENCY = "design_adjacency",
+//	DESIGN_NODES = "design_nodes",
+}
+

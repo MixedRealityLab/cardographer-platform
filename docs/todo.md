@@ -51,7 +51,7 @@ analytics
 - [ ] basic card use from miro export
 - [x] basic card use from legacy app
 - [ ] basic card use from unity
-- [ ] gephy-compatible basic output
+- [x] gephy-compatible basic output
 - [ ] advanced output...
 - [ ] card suggestion
 

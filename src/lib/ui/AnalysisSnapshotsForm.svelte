@@ -67,7 +67,7 @@ async function handleSubmit() {
    
     <div>{snapshot.sessionName}</div>
     <div class="text-sm font-light">{snapshot.sessionDescription}</div>
-    <div class="text-sm font-light">{snapshot.snapshotDescription}</div>
+    <div class="text-sm font-light">{snapshot.sessionType}: {snapshot.snapshotDescription}</div>
     <div class="text-sm font-light">{snapshot.originallyCreated}</div>
   </div>
 {/each}

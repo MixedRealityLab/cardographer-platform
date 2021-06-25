@@ -3,6 +3,7 @@ import type {Analysis} from '$lib/types.ts';
 import type {RequestHandler} from '@sveltejs/kit';
 import type {ServerLocals} from '$lib/systemtypes.ts';
 import {exportAnalysisAsCsv} from '$lib/analysis.ts';
+import {AnalysisExportTypes} from '$lib/analysistypes.ts';
 
 const debug = true;
 
@@ -22,8 +23,12 @@ export async function get(request): RequestHandler {
 		if (debug) console.log(`analysis ${analid} not found for ${locals.email}`);
 		return { status: 404 };
 	}
+	let exportType = AnalysisExportTypes.CARD_USE;
+	if (request.query.has('type')) {
+		exportType = request.query.get('type') as AnalysisExportTypes;
+	}
 	//const allColumns = request.query.has('allColumns');
-	const csv = await exportAnalysisAsCsv( analysis );
+	const csv = await exportAnalysisAsCsv( analysis, exportType );
 	return {
 		headers: { 'content-type': 'text/csv; charset=utf-8' },
 		body: csv

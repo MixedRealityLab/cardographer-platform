@@ -109,6 +109,7 @@ Analysis:
 - [x] `api/user/analyses` POST Analysis (auth) -> {analid}
 - [x] `api/user/analyses/[analid].json` GET () (auth) -> Analysis
 - [x] `api/user/analyses/[analid]` POST Analysis -> () partial?!
-- [ ] `api/user/analyses/[analid]/gephy.csv` GET (auth) -> basic gephy CSV 
+- [x] `api/user/analyses/[analid]/gephy.csv` query param 'type' 
+  card_use|card_adjacency|... GET (auth) -> basic gephy CSV 
 
 TODO: ...??

@@ -29,6 +29,11 @@ export interface Appv1Deck {
 	deck_name: string;
 }
 
+//http://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
+function fileTimeToDate( fileTime ) { 
+	return new Date ( fileTime / 10000 - 11644473600000 );
+}
+
 export class Appv1 extends Client {
         acceptsImport(data : any): boolean {
 		if (data.design_title && data.design_cards) {
@@ -63,6 +68,7 @@ export class Appv1 extends Client {
 	makeSessionSnapshot(d: any): SessionSnapshot {
 		const data = d as Appv1Data;
 		const now = new Date().toISOString();
+		let deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown'; 
 		let snapshot:SessionSnapshot = {
 			_id: '',
 			sessionId: '',
@@ -70,8 +76,8 @@ export class Appv1 extends Client {
 			sessionDescription: data.design_description,
 			sessionCredits: data.design_author,
 			sessionType: 'appv1',
-			originallyCreated: new Date(data.design_creationTimestamp/1000).toISOString(),
-			snapshotDescription: `Imported from legacy data ${data._id}`,
+			originallyCreated: fileTimeToDate(data.design_creationTimestamp).toISOString(),
+			snapshotDescription: `Imported from legacy data ${data._id}; claims deck ${deck}`,
 			owners: [],
 			created: now, 
 			isPublic: false,

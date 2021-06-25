@@ -2,8 +2,12 @@
 import type {Analysis} from '$lib/types.ts';
 import { page, session } from '$app/stores';
 import { base } from '$lib/paths';
+import { AnalysisExportTypes } from '$lib/analysistypes.ts';
 
 export let analysis : Analysis;
+let exportOption = [ AnalysisExportTypes.CARD_USE,
+	AnalysisExportTypes.CARD_ADJACENCY ];
+let exportType: AnalysisExportTypes = AnalysisExportTypes.CARD_USE;
 let working = false;
 let error = '';
 let message = '';
@@ -32,7 +36,7 @@ async function exportCsv() {
 	}
 	working = true;
 	const {analid} = $page.params;
-	let url = `${base}/api/user/analyses/${analid}/gephy.csv`;
+	let url = `${base}/api/user/analyses/${analid}/gephy.csv?type=${exportType}`;
 	const res = await fetch(url, {
                 headers: { authorization: `Bearer ${token}` },
         });
@@ -50,6 +54,14 @@ async function exportCsv() {
 </script>
 
 <div class="py-2 grid grid-cols-1 gap-2">
+	<select bind:value={exportType}>
+		{#each exportOption  as option}
+			<option value={option}>
+				{option}
+			</option>
+		{/each}
+	</select>
+
 
 {#if error}
 <div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
