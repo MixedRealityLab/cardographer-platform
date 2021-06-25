@@ -7,5 +7,6 @@ export abstract class Client {
 	abstract makeSession(data: any): Session;
 	abstract makeSessionSnapshot(data: any): SessionSnapshot;
 	abstract getSnapshotInfo(snapshot:SessionSnapshot): SnapshotInfo;
+	abstract getExistingSessionQuery(d: any) : any;
 }
 

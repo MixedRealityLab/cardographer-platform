@@ -18,7 +18,7 @@ interface CardUse {
 	use: CardInfo[];
 }
  
-export async function exportAnalysisAsCsv( analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard:boolean ) : string {
+export async function exportAnalysisAsCsv( analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard:boolean, includeDetail: boolean ) : string {
 	let rawdesigns:DesignInfo[] = await readDesigns( analysis );
 	// split by board?
 	let designs = rawdesigns;
@@ -63,7 +63,7 @@ export async function exportAnalysisAsCsv( analysis: Analysis, exportType: Analy
 	}
 	switch (exportType) {
 		case AnalysisExportTypes.CARD_USE: {
-			return await exportCardUse( designs, cardUses );
+			return await exportCardUse( designs, cardUses, includeDetail );
 		}
 		case AnalysisExportTypes.CARD_ADJACENCY: {
 			return await exportCardAdjacency( designs, cardUses );
@@ -75,7 +75,7 @@ export async function exportAnalysisAsCsv( analysis: Analysis, exportType: Analy
 	return "Error";
 }
 
-async function exportCardUse( designs: DesignInfo[], cardUses: CardUse[]) : string {
+async function exportCardUse( designs: DesignInfo[], cardUses: CardUse[], includeDetail:boolean) : string {
 	let rows:string[][] = [];
 	// titles
 	let columns:string[] = [];
@@ -90,7 +90,12 @@ async function exportCardUse( designs: DesignInfo[], cardUses: CardUse[]) : stri
 		for (let di in designs) {
 			let use = cardUse.use[di];
 			if (use) {
-				row.push(`${use.length}`);
+				if (includeDetail) {
+					let detail = use.map((u)=>u.zones.map((z)=>z.zoneId));
+					row.push(JSON.stringify(detail));
+				} else {
+					row.push(`${use.length}`);
+				}
 			} else {
 				row.push('');
 			}

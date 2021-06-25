@@ -3,7 +3,8 @@ import type {Session,SessionSnapshot } from '$lib/types.ts';
 import type {ImportSessionResponse} from '$lib/apitypes.ts';
 import type {RequestHandler} from '@sveltejs/kit';
 import type {ServerLocals} from '$lib/systemtypes.ts';
-import { guessSessionType,makeSession, makeSessionSnapshot } from '$lib/clients/index.ts';
+import { Client } from '$lib/clients/types.ts';
+import { guessSessionType,makeSession, makeSessionSnapshot, getClient } from '$lib/clients/index.ts';
 
 const debug = true;
 
@@ -45,31 +46,50 @@ export async function post(request): RequestHandler {
 			continue;
 		}
 		console.log(`sessionType: ${sessionType}`);
+		const client = getClient( sessionType );
+		// session already imported?
+		let squery = client.getExistingSessionQuery( s );
+		let session:Session;
+		let addSession = true;
+		if (squery) {
+			squery.owners = locals.email;
+			session = await db.collection('Sessions').findOne(squery);
+			if (session) {
+				addSession = false;
+				if (debug) console.log(`session for import already exists`, squery);
+			}
+		}
 		// new session
-		let session = makeSession(sessionType, s);
+		if (!session) {
+		       session = makeSession(sessionType, s);
+		}
 		let snapshot = makeSessionSnapshot(sessionType, s);
 		if (!session || !snapshot) {
 			console.log(`Problem making session/snapshot for import ${s._id} (${sessionType})`);
 			continue;
 		}
-		const sessionId = getNewId();
+		const sessionId = addSession ? getNewId() : session._id;
 		const snapshotId = getNewId();
-		session._id = sessionId;
 		snapshot.sessionId = sessionId;
 		snapshot._id = snapshotId;
-		session.owners.push(locals.email);
+		if (addSession) {
+			session._id = sessionId;
+			session.owners.push(locals.email);
+		}
 		snapshot.owners.push(locals.email);
-		let r1 = await db.collection('Sessions').insertOne(session);
-		if (!r1.insertedCount) {
-			console.log(`Error adding new imported session`);
-			continue;
+		if (addSession) {
+			let r1 = await db.collection('Sessions').insertOne(session);
+			if (!r1.insertedCount) {
+				console.log(`Error adding new imported session`);
+				continue;
+			}
 		}
 		let r2 = await db.collection('SessionSnapshots').insertOne(snapshot);
 		if (!r2.insertedCount) {
 			console.log(`Error adding new imported snapshot`);
 			continue;
 		}
-		message = message + `Imported ${sessionType} session ${s._id} as new session ${sessionId}\n`;
+		message = message + `Imported ${sessionType} session ${s._id} as ${addSession ? 'new' : 'existing'} session ${sessionId}\n`;
 	}
 	if (debug) console.log(message);
 	return {

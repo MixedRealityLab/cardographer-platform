@@ -42,13 +42,15 @@ session
 - [x] import legacy sessions
 - [ ] import miro session
 - [ ] list/edit session states
-- [ ] board + region support
+- [ ] board + region support...
+- [ ] miro basic board specification ?!
 
 analytics
 - [x] add analysis
 - [x] list analyses
 - [x] add snapshots to analysis
-- [ ] basic card use from miro export
+- [x] basic card use from miro export
+- [ ] limit boards included in miro (board design??)
 - [x] basic card use from legacy app
 - [ ] basic card use from unity
 - [x] gephy-compatible basic output

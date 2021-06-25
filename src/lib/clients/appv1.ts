@@ -115,4 +115,8 @@ export class Appv1 extends Client {
 		}
 		return info;
 	}
+	getExistingSessionQuery(d: any) : any {
+		// no
+		return null;
+	}
 }

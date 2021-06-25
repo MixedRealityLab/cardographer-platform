@@ -27,8 +27,9 @@ export async function get(request): RequestHandler {
 	if (request.query.has('type')) {
 		exportType = request.query.get('type') as AnalysisExportTypes;
 	}
-	//const allColumns = request.query.has('allColumns');
-	const csv = await exportAnalysisAsCsv( analysis, exportType );
+	const splitByBoard = request.query.has('splitByBoard');
+	const includeDetail = request.query.has('includeDetail');
+	const csv = await exportAnalysisAsCsv( analysis, exportType, splitByBoard, includeDetail );
 	return {
 		headers: { 'content-type': 'text/csv; charset=utf-8' },
 		body: csv

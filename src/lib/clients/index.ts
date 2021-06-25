@@ -1,8 +1,10 @@
 import { Appv1 } from './appv1';
+import { MiroClient } from './miro.ts';
 import type { Client } from './types';
 
 const clients: Client[] = [
 	new Appv1(),
+	new MiroClient(),
 ];
 
 export function guessSessionType(data : any): boolean {

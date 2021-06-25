@@ -8,6 +8,8 @@ export let analysis : Analysis;
 let exportOption = [ AnalysisExportTypes.CARD_USE,
 	AnalysisExportTypes.CARD_ADJACENCY ];
 let exportType: AnalysisExportTypes = AnalysisExportTypes.CARD_USE;
+let splitByBoard = false;
+let includeDetail = false;
 let working = false;
 let error = '';
 let message = '';
@@ -37,6 +39,12 @@ async function exportCsv() {
 	working = true;
 	const {analid} = $page.params;
 	let url = `${base}/api/user/analyses/${analid}/gephy.csv?type=${exportType}`;
+	if (splitByBoard) {
+		url = url+'&splitByBoard';
+	}
+	if (includeDetail) {
+		url = url+'&includeDetail';
+	}
 	const res = await fetch(url, {
                 headers: { authorization: `Bearer ${token}` },
         });
@@ -61,6 +69,14 @@ async function exportCsv() {
 			</option>
 		{/each}
 	</select>
+	<label class="block">
+		<input type="checkbox" class="form-checkbox" bind:checked="{splitByBoard}">
+		<span class="ml-2">Separate boards</span>
+	</label>
+	<label class="block">
+		<input type="checkbox" class="form-checkbox" bind:checked="{includeDetail}">
+		<span class="ml-2">Include details</span>
+	</label>
 
 
 {#if error}
