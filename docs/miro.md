@@ -54,8 +54,8 @@ To support import:
 
 To investigate:
 - Setting metadata on the frame to identify the board id/type, and 
-  perhaps whether to exclude by default
+  perhaps whether to exclude by default; note needs to be done by plugin
 - Setting metadata on a shape to identify the tag id (rather than text)
-  and whether x and/or y are scales.
+  and whether x and/or y are scales; note needs to be done by plugin
 - Ditto for marking a parallel annotation track.
 
