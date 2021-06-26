@@ -43,3 +43,19 @@ Cardographer should host the web plugin.
 Will need to enter board ID/URL manually for existing boards or boards
 which are duplicated or without HTTP API integration.
 
+## Miro Usage for Compatibility
+
+To support import:
+- Set the title of the image to the card ID (at some point it should be
+  fixed to also check the URL)
+- Use one frame per board
+- Use a shape with text label to define areas of the board. Keep them
+  rectangular and don't rotate them.
+
+To investigate:
+- Setting metadata on the frame to identify the board id/type, and 
+  perhaps whether to exclude by default
+- Setting metadata on a shape to identify the tag id (rather than text)
+  and whether x and/or y are scales.
+- Ditto for marking a parallel annotation track.
+
