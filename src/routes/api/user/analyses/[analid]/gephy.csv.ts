@@ -29,7 +29,11 @@ export async function get(request): RequestHandler {
 	}
 	const splitByBoard = request.query.has('splitByBoard');
 	const includeDetail = request.query.has('includeDetail');
-	const csv = await exportAnalysisAsCsv( analysis, exportType, splitByBoard, includeDetail );
+	let boardNames: string[] = null;
+	if (request.query.has('boards')) {
+		boardNames = request.query.get('boards').split(',').map((n) => n.trim());
+	}
+	const csv = await exportAnalysisAsCsv( analysis, exportType, splitByBoard, includeDetail, boardNames );
 	return {
 		headers: { 'content-type': 'text/csv; charset=utf-8' },
 		body: csv

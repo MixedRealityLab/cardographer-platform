@@ -18,10 +18,34 @@ interface CardUse {
 	use: CardInfo[];
 }
  
-export async function exportAnalysisAsCsv( analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard:boolean, includeDetail: boolean ) : string {
+export async function exportAnalysisAsCsv( analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard:boolean, includeDetail: boolean, boardNames: string[] ) : string {
 	let rawdesigns:DesignInfo[] = await readDesigns( analysis );
+	// canonicalise card ids and filter boards
+	for (let design of rawdesigns) {
+		// filter boards
+		design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
+		for (let board of design.boards) {
+			for (let cardinfo of board.cards) {
+				let id = cardinfo.id;
+				// URL or file path?
+				let six = id.lastIndexOf('/');
+				if (six >= 0) {
+					id = id.substring(six+1);
+				}
+				// extension?
+				let dix = id.lastIndexOf('.');
+				if (dix>=0) {
+					id = id.substring(0, dix);
+				}
+				if (cardinfo.id != id) {
+					if (debug) console.log(`canonical card ${id} from ${cardinfo.id}`);
+					cardinfo.id = id;
+				}
+			}
+		}
+	}
 	// split by board?
-	let designs = rawdesigns;
+	let designs = rawdesigns.filter((d) => d.boards && d.boards.length>0);
 	if (splitByBoard) {
 		designs = [];
 		for (let design of rawdesigns) {

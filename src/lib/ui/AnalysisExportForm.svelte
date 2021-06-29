@@ -10,6 +10,7 @@ let exportOption = [ AnalysisExportTypes.CARD_USE,
 let exportType: AnalysisExportTypes = AnalysisExportTypes.CARD_USE;
 let splitByBoard = false;
 let includeDetail = false;
+let boards = '';
 let working = false;
 let error = '';
 let message = '';
@@ -45,6 +46,9 @@ async function exportCsv() {
 	if (includeDetail) {
 		url = url+'&includeDetail';
 	}
+	if (boards) {
+		url = url+'&boards='+encodeURIComponent(boards);
+	}
 	const res = await fetch(url, {
                 headers: { authorization: `Bearer ${token}` },
         });
@@ -77,7 +81,10 @@ async function exportCsv() {
 		<input type="checkbox" class="form-checkbox" bind:checked="{includeDetail}">
 		<span class="ml-2">Include details</span>
 	</label>
-
+	<label class="block">
+		<span class="font-light">Boards to include (default all)</span>
+		<input class="mt-1 block w-full" type="text" bind:value="{boards}">
+	</label>
 
 {#if error}
 <div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
