@@ -75,7 +75,7 @@ mkdir -p 609d13dfd045c0786d2557bf/1
 cd 609d13dfd045c0786d2557bf/1
 wget https://github.com/cgreenhalgh/databox-health-cards/archive/refs/heads/master.zip
 unzip master.zip
-(cd databox-health-cards-master; mv deck.rb layout.yml config.yml icons ..)
+(cd databox-health-cards-master; mv deck.rb layout.yml config.yml options.yml icons ..)
 cp databox-health-cards-master/card-data.csv card-data.csv
 rm -rf databox-health-cards-master
 mkdir -p _output

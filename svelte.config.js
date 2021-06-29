@@ -5,7 +5,7 @@ import adapter from '@sveltejs/adapter-node';
 const mode = process.env.NODE_ENV;
 const production = mode === 'production';
 
-const PRODUCTION_BASE = '/cardographer2';
+const PRODUCTION_BASE = '/platform';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
