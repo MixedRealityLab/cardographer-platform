@@ -17,28 +17,28 @@ services:
         volumes:
             - db:/data/db
 
-    server:
-        build:
-            context: .
-            dockerfile: dev.Dockerfile
-        env_file:
-            - server.env
-            - server.env.local
-        environment:
-            - NODE_OPTIONS=--max_old_space_size=2048
-        restart: unless-stopped
-        depends_on:
-            - 'mongo'
-        ports:
-            - "3000:3000"
-            - "10000:10000"
-            - "24678:24678"
-        volumes:
-            - ./src:/app/src/:consistent
-            - ./static:/app/static/:ro
-            - uploads:/app/uploads
-            - sessions:/app/sessions
-            - uploads:/app/static/uploads/:ro
+#    server:
+#        build:
+#            context: .
+#            dockerfile: dev.Dockerfile
+#        env_file:
+#            - server.env
+#            - server.env.local
+#        environment:
+#            - NODE_OPTIONS=--max_old_space_size=2048
+#        restart: unless-stopped
+#        depends_on:
+#            - 'mongo'
+#        ports:
+#            - "3000:3000"
+#            - "10000:10000"
+#            - "24678:24678"
+#        volumes:
+#            - ./src:/app/src/:consistent
+#            - ./static:/app/static/:ro
+#            - uploads:/app/uploads
+#            - sessions:/app/sessions
+#            - uploads:/app/static/uploads/:ro
 
     prod:
         build:

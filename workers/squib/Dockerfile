@@ -1,4 +1,4 @@
-FROM ruby:2.5-stretch
+FROM ruby:buster
 
 MAINTAINER chris.greenhalgh@nottingham.ac.uk
 
