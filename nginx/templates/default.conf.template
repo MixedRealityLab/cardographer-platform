@@ -25,15 +25,13 @@ server {
 
     # proxy to cardographer in on prod:3000 or server:3000
     #
-    location /cardographer2/ {
-	set $prod http://prod:3000;
-        rewrite ^/cardographer2(/.*)$ $1 break;
-        proxy_pass $prod;
-        proxy_set_header Host $http_host;
+    location /platform/ {
+		proxy_pass          http://prod:3000/;
+        proxy_set_header    Host    $http_host;
     }
     # direct serve uploads
-    location /cardographer2/uploads/ {
-	root	/usr/share/nginx;
+    location /platform/uploads/ {
+		root	/usr/share/nginx;
     }
     location /server/ {
         set $server http://server:3000;
