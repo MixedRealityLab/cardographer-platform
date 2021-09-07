@@ -12,23 +12,23 @@ const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
 	preprocess: preprocess({
-	        postcss: true,
+		postcss: true,
 	}),
 
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
 		paths: {
-			base: (production ? PRODUCTION_BASE : ''), 
+			base: (production ? PRODUCTION_BASE : ''),
 			//assets: ''                  
-		},                                  
+		},
 		adapter: adapter({
 			// default options are shown
 			out: 'build'
 		}),
 		vite: {
 			optimizeDeps: {
-				include: ["csv-stringify","csv-parse"]
+				include: ["csv-stringify", "csv-parse"]
 			}
 		}
 	}

@@ -73,7 +73,6 @@ async function handleSubmit() {
       <span>Registration code</span>
       <input class="mt-1 block w-full" required id="code" type="password" bind:value="{code}" />
     </label>
-
 {/if}
 
 {#if error}

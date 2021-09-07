@@ -1,8 +1,8 @@
 .DS_Store
-node_modules
-/.svelte-kit
-/build
-/functions
-.vagrant
-server.env.local
+.svelte-kit/
 .swp
+.vagrant
+build/
+node_modules/
+/functions
+server.env.local

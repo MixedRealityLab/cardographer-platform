@@ -1,11 +1,12 @@
 version: '3.1'
 
 # Docker compose file for development.
-
 volumes:
-    db: { }
-    uploads: { }
-    sessions: { }
+    db: {}
+    uploads: {}
+    sessions: {}
+    static: {}
+    src: {}
 
 services:
     mongo:
@@ -17,60 +18,55 @@ services:
         volumes:
             - db:/data/db
 
-#    server:
-#        build:
-#            context: .
-#            dockerfile: dev.Dockerfile
-#        env_file:
-#            - server.env
-#            - server.env.local
-#        environment:
-#            - NODE_OPTIONS=--max_old_space_size=2048
-#        restart: unless-stopped
-#        depends_on:
-#            - 'mongo'
-#        ports:
-#            - "3000:3000"
-#            - "10000:10000"
-#            - "24678:24678"
-#        volumes:
-#            - ./src:/app/src/:consistent
-#            - ./static:/app/static/:ro
-#            - uploads:/app/uploads
-#            - sessions:/app/sessions
-#            - uploads:/app/static/uploads/:ro
+    mongo-express:
+        image: mongo-express
+        restart: unless-stopped
+        depends_on:
+            - mongo
+        ports:
+            - "8081:8081"
 
-    prod:
+    sync:
+        build: src/docker/sync
+        restart: unless-stopped
+        volumes:
+            - ./src:/dev/src/:consistent
+            - ./static:/dev/static/:ro
+            - src:/app/src
+            - static:/app/static
+
+    platform:
         build:
             context: .
-            dockerfile: Dockerfile
-        env_file:
-            - server.env
-            - server.env.local
+            dockerfile: src/docker/dev/Dockerfile
+        environment:
+            - NODE_OPTIONS=--max_old_space_size=2048
+            - REGISTER_CODE=1234
         restart: unless-stopped
         depends_on:
             - 'mongo'
         ports:
             - "3000:3000"
+            - "24678:24678"
         volumes:
             - uploads:/app/uploads
-            # Note, /uploads/... needs to be served - see nginx
+            - src:/app/src
+            - static:/app/static
+            - sessions:/app/sessions
 
     squib:
-        build:
-            context: workers/squib
-            dockerfile: Dockerfile
-        ports:
-            - 3001
+        build: src/docker/squib
+        expose:
+            - "3001"
         volumes:
             - uploads:/root/work/uploads
         restart: unless-stopped
 
     nginx:
-        image: nginx
-        volumes: 
-          - ./nginx/templates:/etc/nginx/templates
-          - uploads:/usr/share/nginx/cardographer2/uploads
-        ports: 
-          - 8080:80
-
+        build: src/docker/nginx
+        volumes:
+            - uploads:/usr/share/nginx/cardographer2/uploads
+        ports:
+            - "80:80"
+        depends_on:
+            - 'platform'

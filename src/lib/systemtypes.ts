@@ -1,6 +1,8 @@
 // system types
 
 // session
+import type {CardDeckRevision} from "$lib/types";
+
 export interface UserSession {
 	email?: string;
 	authenticated: boolean;
@@ -21,7 +23,7 @@ export interface BuilderConfig {
 }
 
 export interface BuildRequest {
-        revision: CardDeckRevision;
+        revision: CardDeckRevision
         config: BuilderConfig
 }
 

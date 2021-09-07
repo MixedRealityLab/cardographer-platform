@@ -1,5 +1,5 @@
-import type {Session,SessionSnapshot} from '$lib/types.ts';
-import type {SnapshotInfo} from '$lib/analysistypes.ts';
+import type {Session,SessionSnapshot} from '$lib/types';
+import type {SnapshotInfo} from '$lib/analysistypes';
 
 export abstract class Client {
 	abstract acceptsImport(data : any): boolean;

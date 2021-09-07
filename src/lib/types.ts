@@ -37,9 +37,15 @@ export interface CardDeckRevisionSummary {
 export interface CardDeckRevision extends CardDeckRevisionSummary {
 	propertyDefs: CardPropertyDef[];
 	defaults: CardInfo;
+	boards: BoardInfo[]
 	cards: CardInfo[];
 	build?: DeckBuild;
 	output?: DeckOutput;
+}
+
+export interface BoardInfo {
+	title: string
+
 }
 
 // card property metadata

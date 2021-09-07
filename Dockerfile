@@ -1,17 +1,14 @@
 FROM node:alpine
 RUN mkdir /app
 WORKDIR /app
-COPY package.json /app/
-COPY package-lock.json /app/
-RUN npm install
-COPY *.config.js *.config.cjs tsconfig.json .npmrc /app/
-COPY ./src/ /app/src
+COPY *.json /app/
+RUN npm ci
+COPY *.config.js *.config.cjs .npmrc /app/
 COPY ./static/ /app/static
+COPY ./src/ /app/src
 ENV NODE_ENV=production
 RUN npm run build
 EXPOSE 3000
 VOLUME /app/static/uploads
 
-#CMD ["npm", "run", "preview"]
 CMD ["node", "build"]
-#CMD ["/bin/sh"]
