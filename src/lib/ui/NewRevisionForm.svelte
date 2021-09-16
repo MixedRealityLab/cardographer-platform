@@ -27,11 +27,11 @@
 			return;
 		}
 		const newRevision = await getres.json() as CardDeckRevision
-		const {deckid} = $page.params;
+		const {deckId} = $page.params;
 		newRevision.revisionName = 'New revision';
 		newRevision.revisionDescription = `Based on revision ${revision.revision} of ${revision.deckName}`;
 		newRevision.slug = '';
-		const url = `${base}/api/user/decks/${deckid}/revisions`;
+		const url = `${base}/api/user/decks/${deckId}/revisions`;
 		const res = await fetch(url, {
 			method: 'POST',
 			headers: {
@@ -46,7 +46,7 @@
 			const output = await res.json() as PostUserRevisionResponse;
 			message = 'OK';
 			// redirect
-			goto(`${output.revid}`);
+			goto(`${output.revId}`);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}

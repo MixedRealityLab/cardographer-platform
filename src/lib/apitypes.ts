@@ -32,11 +32,11 @@ export interface BuildResponse {
 }
 
 export interface PostUserDecksResponse {
-	deckid: string;
-	revid: number;
+	deckId: string;
+	revId: number;
 }
 export interface PostUserRevisionResponse {
-	revid: number;
+	revId: number;
 }
 export interface FileInfo {
 	name: string;

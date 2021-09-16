@@ -1,18 +1,18 @@
 <script context="module" lang="ts">
-	import type {Load} from '@sveltejs/kit';
-	import { base } from '$lib/paths.ts';
-	
-	export async function load({ page, fetch, session, context }): Load {
+	import {base} from '$lib/paths'
+	import type {LoadOutput} from '@sveltejs/kit'
+
+	export async function load({fetch, session}): Promise<LoadOutput> {
 		const token = session.user?.token;
 		if (!token) {
 			console.log(`note, no user token`, session);
 			return {
-				props: { decks: [] } 
+				props: {decks: []}
 			}
 		}
-		const url = `${base}/api/user/decks.json`;
+		const url = `${base}/api/user/decks`;
 		const res = await fetch(url, {
-			headers: { authorization: `Bearer ${token}` }
+			headers: {authorization: `Bearer ${token}`}
 		});
 
 		if (res.ok) {
@@ -29,35 +29,44 @@
 		};
 	}
 
-function compareDecks(a,b) {
-	const aname = `${a.name} ${a._id}`;
-	const bname = `${b.name} ${b._id}`;
-	return String(aname).localeCompare(bname);
-}
+	function compareDecks(a, b) {
+		const aName = `${a.name} ${a._id}`;
+		const bName = `${b.name} ${b._id}`;
+		return String(aName).localeCompare(bName);
+	}
 
 </script>
 
 <script lang="ts">
-  import AppBar from '$lib/ui/AppBar.svelte';
-  import UserTabs from '$lib/ui/UserTabs.svelte';
-  import type {CardDeckSummary} from '$lib/types.ts';
+	import AppBar from '$lib/ui/AppBar.svelte';
+	import UserTabs from '$lib/ui/UserTabs.svelte';
+	import type {CardDeckSummary} from '$lib/types.ts';
 
-  export let decks : CardDeckSummary[];
+	export let decks: CardDeckSummary[];
 </script>
 
 <AppBar title="Cardographer" backpage=""/>
 <UserTabs page="decks"/>
 
-<div class="px-2">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
+	{#if decks.length === 0}
+		<p>No Decks Found</p>
+	{:else}
+		{#each decks as deck}
+			<a class="w-full flex rounded-md py-2 px-4 my-1 border border-grey-300"
+			   href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
+				<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
+				<div>
+					<div> {deck.name} <span class="text-gray-400">v{deck.currentRevision}</span></div>
+					{#if deck.description}
+						<div class="text-sm font-light">{deck.description}</div>
+					{/if}
+				</div>
+			</a>
+		{/each}
+	{/if}
 
-  <p>{decks.length} decks:</p>
-  <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
-{#each decks as deck}
-    <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="decks/{deck._id}">
-      <div>{deck.name}</div>
-      <div class="text-sm font-light">{deck.description}</div>
-     </a>
-{/each}
-  </div>
-
+	<a class="mt-2 button self-center" href="{base}/user/decks/new">
+		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck
+	</a>
 </div>

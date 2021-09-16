@@ -1,25 +1,25 @@
-import {getDb} from '$lib/db.ts';
-import type {Session} from '$lib/types.ts';
-import type {RequestHandler} from '@sveltejs/kit';
-import type {ServerLocals} from '$lib/systemtypes.ts';
+import {getDb} from '$lib/db';
+import type {ServerLocals} from '$lib/systemtypes';
+import type {Session} from '$lib/types';
+import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = false;
 
-export async function get(request): RequestHandler {
+export async function get(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return { status: 403 }
+		return {status: 403}
 	}
 	if (debug) console.log(`get sessions`);
 	const db = await getDb();
-	const sessions = await db.collection('Sessions').find({
-		owners: locals.email 
-	}).toArray() as Session[];
+	const sessions = await db.collection<Session>('Sessions').find({
+		owners: locals.email
+	}).toArray()
 	if (debug) console.log(`sessions for ${locals.email}`, sessions);
 	return {
 		body: {
-			values: sessions
+			values: sessions as any
 		}
 	}
 }

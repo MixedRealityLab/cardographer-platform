@@ -10,7 +10,7 @@ const jwtSecret = "somethingelse";
 
 const debug = false;
 
-export async function checkUserToken(rawToken:string) : UserToken {
+export async function checkUserToken(rawToken:string) : Promise<UserToken> {
 	if (!rawToken) {
 		return {
 			valid: false
@@ -35,12 +35,11 @@ export async function checkUserToken(rawToken:string) : UserToken {
 	})
 }
 
-export async function signUserToken(email:string) : string {
+export async function signUserToken(email:string) : Promise<string> {
 	const claims = {
 		email: email
 	}
-	const token = jwt.sign(claims, jwtSecret);
-	return token;
+	return jwt.sign(claims, jwtSecret);
 }
 
 export function getCookieName(): string {

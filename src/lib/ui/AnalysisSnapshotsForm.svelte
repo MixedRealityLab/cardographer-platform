@@ -60,7 +60,7 @@ async function handleSubmit() {
 
 <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
 {#each snapshots as snapshot}
-  <div class="w-full rounded-md py-1 px-2 border boder-grey-300">
+  <div class="w-full rounded-md py-1 px-2 border border-grey-300">
     <div class="float-left pr-2">
       <input type="checkbox" class="form-checkbox" bind:checked="{snapshot.selected}">
     </div>

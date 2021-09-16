@@ -20,51 +20,51 @@ Deck authoring:
 
 - [x] `api/user/decks.json` GET (auth. JWT email) -> 
   {decks:CardDeckSummary[]} with email in owners.
-- [x] `api/user/decks/[deckid]/revisions.json` GET (auth. JWT email) ->
+- [x] `api/user/decks/[deckId]/revisions.json` GET (auth. JWT email) ->
   {revisions:CardDeckRevisionSummary[],deck:CardDeckSummary} 
-- [x] `api/user/decks/[deckid]/revisions/[revid].json` GET (auth. JWT email
+- [x] `api/user/decks/[deckId]/revisions/[revId].json` GET (auth. JWT email
   or revision isPublic) -> CardDeckRevision
-- [x] `api/user/decks` POST CardDeckRevision (auth) -> {deckid,revid=1}
-- [x] `api/user/decks/[deckid]/revisions` POST CardDeckRevision (auth.)
-  -> {revid}
-- [ ] `api/user/decks/[deckid]` POST CardDeckSummary {owners, isPublic}
+- [x] `api/user/decks` POST CardDeckRevision (auth) -> {deckId,revId=1}
+- [x] `api/user/decks/[deckId]/revisions` POST CardDeckRevision (auth.)
+  -> {revId}
+- [ ] `api/user/decks/[deckId]` POST CardDeckSummary {owners, isPublic}
   (auth.) -> ()
-- [x] `api/user/decks/[deckid]/revisions/[revid]` POST CardDeckRevision
+- [x] `api/user/decks/[deckId]/revisions/[revId]` POST CardDeckRevision
   (auth.) -> ()
-- [x] `api/user/decks/[deckid]/revisions/[revid]/cards.csv` GET 
+- [x] `api/user/decks/[deckId]/revisions/[revId]/cards.csv` GET 
   ?allColumns&withRowTypes (auth) -> .CSV file of card metadata
-- [x] `api/user/decks/[deckid]/revisions/[revid]/cards` PUT (auth.) 
+- [x] `api/user/decks/[deckId]/revisions/[revId]/cards` PUT (auth.) 
   PutCardsRequest {addColumns, .CSV file of card metadata} -> 
   () or CardDeckRevision?
-- [x] `api/user/decks/[deckid]/revisions/[revid]/build` POST (auth.)
+- [x] `api/user/decks/[deckId]/revisions/[revId]/build` POST (auth.)
   () -> BuildResponse
 
 Files:
 
-- [x] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]` GET 
+- [x] `api/user/decks/[deckId]/revisions/[revId]/files/[...file]` GET 
   (auth) -> file info [] (for dir)
-- [x] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`       
+- [x] `api/user/decks/[deckId]/revisions/[revId]/files/[...file]`       
   POST (auth) (form-ish) PostFilesRequest -> upload/mkdir
-- [ ] `api/user/decks/[deckid]/revisions/[revid]/files/[...file]`
+- [ ] `api/user/decks/[deckId]/revisions/[revId]/files/[...file]`
   DELETE (auth) -> ()
 
 Public decks & templates:
 - [x] `api/public/templates.json` GET -> 
   {values:CardDeckRevisionSummary[]} with isPublic & isTemplate
 - [ ] `api/public/decks.json` GET -> CardDeckSummary[] with isPublic
-- [ ] `api/public/decks/[deckid]/revisions.json` GET ->
+- [ ] `api/public/decks/[deckId]/revisions.json` GET ->
   CardDeckRevisionSummary[] (if deck isPublic and revision isPublic)
-- [x] `api/public/decks/[deckid]/revisions/[revid].json` GET 
+- [x] `api/public/decks/[deckId]/revisions/[revId].json` GET 
   (revision isPublic) -> CardDeckRevision
 
 Deck use:
-- [ ] `api/client/decks/[deckid]/revisions/[revid].json` GET (auth
+- [ ] `api/client/decks/[deckId]/revisions/[revId].json` GET (auth
   or isPublic) -> subset? of CardDeckRevision
-- [ ] `api/client/decks/[deckid]/revisions/[revid]/outputfiles/[filename]`
+- [ ] `api/client/decks/[deckId]/revisions/[revId]/outputfiles/[filename]`
   GET (auth or isPublic) -> file content
 
 Images - Deprecated - switching to direct URLs:
-- [x] `api/cards/images/[deckid]/[revid]/[...file]` GET -> file
+- [x] `api/cards/images/[deckId]/[revId]/[...file]` GET -> file
   from _output (only application/octet-stream atm - sveltekit issue)
 
 ## Sessions
@@ -93,7 +93,7 @@ Session scheduling:
 Session play:
 - [ ] `api/client/sessions/[sessid]/stage/[stage]/deckInfo.json` GET 
   (auth or public) -> DeckInfo[] for unity
-- [x] `api/client/decks/[deckid]/revision/[revid]/deckInfo.json` GET
+- [x] `api/client/decks/[deckId]/revision/[revId]/deckInfo.json` GET
   (auth or public) -> DeckInfo[] for unity (Note, just for testing/dev)
 
 Session snapshots:

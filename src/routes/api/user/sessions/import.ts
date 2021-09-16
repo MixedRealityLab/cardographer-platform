@@ -1,27 +1,25 @@
-import {getDb,getNewId} from '$lib/db.ts';
-import type {Session,SessionSnapshot } from '$lib/types.ts';
-import type {ImportSessionResponse} from '$lib/apitypes.ts';
-import type {RequestHandler} from '@sveltejs/kit';
-import type {ServerLocals} from '$lib/systemtypes.ts';
-import { Client } from '$lib/clients/types.ts';
-import { guessSessionType,makeSession, makeSessionSnapshot, getClient } from '$lib/clients/index.ts';
+import {getClient, guessSessionType, makeSession, makeSessionSnapshot} from '$lib/clients/index';
+import {getDb, getNewId} from '$lib/db';
+import type {ServerLocals} from '$lib/systemtypes';
+import type {Session, SessionSnapshot} from '$lib/types';
+import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {Filter} from "mongodb/mongodb.ts34";
 
 const debug = true;
 
-
-export async function post(request): RequestHandler {
+export async function post(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return { status: 403 }
+		return {status: 403}
 	}
 	let ss = request.body;
-       	if (!Array.isArray(ss)) {
+	if (!Array.isArray(ss)) {
 		ss = [ss];
 	}
 	//if (debug) console.log(`add session`, copyreq);
 	const db = await getDb();
-	const now = new Date().toISOString();
+	//const now = new Date().toISOString();
 	let message = '';
 	for (let si in ss) {
 		let s = ss[si];
@@ -31,29 +29,29 @@ export async function post(request): RequestHandler {
 			continue;
 		}
 		// already imported?
-		const existing = await db.collection('SessionSnapshots')
+		const existing = await db.collection<SessionSnapshot>('SessionSnapshots')
 			.findOne({
 				legacyId: s._id, owners: locals.email
-			}) as SessionSnapshot;
+			})
 		if (existing) {
 			console.log(`legacy session ${s._id} already imported by ${locals.email}`);
 			continue;
 		}
 		// guess its type
-		const sessionType = guessSessionType( s );
+		const sessionType = guessSessionType(s);
 		if (!sessionType) {
 			console.log(`no sessionType guess for import ${s._id}`);
 			continue;
 		}
 		console.log(`sessionType: ${sessionType}`);
-		const client = getClient( sessionType );
+		const client = getClient(sessionType);
 		// session already imported?
-		let squery = client.getExistingSessionQuery( s );
-		let session:Session;
+		let squery = client.getExistingSessionQuery(s) as Filter<Session>
+		let session: Session;
 		let addSession = true;
 		if (squery) {
 			squery.owners = locals.email;
-			session = await db.collection('Sessions').findOne(squery);
+			session = await db.collection<Session>('Sessions').findOne(squery);
 			if (session) {
 				addSession = false;
 				if (debug) console.log(`session for import already exists`, squery);
@@ -61,7 +59,7 @@ export async function post(request): RequestHandler {
 		}
 		// new session
 		if (!session) {
-		       session = makeSession(sessionType, s);
+			session = makeSession(sessionType, s);
 		}
 		let snapshot = makeSessionSnapshot(sessionType, s);
 		if (!session || !snapshot) {
@@ -78,14 +76,14 @@ export async function post(request): RequestHandler {
 		}
 		snapshot.owners.push(locals.email);
 		if (addSession) {
-			let r1 = await db.collection('Sessions').insertOne(session);
-			if (!r1.insertedCount) {
+			let r1 = await db.collection<Session>('Sessions').insertOne(session);
+			if (!r1.insertedId) {
 				console.log(`Error adding new imported session`);
 				continue;
 			}
 		}
-		let r2 = await db.collection('SessionSnapshots').insertOne(snapshot);
-		if (!r2.insertedCount) {
+		let r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
+		if (!r2.insertedId) {
 			console.log(`Error adding new imported snapshot`);
 			continue;
 		}
@@ -93,7 +91,7 @@ export async function post(request): RequestHandler {
 	}
 	if (debug) console.log(message);
 	return {
-		body: { 
+		body: {
 			message: message
 		}
 	}

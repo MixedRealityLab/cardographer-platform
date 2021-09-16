@@ -1,7 +1,7 @@
 // appv1 = vuforia app, pre2021
-import { Client } from './types.ts';
-import type {Session,SessionSnapshot} from '$lib/types.ts';
-import type {SnapshotInfo,BoardInfo,CardInfo} from '$lib/analysistypes.ts';
+import type {BoardInfo, CardInfo, SnapshotInfo} from '$lib/analysistypes';
+import type {Session, SessionSnapshot} from '$lib/types';
+import {Client} from './types';
 
 // dump data
 export interface Appv1Data {
@@ -30,24 +30,26 @@ export interface Appv1Deck {
 }
 
 //http://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
-function fileTimeToDate( fileTime ) { 
-	return new Date ( fileTime / 10000 - 11644473600000 );
+function fileTimeToDate(fileTime) {
+	return new Date(fileTime / 10000 - 11644473600000);
 }
 
 export class Appv1 extends Client {
-        acceptsImport(data : any): boolean {
+	acceptsImport(data: any): boolean {
 		if (data.design_title && data.design_cards) {
 			return true;
 		}
 		return false;
 	}
-        sessionType(): string {
+
+	sessionType(): string {
 		return 'appv1';
 	}
+
 	makeSession(d: any): Session {
 		const now = new Date().toISOString();
 		const data = d as Appv1Data;
-		let session:Session = {
+		let session: Session = {
 			_id: '', // todo
 			name: data.design_title,
 			description: data.design_description,
@@ -65,11 +67,12 @@ export class Appv1 extends Client {
 		}
 		return session;
 	}
+
 	makeSessionSnapshot(d: any): SessionSnapshot {
 		const data = d as Appv1Data;
 		const now = new Date().toISOString();
-		let deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown'; 
-		let snapshot:SessionSnapshot = {
+		let deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown';
+		let snapshot: SessionSnapshot = {
 			_id: '',
 			sessionId: '',
 			sessionName: data.design_title,
@@ -79,7 +82,7 @@ export class Appv1 extends Client {
 			originallyCreated: fileTimeToDate(data.design_creationTimestamp).toISOString(),
 			snapshotDescription: `Imported from legacy data ${data._id}; claims deck ${deck}`,
 			owners: [],
-			created: now, 
+			created: now,
 			isPublic: false,
 			isNotForAnalysis: false,
 			legacyId: data._id,
@@ -87,13 +90,14 @@ export class Appv1 extends Client {
 		};
 		return snapshot;
 	}
-	getSnapshotInfo(snapshot:SessionSnapshot): SnapshotInfo {
-		let board:BoardInfo = {
-			id:"",//default
-			cards:[],
-			comments:[],
+
+	getSnapshotInfo(snapshot: SessionSnapshot): SnapshotInfo {
+		let board: BoardInfo = {
+			id: "",//default
+			cards: [],
+			comments: [],
 		};
-		let info:SnapshotInfo = {
+		let info: SnapshotInfo = {
 			boards: [board],
 		};
 		let data = snapshot.appv1Data;
@@ -108,14 +112,15 @@ export class Appv1 extends Client {
 			return info;
 		}
 		for (let card of cards) {
-			let ci:CardInfo = {
+			let ci: CardInfo = {
 				id: card.card_id,
 			}
 			board.cards.push(ci);
 		}
 		return info;
 	}
-	getExistingSessionQuery(d: any) : any {
+
+	getExistingSessionQuery(d: any): any {
 		// no
 		return null;
 	}

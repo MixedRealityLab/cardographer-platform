@@ -1,19 +1,19 @@
 <script context="module" lang="ts">
-	import type {Load} from '@sveltejs/kit';
-	import { base } from '$lib/paths';
-	
-	export async function load({ page, fetch, session, context }): Load {
+	import {base} from '$lib/paths';
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+
+	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const token = session.user?.token;
 		if (!token) {
 			console.log(`note, no user token`, session);
 			return {
-				props: { revisions: [] } 
+				props: {revisions: []}
 			}
 		}
-		const {deckid} = page.params;
-		const url = `${base}/api/user/decks/${deckid}/revisions.json`;
+		const {deckId} = page.params;
+		const url = `${base}/api/user/decks/${deckId}/revisions`;
 		const res = await fetch(url, {
-			headers: { authorization: `Bearer ${token}` }
+			headers: {authorization: `Bearer ${token}`}
 		});
 
 		if (res.ok) {
@@ -29,47 +29,55 @@
 			error: new Error(`Could not load ${url}`)
 		};
 	}
-function compareRevisions(a,b) {
-	return b.revision - a.revision;
-}
+
+	function compareRevisions(a, b) {
+		return b.revision - a.revision;
+	}
 </script>
 
 <script lang="ts">
-  import AppBar from '$lib/ui/AppBar.svelte';
-  import UserTabs from '$lib/ui/UserTabs.svelte';
-  import type {CardDeckRevisionSummary} from '$lib/types.ts';
+	import AppBar from '$lib/ui/AppBar.svelte'
+	import type {CardDeckRevisionSummary} from '$lib/types'
 
-  export let revisions : CardDeckRevisionSummary[];
+	export let revisions: CardDeckRevisionSummary[];
 </script>
 
 <AppBar title="Cardographer" backpage="{base}/user/decks"/>
-<!-- <UserTabs/> -->
 
 <div class="px-2">
+	<div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
+		{#each revisions as revision}
+			{#if revision.isCurrent}
+				<p>Current revision:</p>
+			{/if}
+			<a class="w-full rounded-md py-1 px-4 border border-grey-300"
+			   href="{revision.deckId}/revisions/{revision.revision}">
+				<div>{revision.deckName}
+					(rev.{revision.revision}{revision.revisionName ? ' ' + revision.revisionName : ''})
+				</div>
+				<div class="flex flex-row gap-1">
+					{#if !revision.isUsable}
+						<div class="px-1 rounded-md bg-gray-200">Don't use</div>
+					{/if}
+					{#if revision.isLocked}
+						<div class="px-1 rounded-md bg-gray-200">Locked</div>
+					{/if}
+					{#if revision.isPublic}
+						<div class="px-1 rounded-md bg-gray-200">Public</div>
+					{/if}
+					{#if revision.isTemplate}
+						<div class="px-1 rounded-md bg-gray-200">Template</div>
+					{/if}
+				</div>
+				{#if revision.revisionDescription}
+					<div class="text-sm font-light">{revision.revisionDescription}</div>
+				{/if}
+			</a>
 
+			{#if revision.isCurrent && revisions.length > 1}
+				<p class="pt-4">Old revisions:</p>
+			{/if}
 
-  <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
-{#each revisions as revision}
-{#if revision.isCurrent}
-<p>Current revision:</p>
-{/if}
-    <a class="w-full rounded-md py-1 px-2 border boder-grey-300" href="{revision.deckId}/revisions/{revision.revision}">
-      <div>{revision.deckName} (rev.{revision.revision}{revision.revisionName ? ' '+revision.revisionName : ''})</div>
-      <div class="flex flex-row gap-1">
-
-	{#if !revision.isUsable}<div class="px-1 rounded-md bg-gray-200">Don't use</div>{/if}
-	{#if revision.isLocked}<div class="px-1 rounded-md bg-gray-200">Locked</div>{/if}
-	{#if revision.isPublic}<div class="px-1 rounded-md bg-gray-200">Public</div>{/if}
-	{#if revision.isTemplate}<div class="px-1 rounded-md bg-gray-200">Template</div>{/if}
-      </div>
-      <div class="text-sm font-light">{revision.revisionDescription}</div>
-    </a>
-
-{#if revision.isCurrent && revisions.length>1}
-<p class="pt-4">Old revisions:</p>
-{/if}
-
-{/each}
-  </div>
-
+		{/each}
+	</div>
 </div>

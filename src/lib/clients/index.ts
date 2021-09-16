@@ -1,5 +1,6 @@
+import type {Session, SessionSnapshot} from "$lib/types";
 import { Appv1 } from './appv1';
-import { MiroClient } from './miro.ts';
+import { MiroClient } from './miro';
 import type { Client } from './types';
 
 const clients: Client[] = [
@@ -7,7 +8,7 @@ const clients: Client[] = [
 	new MiroClient(),
 ];
 
-export function guessSessionType(data : any): boolean {
+export function guessSessionType(data : any): string {
 	for (let c of clients) {
 		//console.log(`client`, c);
 		if (c.acceptsImport(data)) {
@@ -16,6 +17,7 @@ export function guessSessionType(data : any): boolean {
 	}
 	return null;
 }
+
 export function getClient(sessionType:string): Client {
 	for (let c of clients) {
 		if (c.sessionType() == sessionType) {

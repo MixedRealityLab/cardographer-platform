@@ -33,6 +33,7 @@ export interface CardDeckRevisionSummary {
 	// API only
 	isCurrent?: boolean;
 }
+
 // full revision data
 export interface CardDeckRevision extends CardDeckRevisionSummary {
 	propertyDefs: CardPropertyDef[];
@@ -94,7 +95,7 @@ export enum CardPropertyUse {
 }
 
 export type CustomFields = {
-	[key:string] : string;
+	[key: string]: string;
 }
 
 // single Card or deck default
@@ -118,9 +119,9 @@ export interface CardInfo {
 
 	// deck-specific properties
 	sortBy?: number;
-	categody?: string;
+	category?: string;
 	subtype?: string; // default subtype
-	attriute?: string; // default attribute
+	attribute?: string; // default attribute
 	custom?: CustomFields; // also custom assetFile or content
 	back?: string;
 
@@ -219,14 +220,14 @@ export interface Session {
 
 // in Session, a stage plan
 export interface SessionStage {
-	decks: SessionDeck[]; 
+	decks: SessionDeck[];
 }
 
 // in SessionStage, a deck to use
 export interface SessionDeck {
 	deckId: string; // (FK,
 	revision: number; // FK)
-	deckName: string; 
+	deckName: string;
 	deckCredits?: string;
 }
 
@@ -261,9 +262,10 @@ export interface SessionSnapshotSummary {
 	sessionDescription?: string;
 	sessionCredits?: string;
 	sessionType: string;
-        originallyCreated: string; // ISO date
-        snapshotDescription?: string;
+	originallyCreated: string; // ISO date
+	snapshotDescription?: string;
 }
+
 export interface SessionSnapshot extends SessionSnapshotSummary {
 	owners: string[];
 	created: string; // ISO date

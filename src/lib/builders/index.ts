@@ -1,36 +1,36 @@
-import type { BuildResponse, FileInfo } from '$lib/apitypes.ts';
-import type { CardDeckRevision, DeckBuild } from '$lib/types.ts';
-import { DeckBuildStatus } from '$lib/types.ts';
-import type { BuilderConfig } from '$lib/systemtypes.ts';
+import type {BuildResponse, FileInfo} from '$lib/apitypes';
+import type {BuilderConfig} from '$lib/systemtypes';
+import type {CardDeckRevision, DeckBuild} from '$lib/types';
+import {DeckBuildStatus} from '$lib/types';
 import fs from 'fs';
-const fsPromises = fs.promises;
+import {build as squibBuild} from './squib';
 
-import { build as squibBuild } from './squib.ts';
+const fsPromises = fs.promises;
 
 const debug = true;
 
-type BuildFn = ( revision: CardDeckRevision, config: BuilderConfig ) => Promise<BuildResponse>;
+type BuildFn = (revision: CardDeckRevision, config: BuilderConfig) => Promise<BuildResponse>;
 
 type Builders = {
-	[key: string] : BuildFn;
+	[key: string]: BuildFn;
 }
 
 let builders: Builders = {
-	'squib' : squibBuild,
+	'squib': squibBuild,
 };
 
 const FILE_PATH = "uploads";
 
-export async function buildRevision( revision: CardDeckRevision ) : BuildReponse {
+export async function buildRevision(revision: CardDeckRevision): Promise<BuildResponse> {
 	if (!revision.build?.builderId) {
-		return { error: "No builder defined" };
+		return {error: "No builder defined"};
 	}
 	let builder = builders[revision.build.builderId];
 	if (!builder) {
-		return { error: `Builder ${revision.build.builderId} not known` };
+		return {error: `Builder ${revision.build.builderId} not known`};
 	}
 	// ??
-	let config : BuilderConfig = {
+	let config: BuilderConfig = {
 		baseUrl: `/uploads`,
 		filePath: FILE_PATH,
 	};
@@ -38,8 +38,8 @@ export async function buildRevision( revision: CardDeckRevision ) : BuildReponse
 }
 
 // copy files too...
-export async function copyBuild( oldRevision: CardDeckRevision, newRevision: CardDeckRevision ) : DeckBuild {
-        // Copy files...
+export async function copyBuild(oldRevision: CardDeckRevision, newRevision: CardDeckRevision): Promise<DeckBuild> {
+	// Copy files...
 	const oldPath = `${FILE_PATH}/${oldRevision.deckId}/${oldRevision.revision}`;
 	const newPath = `${FILE_PATH}/${newRevision.deckId}/${newRevision.revision}`;
 	let build: DeckBuild;
@@ -57,7 +57,7 @@ export async function copyBuild( oldRevision: CardDeckRevision, newRevision: Car
 	//return new Promise<DeckBuild>((resolve,reject) => {
 	// make new path
 	try {
-		await fsPromises.mkdir(newPath,{recursive:true});
+		await fsPromises.mkdir(newPath, {recursive: true});
 		await copyDir(oldPath, newPath, true);
 	} catch (err) {
 		console.log(`copy build error ${err.message}`, err);
@@ -65,12 +65,13 @@ export async function copyBuild( oldRevision: CardDeckRevision, newRevision: Car
 	return build;
 	//});//promise
 }
-async function copyDir(oldPath:string, newPath:string, recurse:boolean) {
+
+async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	if (debug) console.log(`copy ${oldPath} to ${newPath}`);
-	const files = await fsPromises.readdir(oldPath,{withFileTypes:true});
+	const files = await fsPromises.readdir(oldPath, {withFileTypes: true});
 	for (const file of files) {
-		const oldFile = oldPath+'/'+file.name;
-		const newFile = newPath+'/'+file.name;
+		const oldFile = oldPath + '/' + file.name;
+		const newFile = newPath + '/' + file.name;
 		if (file.isFile()) {
 			try {
 				await fsPromises.copyFile(oldFile, newFile);
@@ -81,28 +82,31 @@ async function copyDir(oldPath:string, newPath:string, recurse:boolean) {
 			try {
 				await fsPromises.mkdir(newFile);
 				await copyDir(oldFile, newFile, recurse);
-			}
-			catch (err) {
+			} catch (err) {
 				console.log(`error making new directory ${newFile}: ${err.mesage}`);
 			}
 		}
 	}
 }
 
-export async function getFileInfo(deckid:string, revid:string, path:string): FileInfo[] {
-	const relPath = `${FILE_PATH}/${deckid}/${revid}/${path}`;
+export async function getFileInfo(deckId: string, revId: string, path: string): Promise<FileInfo[]> {
+	const revPath = `${FILE_PATH}/${deckId}/${revId}`
+	fsPromises.mkdir(revPath, {
+		recursive: true
+	})
+	const relPath = `${revPath}/${path}`;
 	const stats = await fsPromises.stat(relPath);
 	if (stats.isFile()) {
 		if (debug) console.log(`getDirInfo for file ${relPath}`);
-		return [{ relPath: relPath, isDirectory:false }];
+		return [{name: path, relPath: relPath, isDirectory: false}];
 	}
 	if (!stats.isDirectory()) {
 		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
 		return [];
 	}
-        const files = await fsPromises.readdir(relPath,{withFileTypes:true});
- 	let fis:FileInfo[] = [];
- 	for (const file of files) {
+	const files = await fsPromises.readdir(relPath, {withFileTypes: true});
+	let fis: FileInfo[] = [];
+	for (const file of files) {
 		if (file.isDirectory() || file.isFile()) {
 			fis.push({
 				name: file.name,
@@ -112,8 +116,9 @@ export async function getFileInfo(deckid:string, revid:string, path:string): Fil
 	}
 	return fis;
 }
-export async function writeFile(deckid:string, revid:string, path:string, name:string, base64:string)  {
-	const relPath = `${FILE_PATH}/${deckid}/${revid}/${path}/${name}`;
+
+export async function writeFile(deckId: string, revId: string, path: string, name: string, base64: string) {
+	const relPath = `${FILE_PATH}/${deckId}/${revId}/${path}/${name}`;
 	const data = Buffer.from(base64, 'base64');
 	await fsPromises.writeFile(relPath, data);
 }

@@ -22,8 +22,8 @@
 			return;
 		}
 		working = true;
-		const {deckid, revid} = $page.params;
-		const url = `${base}/api/user/decks/${deckid}/revisions/${revid}/build`;
+		const {deckId, revId} = $page.params;
+		const url = `${base}/api/user/decks/${deckId}/revisions/${revId}/build`;
 		revision.build.status = DeckBuildStatus.Building;
 		const res = await fetch(url, {
 			method: 'POST',
