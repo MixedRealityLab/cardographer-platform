@@ -13,24 +13,24 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 403}
 	}
-	const {deckId, revId, file} = request.params;
-	if (debug) console.log(`get file ${deckId}/${revId}/${file}`);
+	const {deckId, revisionId, file} = request.params;
+	if (debug) console.log(`Get file ${deckId}/${revisionId}/${file}`);
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
 		_id: deckId, owners: locals.email
 	})
 	if (!deck) {
-		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
+		if (debug) console.log(`Deck ${deckId} not found for ${locals.email}`);
 		return {status: 404};
 	}
 	try {
-		const files = await getFileInfo(deckId, revId, file);
+		const files = await getFileInfo(deckId, revisionId, file);
 		return {
 			body: files as any[]
 		}
 	} catch (err) {
-		console.log(`error getting file ${deckId}/${revId}/${file}: ${err.message}`);
+		console.log(`error getting file ${deckId}/${revisionId}/${file}: ${err.message}`);
 		return {status: 500}
 	}
 }
@@ -45,7 +45,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		return {status: 403}
 	}
 	const req = await request.body as unknown as PostFilesRequest;
-	const {deckId, revId} = request.params;
+	const {deckId, revisionId} = request.params;
 	const path = request.params.file;
 	const db = await getDb();
 	// permission check
@@ -58,20 +58,20 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	}
 	// revision
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		deckId: deckId, revision: Number(revId)
+		deckId: deckId, revision: Number(revisionId)
 	})
 	if (!revision) {
-		if (debug) console.log(`revision ${revId} not found for deck ${deckId}`);
+		if (debug) console.log(`revision ${revisionId} not found for deck ${deckId}`);
 		return {status: 404};
 	}
 	if (revision.isLocked) {
-		if (debug) console.log(`revision ${revId} for ${deckId} locked`)
+		if (debug) console.log(`revision ${revisionId} for ${deckId} locked`)
 		;
 		return {status: 403};
 	}
 	for (let file of req.files) {
 		if (debug) console.log(`upload ${file.name}`);
-		await writeFile(deckId, revId, path, file.name, file.content);
+		await writeFile(deckId, revisionId, path, file.name, file.content);
 	}
 	return {
 		body: {}

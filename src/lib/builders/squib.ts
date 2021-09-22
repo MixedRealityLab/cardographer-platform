@@ -87,7 +87,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		const csv = await exportCardsAsCsv(revision, false, false, cards);
 		const csvFile = `${filePath}/${prefix}card-data.csv`;
 		if (debug) console.log(`write cards to ${csvFile}`);
-		await writeFile(csvFile, csv);
+		await fsPromises.writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
 		let localopts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
@@ -159,18 +159,6 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		cards: allCards,
 		atlases: atlases
 	}
-}
-
-async function writeFile(csvFile: string, csv: string) {
-	return new Promise((resolve, reject) => {
-		fs.writeFile(csvFile, csv, {}, (err) => {
-			if (err) {
-				if (debug) console.log(`writing csv file ${csvFile}: ${err.message}`);
-				reject(`writing csv file: ${err.message}`);
-			}
-			resolve();
-		});
-	});
 }
 
 interface CallRes {

@@ -38,14 +38,12 @@
 </script>
 
 <script lang="ts">
-	import AppBar from '$lib/ui/AppBar.svelte';
 	import UserTabs from '$lib/ui/UserTabs.svelte';
 	import type {CardDeckSummary} from '$lib/types.ts';
 
 	export let decks: CardDeckSummary[];
 </script>
 
-<AppBar title="Cardographer" backpage=""/>
 <UserTabs page="decks"/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
@@ -53,7 +51,7 @@
 		<p>No Decks Found</p>
 	{:else}
 		{#each decks as deck}
-			<a class="w-full flex rounded-md py-2 px-4 my-1 border border-grey-300"
+			<a class="listItem"
 			   href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
 				<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
 				<div>
@@ -66,7 +64,7 @@
 		{/each}
 	{/if}
 
-	<a class="mt-2 button self-center" href="{base}/user/decks/new">
+	<a class="mt-4 button self-center" href="{base}/user/decks/new">
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck
 	</a>
 </div>

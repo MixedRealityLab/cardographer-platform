@@ -2,61 +2,87 @@
 
 // deck summary caches latest revision info and adds only owners
 // i.e. RBAC for all revisions in deck
+import type {MiroData} from "$lib/clients/miro";
+
 export interface CardDeckSummary {
-	_id: string;
-	name: string;
-	description?: string;
-	credits?: string;
-	isPublic: boolean;
-	owners: string[];
-	currentRevision: number; // integer
+	_id: string
+	name: string
+	description?: string
+	credits?: string
+	isPublic: boolean
+	owners: string[]
+	currentRevision: number // integer
 }
 
 // summary is returned for list all revisions
 export interface CardDeckRevisionSummary {
-	_id: string;
-	deckId: string;
-	revision: number; // integer 1..
-	slug?: string;
-	deckName: string;
-	deckDescription?: string;
-	deckCredits?: string;
-	created: string;
-	lastModified: string;
-	revisionName?: string;
-	revisionDescription?: string;
-	isUsable: boolean;
-	isPublic: boolean;
-	isLocked: boolean;
-	isTemplate: boolean;
-	cardCount: number; // summary only
+	_id: string
+	deckId: string
+	revision: number // integer 1..
+	slug?: string
+	deckName: string
+	deckDescription?: string
+	deckCredits?: string
+	created: string
+	lastModified: string
+	revisionName?: string
+	revisionDescription?: string
+	isUsable: boolean
+	isPublic: boolean
+	isLocked: boolean
+	isTemplate: boolean
+	cardCount: number // summary only
 	// API only
-	isCurrent?: boolean;
+	isCurrent?: boolean
 }
 
 // full revision data
 export interface CardDeckRevision extends CardDeckRevisionSummary {
-	propertyDefs: CardPropertyDef[];
-	defaults: CardInfo;
+	propertyDefs: CardPropertyDef[]
+	defaults: CardInfo
 	boards: BoardInfo[]
-	cards: CardInfo[];
-	build?: DeckBuild;
-	output?: DeckOutput;
+	cards: CardInfo[]
+	build?: DeckBuild
+	output?: DeckOutput
+}
+
+export interface BoardRegion {
+	id: string
+	name: string
+	description?: string
+	x?: number
+	y?: number
+	width?: number
+	height?: number
+	analyse: boolean
+	// x & y significant
 }
 
 export interface BoardInfo {
-	title: string
-
+	name: string
+	description?: string
+	regions: BoardRegion[]
 }
 
 // card property metadata
 export interface CardPropertyDef {
-	use: CardPropertyUse;
-	customFieldName?: string;
-	title?: string;
-	description?: string;
-	defaultExport?: boolean;
-	sortBy?: number;
+	use: CardPropertyUse
+	customFieldName?: string
+	title?: string
+	description?: string
+	defaultExport?: boolean
+	sortBy?: number
+}
+
+export enum BoardProperty {
+	Id = "id",
+	Name = "name",
+	Description = "description",
+	X = "x",
+	Y = "y",
+	Width = "width",
+	Height = "Height",
+	Analyse = "analyse"
 }
 
 // all pre-defined card property types
@@ -95,65 +121,65 @@ export enum CardPropertyUse {
 }
 
 export type CustomFields = {
-	[key: string]: string;
+	[key: string]: string
 }
 
 // single Card or deck default
 export interface CardInfo {
 
 	// standard metadata
-	id: string; // NB "back:..." for a card back
-	revision: number; // integer
-	link?: string; // URL
-	name?: string;
-	description?: string;
-	slug?: string;
-	credits?: string;
-	created: string; // ISODate
-	lastModified: string; // ISODate
+	id: string // NB "back:..." for a card back
+	revision: number // integer
+	link?: string // URL
+	name?: string
+	description?: string
+	slug?: string
+	credits?: string
+	created: string // ISODate
+	lastModified: string // ISODate
 
 	// basic card properties
-	width?: number; // physical, mm
-	height?: number; // physical, mm
-	sizeName?: string; // e.g. "poker"
+	width?: number // physical, mm
+	height?: number // physical, mm
+	sizeName?: string // e.g. "poker"
 
 	// deck-specific properties
-	sortBy?: number;
-	category?: string;
-	subtype?: string; // default subtype
-	attribute?: string; // default attribute
-	custom?: CustomFields; // also custom assetFile or content
-	back?: string;
+	sortBy?: number
+	category?: string
+	subtype?: string // default subtype
+	attribute?: string // default attribute
+	custom?: CustomFields // also custom assetFile or content
+	back?: string
 
 	// card generation
-	assetFile?: string; // filename?
-	content?: string;
+	assetFile?: string // filename?
+	content?: string
 
 	// card output
-	frontUrl?: string;
-	backUrl?: string;
-	frontFile?: string;
-	backFile?: string;
-	frontTop?: number; // pixels
-	backTop?: number; // pixels
-	frontLeft?: number; //pixels
-	backLeft?: number; //pixels
-	frontWidth?: number; // pixels
-	backWidth?: number; // pixels
-	frontHeight?: number; // pixels
-	backHeight?: number; // pixels
+	frontUrl?: string
+	backUrl?: string
+	frontFile?: string
+	backFile?: string
+	frontTop?: number // pixels
+	backTop?: number // pixels
+	frontLeft?: number //pixels
+	backLeft?: number //pixels
+	frontWidth?: number // pixels
+	backWidth?: number // pixels
+	frontHeight?: number // pixels
+	backHeight?: number // pixels
 }
 
 // deck build info - to be refined
 export interface DeckBuild {
-	//not required? files?: FileInfo[];
-	builderId: string;
-	builderName: string;
-	config?: any; // TBD
-	lastBuilt?: string; // ISODate
-	status: DeckBuildStatus;
-	messages?: string[];
-	isDisabled: boolean;
+	//not required? files?: FileInfo[]
+	builderId: string
+	builderName: string
+	config?: any // TBD
+	lastBuilt?: string // ISODate
+	status: DeckBuildStatus
+	messages?: string[]
+	isDisabled: boolean
 }
 
 export enum DeckBuildStatus {
@@ -164,131 +190,131 @@ export enum DeckBuildStatus {
 }
 
 export interface FileInfo {
-	path: string;
-	mimeType: string;
-	length: number;
+	path: string
+	mimeType: string
+	length: number
 }
 
 // output - to be refined
 export interface DeckOutput {
-	//not required? files: FileInfo[];
-	isUserModified: boolean;
-	atlases?: AtlasInfo[];
+	//not required? files: FileInfo[]
+	isUserModified: boolean
+	atlases?: AtlasInfo[]
 }
 
 // atlas info - like unity DeckInfo
 export interface AtlasInfo {
-	atlasURLs: string[];
-	countX: number[];
-	countY: number[];
-	cardCount: number;
-	cardInfo: string[];
-	builderId?: string;
+	atlasURLs: string[]
+	countX: number[]
+	countY: number[]
+	cardCount: number
+	cardInfo: string[]
+	builderId?: string
 }
 
 // simple internal user account
 export interface User {
-	email: string;
-	password: string; // hashed...
-	disabled: boolean;
-	created: string;
+	email: string
+	password: string // hashed...
+	disabled: boolean
+	created: string
 }
 
 // session
 export interface Session {
-	_id: string; // mongo-style
-	name: string;
-	description?: string;
-	credits?: string;
-	owners: string[]; // User emails
-	stages: SessionStage[]; // just one for now...
-	currentStage: number; // index
-	created: string; // ISO date
-	lastModified: string; // ISO date
-	isPublic: boolean;
-	isTemplate: boolean;
-	isArchived: boolean;
-	sessionType: string; // enum-ish
-	players?: PlayerInfo[];
-	playerTemplates?: PlayerInfo[];
+	_id: string // mongo-style
+	name: string
+	description?: string
+	credits?: string
+	owners: string[] // User emails
+	stages: SessionStage[] // just one for now...
+	currentStage: number // index
+	created: string // ISO date
+	lastModified: string // ISO date
+	isPublic: boolean
+	isTemplate: boolean
+	isArchived: boolean
+	sessionType: string // enum-ish
+	players?: PlayerInfo[]
+	playerTemplates?: PlayerInfo[]
 // miro
-	miroId?: string;
-	miroUrl?: string;
-	miroClaimed?: string; // ISO date
-	miroIsDefault: boolean;
+	miroId?: string
+	miroUrl?: string
+	miroClaimed?: string // ISO date
+	miroIsDefault: boolean
 }
 
 // in Session, a stage plan
 export interface SessionStage {
-	decks: SessionDeck[];
+	decks: SessionDeck[]
 }
 
 // in SessionStage, a deck to use
 export interface SessionDeck {
-	deckId: string; // (FK,
-	revision: number; // FK)
-	deckName: string;
-	deckCredits?: string;
+	deckId: string // (FK,
+	revision: number // FK)
+	deckName: string
+	deckCredits?: string
 }
 
 // in Session, a Player
 export interface PlayerInfo {
-	screenName?: string;
-	role?: string;
+	screenName?: string
+	role?: string
 }
 
 // a scheduled session
 export interface ScheduledSession {
-	_id: string; // mongo-style
-	sessionId: string; // FK
-	sessionName: string;
-	sessionDecription?: string;
-	eventName?: string; // for this
-	eventDecription?: string;
-	created: string; // ISO date
-	lastModified: string; // ISO date
-	initialStage?: number;
-	startTime: string; // ISO date
-	durationMinutes: number;
-	maxSeats: number;
-	isCancelled: boolean;
+	_id: string // mongo-style
+	sessionId: string // FK
+	sessionName: string
+	sessionDecription?: string
+	eventName?: string // for this
+	eventDecription?: string
+	created: string // ISO date
+	lastModified: string // ISO date
+	initialStage?: number
+	startTime: string // ISO date
+	durationMinutes: number
+	maxSeats: number
+	isCancelled: boolean
 }
 
 // snapshot
 export interface SessionSnapshotSummary {
-	_id: string; // mongo-style
-	sessionId: string; // FK
-	sessionName: string;
-	sessionDescription?: string;
-	sessionCredits?: string;
-	sessionType: string;
-	originallyCreated: string; // ISO date
-	snapshotDescription?: string;
+	_id: string // mongo-style
+	sessionId: string // FK
+	sessionName: string
+	sessionDescription?: string
+	sessionCredits?: string
+	sessionType: string
+	originallyCreated: string // ISO date
+	snapshotDescription?: string
 }
 
 export interface SessionSnapshot extends SessionSnapshotSummary {
-	owners: string[];
-	created: string; // ISO date
-	sessionStage?: number;
-	isPublic: boolean;
-	isNotForAnalysis: boolean;
+	owners: string[]
+	created: string // ISO date
+	sessionStage?: number
+	isPublic: boolean
+	isNotForAnalysis: boolean
 
-	legacyId?: string;
-	miroId?: string;
-	miroData?: string;
-	appv1Data?: string;
+	legacyId?: string
+	miroId?: string
+	miroData?: MiroData
+	appv1Data?: string
 }
 
 export interface Analysis {
-	_id: string;
-	name: string;
-	description?: string;
-	credits?: string;
-	created: string; // ISO date
-	lastModified: string; // ISO date
-	owners: string[];
-	isPublic: boolean;
-	snapshots: SessionSnapshotSummary[];
+	_id: string
+	name: string
+	description?: string
+	credits?: string
+	created: string // ISO date
+	lastModified: string // ISO date
+	owners: string[]
+	isPublic: boolean
+	snapshots: SessionSnapshotSummary[]
 }
 
 //EOF

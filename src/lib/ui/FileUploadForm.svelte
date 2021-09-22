@@ -39,7 +39,7 @@
 			return;
 		}
 		working = true;
-		const {deckId, revId, file} = $page.params;
+		const {deckId, revisionId, file} = $page.params;
 		let req: PostFilesRequest = {
 			files: []
 		}
@@ -53,7 +53,7 @@
 				content: content
 			});
 		}
-		const url = `${base}/api/user/decks/${deckId}/revisions/${revId}/files${file.length == 0 ? '' : '/' + file}`;
+		const url = `${base}/api/user/decks/${deckId}/${revisionId}/files${file.length == 0 ? '' : '/' + file}`;
 		//console.log(`upload to ${url}`);
 		const res = await fetch(url, {
 			method: 'POST',
@@ -85,7 +85,7 @@
 	<div class="message-success">{message}</div>
 {/if}
 
-<button class="button" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
+<button class="button float-right" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
 	<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>
 	Upload Files
 </button>

@@ -1,5 +1,6 @@
 <script type="ts">
 	import {base} from '$lib/paths';
+	import AppBar from "$lib/ui/AppBar.svelte";
 	export let page: string;
 </script>
 
@@ -13,6 +14,7 @@
     }
 </style>
 
+<AppBar/>
 <div class="w-full pt-2 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
 	<a href="{base}/user/decks" class="tab" class:bg-gray-400="{page==='decks'}">
 		Decks

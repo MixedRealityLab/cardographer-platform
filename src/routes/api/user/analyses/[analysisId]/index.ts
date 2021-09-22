@@ -5,6 +5,29 @@ import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
+export async function get(request: Request): Promise<EndpointOutput> {
+	const locals = request.locals as ServerLocals;
+	if (!locals.authenticated) {
+		if (debug) console.log(`locals`, locals);
+		return {status: 403}
+	}
+	const {analysisId} = request.params;
+	if (debug) console.log(`get analysis ${analysisId}`);
+	const db = await getDb();
+	// permission check
+	const analysis = await db.collection<Analysis>('Analyses').findOne({
+		_id: analysisId, owners: locals.email
+	})
+	if (!analysis) {
+		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`);
+		return {status: 404};
+	}
+	// project?
+	return {
+		body: analysis as any
+	}
+}
+
 export async function put(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {

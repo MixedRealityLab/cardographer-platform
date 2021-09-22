@@ -18,6 +18,6 @@
 
 {#if expanded}
 	<div transition:slide class="px-4">
-	<slot></slot>
+		<slot></slot>
 	</div>
 {/if}

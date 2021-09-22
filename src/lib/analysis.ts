@@ -19,14 +19,14 @@ interface CardUse {
 }
 
 export async function exportAnalysisAsCsv(analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard: boolean, includeDetail: boolean, boardNames: string[]): Promise<string> {
-	let rawdesigns: DesignInfo[] = await readDesigns(analysis);
-	// canonicalise card ids and filter boards
-	for (let design of rawdesigns) {
+	let rawDesigns: DesignInfo[] = await readDesigns(analysis);
+	// canonicalize card ids and filter boards
+	for (let design of rawDesigns) {
 		// filter boards
 		design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
 		for (let board of design.boards) {
-			for (let cardinfo of board.cards) {
-				let id = cardinfo.id;
+			for (let cardInfo of board.cards) {
+				let id = cardInfo.id;
 				// URL or file path?
 				let six = id.lastIndexOf('/');
 				if (six >= 0) {
@@ -37,18 +37,18 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 				if (dix >= 0) {
 					id = id.substring(0, dix);
 				}
-				if (cardinfo.id != id) {
-					if (debug) console.log(`canonical card ${id} from ${cardinfo.id}`);
-					cardinfo.id = id;
+				if (cardInfo.id != id) {
+					if (debug) console.log(`canonical card ${id} from ${cardInfo.id}`);
+					cardInfo.id = id;
 				}
 			}
 		}
 	}
 	// split by board?
-	let designs = rawdesigns.filter((d) => d.boards && d.boards.length > 0);
+	let designs = rawDesigns.filter((d) => d.boards && d.boards.length > 0);
 	if (splitByBoard) {
 		designs = [];
-		for (let design of rawdesigns) {
+		for (let design of rawDesigns) {
 			for (let bi in design.boards) {
 				let board = design.boards[bi];
 				let id = board.id ? `${design.id}:${board.id}` : design.id;
@@ -66,20 +66,20 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 	for (let di in designs) {
 		const design = designs[di];
 		for (let board of design.boards) {
-			for (let cardinfo of board.cards) {
-				let cardUse: CardUse = cardUses.find((cu) => cu.id == cardinfo.id);
+			for (let cardInfo of board.cards) {
+				let cardUse: CardUse = cardUses.find((cu) => cu.id == cardInfo.id);
 				if (!cardUse) {
 					//if (debug) console.log(`add cardUse ${cardinfo.id} (design ${design.id})`);
 					cardUse = {
-						id: cardinfo.id,
+						id: cardInfo.id,
 						use: [],
 					}
 					cardUses.push(cardUse);
 				}
 				if (cardUse.use[di]) {
-					cardUse.use[di].push(cardinfo);
+					cardUse.use[di].push(cardInfo);
 				} else {
-					cardUse.use[di] = [cardinfo];
+					cardUse.use[di] = [cardInfo];
 				}
 				//if (debug) console.log(`${cardUse.use[di].length} uses of card ${cardUse.id} in design ${design.id}`);
 			}

@@ -23,7 +23,7 @@
 			return {
 				props: {
 					revisions: revisions,
-					revision: revision
+					selectedRevision: revision
 				}
 			};
 		}
@@ -40,56 +40,97 @@
 </script>
 
 <script lang="ts">
+	import {goto} from "$app/navigation"
+	import {page, session} from "$app/stores"
+	import {PostUserRevisionResponse} from "$lib/apitypes"
+	import {CardDeckRevision} from "$lib/types"
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import type {CardDeckRevisionSummary} from '$lib/types'
-	import DeckTabs from "$lib/ui/DeckTabs.svelte";
+	import DeckTabs from "$lib/ui/DeckTabs.svelte"
 
 	export let revisions: CardDeckRevisionSummary[]
-	export let revision: CardDeckRevisionSummary
+	export let selectedRevision: CardDeckRevisionSummary
+
+	let working = false;
+	let message = '';
+	let error = '';
+
+	async function createNewRevision() {
+		message = error = '';
+		const token = $session.user?.token;
+		if (!token) {
+			alert("Sorry, you don't seem to be logged in");
+			return;
+		}
+		working = true;
+		// get latest value
+		const getResponse = await fetch(`${base}/api/user/decks/${selectedRevision.deckId}/${selectedRevision.revision}`)
+		if (!getResponse.ok) {
+			error = `Sorry, couldn't get the latest version of this revision (${getResponse.statusText})`;
+			working = false;
+			return;
+		}
+		const newRevision = await getResponse.json() as CardDeckRevision
+		const {deckId} = $page.params;
+		newRevision.revisionName = 'New revision';
+		newRevision.revisionDescription = `Based on revision ${selectedRevision.revision} of ${selectedRevision.deckName}`;
+		newRevision.slug = '';
+		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, {
+			method: 'POST',
+			headers: {
+				authorization: `Bearer ${token}`,
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify(newRevision)
+		});
+		working = false;
+		if (res.ok) {
+			selectedRevision.isCurrent = false;
+			const output = await res.json() as PostUserRevisionResponse;
+			message = 'OK';
+			// redirect
+			goto(`${base}/user/decks/${deckId}/${output.revId}`);
+		} else {
+			error = `Sorry, there was a problem (${res.statusText})`;
+		}
+	}
+
 </script>
 
-<AppBar title="Cardographer" backpage="{base}/user/decks"/>
-<DeckTabs page="revisions" root="{base}/user/decks/{revision.deckId}/{revision.revision}"/>
-{#if revision}
-	<div class="w-full bg-gray-100 font-semibold px-4 py-1">{revision.deckName}
-		<span class="text-gray-400">v{revision.revision} {revision.revisionName ? ' ' + revision.revisionName : ''}</span>
-	</div>
-{/if}
+<AppBar back="{base}/user/decks/{selectedRevision.deckId}/{selectedRevision.revision}"/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
 	{#each revisions as revision}
-		<a class="w-full rounded-md py-2 px-4 border border-grey-300"
+		<a class="listItem"
 		   href="{base}/user/decks/{revision.deckId}/{revision.revision}">
-			<div>{revision.deckName}
-				<span class="text-gray-400">v{revision.revision} {revision.revisionName ? ' ' + revision.revisionName : ''}</span>
+			<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
+			<div class="flex-col">
+				<div class:text-gray-500={revision.revision !== selectedRevision.revision}>{revision.deckName}
+					<span class="text-gray-400">v{revision.revision} <span class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+				</div>
+				<div class="flex flex-row gap-1">
+					{#if !revision.isUsable}
+						<div class="chip">Don't Use</div>
+					{/if}
+					{#if revision.isLocked}
+						<div class="chip">Locked</div>
+					{/if}
+					{#if revision.isPublic}
+						<div class="chip">Public</div>
+					{/if}
+					{#if revision.isTemplate}
+						<div class="chip">Template</div>
+					{/if}
+				</div>
+				{#if revision.revisionDescription}
+					<div class="text-sm font-light">{revision.revisionDescription}</div>
+				{/if}
 			</div>
-			<div class="flex flex-row gap-1">
-				{#if !revision.isUsable}
-					<div class="px-1 rounded-md bg-gray-200">Don't use</div>
-				{/if}
-				{#if revision.isLocked}
-					<div class="px-1 rounded-md bg-gray-200">Locked</div>
-				{/if}
-				{#if revision.isPublic}
-					<div class="px-1 rounded-md bg-gray-200">Public</div>
-				{/if}
-				{#if revision.isTemplate}
-					<div class="px-1 rounded-md bg-gray-200">Template</div>
-				{/if}
-			</div>
-			{#if revision.revisionDescription}
-				<div class="text-sm font-light">{revision.revisionDescription}</div>
-			{/if}
 		</a>
-
-		{#if revision.isCurrent && revisions.length > 1}
-			<p class="pt-4">Old revisions:</p>
-		{/if}
-
 	{/each}
 
 
-	<button class="button self-center m-2" href="{base}/user/sessions/new">
+	<button class="button self-center m-2" disabled={working} on:click={createNewRevision}>
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Revision
 	</button>
 </div>

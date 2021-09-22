@@ -1,6 +1,6 @@
 // card CSV utils
-import type {CardDeckRevision, CardInfo, CardPropertyDef} from '$lib/types';
-import {CardPropertyUse} from '$lib/types';
+import type {BoardInfo, CardDeckRevision, CardInfo, CardPropertyDef} from '$lib/types';
+import {BoardProperty, CardPropertyUse} from '$lib/types';
 import stringify from 'csv-stringify';
 
 const ROWTYPE_TITLE = 'title:';
@@ -9,6 +9,8 @@ const ROWTYPE_DEFAULT = 'default:';
 const ROWTYPE_CARD = 'card:';
 const ROWTYPE_EXPORT = 'export:';
 const ROWTYPE_DESCRIPTION = 'description:';
+const ROWTYPE_BOARD = 'board:';
+const ROWTYPE_REGION = 'region:';
 //const PREFIX_BACK = 'back:';
 
 const debug = true;
@@ -76,6 +78,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 				sortBy: sortBy,
 				description: description,
 			};
+			console.log(newProp)
 
 			if (addColumns) {
 				if (debug) console.log(`add column ${title}`, newProp);
@@ -175,64 +178,80 @@ function isTrue(value: string): boolean {
 
 }
 
+function getValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: string): string {
+	const colIndex = columns.indexOf(column)
+	if (colIndex < 0) {
+		return defaultValue
+	}
+	const value = values[colIndex]
+	if (!value) {
+		return defaultValue
+	} else {
+		return value
+	}
+}
+
+export function readBoard(cells: string[][]): BoardInfo {
+	if (cells.length < 1) {
+		throw new Error('CSV file is empty');
+	}
+	const headers = cells[0];
+	if (headers.length < 1) {
+		throw new Error('Headers missing');
+	}
+	const hasRowtype = headers[0] == ROWTYPE_TITLE
+	let columns: BoardProperty[] = [];
+	if (hasRowtype) {
+		columns.push(null);
+	}
+	for (let i = (hasRowtype ? 1 : 0); i < headers.length; i++) {
+		columns.push(guessBoardProperty(headers[i]))
+	}
+	let board: BoardInfo = {
+		name: "New Board",
+		regions: []
+	}
+
+	for (let i = 1; i < cells.length; i++) {
+		const values = cells[i];
+		if (values.length < 1 || (hasRowtype && values[0] != ROWTYPE_REGION && values[0] != ROWTYPE_BOARD))
+			continue;
+
+		if (hasRowtype && values[0] == ROWTYPE_BOARD) {
+			board.name = getValue(BoardProperty.Name, columns, values, "New Board")
+			board.description = getValue(BoardProperty.Description, columns, values, null)
+		} else {
+			board.regions.push({
+				description: getValue(BoardProperty.Description, columns, values, null),
+				name: getValue(BoardProperty.Name, columns, values, "Region " + (board.regions.length + 1)),
+				id: getValue(BoardProperty.Id, columns, values, `_${board.regions.length + 1}`),
+				width: parseFloat(getValue(BoardProperty.Width, columns, values, '0')),
+				x: parseFloat(getValue(BoardProperty.X, columns, values, '0')),
+				y: parseFloat(getValue(BoardProperty.Y, columns, values, '0')),
+				height: parseFloat(getValue(BoardProperty.Height, columns, values, '0')),
+				analyse: getValue(BoardProperty.Analyse, columns, values, 'y').toLowerCase() != 'n'
+			})
+		}
+	}
+	return board
+}
+
+function guessBoardProperty(name: string): BoardProperty {
+	const s = name.toLowerCase();
+	const use = Object.values(BoardProperty).find((use) => use.toLowerCase() == s)
+	if (use) {
+		return use
+	}
+	return BoardProperty.Name;
+}
+
 function guessUse(name: string): CardPropertyUse {
 	const s = name.toLowerCase();
-	if (CardPropertyUse.Id == s)
-		return CardPropertyUse.Id;
-	if (CardPropertyUse.Revision == s)
-		return CardPropertyUse.Revision;
-	if (CardPropertyUse.Link == s)
-		return CardPropertyUse.Link;
-	if (CardPropertyUse.Name == s)
-		return CardPropertyUse.Name;
-	if (CardPropertyUse.Description == s)
-		return CardPropertyUse.Description;
-	if (CardPropertyUse.Slug == s)
-		return CardPropertyUse.Slug;
-	if (CardPropertyUse.Credits == s)
-		return CardPropertyUse.Credits;
-	if (CardPropertyUse.Created == s)
-		return CardPropertyUse.Created;
-	if (CardPropertyUse.LastModified == s)
-		return CardPropertyUse.LastModified;
-	if (CardPropertyUse.Width == s)
-		return CardPropertyUse.Width;
-	if (CardPropertyUse.Height == s)
-		return CardPropertyUse.Height;
-	if (CardPropertyUse.SizeName == s)
-		return CardPropertyUse.SizeName;
-	if (CardPropertyUse.SortBy == s)
-		return CardPropertyUse.SortBy;
-	if (CardPropertyUse.Category == s)
-		return CardPropertyUse.Category;
-	if (CardPropertyUse.Subtype == s)
-		return CardPropertyUse.Subtype;
-	if (CardPropertyUse.Attribute == s)
-		return CardPropertyUse.Attribute;
-	if (CardPropertyUse.Back == s)
-		return CardPropertyUse.Back;
-	if (CardPropertyUse.AssetFile == s)
-		return CardPropertyUse.AssetFile;
-	if (CardPropertyUse.Content == s)
-		return CardPropertyUse.Content;
-	if (CardPropertyUse.FrontUrl == s)
-		return CardPropertyUse.FrontUrl;
-	if (CardPropertyUse.BackUrl == s)
-		return CardPropertyUse.BackUrl;
-	if (CardPropertyUse.FrontTop == s)
-		return CardPropertyUse.FrontTop;
-	if (CardPropertyUse.BackTop == s)
-		return CardPropertyUse.BackTop;
-	if (CardPropertyUse.FrontLeft == s)
-		return CardPropertyUse.FrontLeft;
-	if (CardPropertyUse.BackLeft == s)
-		return CardPropertyUse.BackLeft;
-	if (CardPropertyUse.FrontWidth == s)
-		return CardPropertyUse.FrontWidth;
-	if (CardPropertyUse.BackWidth == s)
-		return CardPropertyUse.BackWidth;
-	if (CardPropertyUse.BackHeight == s)
-		return CardPropertyUse.BackHeight;
+	const use = Object.values(CardPropertyUse).find((use) => use.toLowerCase() == s)
+	console.log(`${name} ==> ${use}`)
+	if (use) {
+		return use
+	}
 	// default to attribute
 	return CardPropertyUse.Attribute;
 }

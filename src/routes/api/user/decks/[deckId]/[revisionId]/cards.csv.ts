@@ -12,8 +12,8 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 403}
 	}
-	const {deckId, revId} = request.params;
-	if (debug) console.log(`get revision ${revId} for ${deckId}`);
+	const {deckId, revisionId} = request.params;
+	if (debug) console.log(`get revision ${revisionId} for ${deckId}`);
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
@@ -25,10 +25,10 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	}
 	// project to summary
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		deckId: deckId, revision: Number(revId)
+		deckId: deckId, revision: Number(revisionId)
 	})
 	if (!revision) {
-		if (debug) console.log(`revision ${revId} not found for deck ${deckId}`);
+		if (debug) console.log(`revision ${revisionId} not found for deck ${deckId}`);
 		return {status: 404};
 	}
 	const allColumns = request.query.has('allColumns');

@@ -49,37 +49,36 @@
 
 </script>
 
-<div class="px-2">
-
+<div class="p-4 max-w-md mx-auto">
 	<h1>{register ? 'Register' : 'Log in'}</h1>
 
 	<form on:submit|preventDefault={handleSubmit}>
-		<div class="grid grid-cols-1 gap-2">
-			<label class="block">
+		<div class="flex flex-col">
+			<label>
 				<span>Email</span>
-				<input class="mt-1 block w-full" required id="email" type="text" bind:value="{email}"/>
+				<input class="w-full" required id="email" type="text" bind:value="{email}"/>
 			</label>
-			<label class="block">
+			<label class="mt-2">
 				<span>Password</span>
-				<input class="mt-1 block w-full" required id="password" type="password" bind:value="{password}"/>
+				<input class="w-full" required id="password" type="password" bind:value="{password}"/>
 			</label>
 
-			<label class="block">
+			<label class="mt-3 flex items-center">
 				<input type="checkbox" class="form-checkbox" bind:checked="{register}">
-				<span class="ml-2">Register as a new user</span>
+				<span class="ml-3">Register as a new user</span>
 			</label>
 			{#if register}
-				<label class="block">
+				<label class="mt-2">
 					<span>Registration code</span>
-					<input class="mt-1 block w-full" required id="code" type="password" bind:value="{code}"/>
+					<input class="w-full" required id="code" type="password" bind:value="{code}"/>
 				</label>
 			{/if}
 
 			{#if error}
-				<div class="m-2 p-2 bg-red-300 rounded-lg text-center">{error}</div>
+				<div class="message-error">{error}</div>
 			{/if}
 
-			<input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit'
+			<input disabled={working} class="button self-center mt-4" type='submit'
 			       value='{register ? "Register" : "Log in"}'>
 		</div>
 	</form>

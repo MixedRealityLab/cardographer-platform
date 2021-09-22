@@ -1,125 +1,107 @@
 <script context="module" lang="ts">
-	import type {Load} from '@sveltejs/kit';
-	import { base } from '$lib/paths';
-	
-	export async function load({ page, fetch, session, context }): Load {
+	import {base} from '$lib/paths';
+	import type {Analysis} from "$lib/types";
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+
+	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const token = session.user?.token;
 		if (!token) {
 			console.log(`note, no user token`, session);
 			return {
-				props: { analysis: null, snapshots: [] } 
+				props: {analysis: null, snapshots: []}
 			}
 		}
-		const {analid} = page.params;
-		const url = `${base}/api/user/analyses/${analid}.json`;
-		const res = await fetch(url, {
-			headers: { authorization: `Bearer ${token}` }
+		const {analysisId} = page.params;
+		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, {
+			headers: {authorization: `Bearer ${token}`}
 		});
-		if (!res.ok) {
-			return {
-				status: res.status,
-				error: new Error(`Could not load ${url}`)
-			}
-		}
-		let analysis = await res.json();
-		const url2 = `${base}/api/user/snapshots.json`;
-		const res2 = await fetch(url2, {
-			headers: { authorization: `Bearer ${token}` }
-		});
-		if (res2.ok) {
-			let svalues = await res2.json();
+		if (res.ok) {
 			return {
 				props: {
-					analysis: analysis,
-					snapshots: svalues.values
+					analysis: await res.json() as Analysis
 				}
-			};
+			}
 		}
 
 		return {
-			status: res2.status,
-			error: new Error(`Could not load ${url2}`)
+			status: res.status,
+			error: new Error(`Could not load ${res.url}`)
 		};
 	}
 </script>
 
 <script lang="ts">
-import AppBar from '$lib/ui/AppBar.svelte';
-import UserTabs from '$lib/ui/UserTabs.svelte';
-import type {Analysis, SessionSnapshot} from '$lib/types.ts';
-import { page, session } from '$app/stores';
-import AnalysisEditForm from '$lib/ui/AnalysisEditForm.svelte';
-import AnalysisSnapshotsForm from '$lib/ui/AnalysisSnapshotsForm.svelte';
-import AnalysisExportForm from '$lib/ui/AnalysisExportForm.svelte';
-import { onMount } from 'svelte';
+	import {page, session} from '$app/stores'
+	import type {Analysis} from '$lib/types.ts'
+	import AnalysisTabs from "$lib/ui/AnalysisTabs.svelte"
 
-export let analysis : Analysis;
-export let snapshots : SessionSnapshot[];
-let showform = false;
-let showtesting = false;
-let showsnapshots = false;
-let showexport = false;
+	export let analysis: Analysis
+	let working = false
+	let error = ''
+	let message = ''
 
-function toggleShowform() {
-	showform = !showform;
-}
-function toggleShowtesting() {
-	showtesting = !showtesting;
-}
-function toggleShowsnapshots() {
-	showsnapshots = !showsnapshots;
-}
-function toggleShowexport() {
-	showexport = !showexport;
-}
+	// submit deck edit form
+	async function handleSubmit() {
+		console.log(`submit`, analysis);
+		message = '';
+		error = '';
 
-onMount(() => { console.log(`onMount analysis`); });
+		const token = $session.user?.token;
+		if (!token) {
+			error = "Sorry, you don't seem to be logged in";
+			return;
+		}
+		working = true;
+
+		const {analysisId} = $page.params;
+		const url = `${base}/api/user/analyses/${analysisId}`;
+		const res = await fetch(url, {
+			method: 'PUT',
+			headers: {
+				authorization: `Bearer ${token}`,
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify(analysis)
+		});
+		working = false;
+		if (res.ok) {
+			message = "Updated";
+		} else {
+			error = `Sorry, there was a problem (${res.statusText})`;
+		}
+	}
 </script>
-<AppBar title="Cardographer" backpage="{base}/user/analyses"/>
-<!-- <UserTabs/> -->
 
-{#if analysis}
-<div class="px-2 py-2">
-	<div>{analysis.name}</div>
+<AnalysisTabs page="details" analysis="{analysis}"/>
+<div class="p-6">
+	<form class="flex flex-col text-sm" on:submit|preventDefault={handleSubmit}>
+		<label>
+			<span class="font-light">Analysis name</span>
+			<input class="mt-1 block w-full" required type="text" bind:value="{analysis.name}"/>
+		</label>
+		<label class="mt-2">
+			<span class="font-light">Description</span>
+			<textarea rows="3" class="mt-1 block w-full" type="text" bind:value="{analysis.description}"></textarea>
+		</label>
+		<label class="mt-2">
+			<span class="font-light">Credits</span>
+			<input class="mt-1 block w-full" type="text" bind:value="{analysis.credits}"/>
+		</label>
+		<div class="my-4">
+			<label class="flex justify-center">
+				<input type="checkbox" class="form-checkbox" bind:checked="{analysis.isPublic}">
+				<span class="ml-2">Public</span>
+			</label>
+		</div>
+
+		{#if error}
+			<div class="message-error">{error}</div>
+		{/if}
+		{#if message}
+			<div class="message-success">{message}</div>
+		{/if}
+
+		<input disabled={working} class="button mt-1" class:text-gray-400="{working}"
+		       type='submit' value='Save'>
+	</form>
 </div>
-{/if}
-
-<div class="px-2 py-2 border">
- <div class="w-full" on:click="{toggleShowform}">
-  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showform}-{:else}+{/if}</span></div>
-  <span>Analysis</span>
- </div>
-
-<div class:hidden="{!showform}" class="px-2 py-2">
-
-<AnalysisEditForm analysis="{analysis}"/>
-
-</div><!-- hideable form -->
-</div><!-- deck edit section -->
-
-<div class="px-2 py-2 border">
- <div class="w-full" on:click="{toggleShowsnapshots}">
-  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showsnapshots}-{:else}+{/if}</span></div>
-  <span>Snapshots</span>
- </div>
-
-<div class:hidden="{!showsnapshots}" class="px-2 py-2">
-
-<AnalysisSnapshotsForm analysis="{analysis}" snapshots="{snapshots}"/>
-
-</div><!-- hideable form -->
-</div><!-- deck edit section -->
-
-<div class="px-2 py-2 border">
- <div class="w-full" on:click="{toggleShowexport}">
-  <div class="mx-1 px-2 bg-gray-200 float-right border rounded-full justify-center object-center"><span>{#if showexport}-{:else}+{/if}</span></div>
-  <span>Export</span>
- </div>
-
-<div class:hidden="{!showexport}" class="px-2 py-2">
-
-<AnalysisExportForm analysis="{analysis}"/>
-
-</div><!-- hideable form -->
-</div><!-- deck edit section -->
-

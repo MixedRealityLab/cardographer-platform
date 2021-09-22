@@ -13,9 +13,11 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 403}
 	}
-	let ss = request.body;
-	if (!Array.isArray(ss)) {
-		ss = [ss];
+	let ss: any[];
+	if (!Array.isArray(request.body)) {
+		ss = [request.body];
+	} else {
+		ss = request.body
 	}
 	//if (debug) console.log(`add session`, copyreq);
 	const db = await getDb();
@@ -34,7 +36,8 @@ export async function post(request: Request): Promise<EndpointOutput> {
 				legacyId: s._id, owners: locals.email
 			})
 		if (existing) {
-			console.log(`legacy session ${s._id} already imported by ${locals.email}`);
+			message = message + `Session ${s.title || s.name || s.id} already imported\n`
+			console.log(`Session ${s._id} already imported by ${locals.email}`);
 			continue;
 		}
 		// guess its type
@@ -43,7 +46,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 			console.log(`no sessionType guess for import ${s._id}`);
 			continue;
 		}
-		console.log(`sessionType: ${sessionType}`);
+		console.log(`SessionType: ${sessionType}`);
 		const client = getClient(sessionType);
 		// session already imported?
 		let squery = client.getExistingSessionQuery(s) as Filter<Session>
@@ -59,9 +62,9 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		}
 		// new session
 		if (!session) {
-			session = makeSession(sessionType, s);
+			session = client.makeSession(s);
 		}
-		let snapshot = makeSessionSnapshot(sessionType, s);
+		let snapshot = client.makeSessionSnapshot(s);
 		if (!session || !snapshot) {
 			console.log(`Problem making session/snapshot for import ${s._id} (${sessionType})`);
 			continue;
@@ -87,12 +90,16 @@ export async function post(request: Request): Promise<EndpointOutput> {
 			console.log(`Error adding new imported snapshot`);
 			continue;
 		}
-		message = message + `Imported ${sessionType} session ${s._id} as ${addSession ? 'new' : 'existing'} session ${sessionId}\n`;
+		message = message + `Imported ${addSession ? 'new' : 'existing'} ${sessionType} session ${s.title || s.name || s._id}\n`;
 	}
 	if (debug) console.log(message);
+	const sessions = await db.collection<Session>('Sessions').find({
+		owners: locals.email
+	}).toArray()
 	return {
 		body: {
-			message: message
+			message: message,
+			sessions: sessions as any[]
 		}
 	}
 }

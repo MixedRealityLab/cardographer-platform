@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths';
-	import type {Load} from '@sveltejs/kit';
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
-	export async function load({page, fetch, session, context}): Load {
+	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
 		const token = session.user?.token;
 		if (!token) {
 			console.log(`note, no user token`, session);
@@ -29,9 +29,9 @@
 	}
 
 	function compareSessions(a, b) {
-		const aname = `${a.name} ${a.owners[0]} ${a.created}`;
-		const bname = `${b.name} ${b.owners[0]} ${b.created}`;
-		return String(aname).localeCompare(bname);
+		const aName = `${a.name} ${a.owners[0]} ${a.created}`;
+		const bName = `${b.name} ${b.owners[0]} ${b.created}`;
+		return String(aName).localeCompare(bName);
 	}
 </script>
 
@@ -90,7 +90,7 @@
 	}
 </script>
 
-<AppBar title="Cardographer" backpage="{`${base}/user/sessions`}"/>
+<AppBar back="{base}/user/sessions"/>
 
 <div class="px-2">
 
@@ -119,7 +119,7 @@
 							<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 						{/if}
 
-						<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2"
+						<input disabled={working} class="button mt-2"
 						       class:text-gray-400="{working}" type='submit' value='Copy as New Session'>
 					</div>
 				</form>

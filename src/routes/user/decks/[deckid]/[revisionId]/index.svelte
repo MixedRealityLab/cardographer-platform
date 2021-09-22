@@ -11,7 +11,7 @@
 			}
 		}
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions/${revisionId}.json`, {
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, {
 			headers: {authorization: `Bearer ${token}`}
 		});
 
@@ -32,7 +32,6 @@
 
 <script lang="ts">
 	import type {CardDeckRevision} from "$lib/types";
-	import AppBar from "$lib/ui/AppBar.svelte";
 	import DeckTabs from "$lib/ui/DeckTabs.svelte";
 	import {session} from "$app/stores";
 
@@ -55,7 +54,7 @@
 		}
 		working = true;
 
-		const url = `${base}/api/user/decks/${revision.deckId}/revisions/${revision.revision}`;
+		const url = `${base}/api/user/decks/${revision.deckId}/${revision.revision}`;
 		const res = await fetch(url, {
 			method: 'PUT',
 			headers: {
@@ -73,11 +72,7 @@
 	}
 </script>
 
-<AppBar title="Cardographer" backpage="{base}/user/decks"/>
-<DeckTabs page="details" root="{base}/user/decks/{revision.deckId}/{revision.revision}"/>
-<div class="w-full bg-gray-100 font-semibold px-4 py-1">{revision.deckName}
-	<span class="text-gray-400">v{revision.revision} {revision.revisionName ? ' ' + revision.revisionName : ''}</span>
-</div>
+<DeckTabs page="details" revision="{revision}"/>
 
 <form class="p-4 flex flex-col" on:submit|preventDefault={handleSubmit}>
 	<label class="">

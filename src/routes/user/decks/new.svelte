@@ -63,7 +63,7 @@
 			message = "Created";
 			const info = await postResult.json() as PostUserDecksResponse;
 			// redirect
-			goto(`decks/${info.deckId}/revisions/${info.revId}`);
+			goto(`${base}/user/decks/${info.deckId}/${info.revId}`);
 			console.log(`created`, info);
 		} else {
 			error = `Sorry, there was a problem (${postResult.statusText})`;
@@ -119,10 +119,10 @@
 	}
 </script>
 
-<AppBar title="Cardographer" backpage="{`${base}/user/decks`}"/>
+<AppBar back="{base}/user/decks"/>
 <div class="w-full bg-gray-100 font-semibold px-4 py-1">Create Deck</div>
 <div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium p-4">
-	<div on:click="{() => createBlank()}" class="w-full rounded-md py-1 px-2 border border-grey-300"
+	<div on:click="{() => createBlank()}" class="listItem flex-col"
 	     class:cursor-pointer={!working}>
 		<div class="flex flex-row gap-1">
 			<div>Create Blank Deck</div>
@@ -131,7 +131,7 @@
 
 	{#each revisions as revision}
 		<div on:click="{() => createCopy(revision)}"
-		     class="w-full rounded-md py-1 px-2 border border-grey-300" class:cursor-pointer={!working}>
+		     class="listItem flex-col" class:cursor-pointer={!working}>
 			<div class="flex flex-row gap-1">
 				<div>Create Copy of {revision.deckName}
 					({revision.revisionName ? revision.revisionName : revision.revision})

@@ -75,11 +75,11 @@ export class MiroClient extends Client {
 	makeSession(d: any): Session {
 		const now = new Date().toISOString();
 		const data = d as MiroData;
-		let session: Session = {
+		return {
 			_id: '',
 			name: data.title,
-			description: data.description,
-			credits: data.owners && data.owners.length > 0 ? data.owners[0].name : '',
+			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
+			credits: data.owner && data.owner.name ? data.owner.name : '',
 			owners: [],
 			stages: [],
 			currentStage: 0,
@@ -89,22 +89,22 @@ export class MiroClient extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'miro',
-		};
-		return session;
+			miroIsDefault: true
+		}
 	}
 
 	makeSessionSnapshot(d: any): SessionSnapshot {
 		const data = d as MiroData;
 		const now = new Date().toISOString();
-		let snapshot: SessionSnapshot = {
+		return {
 			_id: '',
 			sessionId: '',
 			sessionName: data.title,
-			sessionDescription: data.description,
-			sessionCredits: data.owners && data.owners.length > 0 ? data.owners[0].name : '',
+			sessionDescription: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
+			sessionCredits: data.owner && data.owner.name ? data.owner.name : '',
 			sessionType: 'miro',
 			originallyCreated: data.createdAt,
-			snapshotDescription: `Imported from legacy data ${data._id}, miro board ${data.id}`,
+			snapshotDescription: '',
 			owners: [],
 			created: now,
 			isPublic: false,
@@ -112,7 +112,6 @@ export class MiroClient extends Client {
 			legacyId: data._id,
 			miroData: data,
 		};
-		return snapshot;
 	}
 
 	getExistingSessionQuery(d: any): any {

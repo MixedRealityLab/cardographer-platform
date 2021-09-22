@@ -13,14 +13,14 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 403}
 	}
-	const {analid} = request.params;
+	const {analysisId} = request.params;
 	const db = await getDb();
 	// permission check
 	const analysis = await db.collection<Analysis>('Analyses').findOne({
-		_id: analid, owners: locals.email
+		_id: analysisId, owners: locals.email
 	})
 	if (!analysis) {
-		if (debug) console.log(`analysis ${analid} not found for ${locals.email}`);
+		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`);
 		return {status: 404};
 	}
 	let exportType = AnalysisExportTypes.CARD_USE;
@@ -34,8 +34,16 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		boardNames = request.query.get('boards').split(',').map((n) => n.trim());
 	}
 	const csv = await exportAnalysisAsCsv(analysis, exportType, splitByBoard, includeDetail, boardNames);
+	let typeName = "Card Use"
+	if(exportType == AnalysisExportTypes.CARD_ADJACENCY) {
+		typeName = "Card Adhacency"
+	}
+	const name = analysis.name + " " + typeName + ".csv"
 	return {
-		headers: {'content-type': 'text/csv; charset=utf-8'},
+		headers: {
+			'Content-Type': 'text/csv; charset=utf-8',
+			'Content-Disposition': 'attachment; filename="' + name +  '"'
+		},
 		body: csv
 	}
 }

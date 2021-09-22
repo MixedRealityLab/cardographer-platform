@@ -10,7 +10,7 @@
 				props: {decks: []}
 			}
 		}
-		const url = `${base}/api/user/sessions.json`;
+		const url = `${base}/api/user/sessions`;
 		const res = await fetch(url, {
 			headers: {authorization: `Bearer ${token}`}
 		});
@@ -38,37 +38,78 @@
 </script>
 
 <script lang="ts">
-	import AppBar from '$lib/ui/AppBar.svelte';
-	import UserTabs from '$lib/ui/UserTabs.svelte';
-	import type {Session} from '$lib/types.ts';
+	import UserTabs from '$lib/ui/UserTabs.svelte'
+	import {session} from '$app/stores';
+	import type {Session} from '$lib/types.ts'
 
-	export let sessions: Session[];
-	let showArchived = false;
+	export let sessions: Session[]
+	let showArchived = false
+
+	let files: FileList
+	let fileInput: HTMLInputElement
+	let working = false
+	let error = ''
+	let message = ''
+
+	async function importSession() {
+		if (files.length == 0) {
+			console.log(`no file`)
+			return
+		}
+		error = message = '';
+		const token = $session.user?.token;
+		if (!token) {
+			error = "Sorry, you don't seem to be logged in";
+			return;
+		}
+		working = true;
+		const promises: Promise<string>[] = []
+
+		Array.from(files).forEach((file) => {
+			promises.push(file.text())
+		})
+		const fileJsons = await Promise.all(promises)
+		const json = '[' + fileJsons.join(',') + ']'
+		const res = await fetch(`${base}/api/user/sessions/import`, {
+			method: 'POST',
+			headers: {
+				authorization: `Bearer ${token}`,
+				'content-type': 'application/json'
+			},
+			body: json
+		});
+		working = false
+		if (res.ok) {
+			const info = await res.json();
+			message = info.message;
+			if(info.sessions) {
+				sessions = info.sessions
+			}
+			// redirect
+			//goto(`sessions/${info.sessid}`);
+			console.log(`imported`, info);
+		} else {
+			error = `Sorry, there was a problem (${res.statusText})`;
+		}
+	}
 </script>
 
-<AppBar title="Cardographer" backpage=""/>
 <UserTabs page="sessions"/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
-	<div><span class="">{sessions.length} sessions:</span>
-		<label class="inline-flex ml-6 py-1">
-			<input type="checkbox" class="py-1 form-checkbox" bind:checked="{showArchived}">
-			<span class="ml-2">Archived</span>
-		</label>
-	</div>
 	{#each sessions as session}
 		{#if showArchived === session.isArchived}
-			<a class="w-full rounded-md py-1 px-2 border border-grey-300" href="sessions/{session._id}">
+			<a class="listItem flex-col" href="sessions/{session._id}">
 				<div>{session.name}</div>
 				<div class="flex flex-row gap-1">
 					{#if session.isPublic}
-						<div class="px-1 rounded-md bg-gray-200">Public</div>
+						<div class="chip">Public</div>
 					{/if}
 					{#if session.isTemplate}
-						<div class="px-1 rounded-md bg-gray-200">Template</div>
+						<div class="chip">Template</div>
 					{/if}
 					{#if session.isArchived}
-						<div class="px-1 rounded-md bg-gray-200">Archived</div>
+						<div class="chip">Archived</div>
 					{/if}
 				</div>
 				<div class="text-sm font-light">{session.description}</div>
@@ -76,12 +117,27 @@
 		{/if}
 	{/each}
 
-	<div class="flex self-center justify-center">
+	{#if error}
+		<div class="mt-1 message-error whitespace-pre-line">{error}</div>
+	{/if}
+	{#if message}
+		<div class="mt-1 message-success whitespace-pre-line">{message}</div>
+	{/if}
+
+	<div class="flex self-center justify-center mt-4">
+		<label class="flex items-center ml-6 py-1">
+			<input type="checkbox" class="form-checkbox" bind:checked="{showArchived}">
+			<span class="ml-2">Show Archived Sessions</span>
+		</label>
+
 		<a class="button mx-2 self-center" href="{base}/user/sessions/new">
 			<img src="{base}/icons/add.svg" class="button-icon" alt=""/>New Session
 		</a>
-		<a class="button mx-2 self-center" href="{base}/user/sessions/import">
+
+		<input class="hidden" required id="file" type="file" multiple="multiple" bind:files accept=".json,application/json"
+		       bind:this={fileInput} on:change={importSession}/>
+		<button class="button mx-2 self-center" on:click={() => fileInput.click()}>
 			<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>Upload Sessions
-		</a>
+		</button>
 	</div>
 </div>

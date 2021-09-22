@@ -89,11 +89,17 @@ async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	}
 }
 
+function checkDirectoryExists(file) {
+	return fsPromises.stat(file)
+		.then((dir) => dir.isDirectory)
+		.catch(() => false)
+}
+
 export async function getFileInfo(deckId: string, revId: string, path: string): Promise<FileInfo[]> {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
-	fsPromises.mkdir(revPath, {
-		recursive: true
-	})
+	if (!checkDirectoryExists(revPath)) {
+		return []
+	}
 	const relPath = `${revPath}/${path}`;
 	const stats = await fsPromises.stat(relPath);
 	if (stats.isFile()) {
@@ -118,7 +124,11 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 }
 
 export async function writeFile(deckId: string, revId: string, path: string, name: string, base64: string) {
-	const relPath = `${FILE_PATH}/${deckId}/${revId}/${path}/${name}`;
+	const revPath = `${FILE_PATH}/${deckId}/${revId}`
+	await fsPromises.mkdir(revPath, {
+		recursive: true
+	})
+	const relPath = `${revPath}/${path}/${name}`;
 	const data = Buffer.from(base64, 'base64');
 	await fsPromises.writeFile(relPath, data);
 }

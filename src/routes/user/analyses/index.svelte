@@ -86,33 +86,28 @@
 
 </script>
 
-<AppBar title="Cardographer" backpage=""/>
 <UserTabs page="analyses"/>
 
-<div class="flex flex-col p-4">
-
-	<div class="w-full px-2 py-1"><span class="">{analyses.length} analyses:</span>
-	</div>
-	<div class="w-full grid grid-cols-1 gap-1 mb-4 text-sm font-medium py-2">
-		{#each analyses as analysis}
-			<a class="w-full rounded-md py-1 px-2 border border-grey-300" href="analyses/{analysis._id}">
-				<div>{analysis.name}</div>
-				<div class="flex flex-row gap-1">
-					{#if analysis.isPublic}
-						<div class="px-1 rounded-md bg-gray-200">Public</div>
-					{/if}
-				</div>
-				<div class="text-sm font-light">{analysis.description}</div>
-			</a>
-		{/each}
-	</div>
+<div class="flex flex-col p-4 w-full text-sm font-medium">
+	{#each analyses as analysis}
+		<a class="listItem flex-col" href="analyses/{analysis._id}">
+			<div>{analysis.name}</div>
+			<div class="flex flex-row gap-1">
+				{#if analysis.isPublic}
+					<div class="chip">Public</div>
+				{/if}
+			</div>
+			<div class="text-sm font-light">{analysis.description}</div>
+		</a>
+	{/each}
 
 	{#if error}
 		<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
 	{/if}
 
 	<button disabled={working} class:text-gray-400="{working}"
-	        class="button mt-1 self-center" on:click="{newAnalysis}">New Analysis
+	        class="button mt-4 self-center" on:click="{newAnalysis}">
+		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Analysis
 	</button>
 
 </div>

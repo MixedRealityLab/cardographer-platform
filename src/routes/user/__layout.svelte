@@ -1,5 +1,6 @@
 <script type="ts">
 	import {session} from '$app/stores';
+	import AppBar from "$lib/ui/AppBar.svelte";
 	import LoginForm from '$lib/ui/LoginForm.svelte';
 </script>
 
@@ -11,9 +12,7 @@
 	{#if $session.user?.authenticated}
 		<slot></slot>
 	{:else}
-		<div class="py-2">
-			<div class="m-2 p-2 bg-red-300 rounded-lg text-center">You need to log in</div>
-		</div>
+		<AppBar/>
 
 		<LoginForm/>
 	{/if}

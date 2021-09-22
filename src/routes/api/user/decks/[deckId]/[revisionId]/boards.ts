@@ -1,5 +1,5 @@
 import type {PutCardsRequest} from '$lib/apitypes';
-import {readCards} from '$lib/csvutils';
+import {readBoard} from '$lib/csvutils';
 import {getDb} from '$lib/db';
 import type {ServerLocals} from '$lib/systemtypes';
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
@@ -19,26 +19,26 @@ export async function put(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 403}
 	}
-	const {deckId, revId} = request.params;
+	const {deckId, revisionId} = request.params;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
 		_id: deckId, owners: locals.email
 	})
 	if (!deck) {
-		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
+		if (debug) console.log(`Deck ${deckId} not found for ${locals.email}`);
 		return {status: 404};
 	}
 	// current revision
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		deckId: deckId, revision: Number(revId)
+		deckId: deckId, revision: Number(revisionId)
 	})
 	if (!revision) {
-		if (debug) console.log(`deck ${deckId} revision ${revId} not found`);
+		if (debug) console.log(`Deck ${deckId} revision ${revisionId} not found`);
 		return {status: 404};
 	}
 	// parse CSV file
-	const cells: string[][] = await new Promise((resolve, reject) => {
+	const cells: string[][] = await new Promise((resolve) => {
 		parse(req.csvFile, {bom: true, columns: false, trim: true},
 			(err, output) => {
 				if (err) {
@@ -49,30 +49,26 @@ export async function put(request: Request): Promise<EndpointOutput> {
 				resolve(output);
 			});
 	});
-	const addColumns = req.addColumns;
-	// process update
-	const newRevision = readCards(revision, cells, addColumns);
-	// update revision
-	const now = new Date().toISOString();
+	const board = readBoard(cells)
+	revision.boards.push(board)
+	revision.lastModified = new Date().toISOString()
 	const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').updateOne({
-		deckId: deckId, revision: Number(revId)
+		deckId: deckId, revision: Number(revisionId)
 	}, {
 		$set: {
 			// project changes
-			lastModified: now,
-			cardCount: newRevision.cards.length,
-			defaults: newRevision.defaults,
-			back: newRevision.back,
-			cards: newRevision.cards,
-			propertyDefs: newRevision.propertyDefs,
+			lastModified: revision.lastModified,
+			boards: revision.boards
 		}
 	});
 	if (!upd.matchedCount) {
-		if (debug) console.log(`revision ${revId} not matched for deck ${deckId}`, upd);
+		if (debug) console.log(`revision ${revisionId} not matched for deck ${deckId}`, upd);
 		return {status: 404};
 	}
 	return {
-		body: {}
+		body: {
+			revision: revision as any
+		}
 	}
 }
   
