@@ -43,6 +43,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	const hash = await hashPassword(login.password);
 	if (login.register) {
 		const user: User = {
+			name: login.name,
 			email: login.email,
 			password: hash,
 			disabled: false,

@@ -1,19 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
+	import {getAuthHeader} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {revisions: []}
-			}
-		}
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, getAuthHeader(session));
 
 		if (res.ok) {
 			return {
@@ -26,13 +18,14 @@
 		return {
 			status: res.status,
 			error: new Error(`Could not load ${res.url}`)
-		};
+		}
 	}
 </script>
 
 <script lang="ts">
 	import type {CardDeckRevision} from "$lib/types"
-	import DeckTabs from "$lib/ui/DeckTabs.svelte"
+	import UploadButton from "$lib/ui/UploadButton.svelte";
+	import DeckTabs from "./_DeckTabs.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
 	import {page, session} from '$app/stores'
@@ -43,12 +36,11 @@
 	let working = false
 	let error = ''
 	let message = ''
-	let files: FileList
 	let addUnknown = false
-	let fileInput: HTMLInputElement
 
 	// submit form
-	async function handleSubmit() {
+	async function upload(event: CustomEvent<FileList>) {
+		const files = event.detail
 		if (files.length == 0) {
 			console.log(`no file`);
 			return;
@@ -71,7 +63,6 @@
 			csvFile: csvdata
 		}
 		// reset
-		fileInput.value = '';
 		const url = `${base}/api/user/decks/${deckId}/${revisionId}/boards`;
 		const res = await fetch(url, {
 			method: 'PUT',
@@ -89,14 +80,9 @@
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}
 	}
-
-	async function startUpload(unknownColumns: boolean) {
-		addUnknown = unknownColumns
-		fileInput.click()
-	}
 </script>
 
-<DeckTabs page="boards" revision="{revision}"/>
+<DeckTabs revision="{revision}"/>
 
 <div class="p-4">
 	{#each revision.boards as board}
@@ -118,9 +104,6 @@
 
 	<div class="flex justify-center">
 		<div class="flex flex-col m-3">
-			<input name="files" class="mt-1 block w-full hidden" id="file" type="file" bind:files
-			       accept=".csv,text/csv"
-			       bind:this={fileInput} on:change={handleSubmit}/>
 			{#if error}
 				<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
 			{/if}
@@ -128,9 +111,9 @@
 				<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 			{/if}
 
-			<button class="button" on:click={() => startUpload(false)}>
+			<UploadButton class="button" on:upload={upload} types=".csv,text/csv">
 				<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
-			</button>
+			</UploadButton>
 		</div>
 	</div>
 </div>

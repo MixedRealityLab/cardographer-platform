@@ -4,10 +4,6 @@
 	import LoginForm from '$lib/ui/LoginForm.svelte';
 </script>
 
-<svelte:head>
-	<title>Cardographer</title>
-</svelte:head>
-
 <div class="max-w-screen-md mx-auto bg-white min-h-screen">
 	{#if $session.user?.authenticated}
 		<slot></slot>

@@ -1,8 +1,6 @@
 // cardographer types - see datamodel.md
-
 // deck summary caches latest revision info and adds only owners
 // i.e. RBAC for all revisions in deck
-import type {MiroData} from "$lib/clients/miro";
 
 export interface CardDeckSummary {
 	_id: string
@@ -189,11 +187,11 @@ export enum DeckBuildStatus {
 	Built = "built"
 }
 
-export interface FileInfo {
-	path: string
-	mimeType: string
-	length: number
-}
+// export interface FileInfo {
+// 	path: string
+// 	mimeType: string
+// 	length: number
+// }
 
 // output - to be refined
 export interface DeckOutput {
@@ -204,6 +202,7 @@ export interface DeckOutput {
 
 // atlas info - like unity DeckInfo
 export interface AtlasInfo {
+	name: string
 	atlasURLs: string[]
 	countX: number[]
 	countY: number[]
@@ -214,6 +213,7 @@ export interface AtlasInfo {
 
 // simple internal user account
 export interface User {
+	name: string
 	email: string
 	password: string // hashed...
 	disabled: boolean
@@ -238,10 +238,10 @@ export interface Session {
 	players?: PlayerInfo[]
 	playerTemplates?: PlayerInfo[]
 // miro
-	miroId?: string
-	miroUrl?: string
-	miroClaimed?: string // ISO date
-	miroIsDefault: boolean
+	//miroId?: string
+	//miroUrl?: string
+	//miroClaimed?: string // ISO date
+	//miroIsDefault: boolean
 }
 
 // in Session, a stage plan
@@ -301,8 +301,7 @@ export interface SessionSnapshot extends SessionSnapshotSummary {
 
 	legacyId?: string
 	miroId?: string
-	miroData?: MiroData
-	appv1Data?: string
+	data?: any
 }
 
 export interface Analysis {

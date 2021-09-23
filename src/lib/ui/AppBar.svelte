@@ -13,3 +13,7 @@
 	{/if}
 	<div class="px-2 py-1">{title}</div>
 </div>
+<div class="w-full pt-2 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
+	<slot></slot>
+</div>
+

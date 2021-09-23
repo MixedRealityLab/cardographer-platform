@@ -38,7 +38,7 @@
 </script>
 
 <script lang="ts">
-	import AnalysisTabs from "$lib/ui/AnalysisTabs.svelte";
+	import AnalysisTabs from "./_AnalysisTabs.svelte";
 	import type {Analysis, SessionSnapshot} from '$lib/types.ts';
 	import AnalysisSnapshotsForm from '$lib/ui/AnalysisSnapshotsForm.svelte';
 

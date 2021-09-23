@@ -36,10 +36,8 @@ function fileTimeToDate(fileTime) {
 
 export class Appv1 extends Client {
 	acceptsImport(data: any): boolean {
-		if (data.design_title && data.design_cards) {
-			return true;
-		}
-		return false;
+		return !!(data.design_title && data.design_cards);
+
 	}
 
 	sessionType(): string {
@@ -49,7 +47,7 @@ export class Appv1 extends Client {
 	makeSession(d: any): Session {
 		const now = new Date().toISOString();
 		const data = d as Appv1Data;
-		let session: Session = {
+		return {
 			_id: '', // todo
 			name: data.design_title,
 			description: data.design_description,
@@ -65,14 +63,13 @@ export class Appv1 extends Client {
 			sessionType: 'appv1',
 			// decks...
 		}
-		return session;
 	}
 
 	makeSessionSnapshot(d: any): SessionSnapshot {
 		const data = d as Appv1Data;
 		const now = new Date().toISOString();
 		let deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown';
-		let snapshot: SessionSnapshot = {
+		return {
 			_id: '',
 			sessionId: '',
 			sessionName: data.design_title,
@@ -86,9 +83,8 @@ export class Appv1 extends Client {
 			isPublic: false,
 			isNotForAnalysis: false,
 			legacyId: data._id,
-			appv1Data: data,
-		};
-		return snapshot;
+			data: data,
+		}
 	}
 
 	getSnapshotInfo(snapshot: SessionSnapshot): SnapshotInfo {
@@ -100,9 +96,9 @@ export class Appv1 extends Client {
 		let info: SnapshotInfo = {
 			boards: [board],
 		};
-		let data = snapshot.appv1Data;
+		let data = snapshot.data as Appv1Data;
 		if (!data) {
-			console.log(`no appv1Data found in snapshot ${snapshot._i}`);
+			console.log(`no appv1Data found in snapshot ${snapshot._id}`);
 			return info;
 
 		}

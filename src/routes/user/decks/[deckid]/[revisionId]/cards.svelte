@@ -1,20 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
+	import {getAuthHeader} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session)
-			return {
-				props: {revisions: []}
-			}
-		}
 		const {deckId, revisionId} = page.params
-		const url = `${base}/api/user/decks/${deckId}/${revisionId}`
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, getAuthHeader(session));
 
 		if (res.ok) {
 			return {
@@ -26,44 +17,38 @@
 
 		return {
 			status: res.status,
-			error: new Error(`Could not load ${url}`)
+			error: new Error(`Could not load ${res.url}`)
 		};
 	}
 </script>
 
 <script lang="ts">
 	import type {CardDeckRevision} from "$lib/types"
-	import DeckTabs from "$lib/ui/DeckTabs.svelte"
+	import DeckTabs from "./_DeckTabs.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
 	import {page, session} from '$app/stores'
+	import UploadButton from "$lib/ui/UploadButton.svelte";
 
 	export let revision: CardDeckRevision
 	let working = false
 	let error = ''
 	let message = ''
-	let files: FileList
-	let addUnknown = false
-	let fileInput: HTMLInputElement
+	let addUnknown = true
 
-	// submit form
-	async function handleSubmit() {
-		if (files.length == 0) {
-			console.log(`no file`);
-			return;
-		}
-		message = '';
-		error = '';
+	async function uploadCards(event: CustomEvent<FileList>) {
+		const files = event.detail
+		message = ''
+		error = ''
 
-		const token = $session.user?.token;
+		const token = $session.user?.token
 		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
+			error = "Sorry, you don't seem to be logged in"
 			return;
 		}
-		working = true;
-		const {deckId, revisionId} = $page.params;
-		const url = `${base}/api/user/decks/${deckId}/${revisionId}/cards`;
-		const res = await fetch(url, {
+		working = true
+		const {deckId, revisionId} = $page.params
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards`, {
 			method: 'PUT',
 			headers: {
 				authorization: `Bearer ${token}`,
@@ -73,25 +58,18 @@
 				addColumns: addUnknown,
 				csvFile: await files[0].text()
 			})
-		});
-		fileInput.value = '';
-		working = false;
+		})
+		working = false
 		if (res.ok) {
-			message = "Updated";
+			message = "Updated"
 			revision = await res.json()
 		} else {
-			error = `Sorry, there was a problem (${res.statusText})`;
+			error = `Sorry, there was a problem (${res.statusText})`
 		}
 	}
 
-	async function startUpload() {
-		fileInput.click()
-	}
-
-	let allColumns = false
-
 	//https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
-	function download(filename, text) {
+	function download(filename: string, text: string) {
 		const element = document.createElement('a');
 		element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
 		element.setAttribute('download', filename);
@@ -114,14 +92,7 @@
 		}
 		working = true;
 		const {deckId, revisionId} = $page.params;
-		let url = `${base}/api/user/decks/${deckId}/${revisionId}/cards.csv`;
-		let sep = '?';
-		if (allColumns) {
-			url = url + sep + 'allColumns';
-			sep = '&';
-			url = url + sep + 'withRowTypes';
-		}
-		const res = await fetch(url, {
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards.csv?allColumns&withRowTypes`, {
 			headers: {authorization: `Bearer ${token}`},
 		});
 		working = false;
@@ -136,14 +107,14 @@
 	}
 </script>
 
-<DeckTabs page="cards" revision="{revision}"/>
+<DeckTabs tab="cards" revision="{revision}"/>
 
 <div class="p-4">
 	{#each revision.cards as card}
 		<ExpandableSection>
 			<div slot="title">
 				<div class="flex items-center">
-					<img src="{base}/icons/card.svg" class="w-5 mr-4"/>
+					<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
 					<span>{card.name}</span>
 					<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 				</div>
@@ -171,30 +142,11 @@
 		<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 	{/if}
 	<div class="flex justify-center">
-		<div class="flex flex-col m-3">
-			<input name="files" class="mt-1 block w-full hidden" id="file" type="file" bind:files
-			       accept=".csv,text/csv"
-			       bind:this={fileInput} on:change={handleSubmit}/>
-
-
-			<button class="button" on:click={startUpload}>
-				<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
-			</button>
-			<label class="flex items-center mt-1">
-				<input type="checkbox" bind:checked="{addUnknown}">
-				<span class="ml-2 text-sm">Additional Columns</span>
-			</label>
-		</div>
-
-		<div class="flex flex-col m-3">
-			<button class="button" on:click={() => exportCsv(false)}>
-				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
-			</button>
-
-			<label class="flex items-center mt-1">
-				<input type="checkbox" bind:checked="{allColumns}">
-				<span class="ml-2 text-sm">Additional columns</span>
-			</label>
-		</div>
+		<UploadButton class="button m-3" on:upload={uploadCards} types=".csv,text/csv">
+			<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
+		</UploadButton>
+		<button class="button m-3" on:click={() => exportCsv(false)}>
+			<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
+		</button>
 	</div>
 </div>

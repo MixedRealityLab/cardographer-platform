@@ -38,7 +38,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 		return {status: 404};
 	}
 	// parse CSV file
-	const cells: string[][] = await new Promise((resolve, reject) => {
+	const cells: string[][] = await new Promise((resolve) => {
 		parse(req.csvFile, {bom: true, columns: false, trim: true},
 			(err, output) => {
 				if (err) {
@@ -63,7 +63,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 			lastModified: now,
 			cardCount: newRevision.cards.length,
 			defaults: newRevision.defaults,
-			back: newRevision.back,
+			//back: newRevision.back,
 			cards: newRevision.cards,
 			propertyDefs: newRevision.propertyDefs,
 		}

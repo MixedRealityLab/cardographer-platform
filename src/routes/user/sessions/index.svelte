@@ -38,6 +38,7 @@
 </script>
 
 <script lang="ts">
+	import UploadButton from "$lib/ui/UploadButton.svelte";
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import {session} from '$app/stores';
 	import type {Session} from '$lib/types.ts'
@@ -45,13 +46,12 @@
 	export let sessions: Session[]
 	let showArchived = false
 
-	let files: FileList
-	let fileInput: HTMLInputElement
 	let working = false
 	let error = ''
 	let message = ''
 
-	async function importSession() {
+	async function importSession(event: CustomEvent<FileList>) {
+		const files = event.detail
 		if (files.length == 0) {
 			console.log(`no file`)
 			return
@@ -82,7 +82,7 @@
 		if (res.ok) {
 			const info = await res.json();
 			message = info.message;
-			if(info.sessions) {
+			if (info.sessions) {
 				sessions = info.sessions
 			}
 			// redirect
@@ -125,19 +125,24 @@
 	{/if}
 
 	<div class="flex self-center justify-center mt-4">
-		<label class="flex items-center ml-6 py-1">
-			<input type="checkbox" class="form-checkbox" bind:checked="{showArchived}">
-			<span class="ml-2">Show Archived Sessions</span>
-		</label>
+		{#if sessions.some((session) => session.isArchived)}
+			<label class="flex items-center ml-6 py-1">
+				<input type="checkbox" class="hidden" bind:checked="{showArchived}">
+				{#if showArchived}
+					<span class="button mx-2">Hide Archived</span>
+				{:else}
+					<span class="button mx-2">Show Archived</span>
+				{/if}
+			</label>
+		{/if}
 
 		<a class="button mx-2 self-center" href="{base}/user/sessions/new">
 			<img src="{base}/icons/add.svg" class="button-icon" alt=""/>New Session
 		</a>
 
-		<input class="hidden" required id="file" type="file" multiple="multiple" bind:files accept=".json,application/json"
-		       bind:this={fileInput} on:change={importSession}/>
-		<button class="button mx-2 self-center" on:click={() => fileInput.click()}>
+		<UploadButton types=".json,application/json" class="button mx-2 self-center" multiple={true}
+		              on:upload={importSession}>
 			<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>Upload Sessions
-		</button>
+		</UploadButton>
 	</div>
 </div>

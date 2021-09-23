@@ -4,6 +4,7 @@ import type {ServerLocals} from '$lib/systemtypes';
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import {CardDeckRevisionSummary, DeckBuildStatus} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {Db} from "mongodb";
 
 const debug = true;
 
@@ -70,6 +71,32 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	// new revision...
 	deck.currentRevision++;
 	const revId = deck.currentRevision;
+	await cleanRevision(db, revision, deckId, revId)
+	// add
+	const insertResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision);
+	if (!insertResult.acknowledged) {
+		console.log(`Error adding revision for new deck ${deckId}`);
+		return {status: 500};
+	}
+	// update deck
+	const updateResult = await db.collection<CardDeckSummary>('CardDeckSummaries').updateOne({
+		_id: deckId
+	}, {
+		$set: {
+			currentRevision: deck.currentRevision
+		}
+	});
+	if (!updateResult.modifiedCount) {
+		console.log(`Error updating deck ${deck._id} on new revision`);
+	}
+	return {
+		body: {
+			revId: revId
+		}
+	}
+}
+
+export async function cleanRevision(db: Db, revision: CardDeckRevision, deckId: string, revId: number) {
 	const oldRevisionId = revision._id;
 	const now = new Date().toISOString();
 	// existing local revision?
@@ -95,28 +122,6 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		delete revision.build.lastBuilt;
 		revision.build.status = DeckBuildStatus.Unbuilt;
 		revision.build.messages = [];
-	}
-	// add
-	const insertResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision);
-	if (!insertResult.acknowledged) {
-		console.log(`Error adding revision for new deck ${deckId}`);
-		return {status: 500};
-	}
-	// update deck
-	const updateResult = await db.collection<CardDeckSummary>('CardDeckSummaries').updateOne({
-		_id: deckId
-	}, {
-		$set: {
-			currentRevision: deck.currentRevision
-		}
-	});
-	if (!updateResult.modifiedCount) {
-		console.log(`Error updating deck ${deck._id} on new revision`);
-	}
-	return {
-		body: {
-			revId: revId
-		}
 	}
 }
   

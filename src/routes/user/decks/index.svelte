@@ -1,20 +1,10 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
-	import type {LoadOutput} from '@sveltejs/kit'
+	import {getAuthHeader} from "$lib/ui/token"
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
-	export async function load({fetch, session}): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {decks: []}
-			}
-		}
-		const url = `${base}/api/user/decks`;
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`}
-		});
-
+	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+		const res = await fetch(`${base}/api/user/decks`, getAuthHeader(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -25,7 +15,7 @@
 
 		return {
 			status: res.status,
-			error: new Error(`Could not load ${url}`)
+			error: new Error(`Could not load ${res.url}`)
 		};
 	}
 

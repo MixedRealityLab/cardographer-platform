@@ -5,8 +5,6 @@
 <style>
 </style>
 
-<main>
-	<div class="container sm:container mx-auto">
-		<slot></slot>
-	</div>
+<main class="container sm:container mx-auto">
+	<slot></slot>
 </main>

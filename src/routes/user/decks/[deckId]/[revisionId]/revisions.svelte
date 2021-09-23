@@ -1,20 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths';
+	import {getAuthHeader} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {revisions: []}
-			}
-		}
 		const {deckId, revisionId} = page.params;
-		const url = `${base}/api/user/decks/${deckId}/revisions`;
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, getAuthHeader(session))
 
 		if (res.ok) {
 			const revisions = (await res.json()).revisions.sort(compareRevisions)
@@ -30,7 +21,7 @@
 
 		return {
 			status: res.status,
-			error: new Error(`Could not load ${url}`)
+			error: new Error(`Could not load ${res.url}`)
 		};
 	}
 
@@ -46,7 +37,6 @@
 	import {CardDeckRevision} from "$lib/types"
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import type {CardDeckRevisionSummary} from '$lib/types'
-	import DeckTabs from "$lib/ui/DeckTabs.svelte"
 
 	export let revisions: CardDeckRevisionSummary[]
 	export let selectedRevision: CardDeckRevisionSummary
@@ -106,7 +96,8 @@
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
 			<div class="flex-col">
 				<div class:text-gray-500={revision.revision !== selectedRevision.revision}>{revision.deckName}
-					<span class="text-gray-400">v{revision.revision} <span class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+					<span class="text-gray-400">v{revision.revision} <span
+							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
 				</div>
 				<div class="flex flex-row gap-1">
 					{#if !revision.isUsable}

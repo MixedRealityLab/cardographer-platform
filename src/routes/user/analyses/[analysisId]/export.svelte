@@ -34,7 +34,7 @@
 	import {page, session} from '$app/stores'
 	import {AnalysisExportTypes} from '$lib/analysistypes.ts'
 	import type {Analysis} from '$lib/types.ts'
-	import AnalysisTabs from "$lib/ui/AnalysisTabs.svelte"
+	import AnalysisTabs from "./_AnalysisTabs.svelte"
 
 	export let analysis: Analysis
 	let exportOption = [

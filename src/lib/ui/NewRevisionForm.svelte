@@ -46,7 +46,7 @@
 			const output = await res.json() as PostUserRevisionResponse;
 			message = 'OK';
 			// redirect
-			goto(`${output.revId}`);
+			await goto(`${output.revId}`);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}

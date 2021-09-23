@@ -1,19 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
+	import {getAuthHeader} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {revisions: []}
-			}
-		}
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, getAuthHeader(session))
 
 		if (res.ok) {
 			return {
@@ -32,7 +24,7 @@
 
 <script lang="ts">
 	import type {CardDeckRevision} from "$lib/types";
-	import DeckTabs from "$lib/ui/DeckTabs.svelte";
+	import DeckTabs from "./_DeckTabs.svelte";
 	import {session} from "$app/stores";
 
 	export let revision: CardDeckRevision
@@ -72,7 +64,7 @@
 	}
 </script>
 
-<DeckTabs page="details" revision="{revision}"/>
+<DeckTabs tab="details" revision="{revision}"/>
 
 <form class="p-4 flex flex-col" on:submit|preventDefault={handleSubmit}>
 	<label class="">

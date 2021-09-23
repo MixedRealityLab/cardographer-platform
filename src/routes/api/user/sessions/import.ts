@@ -1,4 +1,4 @@
-import {getClient, guessSessionType, makeSession, makeSessionSnapshot} from '$lib/clients/index';
+import {getClient, guessSessionType} from '$lib/clients/index';
 import {getDb, getNewId} from '$lib/db';
 import type {ServerLocals} from '$lib/systemtypes';
 import type {Session, SessionSnapshot} from '$lib/types';

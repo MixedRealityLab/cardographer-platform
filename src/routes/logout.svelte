@@ -1,7 +1,6 @@
 <script type="ts">
-	import {session} from '$app/stores';
-	import {base} from '$lib/paths';
-	import type {UserSession} from "$lib/systemtypes";
+	import {session} from '$app/stores'
+	import {base} from '$lib/paths'
 
 	let statusCode = 0;
 	let working = false;
@@ -15,10 +14,9 @@
 		statusCode = response.status;
 		working = false;
 		if (statusCode == 200) {
-			const user: UserSession = {
+			$session.user = {
 				authenticated: false
 			};
-			$session.user = user;
 			console.log(`logged out`);
 		}
 	}

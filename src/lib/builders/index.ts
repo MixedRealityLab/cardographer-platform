@@ -23,11 +23,11 @@ const FILE_PATH = "uploads";
 
 export async function buildRevision(revision: CardDeckRevision): Promise<BuildResponse> {
 	if (!revision.build?.builderId) {
-		return {error: "No builder defined"};
+		return {error: "No builder defined", messages: []};
 	}
 	let builder = builders[revision.build.builderId];
 	if (!builder) {
-		return {error: `Builder ${revision.build.builderId} not known`};
+		return {error: `Builder ${revision.build.builderId} not known`, messages: []};
 	}
 	// ??
 	let config: BuilderConfig = {

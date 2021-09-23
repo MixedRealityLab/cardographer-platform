@@ -33,7 +33,7 @@
 <script lang="ts">
 	import {page, session} from '$app/stores'
 	import type {Analysis} from '$lib/types.ts'
-	import AnalysisTabs from "$lib/ui/AnalysisTabs.svelte"
+	import AnalysisTabs from "./_AnalysisTabs.svelte"
 
 	export let analysis: Analysis
 	let working = false
@@ -101,7 +101,6 @@
 			<div class="message-success">{message}</div>
 		{/if}
 
-		<input disabled={working} class="button mt-1" class:text-gray-400="{working}"
-		       type='submit' value='Save'>
+		<input disabled={working} class="button mt-1" type='submit' value='Save'>
 	</form>
 </div>

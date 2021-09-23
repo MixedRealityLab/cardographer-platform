@@ -46,7 +46,7 @@
 				revision.build.lastBuilt = new Date().toISOString();
 			}
 			buildMessages = output.messages?.join('\n');
-			revision.messages = output.messages;
+			//revision.messages = output.messages;
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 			revision.build.status = DeckBuildStatus.Failed;

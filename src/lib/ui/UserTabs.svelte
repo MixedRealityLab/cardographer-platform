@@ -1,28 +1,17 @@
 <script type="ts">
 	import {base} from '$lib/paths';
 	import AppBar from "$lib/ui/AppBar.svelte";
-	export let page: string;
+	import Tab from "$lib/ui/Tab.svelte";
 </script>
 
-<style>
-    .tab {
-        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500;
-    }
-
-    .tab:hover {
-	    @apply bg-gray-500;
-    }
-</style>
-
-<AppBar/>
-<div class="w-full pt-2 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
-	<a href="{base}/user/decks" class="tab" class:bg-gray-400="{page==='decks'}">
+<AppBar>
+	<Tab url="{base}/user/decks">
 		Decks
-	</a>
-	<a href="{base}/user/sessions" class="tab" class:bg-gray-400="{page==='sessions'}">
+	</Tab>
+	<Tab url="{base}/user/sessions">
 		Sessions
-	</a>
-	<a href="{base}/user/analyses" class="tab" class:bg-gray-400="{page==='analyses'}">
+	</Tab>
+	<Tab url="{base}/user/analyses">
 		Analyses
-	</a>
-</div>
+	</Tab>
+</AppBar>

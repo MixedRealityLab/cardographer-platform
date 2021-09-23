@@ -15,7 +15,7 @@ interface DesignInfo {
 
 interface CardUse {
 	id: string;
-	use: CardInfo[];
+	use: CardInfo[][];
 }
 
 export async function exportAnalysisAsCsv(analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard: boolean, includeDetail: boolean, boardNames: string[]): Promise<string> {

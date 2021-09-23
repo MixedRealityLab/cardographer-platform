@@ -10,7 +10,7 @@ const jwtSecret = "somethingelse";
 
 const debug = false;
 
-export async function checkUserToken(rawToken:string) : Promise<UserToken> {
+export async function checkUserToken(rawToken: string): Promise<UserToken> {
 	if (!rawToken) {
 		return {
 			valid: false
@@ -20,11 +20,11 @@ export async function checkUserToken(rawToken:string) : Promise<UserToken> {
 		jwt.verify(rawToken, jwtSecret, (err, decoded) => {
 			if (err) {
 				if (debug) console.log(`invalid token: ${err}`);
-				resolve({ valid: false });
+				resolve({valid: false});
 			}
 			if (!decoded.email) {
 				if (debug) console.log(`jwt missing email`, decoded);
-				resolve({ valid: false });
+				resolve({valid: false});
 			}
 			if (debug) console.log(`valid token for ${decoded.email}`);
 			resolve({
@@ -35,7 +35,7 @@ export async function checkUserToken(rawToken:string) : Promise<UserToken> {
 	})
 }
 
-export async function signUserToken(email:string) : Promise<string> {
+export async function signUserToken(email: string): Promise<string> {
 	const claims = {
 		email: email
 	}
@@ -43,19 +43,19 @@ export async function signUserToken(email:string) : Promise<string> {
 }
 
 export function getCookieName(): string {
-	return "cardographer-"+cookieSecret;
+	return "cardographer-" + cookieSecret;
 }
 
-export function makeTokenCookie(token:string) : string {
+export function makeTokenCookie(token: string): string {
 	return `${getCookieName()}=${token}; Path=/; HttpOnly`;
 }
 
-export function getAuthorizationHeader(token:string): string {
+export function getAuthorizationHeader(token: string): string {
 	return `Bearer ${token}`;
 }
 
-export function getAuthorizationToken(header:string): string {
- 	const regex = /Bearer ([^ ]+)/;
+export function getAuthorizationToken(header: string): string {
+	const regex = /Bearer ([^ ]+)/;
 	const match = regex.exec(header);
 	if (match !== null) {
 		//console.log(`authorization matches: ${match[1]}`);

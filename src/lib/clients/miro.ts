@@ -89,7 +89,6 @@ export class MiroClient extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'miro',
-			miroIsDefault: true
 		}
 	}
 
@@ -110,14 +109,14 @@ export class MiroClient extends Client {
 			isPublic: false,
 			isNotForAnalysis: false,
 			legacyId: data._id,
-			miroData: data,
+			data: data,
 		};
 	}
 
 	getExistingSessionQuery(d: any): any {
 		const data = d as MiroData;
 		return {
-			miroId: d.id
+			miroId: data.id
 		};
 	}
 
@@ -125,7 +124,8 @@ export class MiroClient extends Client {
 		let boards: BoardInfo[] = [];
 		// frame is a board
 		// card is an image
-		for (let widget of snapshot.miroData.widgets) {
+		const data = snapshot.data as MiroData
+		for (let widget of data.widgets) {
 			if (widget.type != WidgetType.IMAGE) {
 				continue;
 			}
@@ -135,7 +135,7 @@ export class MiroClient extends Client {
 				continue;
 			}
 			let ci: CardInfo = {id, zones: []};
-			let frames: WidgetData[] = snapshot.miroData.widgets.filter((w) => w.type == WidgetType.FRAME && cardInBounds(widget, w));
+			let frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && cardInBounds(widget, w));
 			let boardId = '';
 			if (frames.length == 0) {
 				if (debug) console.log(`no board for image ${id} ${widget.id}`);
@@ -155,7 +155,7 @@ export class MiroClient extends Client {
 				boards.push(board);
 			}
 			board.cards.push(ci);
-			let shapes: WidgetData[] = snapshot.miroData.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
+			let shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
 			for (let shape of shapes) {
 				ci.zones.push({zoneId: shape.plainText});
 			}

@@ -2,10 +2,11 @@
 import type { CardInfo, AtlasInfo } from '$lib/types';
 
 export interface LoginRequest {
-	email: string;
-	password: string;
-	register: boolean;
-	code?: string;
+	name?: string
+	email: string
+	password: string
+	register: boolean
+	code?: string
 }
 export interface LoginResponse {
 	token?: string;

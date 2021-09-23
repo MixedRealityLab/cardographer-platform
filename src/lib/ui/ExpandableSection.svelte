@@ -10,9 +10,9 @@
 		<slot name="title">Title</slot>
 	</div>
 	{#if expanded}
-		<img class="w-6" src={`${base}/icons/chevron_up.svg`}/>
+		<img class="w-6" src={`${base}/icons/chevron_up.svg`} alt="Collapse"/>
 	{:else}
-		<img class="w-6" src={`${base}/icons/chevron_down.svg`}/>
+		<img class="w-6" src={`${base}/icons/chevron_down.svg`} alt="Expand"/>
 	{/if}
 </div>
 

@@ -19,7 +19,7 @@
 		return new Promise<string>((resolve, reject) => {
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result.split(',')[1]);
+			reader.onload = () => resolve((reader.result as string).split(',')[1]);
 			reader.onerror = error => reject(error);
 		});
 	}
@@ -85,7 +85,7 @@
 	<div class="message-success">{message}</div>
 {/if}
 
-<button class="button float-right" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
+<button class="button-slim" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
 	<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>
 	Upload Files
 </button>

@@ -16,14 +16,14 @@ const SQUIB_HOST = "squib";
 const SQUIB_PORT = 3001;
 const SQUIB_COMMAND = "rundeck/2";
 const DEFAULT_OPTIONS_FILE = "options.yml";
-const OPTION_OUTPUT = "output";
-const OPTION_PNG = "png";
-const OPTION_SHEET = "sheet";
-const OPTION_PREFIX = "prefix";
-const OPTION_COUNT_FORMAT = "count_format";
-const OPTION_COLUMNS = "columns";
-const OPTION_ROWS = "rows";
-const OUTPUT_DIR = "_output";
+// const OPTION_OUTPUT = "output";
+// const OPTION_PNG = "png";
+// const OPTION_SHEET = "sheet";
+// const OPTION_PREFIX = "prefix";
+// const OPTION_COUNT_FORMAT = "count_format";
+// const OPTION_COLUMNS = "columns";
+// const OPTION_ROWS = "rows";
+// const OUTPUT_DIR = "_output";
 
 function onlyUnique(value, index, self) {
 	return self.indexOf(value) === index;
@@ -35,7 +35,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	const filePath = `${config.filePath}/${revPath}`;
 	// each back => an atlas
 	const backColumn = revision.propertyDefs.find((p) => p.use == CardPropertyUse.Back);
-	let backs: string[] = [];
+	let backs: string[]
 	if (!backColumn) {
 		backs = [''];
 	} else {
@@ -114,11 +114,13 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			}
 		}
 		// squib currently generates _output/card_NN.png
-		for (let cix in cards) {
+		for (let cix = 0; cix < cards.length; cix++) {
 			const card = cards[cix];
 			let newCard: CardInfo = {
 				id: card.id,
 				revision: card.revision,
+				lastModified: card.lastModified,
+				created: card.created
 			};
 			const fileName = `${localopts.png.prefix}${Math.floor(cix / 10)}${cix % 10}.png`;
 			newCard[frontFilePropName] = fileName;
@@ -150,7 +152,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			atlas.countY[0] = 1;
 		}
 		// needed?
-		atlas.atlasCount = atlas.atlasURLs.length;
+		//atlas.atlasCount = atlas.atlasURLs.length;
 		atlases.push(atlas);
 	}
 	//if(debug) console.log(`cards`, allCards);
@@ -180,7 +182,7 @@ const WORKER_TIMEOUT = 30000;
 async function callWorker(revPath: string, optionsFile: string): Promise<CallRes> {
 	let state = WState.AWAIT_CONNECT;
 	let output = [];
-	return new Promise<CallRes>((resolve, reject) => {
+	return new Promise<CallRes>((resolve) => {
 		let sock = new net.Socket();
 		let timeout = setTimeout(() => {
 			if (debug) console.log('socket timeout');
@@ -207,7 +209,7 @@ async function callWorker(revPath: string, optionsFile: string): Promise<CallRes
 					state = WState.AWAIT_RUNNING;
 				} else {
 					if (debug) console.log(`bad initial response: ${text}`);
-					sock.close();
+					sock.destroy();
 					return;
 				}
 			}

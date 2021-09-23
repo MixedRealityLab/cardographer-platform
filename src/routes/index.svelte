@@ -1,5 +1,8 @@
-<div class="p-2 max-w-screen-md mx-auto bg-white min-h-screen">
-	<div class="flex space-x-3 mb-4 text-sm font-medium py-2">
-		<a class="flex rounded-md py-2 px-4 border border-gray-300" href="user/home">User</a>
-	</div>
-</div>
+<script lang="ts" context="module">
+	import {base} from "$app/paths"
+	import type {LoadOutput} from "@sveltejs/kit"
+
+	export async function load(): Promise<LoadOutput> {
+		return {status: 301, redirect: `${base}/user/decks`}
+	}
+</script>

@@ -155,15 +155,19 @@ function updateCustomFieldNames(props: CardPropertyDef[]) {
 function updateCardInfo(info: CardInfo, values: string[], columns: CardPropertyDef[]): CardInfo {
 	for (let i = 0; i < values.length; i++) {
 		const value = values[i];
+		if (value === null || value === undefined || value === '') {
+			continue
+		}
 		if (!columns[i].use)
 			// ignore rowtype or unknown/unadded
-			continue;
+			continue
 		if (columns[i].customFieldName) {
 			if (!info.custom) {
 				info.custom = {};
 			}
 			info.custom[columns[i].customFieldName] = value;
 		} else {
+			// @ts-ignore
 			info[columns[i].use] = value;
 		}
 	}
@@ -175,7 +179,6 @@ function isTrue(value: string): boolean {
 		return false;
 	value = value.toLowerCase();
 	return !(value.startsWith('t') || value == "0" || value.startsWith('f'));
-
 }
 
 function getValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: string): string {
@@ -317,7 +320,7 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 			} else if (column.customFieldName) {
 				row.push(revision.defaults.custom[column.customFieldName]);
 			} else {
-				row.push(revision.defaults[column.use]);
+				row.push(<string>revision.defaults[column.use]);
 			}
 		}
 		rows.push(row);

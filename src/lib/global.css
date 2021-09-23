@@ -12,6 +12,7 @@
     }
 }
 
+
 .listItem {
     @apply w-full flex rounded-md py-2 px-4 my-1 border border-gray-300 transition-colors duration-500;
 }
@@ -22,6 +23,10 @@
 
 .chip {
     @apply px-2 rounded-md bg-gray-200 text-gray-500 text-sm;
+}
+
+.button-slim {
+    @apply rounded-md transition-colors duration-500 px-3 flex items-center justify-center self-center bg-gray-300 py-1 text-sm font-medium cursor-pointer;
 }
 
 .button {

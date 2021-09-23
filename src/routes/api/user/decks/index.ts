@@ -1,9 +1,8 @@
-import {copyBuild} from '$lib/builders';
 import {getDb, getNewId} from '$lib/db';
 import type {ServerLocals} from '$lib/systemtypes';
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import {DeckBuildStatus} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
+import {cleanRevision} from "./[deckId]/revisions";
 
 const debug = true;
 
@@ -38,33 +37,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	// new deck id
 	const deckId = getNewId();
 	const revId = 1;
-	const oldRevisionId = revision._id;
-	const now = new Date().toISOString();
-	// existing local revision?
-	const oldRevision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		_id: oldRevisionId
-	})
-	// sanitise revision
-	revision.deckId = deckId;
-	revision.revision = revId;
-	revision._id = `${deckId}:${revId}`;
-	revision.slug = '';
-	revision.created = revision.lastModified = now;
-	revision.isUsable = false;
-	revision.isPublic = false;
-	revision.isLocked = false;
-	revision.isTemplate = false;
-	delete revision.isCurrent;
-	if (oldRevision) {
-		if (debug) console.log(`copying build from existing revision ${oldRevisionId}`);
-		revision.build = await copyBuild(oldRevision, revision);
-	} else if (revision.build) {
-		if (debug) console.log(`cannot copy build - old revision ${oldRevisionId} not found`);
-		delete revision.build.lastBuilt;
-		revision.build.status = DeckBuildStatus.Unbuilt;
-		revision.build.messages = [];
-	}
-	// add
+	await cleanRevision(db, revision, deckId, revId)
 	const revResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision)
 	if (!revResult.insertedId) {
 		console.log(`Error adding revision for new deck ${deckId}`);

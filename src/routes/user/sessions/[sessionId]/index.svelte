@@ -31,7 +31,7 @@
 <script lang="ts">
 	import type {Session} from '$lib/types.ts'
 	import SessionEditForm from '$lib/ui/SessionEditForm.svelte'
-	import SessionTabs from "$lib/ui/SessionTabs.svelte"
+	import SessionTabs from "./_SessionTabs.svelte"
 
 	export let session: Session
 </script>

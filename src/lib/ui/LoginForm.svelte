@@ -4,11 +4,13 @@
 	import {base} from '$lib/paths';
 	import type {UserSession} from '$lib/systemtypes.ts';
 
-	let email: string;
-	let password: string;
-	let code: string;
+	let name: string
+	let email: string
+	let password: string
+	let code: string
+
 	let statusCode = "";
-	let error = '';
+	let error = ''
 	let working = false;
 	let register = false;
 
@@ -17,6 +19,7 @@
 			return;
 		}
 		const request: LoginRequest = {
+			name: name,
 			email: email,
 			password: password,
 			register: register,
@@ -27,9 +30,8 @@
 			headers: {'content-type': 'application/json'},
 			body: JSON.stringify(request)
 		});
-		let statusCode = response.status;
 		working = false;
-		if (statusCode == 200) {
+		if (response.ok) {
 			const login = await response.json() as LoginResponse;
 			if (login.error) {
 				error = login.error;
@@ -43,18 +45,33 @@
 			$session.user = user;
 			console.log(`logged in as ${email} with ${user.token}`);
 		} else {
-			error = 'Sorry, there was a problem loggin in with those details. Please try again or contact the system administrator for help.';
+			error = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
 		}
 	}
 
 </script>
 
-<div class="p-4 max-w-md mx-auto">
-	<h1>{register ? 'Register' : 'Log in'}</h1>
+<div class="w-full pt-2 pb-0 bg-gray-700 text-white flex flex-wrap justify-center text-center">
+	<button class="tab"
+	        class:tabSelected="{!register}" on:click={() => register = false}>
+		Login
+	</button>
+	<button class="tab" on:click={() => register = true}
+	        class:tabSelected="{register}">
+		Register
+	</button>
+</div>
 
+<div class="p-4 max-w-md mx-auto">
 	<form on:submit|preventDefault={handleSubmit}>
 		<div class="flex flex-col">
-			<label>
+			{#if register}
+				<label class="mt-2">
+					<span>Name</span>
+					<input class="w-full" required id="name" type="text" bind:value="{name}"/>
+				</label>
+			{/if}
+			<label class="mt-2">
 				<span>Email</span>
 				<input class="w-full" required id="email" type="text" bind:value="{email}"/>
 			</label>
@@ -63,10 +80,6 @@
 				<input class="w-full" required id="password" type="password" bind:value="{password}"/>
 			</label>
 
-			<label class="mt-3 flex items-center">
-				<input type="checkbox" class="form-checkbox" bind:checked="{register}">
-				<span class="ml-3">Register as a new user</span>
-			</label>
 			{#if register}
 				<label class="mt-2">
 					<span>Registration code</span>
