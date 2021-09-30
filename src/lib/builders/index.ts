@@ -2,7 +2,8 @@ import type {BuildResponse, FileInfo} from '$lib/apitypes';
 import type {BuilderConfig} from '$lib/systemtypes';
 import type {CardDeckRevision, DeckBuild} from '$lib/types';
 import {DeckBuildStatus} from '$lib/types';
-import fs from 'fs';
+import AdmZip from "adm-zip";
+import fs from 'fs'
 import {build as squibBuild} from './squib';
 
 const fsPromises = fs.promises;
@@ -89,15 +90,15 @@ async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	}
 }
 
-function checkDirectoryExists(file) {
-	return fsPromises.stat(file)
+async function checkDirectoryExists(file) {
+	return await fsPromises.stat(file)
 		.then((dir) => dir.isDirectory)
 		.catch(() => false)
 }
 
 export async function getFileInfo(deckId: string, revId: string, path: string): Promise<FileInfo[]> {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
-	if (!checkDirectoryExists(revPath)) {
+	if (!await checkDirectoryExists(revPath)) {
 		return []
 	}
 	const relPath = `${revPath}/${path}`;
@@ -128,8 +129,24 @@ export async function writeFile(deckId: string, revId: string, path: string, nam
 	await fsPromises.mkdir(revPath, {
 		recursive: true
 	})
-	const relPath = `${revPath}/${path}/${name}`;
-	const data = Buffer.from(base64, 'base64');
-	await fsPromises.writeFile(relPath, data);
+	const relPath = `${revPath}/${path}/${name}`
+	const data = Buffer.from(base64, 'base64')
+	if (name.endsWith('.zip')) {
+		const zip = new AdmZip(data)
+		zip.extractAllTo(revPath, true)
+	} else {
+		await fsPromises.writeFile(relPath, data)
+	}
+}
+
+export async function deleteFile(deckId: string, revId: string, path: string) {
+	const revPath = `${FILE_PATH}/${deckId}/${revId}`
+	const relPath = `${revPath}/${path}`
+	const stat = await fsPromises.stat(relPath)
+	if (stat.isDirectory()) {
+		await fsPromises.rmdir(relPath, {recursive: true})
+	} else {
+		await fsPromises.rm(relPath)
+	}
 }
 

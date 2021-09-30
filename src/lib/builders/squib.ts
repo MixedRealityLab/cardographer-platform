@@ -56,7 +56,11 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	if (debug) console.log(`options:`, options);
 	// TODO use their options instead...
 	// delete old files (go to _output)
-	await rmAll(`${filePath}/_output`);
+	const outputDir = `${filePath}/_output`
+	await fsPromises.mkdir(outputDir, {
+		recursive: true
+	})
+	await rmAll(outputDir)
 	// cards updates...
 	let now = new Date().toISOString();
 	let allCards: CardInfo[] = [];
@@ -70,17 +74,17 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	for (let back of backs) {
 		if (debug) console.log(`process back ${back}`);
 		let cards = revision.cards.filter((c) => back == (c.back ? c.back : '') && !c.id.startsWith('back:'));
-		let backcard = revision.cards.find((c) => `back:${back}` == c.id);
-		if (!backcard) {
+		let backCard = revision.cards.find((c) => `back:${back}` == c.id);
+		if (!backCard) {
 			if (debug) console.log(`missing card back back:${back}`);
-			backcard = {
+			backCard = {
 				id: `back:${back}`,
 				revision: 1,
 				created: now,
 				lastModified: now
 			};
 		}
-		cards.push(backcard);
+		cards.push(backCard);
 		// back-specific filename prefix, map ' ' -> '_'
 		const prefix = back.length > 0 ? (back.split(' ').join('_')) + '_' : '';
 		// export cards to .../...card-data.csv (not all columns, no row types, with back)
@@ -90,12 +94,12 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		await fsPromises.writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
-		let localopts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
-		localopts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
-		localopts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
-		localopts.pdf = {...options.pdf, file: prefix + options.pdf.file};
+		let localOpts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
+		localOpts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
+		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
+		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
 		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, localopts);
-		const opts = yaml.dump(localopts);
+		const opts = yaml.dump(localOpts);
 		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, opts);
 		await fsPromises.writeFile(`${filePath}/${backOptionsFile}`, opts);
 		const {ok, error, output} = await callWorker(revPath, backOptionsFile);
@@ -122,14 +126,14 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 				lastModified: card.lastModified,
 				created: card.created
 			};
-			const fileName = `${localopts.png.prefix}${Math.floor(cix / 10)}${cix % 10}.png`;
+			const fileName = `${localOpts.png.prefix}${Math.floor(cix / 10)}${cix % 10}.png`;
 			newCard[frontFilePropName] = fileName;
-			newCard[frontUrlPropName] = `${config.baseUrl}${revPath}/${localopts.output}/${fileName}`;
+			newCard[frontUrlPropName] = `${config.baseUrl}/${revPath}/${localOpts.output}/${fileName}`;
 			allCards.push(newCard);
 		}
 		// atlas
-		let countX = Number(localopts.sheet.columns);
-		let countY = Number(localopts.sheet.rows);
+		let countX = Number(localOpts.sheet.columns);
+		let countY = Number(localOpts.sheet.rows);
 		let atlas: AtlasInfo = {
 			name: `${revision.deckName}${back.length > 0 ? ' - ' : ''}${back}`,
 			atlasURLs: [],
@@ -143,8 +147,8 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		// card it output 1 row; with more it outputs rows rows
 		const sheets = Math.ceil(cards.length / (countX * countY));
 		for (let i = 0; i < sheets; i++) {
-			const fileName = `${localopts.sheet.prefix}${i}.png`;
-			atlas.atlasURLs.push(`${config.baseUrl}/${revPath}/${localopts.output}/${fileName}`);
+			const fileName = `${localOpts.sheet.prefix}${i}.png`;
+			atlas.atlasURLs.push(`${config.baseUrl}/${revPath}/${localOpts.output}/${fileName}`);
 			atlas.countX.push(countX);
 			atlas.countY.push(countY);
 		}

@@ -1,8 +1,11 @@
 <script lang="ts">
+	import {base} from "$app/paths";
 	import {page} from '$app/stores'
 
-	export let url: string
+	export let url: string = ""
 	export let checkPath: boolean = false
+	let path = base + $page.path
+	let selected = path === url || (checkPath && path.startsWith(url))
 </script>
 
 <style>
@@ -11,7 +14,7 @@
     }
 
     .tabSelected {
-        @apply bg-gray-400 cursor-default;
+        @apply bg-gray-300 cursor-default text-gray-900;
     }
 
     .tab:hover:not(.tabSelected) {
@@ -19,6 +22,6 @@
     }
 </style>
 
-<a href={url} class="tab" class:tabSelected="{$page.path === url || (checkPath && $page.path.startsWith(url))}">
+<a href={url} class="tab" class:tabSelected={selected}>
 	<slot></slot>
 </a>

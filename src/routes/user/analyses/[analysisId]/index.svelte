@@ -1,20 +1,12 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths';
 	import type {Analysis} from "$lib/types";
+	import {errorResponse, authenticateRequest} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {analysis: null, snapshots: []}
-			}
-		}
 		const {analysisId} = page.params;
-		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -23,10 +15,7 @@
 			}
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${res.url}`)
-		};
+		return errorResponse(res)
 	}
 </script>
 
@@ -72,7 +61,7 @@
 	}
 </script>
 
-<AnalysisTabs page="details" analysis="{analysis}"/>
+<AnalysisTabs analysis="{analysis}"/>
 <div class="p-6">
 	<form class="flex flex-col text-sm" on:submit|preventDefault={handleSubmit}>
 		<label>

@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
-	import {getAuthHeader} from "$lib/ui/token"
+	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = page.params
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, getAuthHeader(session));
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -15,10 +15,7 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${res.url}`)
-		};
+		return errorResponse(res)
 	}
 </script>
 
@@ -29,6 +26,7 @@
 
 	import {page, session} from '$app/stores'
 	import UploadButton from "$lib/ui/UploadButton.svelte";
+	import revisions from "./revisions.svelte";
 
 	export let revision: CardDeckRevision
 	let working = false
@@ -109,7 +107,7 @@
 
 <DeckTabs tab="cards" revision="{revision}"/>
 
-<div class="p-4">
+<div class="p-6 flex flex-col">
 	{#each revision.cards as card}
 		<ExpandableSection>
 			<div slot="title">
@@ -121,32 +119,43 @@
 			</div>
 			<div>
 				<div class="ml-9 mb-4">
-					<div>
-						Type: {card.category}
+					<div class="flex">
+						{#if card.frontUrl}
+							<img src={card.frontUrl} class="h-48"/>
+						{/if}
+						<div>
+							<div>
+								Type: {card.category}
+							</div>
+							{#if card.description}
+								<div>{card.description}</div>
+							{/if}
+							{#if card.content}
+								<div>{card.content}</div>
+							{/if}
+						</div>
 					</div>
-					{#if card.description}
-						<div>{card.description}</div>
-					{/if}
-					{#if card.content}
-						<div>{card.content}</div>
-					{/if}
 				</div>
 			</div>
 		</ExpandableSection>
+	{:else}
+		<div class="self-center">No Cards</div>
 	{/each}
 
 	{#if error}
-		<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
+		<div class="message-error">{error}</div>
 	{/if}
 	{#if message}
-		<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
+		<div class="message-success">{message}</div>
 	{/if}
 	<div class="flex justify-center">
 		<UploadButton class="button m-3" on:upload={uploadCards} types=".csv,text/csv">
 			<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
 		</UploadButton>
-		<button class="button m-3" on:click={() => exportCsv(false)}>
-			<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
-		</button>
+		{#if revision.cards.length > 0}
+			<button class="button m-3" on:click={() => exportCsv(false)}>
+				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
+			</button>
+		{/if}
 	</div>
 </div>

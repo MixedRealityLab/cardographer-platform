@@ -13,7 +13,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	const {deckId} = request.params;
 	if (debug) console.log(`get revisions for ${deckId}`);
@@ -54,7 +54,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	let revision = request.body as unknown as CardDeckRevision;
 	//if (debug) console.log(`add deck`, revision);

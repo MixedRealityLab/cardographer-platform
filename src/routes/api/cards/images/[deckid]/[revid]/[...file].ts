@@ -22,21 +22,21 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	if (debug) console.log(`get file ${file} for deck ${deckId} ${revId}`);
 	if (file.indexOf('..') >= 0) {
 		if (debug) console.log(`refuse back path ${file}`);
-		return {status: 403};
+		return {status: 401};
 	}
 	const path = `uploads/${deckId}/${revId}/_output/${file}`;
 	if (debug) console.log(`get file ${file} for deck ${deckId} ${revId} = ${path}`);
 	const ix = file.lastIndexOf('.');
 	if (ix < 0) {
 		if (debug) console.log(`refuse file without extension: ${file}`);
-		return {status: 403};
+		return {status: 401};
 	}
 	const ext = file.substring(ix + 1).toLowerCase();
 	if ("png" == ext || "jpg" == ext) {
 		return sendFile(request, path, "image/" + ext);
 	}
 	if (debug) console.log(`refuse file ${file}`);
-	return {status: 403};
+	return {status: 401};
 }
 
 async function sendFile(request: Request, path: string, mimeType: string): Promise<EndpointOutput> {

@@ -2,8 +2,8 @@
 	import {base} from "$app/paths"
 	import {page} from "$app/stores";
 	import type {Analysis} from "$lib/types"
-	import AppBar from "$lib/ui/AppBar.svelte";
-	import Tab from "$lib/ui/Tab.svelte";
+	import AppBar from "$lib/ui/AppBar.svelte"
+	import Tab from "$lib/ui/Tab.svelte"
 
 	export let analysis: Analysis
 	let {analysisId} = $page.params
@@ -16,8 +16,9 @@
 	<Tab url="{base}/user/analyses/{analysisId}/sessions">
 		Snapshots
 	</Tab>
-	<Tab href="{base}/user/analyses/{analysisId}/export">
+	<Tab url="{base}/user/analyses/{analysisId}/export">
 		Export
 	</Tab>
+	<div slot="subheader">{analysis.name}</div>
 </AppBar>
-<div class="w-full block bg-gray-100 font-semibold px-4 py-1">{analysis.name}</div>
+

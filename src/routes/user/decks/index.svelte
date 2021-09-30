@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
-	import {getAuthHeader} from "$lib/ui/token"
+	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const res = await fetch(`${base}/api/user/decks`, getAuthHeader(session));
+		const res = await fetch(`${base}/api/user/decks`, authenticateRequest(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -13,10 +13,7 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${res.url}`)
-		};
+		return errorResponse(res)
 	}
 
 	function compareDecks(a, b) {
@@ -34,25 +31,23 @@
 	export let decks: CardDeckSummary[];
 </script>
 
-<UserTabs page="decks"/>
+<UserTabs/>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
-	{#if decks.length === 0}
-		<p>No Decks Found</p>
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
+	{#each decks as deck}
+		<a class="listItem"
+		   href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
+			<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
+			<div>
+				<div> {deck.name} <span class="text-gray-400">v{deck.currentRevision}</span></div>
+				{#if deck.description}
+					<div class="text-sm font-light">{deck.description}</div>
+				{/if}
+			</div>
+		</a>
 	{:else}
-		{#each decks as deck}
-			<a class="listItem"
-			   href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
-				<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
-				<div>
-					<div> {deck.name} <span class="text-gray-400">v{deck.currentRevision}</span></div>
-					{#if deck.description}
-						<div class="text-sm font-light">{deck.description}</div>
-					{/if}
-				</div>
-			</a>
-		{/each}
-	{/if}
+		<div class="self-center">No Decks Found</div>
+	{/each}
 
 	<a class="mt-4 button self-center" href="{base}/user/decks/new">
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck

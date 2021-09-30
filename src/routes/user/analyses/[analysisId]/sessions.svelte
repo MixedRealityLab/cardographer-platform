@@ -1,18 +1,12 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths';
 	import {Analysis, SessionSnapshot} from "$lib/types";
+	import {errorResponses, authenticateRequest} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {analysis: null, snapshots: []}
-			}
-		}
-		const headers = {headers: {authorization: `Bearer ${token}`}}
-		const {analysisId} = page.params;
+		const headers = authenticateRequest(session)
+		const {analysisId} = page.params
 		const responses = await Promise.all([
 			fetch(`${base}/api/user/analyses/${analysisId}`, headers),
 			fetch(`${base}/api/user/snapshots`, headers)
@@ -27,13 +21,7 @@
 			}
 		}
 
-		console.log(responses)
-		return {
-			props: {
-				snapshots: [],
-				error: `Could not load file information`
-			}
-		}
+		return errorResponses(responses)
 	}
 </script>
 
@@ -45,7 +33,7 @@
 	export let analysis: Analysis;
 	export let snapshots: SessionSnapshot[];
 </script>
-<AnalysisTabs page="sessions" analysis="{analysis}"/>
+<AnalysisTabs analysis="{analysis}"/>
 
 <div class="p-6">
 	<AnalysisSnapshotsForm analysis="{analysis}" snapshots="{snapshots}"/>

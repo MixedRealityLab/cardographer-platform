@@ -81,7 +81,6 @@ export class MiroClient extends Client {
 			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
 			credits: data.owner && data.owner.name ? data.owner.name : '',
 			owners: [],
-			stages: [],
 			currentStage: 0,
 			created: now,
 			lastModified: now,
@@ -89,6 +88,7 @@ export class MiroClient extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'miro',
+			decks: []
 		}
 	}
 
@@ -124,6 +124,7 @@ export class MiroClient extends Client {
 		let boards: BoardInfo[] = [];
 		// frame is a board
 		// card is an image
+		// shape is a zone
 		const data = snapshot.data as MiroData
 		for (let widget of data.widgets) {
 			if (widget.type != WidgetType.IMAGE) {
@@ -146,6 +147,7 @@ export class MiroClient extends Client {
 				boardId = frames[0].title;
 			}
 			let board = boards.find((b) => b.id == boardId);
+
 			if (!board) {
 				if (debug) console.log(`add board ${boardId}`);
 				board = {

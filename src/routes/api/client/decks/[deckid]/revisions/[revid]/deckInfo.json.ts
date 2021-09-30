@@ -21,7 +21,7 @@ export async function get(request): Promise<EndpointOutput> {
 		// permission check
 		const locals = request.locals as ServerLocals;
 		if (!locals.authenticated) {
-			return {status: 403}
+			return {status: 401}
 		}
 		const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
 			_id: deckId, owners: locals.email

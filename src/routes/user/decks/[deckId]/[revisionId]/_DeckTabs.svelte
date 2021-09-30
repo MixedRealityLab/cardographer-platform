@@ -16,19 +16,23 @@
 	<Tab url="{base}/user/decks/{deckId}/{revisionId}/cards">
 		Cards
 	</Tab>
-	<Tab url="{base}/user/decks/{deckId}/{revisionId}/boards">
-		Board
-	</Tab>
-	<Tab url="{base}/user/decks/{deckId}/{revisionId}/build" checkPath={true}>
-		Build
-	</Tab>
-</AppBar>
-{#if revision}
-	<a class="w-full block bg-gray-100 font-semibold px-4 py-1"
-	   href="{base}/user/decks/{revision.deckId}/{revision.revision}/revisions">{revision.deckName}
-		<span class="text-gray-400">v{revision.revision}
-			<span class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span>
+	{#if revision.cardCount > 0}
+		<Tab url="{base}/user/decks/{deckId}/{revisionId}/build" checkPath={true}>
+			Build
+		</Tab>
+	{/if}
+	<div slot="subheader">
+		{#if revision}
+			<a href="{base}/user/decks/{revision.deckId}/{revision.revision}/revisions">{revision.deckName}
+				{#if revision.deckName.toLowerCase().indexOf('deck') === -1}
+					Deck
+				{/if}
+				<span class="text-gray-600">v{revision.revision}
+					<span class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span>
 	</span>
-	</a>
-{/if}
+			</a>
+		{/if}
+	</div>
+</AppBar>
+
 

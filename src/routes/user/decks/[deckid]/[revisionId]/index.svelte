@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths'
-	import {getAuthHeader} from "$lib/ui/token"
+	import {errorResponse, authenticateRequest} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, getAuthHeader(session))
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session))
 
 		if (res.ok) {
 			return {
@@ -15,10 +15,7 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${res.url}`)
-		};
+		return errorResponse(res)
 	}
 </script>
 
@@ -66,7 +63,7 @@
 
 <DeckTabs tab="details" revision="{revision}"/>
 
-<form class="p-4 flex flex-col" on:submit|preventDefault={handleSubmit}>
+<form class="p-6 flex flex-col" on:submit|preventDefault={handleSubmit}>
 	<label class="">
 		<span class="text-sm text-gray-500">Title</span>
 		<input class="block w-full" required id="deckName" type="text" bind:value="{revision.deckName}"/>

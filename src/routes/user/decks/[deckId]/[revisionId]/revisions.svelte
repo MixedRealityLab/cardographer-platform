@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths';
-	import {getAuthHeader} from "$lib/ui/token"
+	import {errorResponse, authenticateRequest} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, getAuthHeader(session))
+		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
 
 		if (res.ok) {
 			const revisions = (await res.json()).revisions.sort(compareRevisions)
@@ -19,10 +19,7 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${res.url}`)
-		};
+		return errorResponse(res)
 	}
 
 	function compareRevisions(a, b) {
@@ -89,7 +86,7 @@
 
 <AppBar back="{base}/user/decks/{selectedRevision.deckId}/{selectedRevision.revision}"/>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
 	{#each revisions as revision}
 		<a class="listItem"
 		   href="{base}/user/decks/{revision.deckId}/{revision.revision}">

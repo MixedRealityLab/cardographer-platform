@@ -103,8 +103,7 @@
 		{/if}
 
 
-		<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2" class:text-gray-400="{working}"
-		       type='submit' value='Save'>
+		<input disabled={working} class="button" type='submit' value='Save'>
 	</div>
 
 </form>

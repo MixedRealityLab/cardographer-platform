@@ -1,4 +1,4 @@
-// cardographer types - see datamodel.md
+// Cardographer types - see datamodel.md
 // deck summary caches latest revision info and adds only owners
 // i.e. RBAC for all revisions in deck
 
@@ -38,7 +38,7 @@ export interface CardDeckRevisionSummary {
 export interface CardDeckRevision extends CardDeckRevisionSummary {
 	propertyDefs: CardPropertyDef[]
 	defaults: CardInfo
-	boards: BoardInfo[]
+	//boards: BoardInfo[]
 	cards: CardInfo[]
 	build?: DeckBuild
 	output?: DeckOutput
@@ -80,7 +80,8 @@ export enum BoardProperty {
 	Y = "y",
 	Width = "width",
 	Height = "Height",
-	Analyse = "analyse"
+	Analyse = "analyse",
+	Graph = "graph"
 }
 
 // all pre-defined card property types
@@ -227,7 +228,6 @@ export interface Session {
 	description?: string
 	credits?: string
 	owners: string[] // User emails
-	stages: SessionStage[] // just one for now...
 	currentStage: number // index
 	created: string // ISO date
 	lastModified: string // ISO date
@@ -237,6 +237,8 @@ export interface Session {
 	sessionType: string // enum-ish
 	players?: PlayerInfo[]
 	playerTemplates?: PlayerInfo[]
+	board?: BoardInfo
+	decks: SessionDeck[]
 // miro
 	//miroId?: string
 	//miroUrl?: string
@@ -245,9 +247,9 @@ export interface Session {
 }
 
 // in Session, a stage plan
-export interface SessionStage {
-	decks: SessionDeck[]
-}
+// export interface SessionStage {
+// 	decks: SessionDeck[]
+// }
 
 // in SessionStage, a deck to use
 export interface SessionDeck {
@@ -268,9 +270,9 @@ export interface ScheduledSession {
 	_id: string // mongo-style
 	sessionId: string // FK
 	sessionName: string
-	sessionDecription?: string
+	sessionDescription?: string
 	eventName?: string // for this
-	eventDecription?: string
+	eventDescription?: string
 	created: string // ISO date
 	lastModified: string // ISO date
 	initialStage?: number

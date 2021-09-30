@@ -9,7 +9,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	const {sessionId} = request.params;
 	if (debug) console.log(`get session ${sessionId}`);
@@ -32,7 +32,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	const sess = request.body as unknown as Session;
 	const {sessionId} = request.params;

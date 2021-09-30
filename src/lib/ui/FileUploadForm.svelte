@@ -67,7 +67,7 @@
 		working = false;
 		if (res.ok) {
 			//message = "Uploaded";
-			dispatch('refresh', {});
+			dispatch('finished', await res.json());
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}

@@ -64,8 +64,7 @@
 			{#if message}
 				<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 			{/if}
-			<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2"
-			       class:text-gray-400="{working}" type='submit' value='Create new revision'>
+			<input disabled={working} class="rounded-md mt-1 block w-full bg-gray-300 py-2" type='submit' value='Create new revision'>
 		</div>
 	</form>
 {/if}

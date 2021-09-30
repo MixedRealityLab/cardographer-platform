@@ -2,43 +2,53 @@ import {buildRevision} from '$lib/builders'
 import {getDb} from '$lib/db'
 import type {ServerLocals} from '$lib/systemtypes'
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types'
+import {DeckBuildStatus} from "$lib/types";
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true;
 
 export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+	const locals = request.locals as ServerLocals
 	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		if (debug) console.log(`locals`, locals)
+		return {status: 401}
 	}
 	const {deckId, revisionId} = request.params;
 	const db = await getDb();
 	// permission check
-	const deck = await db.collection('CardDeckSummaries').findOne({
+	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
 		_id: deckId, owners: locals.email
-	}) as CardDeckSummary;
+	})
 	if (!deck) {
 		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
 		return {status: 404};
 	}
 	// current revision
-	const revision = await db.collection('CardDeckRevisions').findOne({
+	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
 		deckId: deckId, revision: Number(revisionId)
-	}) as CardDeckRevision;
+	})
 	if (!revision) {
 		if (debug) console.log(`deck ${deckId} revision ${revisionId} not found`);
 		return {status: 404};
 	}
 	if (!revision.build) {
-		if (debug) console.log(`deck ${deckId} revision ${revisionId} not set up to build`);
-		return {status: 403}
+		revision.build = {
+			builderId: "squib",
+			builderName: "squib",
+			isDisabled: false,
+			status: DeckBuildStatus.Unbuilt
+
+		}
+		//if (debug) console.log(`deck ${deckId} revision ${revisionId} not set up to build`);
+		//return {status: 401}
 	}
 	if (revision.build.isDisabled) {
 		if (debug) console.log(`deck ${deckId} revision ${revisionId} build is disabled`);
-		return {status: 403}
+		return {status: 401}
 	}
 	// build...
+	revision.build.status = DeckBuildStatus.Building
+	await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 	const result = await buildRevision(revision)
 	// update revision
 	if (!result.error && result.cards) {
@@ -54,22 +64,12 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		}
 	}
 	const now = new Date().toISOString();
-	const upd = await db.collection('CardDeckRevisions').updateOne({
-		deckId: deckId, revision: Number(revisionId)
-	}, {
-		$set: {
-			// project changes
-			lastModified: now,
-			cards: revision.cards,
-			'build.messages': result.messages,
-			'build.status': (result.error ? 'failed' : 'built'),
-			'build.lastBuilt': now,
-			output: {
-				isUserModified: false,
-				atlases: result.atlases
-			}
-		}
-	});
+	revision.build.status = (result.error ? DeckBuildStatus.Failed : DeckBuildStatus.Built)
+	revision.build.messages = result.messages
+	revision.build.lastBuilt = now
+	revision.lastModified = now
+	revision.output = {isUserModified: false, atlases: result.atlases}
+	const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 	if (!upd.matchedCount) {
 		if (debug) console.log(`revision ${revisionId} not matched for deck ${deckId}`, upd);
 		return {status: 404};

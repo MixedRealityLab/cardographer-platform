@@ -13,11 +13,21 @@
 	<Tab url="{base}/user/sessions/{sessionId}">
 		Details
 	</Tab>
-	<Tab url="{base}/user/sessions/{sessionId}/snapshots">
-		Snapshots
-	</Tab>
 	<Tab url="{base}/user/sessions/{sessionId}/decks">
 		Decks
 	</Tab>
+	<Tab url="{base}/user/sessions/{sessionId}/board">
+		Board
+	</Tab>
+	{#if session && session.decks && session.decks.length !== 0}
+		<Tab url="{base}/user/sessions/{sessionId}/tabletop">
+			Tabletop
+		</Tab>
+	{/if}
+	<div slot="subheader">
+		{#if session.name.toLowerCase().indexOf('session') === -1}
+			Session
+		{/if}
+		{session.name}
+	</div>
 </AppBar>
-<div class="w-full block bg-gray-100 font-semibold px-4 py-1">{session.name}</div>

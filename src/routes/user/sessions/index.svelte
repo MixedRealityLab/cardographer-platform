@@ -94,14 +94,14 @@
 	}
 </script>
 
-<UserTabs page="sessions"/>
+<UserTabs/>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-4">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
 	{#each sessions as session}
 		{#if showArchived === session.isArchived}
 			<a class="listItem flex-col" href="sessions/{session._id}">
-				<div>{session.name}</div>
 				<div class="flex flex-row gap-1">
+					{session.name}
 					{#if session.isPublic}
 						<div class="chip">Public</div>
 					{/if}
@@ -112,9 +112,13 @@
 						<div class="chip">Archived</div>
 					{/if}
 				</div>
-				<div class="text-sm font-light">{session.description}</div>
+				{#if session.description}
+					<div class="text-sm font-light">{session.description}</div>
+				{/if}
 			</a>
 		{/if}
+	{:else}
+		<div class="self-center">No Sessions Found</div>
 	{/each}
 
 	{#if error}

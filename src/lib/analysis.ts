@@ -3,7 +3,7 @@ import {AnalysisExportTypes} from '$lib/analysistypes';
 import {getClient} from '$lib/clients';
 import {arrayToCsv} from '$lib/csvutils';
 import {getDb} from '$lib/db';
-import type {Analysis, SessionSnapshot} from '$lib/types';
+import type {Analysis, Session, SessionSnapshot} from '$lib/types';
 
 const debug = true;
 
@@ -16,6 +16,109 @@ interface DesignInfo {
 interface CardUse {
 	id: string;
 	use: CardInfo[][];
+}
+
+export async function analysisNodeGraph(analysis: Analysis) {
+	let rawDesigns: DesignInfo[] = await readDesigns(analysis);
+	for (let design of rawDesigns) {
+		// filter boards
+		// TODO design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
+		for (let board of design.boards) {
+			for (let cardInfo of board.cards) {
+				let id = cardInfo.id;
+				// URL or file path?
+				let six = id.lastIndexOf('/');
+				if (six >= 0) {
+					id = id.substring(six + 1);
+				}
+				// extension?
+				let dix = id.lastIndexOf('.');
+				if (dix >= 0) {
+					id = id.substring(0, dix);
+				}
+				if (cardInfo.id != id) {
+					if (debug) console.log(`canonical card ${id} from ${cardInfo.id}`);
+					cardInfo.id = id;
+				}
+			}
+		}
+	}
+
+	let designs = [];
+	for (let design of rawDesigns) {
+		for (let bi in design.boards) {
+			let board = design.boards[bi];
+			designs.push({
+				id: board.id ? `${design.id}:${board.id}` : design.id,
+				snapshot: design.snapshot,
+				boards: [board],
+			});
+		}
+	}
+
+	let cardUses: CardUse[] = [];
+	for (let di in designs) {
+		const design = designs[di];
+		for (let board of design.boards) {
+			for (let cardInfo of board.cards) {
+				let cardUse: CardUse = cardUses.find((cu) => cu.id === cardInfo.id);
+				if (!cardUse) {
+					cardUse = {
+						id: cardInfo.id,
+						use: [],
+					}
+					cardUses.push(cardUse);
+				}
+				if (cardUse.use[di]) {
+					cardUse.use[di].push(cardInfo);
+				} else {
+					cardUse.use[di] = [cardInfo];
+				}
+			}
+		}
+	}
+
+	let nodes = []
+	let edges = []
+
+	for (let cardIndex1 = 0; cardIndex1 < cardUses.length; cardIndex1++) {
+		const cardUse1 = cardUses[cardIndex1]
+		for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {
+			const cardUse2 = cardUses[cardIndex2]
+			let count = 0;
+			for (let di in designs) {
+				if (cardUse1.use[di] && cardUse2.use[di]) {
+					count++;
+				}
+			}
+			if (count != 0) {
+				if (nodes.every((node) => node.data.id !== cardUse1.id)) {
+					nodes.push({
+						data: {
+							id: cardUse1.id
+						}
+					})
+				}
+				if (nodes.every((node) => node.data.id !== cardUse2.id)) {
+					nodes.push({
+						data: {
+							id: cardUse2.id
+						}
+					})
+				}
+				edges.push({
+					data: {
+						id: cardUse1.id + ":" + cardUse2.id, source: cardUse1.id, target: cardUse2.id, value: count
+					}
+				})
+			}
+		}
+	}
+
+	return {
+		nodes: nodes,
+		edges: edges
+	}
 }
 
 export async function exportAnalysisAsCsv(analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard: boolean, includeDetail: boolean, boardNames: string[]): Promise<string> {
@@ -147,11 +250,27 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			continue;
 		}
 		const info = client.getSnapshotInfo(snapshot);
+		const session = await db.collection<Session>('Sessions').findOne({
+			_id: snapshot.sessionId
+		})
+		if (!session) {
+			if (debug) console.log(`cannot find real snapshot ${s._id}`);
+			continue;
+		}
+
+		let boards = info.boards
+		if (session.board) {
+			boards = info.boards.filter((board) => {
+				const region = session.board.regions.find((region) => region.id === board.id)
+				return !region || region.analyse
+			})
+		}
+
 		designs.push({
-			id: snapshot._id, //??
+			id: snapshot._id,
 			snapshot,
-			boards: info.boards
-		});
+			boards: boards
+		})
 	}
 	//console.log(`extract something from ${snapshots.length} snapshots...`);
 	return designs;

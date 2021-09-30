@@ -9,7 +9,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	if (debug) console.log(`get analyses`);
 	const db = await getDb();
@@ -29,7 +29,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	let an = request.body as unknown as Analysis;
 	//if (debug) console.log(`add analysis`, analysis);

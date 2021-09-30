@@ -1,19 +1,10 @@
 <script context="module" lang="ts">
 	import {base} from '$lib/paths.ts';
+	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {decks: []}
-			}
-		}
-		const url = `${base}/api/user/analyses`;
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`}
-		});
+		const res = await fetch(`${base}/api/user/analyses`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -23,10 +14,7 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${url}`)
-		};
+		return errorResponse(res)
 	}
 
 	function compareAnalyses(a, b) {
@@ -38,11 +26,10 @@
 </script>
 
 <script lang="ts">
-	import AppBar from '$lib/ui/AppBar.svelte';
-	import UserTabs from '$lib/ui/UserTabs.svelte';
-	import type {Analysis} from '$lib/types';
-	import {session} from '$app/stores';
-	import {goto} from '$app/navigation';
+	import UserTabs from '$lib/ui/UserTabs.svelte'
+	import type {Analysis} from '$lib/types'
+	import {session} from '$app/stores'
+	import {goto} from '$app/navigation'
 
 	export let analyses: Analysis[];
 	let error = '';
@@ -86,27 +73,31 @@
 
 </script>
 
-<UserTabs page="analyses"/>
+<UserTabs/>
 
-<div class="flex flex-col p-4 w-full text-sm font-medium">
+<div class="flex flex-col p-6 w-full text-sm font-medium">
 	{#each analyses as analysis}
-		<a class="listItem flex-col" href="analyses/{analysis._id}">
-			<div>{analysis.name}</div>
-			<div class="flex flex-row gap-1">
-				{#if analysis.isPublic}
-					<div class="chip">Public</div>
-				{/if}
+		<a class="listItem items-center" href="analyses/{analysis._id}">
+			<img src="{base}/icons/analysis.svg" class="w-7 my-1 mr-4" alt=""/>
+			<div class="flex flex-col">
+				<div>{analysis.name}</div>
+				<div class="flex flex-row gap-1">
+					{#if analysis.isPublic}
+						<div class="chip">Public</div>
+					{/if}
+				</div>
+				<div class="text-sm font-light">{analysis.description}</div>
 			</div>
-			<div class="text-sm font-light">{analysis.description}</div>
 		</a>
+	{:else}
+		<div class="self-center">No Analyses Found</div>
 	{/each}
 
 	{#if error}
 		<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
 	{/if}
 
-	<button disabled={working} class:text-gray-400="{working}"
-	        class="button mt-4 self-center" on:click="{newAnalysis}">
+	<button disabled={working} class="button mt-4 self-center" on:click="{newAnalysis}">
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Analysis
 	</button>
 

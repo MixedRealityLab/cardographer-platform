@@ -53,7 +53,6 @@ export class Appv1 extends Client {
 			description: data.design_description,
 			credits: data.design_author,
 			owners: [],
-			stages: [],
 			currentStage: 0,
 			created: now,
 			lastModified: now,
@@ -61,7 +60,7 @@ export class Appv1 extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'appv1',
-			// decks...
+			decks: []
 		}
 	}
 

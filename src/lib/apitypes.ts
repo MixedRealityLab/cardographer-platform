@@ -1,5 +1,5 @@
 // extra API types, e.g. messages
-import type { CardInfo, AtlasInfo } from '$lib/types';
+import type {AtlasInfo, CardInfo} from '$lib/types';
 
 export interface LoginRequest {
 	name?: string
@@ -8,14 +8,17 @@ export interface LoginRequest {
 	register: boolean
 	code?: string
 }
+
 export interface LoginResponse {
 	token?: string;
 	error?: string;
 }
+
 export interface PostDeckResponse {
 	deckId: string;
 	revision: number;
 }
+
 export interface PostRevisionResponse {
 	revision: number;
 }
@@ -36,19 +39,23 @@ export interface PostUserDecksResponse {
 	deckId: string;
 	revId: number;
 }
+
 export interface PostUserRevisionResponse {
 	revId: number;
 }
+
 export interface FileInfo {
 	name: string;
 	isDirectory: boolean;
 	relPath?: string; // internal?
 }
+
 export interface UploadFile {
 	name: string;
 	//	isDirectory: boolean;
 	content: string; // base64
 }
+
 export interface PostFilesRequest {
 	files: UploadFile[];
 }
@@ -65,15 +72,17 @@ export interface DeckInfo {
 }
 
 export interface CopySessionRequest {
-	sessid: string;
+	sessionId: string;
 }
+
 export interface CopySessionResponse {
-	sessid: string;
+	sessionId: string;
 }
 
 export interface ImportSessionResponse {
 	message: string;
 }
+
 export interface PostAnalysisResponse {
 	analid: string;
 }

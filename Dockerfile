@@ -4,8 +4,8 @@ WORKDIR /app
 COPY *.json /app/
 RUN npm ci
 COPY *.config.js *.config.cjs .npmrc /app/
-COPY ./static/ /app/static
-COPY ./src/ /app/src
+COPY static /app/static
+COPY src /app/src
 ENV NODE_ENV=production
 RUN npm run build
 EXPOSE 3000

@@ -12,6 +12,13 @@
     }
 }
 
+[type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select {
+    @apply transition-colors duration-500 bg-gray-50;
+}
+
+[type='text']:hover, [type='email']:hover, [type='url']:hover, [type='password']:hover, [type='number']:hover, [type='date']:hover, [type='datetime-local']:hover, [type='month']:hover, [type='search']:hover, [type='tel']:hover, [type='time']:hover, [type='week']:hover, [multiple]:hover, textarea:hover, select:hover {
+    @apply border-gray-500;
+}
 
 .listItem {
     @apply w-full flex rounded-md py-2 px-4 my-1 border border-gray-300 transition-colors duration-500;
@@ -22,31 +29,33 @@
 }
 
 .chip {
-    @apply px-2 rounded-md bg-gray-200 text-gray-500 text-sm;
+    @apply px-2 rounded-md bg-gray-200 text-gray-700 text-xs flex items-center;
 }
 
 .button-slim {
-    @apply rounded-md transition-colors duration-500 px-3 flex items-center justify-center self-center bg-gray-300 py-1 text-sm font-medium cursor-pointer;
+    @apply rounded-md transition-colors duration-500 px-3 flex items-center justify-center self-center bg-gray-300 py-1 text-sm font-semibold cursor-pointer text-gray-900;
+    font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
 }
 
 .button {
-    @apply rounded-md transition-colors duration-500 px-4 flex items-center justify-center self-center bg-gray-300 py-1.5 text-sm font-medium cursor-pointer;
+    @apply rounded-md transition-colors duration-500 px-4 flex items-center justify-center self-center bg-gray-300 py-1.5 text-sm font-semibold cursor-pointer text-gray-900;
     min-width: 80px;
+    font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
 }
 
 .button-icon {
     @apply w-3.5 mr-1;
 }
 
-.button:hover {
+.button:hover, .button-slim:hover {
     @apply bg-gray-400;
 }
 
-.button:hover:disabled {
+.button:hover:disabled, .button-slim:hover:disabled {
     @apply bg-gray-300;
 }
 
-.button:disabled {
+.button:disabled, .button-slim:disabled {
     @apply opacity-50 cursor-default;
 }
 

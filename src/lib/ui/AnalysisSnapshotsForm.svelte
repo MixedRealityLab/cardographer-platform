@@ -106,7 +106,6 @@
 			<div class="message-success">{message}</div>
 		{/if}
 
-		<input disabled={working} class="button mt-4" class:text-gray-400="{working}"
-		       type='submit' value='Save'>
+		<input disabled={working} class="button mt-4" type='submit' value='Save'>
 	</form>
 {/if}

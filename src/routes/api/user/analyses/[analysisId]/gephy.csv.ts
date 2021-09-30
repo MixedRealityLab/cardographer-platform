@@ -11,7 +11,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	const locals = request.locals as ServerLocals;
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	const {analysisId} = request.params;
 	const db = await getDb();

@@ -181,7 +181,7 @@ function isTrue(value: string): boolean {
 	return !(value.startsWith('t') || value == "0" || value.startsWith('f'));
 }
 
-function getValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: string): string {
+function getValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: string = null): string {
 	const colIndex = columns.indexOf(column)
 	if (colIndex < 0) {
 		return defaultValue
@@ -191,6 +191,24 @@ function getValue(column: BoardProperty, columns: BoardProperty[], values: strin
 		return defaultValue
 	} else {
 		return value
+	}
+}
+
+function getBooleanValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: boolean = true): boolean {
+	const value = getValue(column, columns, values)
+	if (defaultValue) {
+		return value != 'n' && value != 'false'
+	} else {
+		return value != 'y' && value != 'true'
+	}
+}
+
+function getFloatValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: number = null): number {
+	const value = getValue(column, columns, values)
+	if (!value) {
+		return defaultValue
+	} else {
+		return parseFloat(value)
 	}
 }
 
@@ -225,14 +243,14 @@ export function readBoard(cells: string[][]): BoardInfo {
 			board.description = getValue(BoardProperty.Description, columns, values, null)
 		} else {
 			board.regions.push({
-				description: getValue(BoardProperty.Description, columns, values, null),
-				name: getValue(BoardProperty.Name, columns, values, "Region " + (board.regions.length + 1)),
 				id: getValue(BoardProperty.Id, columns, values, `_${board.regions.length + 1}`),
-				width: parseFloat(getValue(BoardProperty.Width, columns, values, '0')),
-				x: parseFloat(getValue(BoardProperty.X, columns, values, '0')),
-				y: parseFloat(getValue(BoardProperty.Y, columns, values, '0')),
-				height: parseFloat(getValue(BoardProperty.Height, columns, values, '0')),
-				analyse: getValue(BoardProperty.Analyse, columns, values, 'y').toLowerCase() != 'n'
+				name: getValue(BoardProperty.Name, columns, values, "Region " + (board.regions.length + 1)),
+				description: getValue(BoardProperty.Description, columns, values),
+				x: getFloatValue(BoardProperty.X, columns, values),
+				y: getFloatValue(BoardProperty.Y, columns, values),
+				width: getFloatValue(BoardProperty.Width, columns, values),
+				height: getFloatValue(BoardProperty.Height, columns, values),
+				analyse: getBooleanValue(BoardProperty.Analyse, columns, values)
 			})
 		}
 	}

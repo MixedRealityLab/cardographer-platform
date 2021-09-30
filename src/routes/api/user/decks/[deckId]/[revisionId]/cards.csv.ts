@@ -7,10 +7,10 @@ import type {EndpointOutput, Request} from '@sveltejs/kit';
 const debug = true;
 
 export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+	const locals = request.locals as ServerLocals
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
-		return {status: 403}
+		return {status: 401}
 	}
 	const {deckId, revisionId} = request.params;
 	if (debug) console.log(`get revision ${revisionId} for ${deckId}`);
