@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths';
+	import {loadBase} from '$lib/paths'
 	import type {Analysis} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {analysisId} = page.params;
-		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest(session));
+		const res = await fetch(`${loadBase}/api/user/analyses/${analysisId}`, authenticateRequest(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -20,6 +20,7 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import {page, session} from "$app/stores"
 	import cytoscape from "cytoscape"
 	import type {ElementsDefinition} from "cytoscape"

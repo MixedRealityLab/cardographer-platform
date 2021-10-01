@@ -18,6 +18,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	const session = await db.collection<Session>('Sessions').findOne({
 		_id: sessionId, owners: locals.email
 	})
+	console.log(session)
 	if (!session) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
 		return {status: 404};

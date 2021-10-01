@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths';
+	import {loadBase} from '$lib/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {sessionId} = page.params;
-		const res = await fetch(`${base}/api/user/sessions/${sessionId}`, authenticateRequest(session));
+		const res = await fetch(`${loadBase}/api/user/sessions/${sessionId}`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -19,8 +19,9 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import {page, session as pageSession} from "$app/stores"
-	import type {Session} from '$lib/types.ts'
+	import type {Session} from '$lib/types'
 	import SessionTabs from "./_SessionTabs.svelte"
 
 	export let session: Session

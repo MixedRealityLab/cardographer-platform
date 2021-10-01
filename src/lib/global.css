@@ -25,7 +25,7 @@
 }
 
 .listItem:hover {
-    @apply border-gray-500
+    @apply border-gray-600
 }
 
 .chip {

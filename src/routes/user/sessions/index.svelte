@@ -1,20 +1,10 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths.ts';
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import {loadBase} from '$lib/paths'
+	import {authenticateRequest, errorResponse} from "$lib/ui/token"
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const token = session.user?.token;
-		if (!token) {
-			console.log(`note, no user token`, session);
-			return {
-				props: {decks: []}
-			}
-		}
-		const url = `${base}/api/user/sessions`;
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`}
-		});
-
+		const res = await fetch(`${loadBase}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
 			return {
 				props: {
@@ -23,25 +13,23 @@
 			};
 		}
 
-		return {
-			status: res.status,
-			error: new Error(`Could not load ${url}`)
-		};
+		return errorResponse(res)
 	}
 
 	function compareSessions(a, b) {
-		const aname = `${a.name} ${a.owners[0]} ${a.created}`;
-		const bname = `${b.name} ${b.owners[0]} ${b.created}`;
-		return String(aname).localeCompare(bname);
+		const aName = `${a.name} ${a.owners[0]} ${a.created}`
+		const bName = `${b.name} ${b.owners[0]} ${b.created}`
+		return String(aName).localeCompare(bName)
 	}
 
 </script>
 
 <script lang="ts">
-	import UploadButton from "$lib/ui/UploadButton.svelte";
+	import {base} from '$app/paths'
+	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
-	import {session} from '$app/stores';
-	import type {Session} from '$lib/types.ts'
+	import {session} from '$app/stores'
+	import type {Session} from '$lib/types'
 
 	export let sessions: Session[]
 	let showArchived = false

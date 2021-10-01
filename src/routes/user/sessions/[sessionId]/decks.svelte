@@ -1,22 +1,57 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths';
+	import {loadBase} from '$lib/paths'
 	import {CardDeckRevisionSummary, Session} from "$lib/types";
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+
+	interface DeckInfo {
+		deckId: string
+		revisions: CardDeckRevisionSummary[]
+		index: number
+		selected: boolean
+	}
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const requestInfo = authenticateRequest(session)
 		const {sessionId} = page.params;
 		const responses = await Promise.all([
-			fetch(`${base}/api/user/sessions/${sessionId}`, requestInfo),
-			fetch(`${base}/api/user/decks/revisions`, requestInfo)
+			fetch(`${loadBase}/api/user/sessions/${sessionId}`, requestInfo),
+			fetch(`${loadBase}/api/user/decks/revisions`, requestInfo)
 		])
 
 		if (responses.every((res) => res.ok)) {
+			const decks = (await responses[1].json()).decks as CardDeckRevisionSummary[]
+			let deckInfo: DeckInfo[] = []
+			decks.forEach((revision) => {
+				const deck = deckInfo.find((deckItem) => deckItem.deckId == revision.deckId)
+				if (!deck) {
+					deckInfo.push({
+						deckId: revision.deckId,
+						revisions: [revision],
+						index: -1,
+						selected: false
+					})
+				} else {
+					deck.revisions.push(revision)
+				}
+			})
+			const sessionItem = await responses[0].json() as Session
+			deckInfo.forEach((deckInfo) => {
+				if (sessionItem.decks) {
+					const sessionDeck = sessionItem.decks.find((sessionDeck) => sessionDeck.deckId == deckInfo.deckId)
+					if (sessionDeck) {
+						deckInfo.index = deckInfo.revisions.findIndex((revision) => revision.revision === sessionDeck.revision)
+						deckInfo.selected = true
+					}
+				}
+				if (deckInfo.index === -1) {
+					deckInfo.index = deckInfo.revisions.length - 1
+				}
+			})
 			return {
 				props: {
-					session: await responses[0].json() as Session,
-					decks: (await responses[1].json()).decks as CardDeckRevisionSummary[]
+					session: sessionItem,
+					decks: deckInfo
 				}
 			}
 		}
@@ -26,29 +61,17 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import SessionTabs from './_SessionTabs.svelte'
-	import type {CardDeckRevisionSummary, Session} from '$lib/types.ts'
+	import type {CardDeckRevisionSummary, Session} from '$lib/types'
 	import {page, session as pageSession} from '$app/stores'
-	import {onMount} from 'svelte'
 
 	export let session: Session
-	export let decks: CardDeckRevisionSummary[]
+	export let decks: DeckInfo[]
 
 	let working = false
 	let error = ''
 	let message = ''
-
-	onMount(() => {
-		console.log(session)
-		console.log(decks)
-		if (decks && session && session.decks) {
-			decks.forEach((deck) => {
-				deck.selected = session.decks.some((sessionDeck) => sessionDeck.deckId === deck.deckId && sessionDeck.revision === deck.revision)
-			})
-			decks = decks
-			//console.log(`should be ${analysis.snapshots.length} selected`);
-		}
-	});
 
 	function formatDate(isoDate: string): string {
 		const date = new Date(isoDate)
@@ -73,14 +96,13 @@
 		}
 	}
 
-	// submit deck edit form
 	async function handleSubmit() {
 		message = ''
 		error = ''
 		working = true
 
 		const {sessionId} = $page.params;
-		const cards = decks.filter((deck) => deck.selected).map<string>((deck) => deck._id)
+		const cards = decks.filter((deck) => deck.selected).map<string>((deck) => deck.revisions[deck.index]._id)
 		console.log(`submit`, cards)
 		const res = await fetch(`${base}/api/user/sessions/${sessionId}/decks`, authenticateRequest($pageSession, {
 			method: 'PUT',
@@ -97,22 +119,59 @@
 	}
 </script>
 
+<style>
+	button:disabled {
+		@apply opacity-50 cursor-default;
+	}
+
+	button:enabled:hover {
+		@apply opacity-75;
+	}
+
+	.border-highlight {
+		@apply border-blue-700;
+	}
+</style>
+
 <SessionTabs session="{session}"/>
 
 {#if decks}
 	<div class="w-full flex flex-col text-sm font-medium p-6">
 		{#each decks as deck}
-			<label class:border-blue-400={deck.selected} class="listItem items-center">
+			<label class:border-highlight={deck.selected} class="listItem items-center">
 				<input type="checkbox" class="form-checkbox mr-4" bind:checked="{deck.selected}">
 				<div class="flex flex-1 flex-col">
 					<div class="flex">
-						<div class="flex-1" class:text-gray-500={!deck.selected}>{deck.deckName}
-							<span>v{deck.revision} <span class="font-normal">{deck.revisionName || ''}</span></span></div>
-						<div class="text-sm font-light">{formatDate(deck.created)}</div>
+						<div class="flex-1 flex items-center gap-1">
+							{deck.revisions[deck.index].deckName}
+							{#if deck.revisions.length > 1}
+								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0}>
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+									     fill="currentColor">
+										<path fill-rule="evenodd"
+										      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+										      clip-rule="evenodd"/>
+									</svg>
+								</button>
+								v{deck.revisions[deck.index].revision}
+								<button on:click|preventDefault={() => {deck.index++}} disabled={deck.index >= deck.revisions.length - 1}>
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+									     fill="currentColor">
+										<path fill-rule="evenodd"
+										      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+										      clip-rule="evenodd"/>
+									</svg>
+								</button>
+								{:else}
+								v{deck.revisions[deck.index].revision}
+							{/if}
+							<span class="font-normal">{deck.revisions[deck.index].revisionName || ''}</span>
+						</div>
+						<div class="text-sm font-light">{formatDate(deck.revisions[deck.index].created)}</div>
 					</div>
 
-					<div class="text-sm font-light">{deck.deckDescription || ''}</div>
-					<div class="text-sm font-light">{deck.revisionDescription || ''}</div>
+					<div class="text-sm font-light">{deck.revisions[deck.index].deckDescription || ''}</div>
+					<div class="text-sm font-light">{deck.revisions[deck.index].revisionDescription || ''}</div>
 				</div>
 			</label>
 		{/each}

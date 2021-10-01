@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths'
+	import {loadBase} from '$lib/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = page.params
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
+		const res = await fetch(`${loadBase}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -20,13 +20,13 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import type {CardDeckRevision} from "$lib/types"
 	import DeckTabs from "./_DeckTabs.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
 	import {page, session} from '$app/stores'
 	import UploadButton from "$lib/ui/UploadButton.svelte";
-	import revisions from "./revisions.svelte";
 
 	export let revision: CardDeckRevision
 	let working = false
@@ -121,7 +121,7 @@
 				<div class="ml-9 mb-4">
 					<div class="flex">
 						{#if card.frontUrl}
-							<img src={card.frontUrl} class="h-48"/>
+							<img src={card.frontUrl} class="h-48" alt="Card"/>
 						{/if}
 						<div>
 							<div>

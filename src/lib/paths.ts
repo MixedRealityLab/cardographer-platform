@@ -7,6 +7,6 @@ let isBrowser=new Function("try {return this===window;}catch(e){ return false;}"
 const browser = isBrowser();
 console.log(`browser = ${browser}`);
 
-export let base = browser ? sbase : '';
+export let loadBase = browser ? sbase : '';
 
 

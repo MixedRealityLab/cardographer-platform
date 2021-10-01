@@ -1,6 +1,6 @@
 <script type="ts">
 	import {session} from '$app/stores'
-	import {base} from '$lib/paths'
+	import {base} from '$app/paths'
 
 	let statusCode = 0;
 	let working = false;

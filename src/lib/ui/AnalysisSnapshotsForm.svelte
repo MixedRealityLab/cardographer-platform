@@ -1,8 +1,8 @@
 <script lang="ts">
-	import {page, session} from '$app/stores';
-	import {base} from '$lib/paths';
-	import type {Analysis, SessionSnapshotSummary} from '$lib/types.ts';
-	import {onMount} from 'svelte';
+	import {page, session} from '$app/stores'
+	import {base} from '$app/paths'
+	import type {Analysis, SessionSnapshotSummary} from '$lib/types'
+	import {onMount} from 'svelte'
 
 	export let analysis: Analysis;
 	export let snapshots: SessionSnapshotSummary[] = []

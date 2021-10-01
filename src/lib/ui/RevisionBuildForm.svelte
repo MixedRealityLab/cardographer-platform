@@ -1,7 +1,7 @@
 <script type="ts">
 	import {page, session} from '$app/stores';
 	import type {BuildResponse} from '$lib/apitypes';
-	import {base} from '$lib/paths';
+	import {base} from '$app/paths';
 	import type {CardDeckRevision} from '$lib/types';
 	import {DeckBuildStatus} from "$lib/types";
 

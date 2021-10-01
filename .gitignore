@@ -2,7 +2,7 @@
 .svelte-kit/
 .swp
 .vagrant
-build/
+/build/
 node_modules/
 /functions
 server.env.local

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {page, session} from '$app/stores';
 	import type {PostFilesRequest} from '$lib/apitypes';
-	import {base} from '$lib/paths';
+	import {base} from '$app/paths';
 	import type {CardDeckRevision} from '$lib/type';
 	import {createEventDispatcher} from 'svelte';
 

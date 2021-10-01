@@ -2,7 +2,7 @@
 	import {goto} from '$app/navigation';
 	import {page, session} from '$app/stores';
 	import type {PostUserRevisionResponse} from '$lib/apitypes';
-	import {base} from '$lib/paths';
+	import {base} from '$app/paths';
 	import type {CardDeckRevision} from '$lib/types';
 
 	export let revision: CardDeckRevision;

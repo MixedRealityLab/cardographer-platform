@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {page, session} from '$app/stores'
-	import {base} from '$lib/paths'
+	import {base} from '$app/paths';
 	import type {CardDeckRevision} from '$lib/types'
 
 	export let revision: CardDeckRevision

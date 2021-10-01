@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {base} from '$lib/paths'
+	import {base} from '$app/paths';
 	import {slide} from 'svelte/transition'
 
 	export let expanded = false

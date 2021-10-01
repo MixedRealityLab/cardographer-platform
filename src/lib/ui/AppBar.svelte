@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {base} from '$lib/paths'
+	import {base} from '$app/paths';
 
 	export let title: string = 'Cardographer';
 	export let back: string = null;

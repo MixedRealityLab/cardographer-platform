@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths';
+	import {loadBase} from '$lib/paths'
 	import type {Analysis} from "$lib/types";
-	import {errorResponse, authenticateRequest} from "$lib/ui/token";
+	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {analysisId} = page.params;
-		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest(session));
+		const res = await fetch(`${loadBase}/api/user/analyses/${analysisId}`, authenticateRequest(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -20,8 +20,9 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import {page, session} from '$app/stores'
-	import type {Analysis} from '$lib/types.ts'
+	import type {Analysis} from '$lib/types'
 	import AnalysisTabs from "./_AnalysisTabs.svelte"
 
 	export let analysis: Analysis
@@ -66,19 +67,19 @@
 	<form class="flex flex-col text-sm" on:submit|preventDefault={handleSubmit}>
 		<label>
 			<span class="font-light">Analysis name</span>
-			<input class="mt-1 block w-full" required type="text" bind:value="{analysis.name}"/>
+			<input bind:value="{analysis.name}" class="mt-1 block w-full" required type="text"/>
 		</label>
 		<label class="mt-2">
 			<span class="font-light">Description</span>
-			<textarea rows="3" class="mt-1 block w-full" type="text" bind:value="{analysis.description}"></textarea>
+			<textarea bind:value="{analysis.description}" class="mt-1 block w-full" rows="3" type="text"></textarea>
 		</label>
 		<label class="mt-2">
 			<span class="font-light">Credits</span>
-			<input class="mt-1 block w-full" type="text" bind:value="{analysis.credits}"/>
+			<input bind:value="{analysis.credits}" class="mt-1 block w-full" type="text"/>
 		</label>
 		<div class="my-4">
 			<label class="flex justify-center">
-				<input type="checkbox" class="form-checkbox" bind:checked="{analysis.isPublic}">
+				<input bind:checked="{analysis.isPublic}" class="form-checkbox" type="checkbox">
 				<span class="ml-2">Public</span>
 			</label>
 		</div>
@@ -90,6 +91,6 @@
 			<div class="message-success">{message}</div>
 		{/if}
 
-		<input disabled={working} class="button mt-1" type='submit' value='Save'>
+		<input class="button mt-1" disabled={working} type='submit' value='Save'>
 	</form>
 </div>

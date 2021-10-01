@@ -1,9 +1,9 @@
 <script type="ts">
 	import {goto} from "$app/navigation";
 	import {session} from '$app/stores';
-	import type {LoginResponse} from '$lib/apitypes.ts';
-	import {base} from '$lib/paths';
-	import type {UserSession} from '$lib/systemtypes.ts';
+	import type {LoginResponse} from '$lib/apitypes'
+	import {base} from '$app/paths'
+	import type {UserSession} from '$lib/systemtypes'
 	import AppBar from "$lib/ui/AppBar.svelte";
 
 	let name: string
@@ -45,7 +45,7 @@
 				token: login.token
 			};
 			$session.user = user
-			goto(`${base}/user/decks`)
+			await goto(`${base}/user/decks`)
 			console.log(`logged in as ${email} with ${user.token}`)
 		} else {
 			error = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'

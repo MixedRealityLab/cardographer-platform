@@ -1,5 +1,5 @@
 <script type="ts">
-	import {base} from "$app/paths"
+	import {base} from '$app/paths'
 	import {page} from '$app/stores'
 	import type {Session} from "$lib/types"
 	import AppBar from "$lib/ui/AppBar.svelte"
@@ -19,11 +19,11 @@
 	<Tab url="{base}/user/sessions/{sessionId}/board">
 		Board
 	</Tab>
-	{#if session && session.decks && session.decks.length !== 0}
-		<Tab url="{base}/user/sessions/{sessionId}/tabletop">
-			Tabletop
-		</Tab>
-	{/if}
+	<!--{#if session && session.decks && session.decks.length !== 0}-->
+	<!--	<Tab url="{base}/user/sessions/{sessionId}/tabletop">-->
+	<!--		Tabletop-->
+	<!--	</Tab>-->
+	<!--{/if}-->
 	<div slot="subheader">
 		{#if session.name.toLowerCase().indexOf('session') === -1}
 			Session

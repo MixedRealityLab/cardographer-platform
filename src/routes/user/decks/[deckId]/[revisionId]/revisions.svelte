@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {base} from '$lib/paths';
+	import {loadBase} from '$lib/paths'
 	import {errorResponse, authenticateRequest} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
+		const res = await fetch(`${loadBase}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
 
 		if (res.ok) {
 			const revisions = (await res.json()).revisions.sort(compareRevisions)
@@ -28,6 +28,7 @@
 </script>
 
 <script lang="ts">
+	import {base} from '$app/paths'
 	import {goto} from "$app/navigation"
 	import {page, session} from "$app/stores"
 	import {PostUserRevisionResponse} from "$lib/apitypes"
@@ -84,16 +85,30 @@
 
 </script>
 
-<AppBar back="{base}/user/decks/{selectedRevision.deckId}/{selectedRevision.revision}"/>
+<style>
+    .border-highlight {
+        @apply border-gray-500;
+    }
+
+    .border-highlight:hover {
+        @apply border-gray-600;
+    }
+</style>
+
+<AppBar back="{base}/user/decks/{selectedRevision.deckId}/{selectedRevision.revision}">
+	<div slot="subheader">
+		Select Revision
+	</div>
+</AppBar>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
 	{#each revisions as revision}
-		<a class="listItem"
+		<a class:border-highlight={revision.revision === selectedRevision.revision} class="listItem items-center"
 		   href="{base}/user/decks/{revision.deckId}/{revision.revision}">
-			<img src="{base}/icons/deck.svg" class="w-6 mr-4"/>
+			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
 			<div class="flex-col">
-				<div class:text-gray-500={revision.revision !== selectedRevision.revision}>{revision.deckName}
-					<span class="text-gray-400">v{revision.revision} <span
+				<div>{revision.deckName}
+					<span class="text-gray-600">v{revision.revision} <span
 							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
 				</div>
 				<div class="flex flex-row gap-1">

@@ -16,6 +16,9 @@ services:
     platform:
         build: .
         restart: unless-stopped
+        environment:
+            - NODE_OPTIONS=--max_old_space_size=2048
+            - REGISTER_CODE=1234
         depends_on:
             - 'mongo'
         expose:
@@ -39,6 +42,6 @@ services:
         ports:
             - "80:80"
         depends_on:
-            - wetlands
+            - platform
         volumes:
-            - uploads:/var/www/wetlands/uploads
+            - uploads:/var/www/platform/uploads

@@ -1,5 +1,5 @@
 <script type="ts">
-	import {base} from "$app/paths"
+	import {base} from '$app/paths'
 	import {page} from "$app/stores";
 	import type {Analysis} from "$lib/types"
 	import AppBar from "$lib/ui/AppBar.svelte"
