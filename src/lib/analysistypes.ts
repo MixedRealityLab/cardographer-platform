@@ -1,19 +1,24 @@
 // for analysis
 
+import type {CardInfo} from "$lib/types";
+
 export interface SnapshotInfo {
 	boards: BoardInfo[];
 }
 
 export interface BoardInfo {
 	id: string;
-	cards: CardInfo[];
+	cards: CardSnapshot[];
 	comments?: CommentInfo[];
 }
 
-export interface CardInfo {
-	id: string;
-	zones?: CardZone[];
-	scales?: CardScale[];
+export interface CardSnapshot {
+	id: string
+	x?: number
+	y?: number
+	info?: CardInfo
+	zones?: CardZone[]
+	scales?: CardScale[]
 }
 
 export interface CommentInfo {

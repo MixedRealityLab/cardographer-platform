@@ -195,7 +195,7 @@ function getValue(column: BoardProperty, columns: BoardProperty[], values: strin
 }
 
 function getBooleanValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: boolean = true): boolean {
-	const value = getValue(column, columns, values)
+	const value = getValue(column, columns, values).toLowerCase()
 	if (defaultValue) {
 		return value != 'n' && value != 'false'
 	} else {

@@ -14,8 +14,7 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	if (debug) console.log(`get session snapshots`);
 	const db = await getDb();
 	const snapshots = await db.collection<SessionSnapshot>('SessionSnapshots').find({
-		$or: [{owners: locals.email},
-			{isPublic: true}]
+		$or: [{owners: locals.email}, {isPublic: true}]
 	}, {
 		projection: {
 			_id: true, sessionId: true, sessionName: true,

@@ -47,7 +47,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		lastModified: now,
 		owners: [locals.email],
 		isPublic: false,
-		snapshots: [],
+		snapshotIds: [],
 	};
 	// add
 	let result = await db.collection<Analysis>('Analyses').insertOne(analysis);

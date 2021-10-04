@@ -55,7 +55,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	}
 	return {
 		body: {
-			revision: session as any
+			session: session as any
 		}
 	}
 }

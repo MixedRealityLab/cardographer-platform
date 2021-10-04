@@ -1,9 +1,10 @@
-import type {BoardInfo, CardInfo} from '$lib/analysistypes';
+import type {BoardInfo, CardSnapshot} from '$lib/analysistypes';
 import {AnalysisExportTypes} from '$lib/analysistypes';
 import {getClient} from '$lib/clients';
+import {hexValue, plasmaColour} from "$lib/colour";
 import {arrayToCsv} from '$lib/csvutils';
 import {getDb} from '$lib/db';
-import type {Analysis, Session, SessionSnapshot} from '$lib/types';
+import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types';
 
 const debug = true;
 
@@ -15,14 +16,13 @@ interface DesignInfo {
 
 interface CardUse {
 	id: string;
-	use: CardInfo[][];
+	info?: CardInfo
+	use: CardSnapshot[][];
 }
 
 export async function analysisNodeGraph(analysis: Analysis) {
 	let rawDesigns: DesignInfo[] = await readDesigns(analysis);
 	for (let design of rawDesigns) {
-		// filter boards
-		// TODO design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
 		for (let board of design.boards) {
 			for (let cardInfo of board.cards) {
 				let id = cardInfo.id;
@@ -44,36 +44,35 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
-	let designs = [];
+	let boards: BoardInfo[] = []
 	for (let design of rawDesigns) {
 		for (let bi in design.boards) {
 			let board = design.boards[bi];
-			designs.push({
-				id: board.id ? `${design.id}:${board.id}` : design.id,
-				snapshot: design.snapshot,
-				boards: [board],
-			});
+			boards.push(board)
 		}
 	}
 
 	let cardUses: CardUse[] = [];
-	for (let di in designs) {
-		const design = designs[di];
-		for (let board of design.boards) {
-			for (let cardInfo of board.cards) {
-				let cardUse: CardUse = cardUses.find((cu) => cu.id === cardInfo.id);
-				if (!cardUse) {
-					cardUse = {
-						id: cardInfo.id,
-						use: [],
-					}
-					cardUses.push(cardUse);
+	for (let bi in boards) {
+		const board = boards[bi];
+		for (let cardInfo of board.cards) {
+			let cardUse: CardUse = cardUses.find((cu) => cu.id === cardInfo.id);
+			if (!cardUse) {
+				cardUse = {
+					id: cardInfo.id,
+					info: cardInfo.info,
+					use: [],
 				}
-				if (cardUse.use[di]) {
-					cardUse.use[di].push(cardInfo);
-				} else {
-					cardUse.use[di] = [cardInfo];
-				}
+
+				cardUses.push(cardUse);
+			}
+			if (cardUse.use[bi]) {
+				cardUse.use[bi].push(cardInfo);
+			} else {
+				cardUse.use[bi] = [cardInfo];
+			}
+			if (!cardUse.info && cardInfo.info) {
+				cardUse.info = cardInfo.info
 			}
 		}
 	}
@@ -83,37 +82,56 @@ export async function analysisNodeGraph(analysis: Analysis) {
 
 	for (let cardIndex1 = 0; cardIndex1 < cardUses.length; cardIndex1++) {
 		const cardUse1 = cardUses[cardIndex1]
-		for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {
-			const cardUse2 = cardUses[cardIndex2]
-			let count = 0;
-			for (let di in designs) {
-				if (cardUse1.use[di] && cardUse2.use[di]) {
-					count++;
+		let cardColors: number[] = []
+		let include = false
+		for (const bi in boards) {
+			const cu = cardUse1.use[bi]
+			if (cu) {
+				for (const use of cu) {
+					if (use.x) {
+						cardColors.push(use.x)
+					}
+					include = true
 				}
 			}
-			if (count != 0) {
-				if (nodes.every((node) => node.data.id !== cardUse1.id)) {
-					nodes.push({
-						data: {
-							id: cardUse1.id
-						}
-					})
+		}
+		if (include) {
+			let colour = '#666'
+			if (cardColors.length > 0) {
+				const colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
+				colour = hexValue(plasmaColour(colourMix))
+			}
+
+			nodes.push({
+				data: {
+					id: cardUse1.id,
+					label: cardUse1.info && cardUse1.info.name || cardUse1.id,
+					colour: colour
 				}
-				if (nodes.every((node) => node.data.id !== cardUse2.id)) {
-					nodes.push({
-						data: {
-							id: cardUse2.id
-						}
-					})
-				}
-				edges.push({
-					data: {
-						id: cardUse1.id + ":" + cardUse2.id, source: cardUse1.id, target: cardUse2.id, value: count
+			})
+			for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {
+				const cardUse2 = cardUses[cardIndex2]
+				let count = 0;
+				for (const bi in boards) {
+					if (cardUse1.use[bi] && cardUse2.use[bi]) {
+						count++;
 					}
-				})
+				}
+				if (count != 0) {
+					edges.push({
+						data: {
+							id: cardUse1.id + ":" + cardUse2.id,
+							source: cardUse1.id,
+							target: cardUse2.id,
+							value: count / 2
+						}
+					})
+				}
 			}
 		}
 	}
+
+	//nodes.sort((node1, node2) => node1.colour.localeCompare(node2.colour))
 
 	return {
 		nodes: nodes,
@@ -236,12 +254,12 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 	const db = await getDb();
 	// get real snapshots
 	let designs: DesignInfo[] = [];
-	for (let s of analysis.snapshots) {
+	for (let snapshotId of analysis.snapshotIds) {
 		const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({
-			_id: s._id
+			_id: snapshotId
 		});
 		if (!snapshot) {
-			if (debug) console.log(`cannot find real snapshot ${s._id}`);
+			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
 			continue;
 		}
 		const client = getClient(snapshot.sessionType);
@@ -254,7 +272,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			_id: snapshot.sessionId
 		})
 		if (!session) {
-			if (debug) console.log(`cannot find real snapshot ${s._id}`);
+			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
 			continue;
 		}
 
@@ -264,6 +282,24 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 				const region = session.board.regions.find((region) => region.id === board.id)
 				return !region || region.analyse
 			})
+		}
+		if (session.decks) {
+			for (let sessionDeck of session.decks) {
+				const deck = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
+					deckId: sessionDeck.deckId,
+					revision: sessionDeck.revision
+				})
+				if (deck && deck.cards) {
+					for (let board of boards) {
+						for (let card of board.cards) {
+							const info = deck.cards.find((deckCard) => deckCard.id === card.id)
+							if (info) {
+								card.info = info
+							}
+						}
+					}
+				}
+			}
 		}
 
 		designs.push({

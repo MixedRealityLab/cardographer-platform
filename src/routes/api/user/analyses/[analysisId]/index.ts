@@ -61,7 +61,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 			credits: analysis.credits,
 			lastModified: now,
 			isPublic: analysis.isPublic,
-			snapshots: analysis.snapshots, //?
+			snapshotIds: analysis.snapshotIds, //?
 		}
 	});
 	if (!upd.matchedCount) {

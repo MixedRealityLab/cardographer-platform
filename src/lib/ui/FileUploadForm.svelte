@@ -3,6 +3,7 @@
 	import type {PostFilesRequest} from '$lib/apitypes';
 	import {base} from '$app/paths';
 	import type {CardDeckRevision} from '$lib/type';
+	import {authenticateRequest} from "$lib/ui/token";
 	import {createEventDispatcher} from 'svelte';
 
 	export let revision: CardDeckRevision;
@@ -33,11 +34,6 @@
 		message = '';
 		error = '';
 
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
 		working = true;
 		const {deckId, revisionId, file} = $page.params;
 		let req: PostFilesRequest = {
@@ -55,14 +51,13 @@
 		}
 		const url = `${base}/api/user/decks/${deckId}/${revisionId}/files${file.length == 0 ? '' : '/' + file}`;
 		//console.log(`upload to ${url}`);
-		const res = await fetch(url, {
+		const res = await fetch(url, authenticateRequest($session, {
 			method: 'POST',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(req)
-		});
+		}));
 		//console.log(`done`, res);
 		working = false;
 		if (res.ok) {

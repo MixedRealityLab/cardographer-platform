@@ -1,5 +1,5 @@
 // appv1 = vuforia app, pre2021
-import type {BoardInfo, CardInfo, SnapshotInfo} from '$lib/analysistypes';
+import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
 import type {Session, SessionSnapshot} from '$lib/types';
 import {Client} from './types';
 
@@ -107,7 +107,7 @@ export class Appv1 extends Client {
 			return info;
 		}
 		for (let card of cards) {
-			let ci: CardInfo = {
+			let ci: CardSnapshot = {
 				id: card.card_id,
 			}
 			board.cards.push(ci);

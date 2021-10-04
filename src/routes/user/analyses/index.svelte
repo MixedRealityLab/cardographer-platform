@@ -37,14 +37,8 @@
 	let working = false;
 
 	async function newAnalysis() {
-		error = '';
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
-		working = true;
-		const url = `${base}/api/user/analyses`;
+		error = ''
+		working = true
 		const analysis: Analysis = {
 			_id: '',
 			name: 'New Analysis',
@@ -52,21 +46,20 @@
 			created: "",
 			lastModified: new Date().toISOString(),
 			owners: [],
-			snapshots: []
-		};
-		let res = await fetch(url, {
+			snapshotIds: []
+		}
+		let res = await fetch(`${base}/api/user/analyses`, authenticateRequest($session,{
 			method: 'POST',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(analysis)
-		});
+		}));
 		working = false;
 		if (res.ok) {
 			const info = await res.json();
 			// redirect
-			goto(`analyses/${info.analid}`);
+			await goto(`analyses/${info.analid}`);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}
@@ -79,9 +72,8 @@
 <div class="flex flex-col p-6 w-full text-sm font-medium">
 	{#each analyses as analysis}
 		<a class="listItem items-center" href="analyses/{analysis._id}">
-			<img src="{base}/icons/analysis.svg" class="w-7 my-1 mr-4" alt=""/>
 			<div class="flex flex-col">
-				<div>{analysis.name}</div>
+				<div class="font-semibold">{analysis.name}</div>
 				<div class="flex flex-row gap-1">
 					{#if analysis.isPublic}
 						<div class="chip">Public</div>

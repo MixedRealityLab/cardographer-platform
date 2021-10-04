@@ -30,6 +30,7 @@
 	import type {CopySessionResponse} from '$lib/apitypes';
 	import {session} from '$app/stores';
 	import {goto} from '$app/navigation';
+	import {authenticateRequest} from "$lib/ui/token";
 
 	export let sessions: Session[]
 
@@ -38,23 +39,17 @@
 
 	async function createSession(sessionId: string) {
 		error = ''
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
 		working = true;
 
-		const res = await fetch(`${base}/api/user/sessions/copy`, {
+		const res = await fetch(`${base}/api/user/sessions/copy`, authenticateRequest($session, {
 			method: 'POST',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify({
 				sessionId: sessionId
 			})
-		});
+		}));
 		working = false;
 		if (res.ok) {
 			const info = await res.json() as CopySessionResponse;
@@ -73,7 +68,7 @@
 	{#if error}
 		<div class="message-error">{error}</div>
 	{/if}
-	<div on:click={() => createSession('blank')} class="listItem flex-col" class:cursor-pointer={!working}>
+	<div class="listItem flex-col" class:cursor-pointer={!working} on:click={() => createSession('blank')}>
 		<div class="flex flex-row gap-1">
 			<div>Create Blank Session</div>
 		</div>

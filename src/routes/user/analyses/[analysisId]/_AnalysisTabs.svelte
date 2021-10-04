@@ -14,7 +14,7 @@
 		Details
 	</Tab>
 	<Tab url="{base}/user/analyses/{analysisId}/sessions">
-		Snapshots
+		Sessions
 	</Tab>
 	<Tab url="{base}/user/analyses/{analysisId}/export">
 		Export

@@ -97,6 +97,14 @@
 		if (res.ok) {
 			//files = await res.json() as FileInfo[]
 			await refresh()
+			const result = await res.json()
+			if(result.error) {
+				if(result.messages && result.messages.length > 0) {
+					error = result.messages.join('')
+				} else {
+					error = result.error
+				}
+			}
 		} else {
 			error = res.statusText
 			console.log(`error refreshing ${res.status}`);
@@ -123,7 +131,7 @@
 	<FileUploadForm on:finished={uploadFinished}/>
 </div>
 {#if error}
-	<div class="message-error mx-6">{error}</div>
+	<div class="message-error mx-6 whitespace-pre-line">{error}</div>
 {/if}
 
 
@@ -151,8 +159,9 @@
 				</a>
 			{/if}
 			<button class="opacity-25 transition-opacity duration-500 hover:opacity-100"
-			        on:click={() => {deleteFile(($page.params.file.length > 0 ? $page.params.file + '/' : '')+ file.name)}}><img
-					src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/></button>
+			        on:click={() => {deleteFile(($page.params.file.length > 0 ? $page.params.file + '/' : '')+ file.name)}}>
+				<img
+						src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/></button>
 		</div>
 	{/each}
 </div>

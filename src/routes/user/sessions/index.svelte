@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import {loadBase} from '$lib/paths'
+	import type {Session} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
@@ -16,12 +17,11 @@
 		return errorResponse(res)
 	}
 
-	function compareSessions(a, b) {
+	function compareSessions(a: Session, b: Session) {
 		const aName = `${a.name} ${a.owners[0]} ${a.created}`
 		const bName = `${b.name} ${b.owners[0]} ${b.created}`
 		return String(aName).localeCompare(bName)
 	}
-
 </script>
 
 <script lang="ts">
@@ -45,11 +45,6 @@
 			return
 		}
 		error = message = '';
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
 		working = true;
 		const promises: Promise<string>[] = []
 
@@ -58,14 +53,13 @@
 		})
 		const fileJsons = await Promise.all(promises)
 		const json = '[' + fileJsons.join(',') + ']'
-		const res = await fetch(`${base}/api/user/sessions/import`, {
+		const res = await fetch(`${base}/api/user/sessions/import`, authenticateRequest($session, {
 			method: 'POST',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: json
-		});
+		}));
 		working = false
 		if (res.ok) {
 			const info = await res.json();
@@ -89,7 +83,7 @@
 		{#if showArchived === session.isArchived}
 			<a class="listItem flex-col" href="sessions/{session._id}">
 				<div class="flex flex-row gap-1">
-					{session.name}
+					<div class="font-semibold">{session.name}</div>
 					{#if session.isPublic}
 						<div class="chip">Public</div>
 					{/if}

@@ -64,11 +64,6 @@
 	async function exportCsv() {
 		console.log(`export...`);
 		message = error = '';
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
 		working = true;
 		const {analysisId} = $page.params;
 		let url = `${base}/api/user/analyses/${analysisId}/gephy.csv?type=${exportType}`;
@@ -81,9 +76,7 @@
 		if (boards) {
 			url = url + '&boards=' + encodeURIComponent(boards);
 		}
-		const res = await fetch(url, {
-			headers: {authorization: `Bearer ${token}`},
-		});
+		const res = await fetch(url, authenticateRequest($session))
 		working = false;
 		if (res.ok) {
 			const text = await res.text();

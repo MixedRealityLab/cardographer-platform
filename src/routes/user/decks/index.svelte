@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
 	import {loadBase} from '$lib/paths'
+	import type {CardDeckSummary} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
@@ -16,7 +17,7 @@
 		return errorResponse(res)
 	}
 
-	function compareDecks(a, b) {
+	function compareDecks(a: CardDeckSummary, b: CardDeckSummary) {
 		const aName = `${a.name} ${a._id}`;
 		const bName = `${b.name} ${b._id}`;
 		return String(aName).localeCompare(bName);
@@ -39,9 +40,9 @@
 		<a class="listItem" href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
 			<div>
-				<div> {deck.name} <span class="text-gray-400">v{deck.currentRevision}</span></div>
+				<div><span class="font-semibold">{deck.name}</span> <span class="text-gray-600">v{deck.currentRevision}</span></div>
 				{#if deck.description}
-					<div class="text-sm font-light">{deck.description}</div>
+					<div class="text-sm">{deck.description}</div>
 				{/if}
 			</div>
 		</a>

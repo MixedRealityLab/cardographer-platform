@@ -315,7 +315,7 @@ export interface Analysis {
 	lastModified: string // ISO date
 	owners: string[]
 	isPublic: boolean
-	snapshots: SessionSnapshotSummary[]
+	snapshotIds: string[]
 }
 
 //EOF

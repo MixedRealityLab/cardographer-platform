@@ -36,23 +36,14 @@
 		message = '';
 		error = '';
 
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
-		working = true;
-
-		const {analysisId} = $page.params;
-		const url = `${base}/api/user/analyses/${analysisId}`;
-		const res = await fetch(url, {
+		const {analysisId} = $page.params
+		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest($session, {
 			method: 'PUT',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(analysis)
-		});
+		}))
 		working = false;
 		if (res.ok) {
 			message = "Updated";

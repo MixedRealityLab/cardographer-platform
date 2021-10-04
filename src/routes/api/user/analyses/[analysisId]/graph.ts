@@ -1,5 +1,4 @@
-import {analysisNodeGraph, exportAnalysisAsCsv} from '$lib/analysis';
-import {AnalysisExportTypes} from '$lib/analysistypes';
+import {analysisNodeGraph} from '$lib/analysis';
 import {getDb} from '$lib/db';
 import type {ServerLocals} from '$lib/systemtypes';
 import type {Analysis} from '$lib/types';

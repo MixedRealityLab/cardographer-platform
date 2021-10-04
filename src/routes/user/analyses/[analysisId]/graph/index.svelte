@@ -22,10 +22,10 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import {page, session} from "$app/stores"
-	import cytoscape from "cytoscape"
+	import cytoscape, {Css, StylesheetStyle} from "cytoscape"
 	import type {ElementsDefinition} from "cytoscape"
 	import {onMount} from "svelte"
-	import AnalysisTabs from "./_AnalysisTabs.svelte"
+	import AnalysisTabs from "../_AnalysisTabs.svelte"
 
 	export let analysis: Analysis
 	let graphElement: HTMLElement
@@ -46,8 +46,8 @@
 						style: {
 							'width': 20,
 							'height': 20,
-							'background-color': '#666',
-							'content': 'data(id)'
+							'background-color': 'data(colour)',
+							'content': 'data(label)'
 						}
 					},
 					{
@@ -57,6 +57,17 @@
 							'line-color': '#333',
 							'curve-style': 'bezier'
 						}
+					},
+					{
+						selector: 'node[label]',
+						style: {
+							"color": "#111",
+							"text-background-color": "#FFF",
+							"text-background-opacity": 0.5,
+							"text-background-padding": 2,
+							"text-margin-y": -2,
+							"text-background-shape": "round-rectangle",
+						} as Css.Node
 					}
 				],
 			})
@@ -65,5 +76,5 @@
 </script>
 
 <AnalysisTabs analysis="{analysis}"/>
-<div style="height: 800px" bind:this={graphElement}>
+<div bind:this={graphElement} style="height: 800px">
 </div>

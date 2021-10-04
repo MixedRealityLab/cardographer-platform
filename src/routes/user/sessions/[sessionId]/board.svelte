@@ -4,14 +4,14 @@
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const {sessionId} = page.params;
-		const res = await fetch(`${loadBase}/api/user/sessions/${sessionId}`, authenticateRequest(session));
+		const {sessionId} = page.params
+		const res = await fetch(`${loadBase}/api/user/sessions/${sessionId}`, authenticateRequest(session))
 		if (res.ok) {
 			return {
 				props: {
 					session: (await res.json())
 				}
-			};
+			}
 		}
 
 		return errorResponse(res)
@@ -35,11 +35,11 @@
 	// submit form
 	async function upload(event: CustomEvent<FileList>) {
 		const files = event.detail
-		console.log(`submit`, files);
-		message = '';
-		error = '';
+		console.log(`submit`, files)
+		message = ''
+		error = ''
 
-		working = true;
+		working = true
 		const {sessionId} = $page.params
 		const csvData = await files[0].text()
 		const res = await fetch(`${base}/api/user/sessions/${sessionId}/board`, authenticateRequest($pageSession, {
@@ -49,12 +49,12 @@
 			},
 			body: csvData
 		}))
-		working = false;
+		working = false
 		if (res.ok) {
-			message = "Updated";
-			//??revision = await res.body.json() as CardDeckRevision;
+			message = "Updated"
+			session = (await res.json()).session
 		} else {
-			error = `Sorry, there was a problem (${res.statusText})`;
+			error = `Sorry, there was a problem (${res.statusText})`
 		}
 	}
 </script>
@@ -63,13 +63,17 @@
 
 <div class="p-6 flex flex-col">
 	{#if session.board}
-		<div>{session.board.name}
-		</div>
+		<div class="font-semibold">{session.board.name}</div>
 		{#if session.board.description}
 			<div>{session.board.description}</div>
 		{/if}
 		{#each session.board.regions as region}
-			<div>{region.name}</div>
+			<div class="text-sm">
+				{#if !region.analyse}
+					Ignore
+				{/if}
+				{region.name}
+			</div>
 		{/each}
 	{:else}
 		<span class="self-center">No Board</span>
@@ -83,6 +87,6 @@
 	{/if}
 
 	<UploadButton class="button mt-4" on:upload={upload} types=".csv,text/csv">
-		<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
+		<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
 	</UploadButton>
 </div>

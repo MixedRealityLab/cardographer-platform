@@ -1,4 +1,4 @@
-import type {BoardInfo, CardInfo, SnapshotInfo} from '$lib/analysistypes';
+import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
 import type {Session, SessionSnapshot} from '$lib/types';
 import {Client} from './types';
 
@@ -135,7 +135,7 @@ export class MiroClient extends Client {
 				if (debug) console.log(`ignore unnamed image`, widget);
 				continue;
 			}
-			let ci: CardInfo = {id, zones: []};
+			let ci: CardSnapshot = {id, zones: []};
 			let frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && cardInBounds(widget, w));
 			let boardId = '';
 			if (frames.length == 0) {
@@ -144,7 +144,9 @@ export class MiroClient extends Client {
 				if (frames.length > 1) {
 					if (debug) console.log(`${frames.length} possible boards for image ${id} ${widget.id}`);
 				}
-				boardId = frames[0].title;
+				boardId = frames[0].title
+				ci.x = (widget.bounds.left - frames[0].bounds.left) / (frames[0].bounds.width - widget.bounds.width)
+				ci.y = (widget.bounds.top - frames[0].bounds.top) / (frames[0].bounds.height - widget.bounds.height)
 			}
 			let board = boards.find((b) => b.id == boardId);
 

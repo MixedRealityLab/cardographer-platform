@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import {loadBase} from '$lib/paths'
-	import {errorResponse, authenticateRequest} from "$lib/ui/token"
+	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
@@ -45,11 +45,6 @@
 
 	async function createNewRevision() {
 		message = error = '';
-		const token = $session.user?.token;
-		if (!token) {
-			alert("Sorry, you don't seem to be logged in");
-			return;
-		}
 		working = true;
 		// get latest value
 		const getResponse = await fetch(`${base}/api/user/decks/${selectedRevision.deckId}/${selectedRevision.revision}`)
@@ -63,21 +58,20 @@
 		newRevision.revisionName = 'New revision';
 		newRevision.revisionDescription = `Based on revision ${selectedRevision.revision} of ${selectedRevision.deckName}`;
 		newRevision.slug = '';
-		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, {
+		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, authenticateRequest($session, {
 			method: 'POST',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(newRevision)
-		});
+		}))
 		working = false;
 		if (res.ok) {
 			selectedRevision.isCurrent = false;
 			const output = await res.json() as PostUserRevisionResponse;
 			message = 'OK';
 			// redirect
-			goto(`${base}/user/decks/${deckId}/${output.revId}`);
+			await goto(`${base}/user/decks/${deckId}/${output.revId}`);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}
@@ -134,6 +128,6 @@
 
 
 	<button class="button self-center m-2" disabled={working} on:click={createNewRevision}>
-		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Revision
+		<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision
 	</button>
 </div>

@@ -20,7 +20,7 @@
 		])
 
 		if (responses.every((res) => res.ok)) {
-			const decks = (await responses[1].json()).decks as CardDeckRevisionSummary[]
+			const decks = ((await responses[1].json()).decks as CardDeckRevisionSummary[]).sort(compareDecks)
 			let deckInfo: DeckInfo[] = []
 			decks.forEach((revision) => {
 				const deck = deckInfo.find((deckItem) => deckItem.deckId == revision.deckId)
@@ -57,6 +57,12 @@
 		}
 
 		return errorResponses(responses)
+	}
+
+	function compareDecks(a: CardDeckRevisionSummary, b: CardDeckRevisionSummary) {
+		const aName = `${a.deckName} ${a.created}`;
+		const bName = `${b.deckName} ${b.created}`;
+		return String(aName).localeCompare(bName);
 	}
 </script>
 
@@ -120,17 +126,17 @@
 </script>
 
 <style>
-	button:disabled {
-		@apply opacity-50 cursor-default;
-	}
+    button:disabled {
+        @apply opacity-50 cursor-default;
+    }
 
-	button:enabled:hover {
-		@apply opacity-75;
-	}
+    button:enabled:hover {
+        @apply opacity-75;
+    }
 
-	.border-highlight {
-		@apply border-blue-700;
-	}
+    .border-highlight {
+        @apply border-blue-700;
+    }
 </style>
 
 <SessionTabs session="{session}"/>
@@ -143,7 +149,7 @@
 				<div class="flex flex-1 flex-col">
 					<div class="flex">
 						<div class="flex-1 flex items-center gap-1">
-							{deck.revisions[deck.index].deckName}
+							<span class="font-semibold">{deck.revisions[deck.index].deckName}</span>
 							{#if deck.revisions.length > 1}
 								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0}>
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -153,8 +159,9 @@
 										      clip-rule="evenodd"/>
 									</svg>
 								</button>
-								v{deck.revisions[deck.index].revision}
-								<button on:click|preventDefault={() => {deck.index++}} disabled={deck.index >= deck.revisions.length - 1}>
+								<span class="text-gray-600 font-semibold">v{deck.revisions[deck.index].revision}</span>
+								<button on:click|preventDefault={() => {deck.index++}}
+								        disabled={deck.index >= deck.revisions.length - 1}>
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
 									     fill="currentColor">
 										<path fill-rule="evenodd"
@@ -162,10 +169,10 @@
 										      clip-rule="evenodd"/>
 									</svg>
 								</button>
-								{:else}
-								v{deck.revisions[deck.index].revision}
+							{:else}
+								<span class="text-gray-600 font-semibold">v{deck.revisions[deck.index].revision}</span>
 							{/if}
-							<span class="font-normal">{deck.revisions[deck.index].revisionName || ''}</span>
+							<span class="text-gray-600 font-normal">{deck.revisions[deck.index].revisionName || ''}</span>
 						</div>
 						<div class="text-sm font-light">{formatDate(deck.revisions[deck.index].created)}</div>
 					</div>

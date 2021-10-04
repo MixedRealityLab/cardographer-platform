@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import {loadBase} from '$lib/paths'
-	import {errorResponse, authenticateRequest} from "$lib/ui/token"
+	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
@@ -33,26 +33,17 @@
 
 	// submit deck edit form
 	async function handleSubmit() {
-		console.log(`submit`, revision);
-		message = '';
-		error = '';
+		console.log(`submit`, revision)
+		message = error = ''
+		working = true
 
-		const token = $session.user?.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
-		working = true;
-
-		const url = `${base}/api/user/decks/${revision.deckId}/${revision.revision}`;
-		const res = await fetch(url, {
+		const res = await fetch(`${base}/api/user/decks/${revision.deckId}/${revision.revision}`, authenticateRequest($session, {
 			method: 'PUT',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify(revision)
-		});
+		}))
 		working = false;
 		if (res.ok) {
 			message = "Updated";
@@ -62,50 +53,50 @@
 	}
 </script>
 
-<DeckTabs tab="details" revision="{revision}"/>
+<DeckTabs revision="{revision}" tab="details"/>
 
 <form class="p-6 flex flex-col" on:submit|preventDefault={handleSubmit}>
 	<label class="">
 		<span class="text-sm text-gray-500">Title</span>
-		<input class="block w-full" required id="deckName" type="text" bind:value="{revision.deckName}"/>
+		<input bind:value="{revision.deckName}" class="block w-full" id="deckName" required type="text"/>
 	</label>
 	<label class="mt-2">
 		<span class="text-sm text-gray-500">Description</span>
-		<textarea rows="3" class="block w-full" id="deckDescription" type="text"
-		          bind:value="{revision.deckDescription}"></textarea>
+		<textarea bind:value="{revision.deckDescription}" class="block w-full" id="deckDescription" rows="3"
+		          type="text"></textarea>
 	</label>
 	<label class="mt-2">
 		<span class="text-sm text-gray-500">Credits</span>
-		<input class="block w-full" id="deckCredits" type="text" bind:value="{revision.deckCredits}"/>
+		<input bind:value="{revision.deckCredits}" class="block w-full" id="deckCredits" type="text"/>
 	</label>
 	<label class="mt-2">
 		<span class="text-sm text-gray-500">Revision Subtitle</span>
-		<input class="block w-full" id="revisionName" type="text" bind:value="{revision.revisionName}"/>
+		<input bind:value="{revision.revisionName}" class="block w-full" id="revisionName" type="text"/>
 	</label>
 	<label class="mt-2">
 		<span class="text-sm text-gray-500">Revision Description</span>
-		<textarea rows="3" class="block w-full" id="revisionDescription" type="text"
-		          bind:value="{revision.revisionDescription}"></textarea>
+		<textarea bind:value="{revision.revisionDescription}" class="block w-full" id="revisionDescription" rows="3"
+		          type="text"></textarea>
 	</label>
 	<label class="mt-2">
 		<span class="text-sm text-gray-500">Slug (for filenames and URLs)</span>
-		<input class="block w-full" id="slug" type="text" bind:value="{revision.slug}"/>
+		<input bind:value="{revision.slug}" class="block w-full" id="slug" type="text"/>
 	</label>
 	<div class="flex flex-wrap justify-center m-3">
 		<label class="flex items-center py-1">
-			<input type="checkbox" class="form-checkbox" bind:checked="{revision.isUsable}">
+			<input bind:checked="{revision.isUsable}" class="form-checkbox" type="checkbox">
 			<span class="ml-2">Usable</span>
 		</label>
 		<label class="flex items-center ml-6 py-1">
-			<input type="checkbox" class="form-checkbox" bind:checked="{revision.isPublic}">
+			<input bind:checked="{revision.isPublic}" class="form-checkbox" type="checkbox">
 			<span class="ml-2">Public</span>
 		</label>
 		<label class="flex items-center ml-6 py-1">
-			<input type="checkbox" class="form-checkbox" bind:checked="{revision.isLocked}">
+			<input bind:checked="{revision.isLocked}" class="form-checkbox" type="checkbox">
 			<span class="ml-2">Locked</span>
 		</label>
 		<label class="flex items-center ml-6 py-1">
-			<input type="checkbox" class="form-checkbox" bind:checked="{revision.isTemplate}">
+			<input bind:checked="{revision.isTemplate}" class="form-checkbox" type="checkbox">
 			<span class="ml-2">Template</span>
 		</label>
 		{#if revision?.build}
@@ -124,5 +115,5 @@
 		<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
 	{/if}
 
-	<input disabled={working} class="button self-center mt-2" type='submit' value='Save'>
+	<input class="button self-center mt-2" disabled={working} type='submit' value='Save'>
 </form>
