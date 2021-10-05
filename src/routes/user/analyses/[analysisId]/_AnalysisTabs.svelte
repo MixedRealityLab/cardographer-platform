@@ -19,6 +19,9 @@
 	<Tab url="{base}/user/analyses/{analysisId}/export">
 		Export
 	</Tab>
+	<Tab url="{base}/user/analyses/{analysisId}/graph">
+		Graph
+	</Tab>
 	<div slot="subheader">{analysis.name}</div>
 </AppBar>
 

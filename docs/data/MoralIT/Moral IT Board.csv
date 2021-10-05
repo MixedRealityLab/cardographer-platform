@@ -1,0 +1,6 @@
+title:,ID,title,description,x,y,width,height,analyse
+board:,,Test Board,,,,,,
+region:,Ethics Suit,Ethics Suit,,,,,,FALSE
+region:,Security Suit,Security Suit,,,,,,FALSE
+region:,Privacy Suit,Privacy Suit,,,,,,FALSE
+region:,Law Suit,Law Suit,,,,,,FALSE
