@@ -30,7 +30,6 @@
 	import type {CopySessionResponse} from '$lib/apitypes';
 	import {session} from '$app/stores';
 	import {goto} from '$app/navigation';
-	import {authenticateRequest} from "$lib/ui/token";
 
 	export let sessions: Session[]
 
