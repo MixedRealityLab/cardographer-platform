@@ -59,7 +59,7 @@
 		if (res.ok) {
 			const info = await res.json();
 			// redirect
-			await goto(`analyses/${info.analid}`);
+			await goto(`analyses/${info.analysisId}`);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}

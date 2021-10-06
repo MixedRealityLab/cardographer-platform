@@ -1,23 +1,23 @@
-import {getDb, getNewId} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
-import type {Analysis} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import {getDb, getNewId} from '$lib/db'
+import type {ServerLocals} from '$lib/systemtypes'
+import type {Analysis} from '$lib/types'
+import type {EndpointOutput, Request} from '@sveltejs/kit'
 
-const debug = true;
+const debug = true
 
 export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+	const locals = request.locals as ServerLocals
 	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+		if (debug) console.log(`locals`, locals)
 		return {status: 401}
 	}
-	if (debug) console.log(`get analyses`);
-	const db = await getDb();
+	if (debug) console.log(`get analyses`)
+	const db = await getDb()
 	const analyses = await db.collection<Analysis>('Analyses').find({
 		owners: locals.email
 	}).toArray()
 	// Project?
-	if (debug) console.log(`${analyses.length} analyses for ${locals.email}`);
+	if (debug) console.log(`${analyses.length} analyses for ${locals.email}`)
 	return {
 		body: {
 			values: analyses as any
@@ -33,13 +33,11 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	}
 	let an = request.body as unknown as Analysis;
 	//if (debug) console.log(`add analysis`, analysis);
-	const db = await getDb();
-	// new analysis id
-	const newid = getNewId();
-	const now = new Date().toISOString();
-	// sanitise
+	const db = await getDb()
+	const newId = getNewId()
+	const now = new Date().toISOString()
 	const analysis: Analysis = {
-		_id: newid,
+		_id: newId,
 		name: an.name || "Unnamed",
 		description: an.description || "",
 		credits: an.credits || "",
@@ -52,15 +50,14 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	// add
 	let result = await db.collection<Analysis>('Analyses').insertOne(analysis);
 	if (!result.insertedId) {
-		console.log(`Error adding new analysis ${newid}`);
+		console.log(`Error adding new analysis ${newId}`);
 		return {status: 500};
 	}
-	console.log(`added analysis ${newid}`);
+	console.log(`added analysis ${newId}`);
 
 	return {
 		body: {
-			analid: newid
+			analysisId: newId
 		}
 	}
 }
-
