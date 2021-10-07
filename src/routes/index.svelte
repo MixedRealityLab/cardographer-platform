@@ -77,26 +77,26 @@
 	</button>
 </AppBar>
 
-<div class="p-6 max-w-md mx-auto">
+<div class="p-12 max-w-md mx-auto">
 	<form on:submit|preventDefault={handleSubmit}>
-		<div class="flex flex-col">
+		<div class="flex flex-col gap-8">
 			{#if register}
-				<label class="mt-2">
+				<label>
 					<span>Name</span>
 					<input class="w-full" required id="name" type="text" bind:value="{name}"/>
 				</label>
 			{/if}
-			<label class="mt-2">
+			<label>
 				<span>Email</span>
 				<input class="w-full" required id="email" type="text" bind:value="{email}"/>
 			</label>
-			<label class="mt-2">
+			<label>
 				<span>Password</span>
 				<input class="w-full" required id="password" type="password" bind:value="{password}"/>
 			</label>
 
 			{#if register}
-				<label class="mt-2">
+				<label>
 					<span>Registration code</span>
 					<input class="w-full" required id="code" type="password" bind:value="{code}"/>
 				</label>
@@ -106,7 +106,7 @@
 				<div class="message-error">{error}</div>
 			{/if}
 
-			<input disabled={working} class="button self-center mt-4" type='submit'
+			<input disabled={working} class="button self-center" type='submit'
 			       value='{register ? "Register" : "Log in"}'>
 		</div>
 	</form>
