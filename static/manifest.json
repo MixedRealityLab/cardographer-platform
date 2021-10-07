@@ -7,6 +7,11 @@
 	"short_name": "Cardographer",
 	"icons": [
 		{
+			"src": "/platform/cards.svg",
+			"sizes": "24x24",
+			"type": "image/svg"
+		},
+		{
 			"src": "/platform/icon-192.png",
 			"sizes": "192x192",
 			"type": "image/png"
