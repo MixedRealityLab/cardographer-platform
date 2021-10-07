@@ -9,7 +9,7 @@
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato&display=swap">
 	<link rel="icon" type="image/svg" href="{base}/cards.svg">
 	<link rel="manifest" href="{base}/manifest.json">
 </svelte:head>
