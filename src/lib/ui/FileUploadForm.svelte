@@ -80,7 +80,7 @@
 	<div class="message-success">{message}</div>
 {/if}
 
-<button class="button-slim" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
+<button class="button button-slim" disabled={working || revision?.isLocked} on:click={() => {input.click()}}>
 	<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>
 	Upload Files
 </button>

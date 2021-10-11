@@ -35,7 +35,7 @@
 
 <UserTabs/>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each decks as deck}
 		<a class="listItem" href="{base}/user/decks/{deck._id}/{deck.currentRevision}">
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
@@ -50,7 +50,7 @@
 		<div class="self-center">No Decks Found</div>
 	{/each}
 
-	<a class="mt-4 button self-center" href="{base}/user/decks/new">
+	<a class="button self-center" href="{base}/user/decks/new">
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck
 	</a>
 </div>

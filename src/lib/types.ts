@@ -188,15 +188,8 @@ export enum DeckBuildStatus {
 	Built = "built"
 }
 
-// export interface FileInfo {
-// 	path: string
-// 	mimeType: string
-// 	length: number
-// }
-
 // output - to be refined
 export interface DeckOutput {
-	//not required? files: FileInfo[]
 	isUserModified: boolean
 	atlases?: AtlasInfo[]
 }
@@ -234,22 +227,10 @@ export interface Session {
 	isPublic: boolean
 	isTemplate: boolean
 	isArchived: boolean
-	sessionType: string // enum-ish
-	players?: PlayerInfo[]
-	playerTemplates?: PlayerInfo[]
+	sessionType: string
 	board?: BoardInfo
 	decks: SessionDeck[]
-// miro
-	//miroId?: string
-	//miroUrl?: string
-	//miroClaimed?: string // ISO date
-	//miroIsDefault: boolean
 }
-
-// in Session, a stage plan
-// export interface SessionStage {
-// 	decks: SessionDeck[]
-// }
 
 // in SessionStage, a deck to use
 export interface SessionDeck {
@@ -257,29 +238,6 @@ export interface SessionDeck {
 	revision: number // FK)
 	deckName: string
 	deckCredits?: string
-}
-
-// in Session, a Player
-export interface PlayerInfo {
-	screenName?: string
-	role?: string
-}
-
-// a scheduled session
-export interface ScheduledSession {
-	_id: string // mongo-style
-	sessionId: string // FK
-	sessionName: string
-	sessionDescription?: string
-	eventName?: string // for this
-	eventDescription?: string
-	created: string // ISO date
-	lastModified: string // ISO date
-	initialStage?: number
-	startTime: string // ISO date
-	durationMinutes: number
-	maxSeats: number
-	isCancelled: boolean
 }
 
 // snapshot

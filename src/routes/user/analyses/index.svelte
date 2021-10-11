@@ -69,7 +69,7 @@
 
 <UserTabs/>
 
-<div class="flex flex-col p-6 w-full text-sm font-medium">
+<div class="flex flex-col p-6 w-full text-sm font-medium gap-4">
 	{#each analyses as analysis}
 		<a class="listItem items-center" href="analyses/{analysis._id}">
 			<div class="flex flex-col">
@@ -87,10 +87,10 @@
 	{/each}
 
 	{#if error}
-		<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
+		<div class="border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
 	{/if}
 
-	<button disabled={working} class="button mt-4 self-center" on:click="{newAnalysis}">
+	<button disabled={working} class="button self-center" on:click="{newAnalysis}">
 		<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Analysis
 	</button>
 

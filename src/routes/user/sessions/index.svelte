@@ -78,7 +78,7 @@
 
 <UserTabs/>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each sessions as session}
 		{#if showArchived === session.isArchived}
 			<a class="listItem flex-col" href="sessions/{session._id}">
@@ -104,13 +104,13 @@
 	{/each}
 
 	{#if error}
-		<div class="mt-1 message-error whitespace-pre-line">{error}</div>
+		<div class="message-error whitespace-pre-line">{error}</div>
 	{/if}
 	{#if message}
-		<div class="mt-1 message-success whitespace-pre-line">{message}</div>
+		<div class="message-success whitespace-pre-line">{message}</div>
 	{/if}
 
-	<div class="flex self-center justify-center mt-4">
+	<div class="flex self-center justify-center">
 		{#if sessions.some((session) => session.isArchived)}
 			<label class="flex items-center ml-6 py-1">
 				<input type="checkbox" class="hidden" bind:checked="{showArchived}">

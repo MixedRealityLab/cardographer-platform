@@ -126,7 +126,7 @@
 	<div class="flex-1 block font-semibold">
 		Files /{$page.params.file}
 	</div>
-	<button class="button-slim mr-4" disabled={building} on:click={build}>Build</button>
+	<button class="button button-slim mr-4" disabled={building} on:click={build}>Build</button>
 
 	<FileUploadForm on:finished={uploadFinished}/>
 </div>

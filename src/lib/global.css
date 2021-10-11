@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* latin-ext */
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/lato/v20/S6uyw4BMUTPHjxAwXjeu.woff2) format('woff2');
+    unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/lato/v20/S6uyw4BMUTPHjx4wXg.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @layer base {
     h1 {
         @apply text-2xl font-bold;
@@ -12,51 +31,53 @@
     }
 }
 
-[type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select {
-    @apply transition-colors duration-500 bg-gray-50;
+label span {
+    @apply block text-sm text-gray-900 transition-colors duration-500;
 }
 
-[type='text']:hover, [type='email']:hover, [type='url']:hover, [type='password']:hover, [type='number']:hover, [type='date']:hover, [type='datetime-local']:hover, [type='month']:hover, [type='search']:hover, [type='tel']:hover, [type='time']:hover, [type='week']:hover, [multiple]:hover, textarea:hover, select:hover {
-    @apply border-gray-500;
+label:hover span {
+    @apply text-blue-700;
+}
+
+label:hover input, label:hover textarea {
+    @apply border-blue-700;
+}
+
+input, textarea, select {
+    @apply transition-colors duration-500;
+}
+
+[type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select {
+    @apply bg-gray-50 focus:bg-lblue;
 }
 
 .listItem {
-    @apply w-full flex rounded-md py-2 px-4 my-1 border border-gray-300 transition-colors duration-500;
-}
-
-.listItem:hover {
-    @apply border-gray-600
+    @apply w-full flex rounded-md py-2 px-4 border border-gray-200 hover:border-blue-400 transition-colors duration-500;
 }
 
 .chip {
     @apply px-2 rounded-md bg-gray-200 text-gray-700 text-xs flex items-center;
 }
 
-.button-slim {
-    @apply rounded-md transition-colors duration-500 px-3 flex items-center justify-center self-center bg-gray-300 py-1 text-sm font-semibold cursor-pointer text-gray-900;
-    font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
-}
-
 .button {
-    @apply rounded-md transition-colors duration-500 px-4 flex items-center justify-center self-center bg-gray-300 py-1.5 text-sm font-semibold cursor-pointer text-gray-900;
+    @apply rounded-md
+    bg-gray-300 hover:bg-blue-400 hover:disabled:bg-gray-100 hover:disabled:drop-shadow-none hover:drop-shadow
+    disabled:bg-gray-100 disabled:cursor-default disabled:text-gray-300
+    cursor-pointer transition duration-500 text-gray-900
+    flex items-center justify-center self-center
+    text-sm font-semibold text-gray-900
+    px-4 py-1.5;
     min-width: 80px;
     font-family: 'Lato', 'Roboto', 'Open Sans', sans-serif;
 }
 
+.button-slim {
+    @apply px-3 py-1;
+    min-width: auto;
+}
+
 .button-icon {
-    @apply w-3.5 mr-1;
-}
-
-.button:hover, .button-slim:hover {
-    @apply bg-gray-400;
-}
-
-.button:hover:disabled, .button-slim:hover:disabled {
-    @apply bg-gray-300;
-}
-
-.button:disabled, .button-slim:disabled {
-    @apply opacity-50 cursor-default;
+    @apply w-3.5 h-3.5 mr-1;
 }
 
 .message-error {

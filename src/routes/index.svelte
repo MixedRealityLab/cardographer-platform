@@ -1,8 +1,8 @@
 <script type="ts">
 	import {goto} from "$app/navigation";
+	import {base} from '$app/paths'
 	import {session} from '$app/stores';
 	import type {LoginResponse} from '$lib/apitypes'
-	import {base} from '$app/paths'
 	import type {UserSession} from '$lib/systemtypes'
 	import AppBar from "$lib/ui/AppBar.svelte";
 
@@ -32,7 +32,6 @@
 				code: code
 			})
 		});
-		working = false
 		if (response.ok) {
 			const login = await response.json() as LoginResponse;
 			if (login.error) {
@@ -50,6 +49,7 @@
 		} else {
 			error = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
 		}
+		working = false
 	}
 
 </script>
@@ -83,22 +83,22 @@
 			{#if register}
 				<label>
 					<span>Name</span>
-					<input class="w-full" required id="name" type="text" bind:value="{name}"/>
+					<input bind:value="{name}" class="w-full" required id="name" type="text"/>
 				</label>
 			{/if}
 			<label>
 				<span>Email</span>
-				<input class="w-full" required id="email" type="text" bind:value="{email}"/>
+				<input bind:value="{email}" class="w-full" id="email" required type="text"/>
 			</label>
 			<label>
 				<span>Password</span>
-				<input class="w-full" required id="password" type="password" bind:value="{password}"/>
+				<input bind:value="{password}" class="w-full" id="password" required type="password"/>
 			</label>
 
 			{#if register}
 				<label>
 					<span>Registration code</span>
-					<input class="w-full" required id="code" type="password" bind:value="{code}"/>
+					<input bind:value="{code}" class="w-full" id="code" required type="password"/>
 				</label>
 			{/if}
 
@@ -106,7 +106,7 @@
 				<div class="message-error">{error}</div>
 			{/if}
 
-			<input disabled={working} class="button self-center" type='submit'
+			<input class="button self-center" disabled={working} type='submit'
 			       value='{register ? "Register" : "Log in"}'>
 		</div>
 	</form>

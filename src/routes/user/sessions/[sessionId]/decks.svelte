@@ -126,14 +126,6 @@
 </script>
 
 <style>
-    button:disabled {
-        @apply opacity-50 cursor-default;
-    }
-
-    button:enabled:hover {
-        @apply opacity-75;
-    }
-
     .border-highlight {
         @apply border-blue-700;
     }
@@ -142,7 +134,7 @@
 <SessionTabs session="{session}"/>
 
 {#if decks}
-	<div class="w-full flex flex-col text-sm font-medium p-6">
+	<div class="w-full flex flex-col text-sm font-medium p-6 gap-4">
 		{#each decks as deck}
 			<label class:border-highlight={deck.selected} class="listItem items-center">
 				<input type="checkbox" class="form-checkbox mr-4" bind:checked="{deck.selected}">
@@ -190,6 +182,6 @@
 			<div class="message-success">{message}</div>
 		{/if}
 
-		<button disabled={working} class="button mt-4" on:click={handleSubmit}>Save</button>
+		<button disabled={working} class="button" on:click={handleSubmit}>Save</button>
 	</div>
 {/if}

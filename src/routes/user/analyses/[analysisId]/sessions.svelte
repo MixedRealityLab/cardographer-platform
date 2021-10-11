@@ -112,7 +112,7 @@
 
 <AnalysisTabs analysis="{analysis}"/>
 
-<form class="w-full flex flex-col text-sm font-medium p-6" on:submit|preventDefault={handleSubmit}>
+<form class="w-full flex flex-col text-sm font-medium p-6 gap-4" on:submit|preventDefault={handleSubmit}>
 	{#each snapshots as snapshot}
 		<label class:border-highlight={snapshot.selected} class="listItem items-center">
 			<input type="checkbox" class="form-checkbox mr-4" bind:checked="{snapshot.selected}">
@@ -137,5 +137,5 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input class="button mt-4" disabled={working} type='submit' value='Save'>
+	<input class="button" disabled={working} type='submit' value='Save'>
 </form>

@@ -55,52 +55,52 @@
 
 <DeckTabs revision="{revision}" tab="details"/>
 
-<form class="p-6 flex flex-col" on:submit|preventDefault={handleSubmit}>
-	<label class="">
-		<span class="text-sm text-gray-500">Title</span>
+<form class="p-6 flex flex-col gap-4" on:submit|preventDefault={handleSubmit}>
+	<label>
+		<span>Title</span>
 		<input bind:value="{revision.deckName}" class="block w-full" id="deckName" required type="text"/>
 	</label>
-	<label class="mt-2">
-		<span class="text-sm text-gray-500">Description</span>
+	<label>
+		<span>Description</span>
 		<textarea bind:value="{revision.deckDescription}" class="block w-full" id="deckDescription" rows="3"
 		          type="text"></textarea>
 	</label>
-	<label class="mt-2">
-		<span class="text-sm text-gray-500">Credits</span>
+	<label>
+		<span>Credits</span>
 		<input bind:value="{revision.deckCredits}" class="block w-full" id="deckCredits" type="text"/>
 	</label>
-	<label class="mt-2">
-		<span class="text-sm text-gray-500">Revision Subtitle</span>
+	<label>
+		<span>Revision Subtitle</span>
 		<input bind:value="{revision.revisionName}" class="block w-full" id="revisionName" type="text"/>
 	</label>
-	<label class="mt-2">
-		<span class="text-sm text-gray-500">Revision Description</span>
+	<label>
+		<span>Revision Description</span>
 		<textarea bind:value="{revision.revisionDescription}" class="block w-full" id="revisionDescription" rows="3"
 		          type="text"></textarea>
 	</label>
-	<label class="mt-2">
-		<span class="text-sm text-gray-500">Slug (for filenames and URLs)</span>
+	<label>
+		<span>Slug (for filenames and URLs)</span>
 		<input bind:value="{revision.slug}" class="block w-full" id="slug" type="text"/>
 	</label>
-	<div class="flex flex-wrap justify-center m-3">
-		<label class="flex items-center py-1">
+	<div class="flex flex-wrap justify-center gap-4 py-1">
+		<label class="flex items-center gap-2">
 			<input bind:checked="{revision.isUsable}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Usable</span>
+			<span>Usable</span>
 		</label>
-		<label class="flex items-center ml-6 py-1">
+		<label class="flex items-center gap-2">
 			<input bind:checked="{revision.isPublic}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Public</span>
+			<span>Public</span>
 		</label>
-		<label class="flex items-center ml-6 py-1">
+		<label class="flex items-center gap-2">
 			<input bind:checked="{revision.isLocked}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Locked</span>
+			<span>Locked</span>
 		</label>
-		<label class="flex items-center ml-6 py-1">
+		<label class="flex items-center gap-2">
 			<input bind:checked="{revision.isTemplate}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Template</span>
+			<span>Template</span>
 		</label>
 		{#if revision?.build}
-			<label class="flex items-center ml-6 py-1">
+			<label class="flex items-center">
 				<input type="checkbox" class="form-checkbox" bind:checked="{revision.build.isDisabled}">
 				<span class="ml-2">Disable re-build</span>
 			</label>
