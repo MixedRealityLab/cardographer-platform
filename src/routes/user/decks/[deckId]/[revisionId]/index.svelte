@@ -53,7 +53,7 @@
 	}
 </script>
 
-<DeckTabs revision="{revision}" tab="details"/>
+<DeckTabs revision="{revision}"/>
 
 <form class="p-6 flex flex-col gap-4" on:submit|preventDefault={handleSubmit}>
 	<label>
@@ -109,10 +109,10 @@
 	</div>
 
 	{#if error}
-		<div class="mt-1 border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
+		<div class="message-error">{error}</div>
 	{/if}
 	{#if message}
-		<div class="mt-1 border-green-500 bg-green-300 rounded-md w-full py-2 px-2">{message}</div>
+		<div class="message-success">{message}</div>
 	{/if}
 
 	<input class="button self-center mt-2" disabled={working} type='submit' value='Save'>

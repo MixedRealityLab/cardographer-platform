@@ -12,8 +12,6 @@
 	<link rel="manifest" href="{base}/manifest.json">
 </svelte:head>
 
-<main class="container sm:container mx-auto">
 	<div class="max-w-screen-md mx-auto bg-white min-h-screen">
 		<slot></slot>
 	</div>
-</main>

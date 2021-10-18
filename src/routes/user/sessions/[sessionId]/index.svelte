@@ -56,25 +56,25 @@
 
 <SessionTabs session="{session}"/>
 
-<form class="p-6 flex flex-col text-sm" on:submit|preventDefault={handleSubmit}>
+<form class="p-6 flex flex-col text-sm gap-4" on:submit|preventDefault={handleSubmit}>
 	<label>
 		<span class="font-light">Session name</span>
 		<input class="mt-1 block w-full" required type="text" bind:value="{session.name}"/>
 	</label>
-	<label class="mt-2">
+	<label>
 		<span class="font-light">Description</span>
 		<textarea rows="3" class="mt-1 block w-full" type="text" bind:value="{session.description}"></textarea>
 	</label>
-	<label class="mt-2">
+	<label>
 		<span class="font-light">Credits</span>
 		<input class="mt-1 block w-full" type="text" bind:value="{session.credits}"/>
 	</label>
-	<div class="flex justify-center mt-4">
-		<label class="flex items-center mr-4">
+	<div class="flex justify-center gap-4">
+		<label class="flex items-center">
 			<input type="checkbox" class="form-checkbox" bind:checked="{session.isPublic}">
 			<span class="ml-2">Public</span>
 		</label>
-		<label class="flex items-center mr-4">
+		<label class="flex items-center">
 			<input type="checkbox" class="form-checkbox" bind:checked="{session.isArchived}">
 			<span class="ml-2">Archived</span>
 		</label>
@@ -92,5 +92,5 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input disabled={working} class="button mt-4 self-center" type='submit' value='Save'>
+	<input disabled={working} class="button self-center mt-2" type='submit' value='Save'>
 </form>

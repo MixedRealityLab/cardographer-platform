@@ -1,10 +1,15 @@
-import type {BoardInfo, CardSnapshot} from '$lib/analysistypes';
-import {AnalysisExportTypes} from '$lib/analysistypes';
-import {getClient} from '$lib/clients';
-import {hexValue, plasmaColour} from "$lib/colour";
-import {arrayToCsv} from '$lib/csvutils';
-import {getDb} from '$lib/db';
-import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types';
+import type {BoardInfo, CardSnapshot} from '$lib/analysistypes'
+import {AnalysisExportTypes} from '$lib/analysistypes'
+import {getClient} from '$lib/clients'
+import {hexValue, plasmaColour} from "$lib/colour"
+import {arrayToCsv} from '$lib/csvutils'
+import {getDb} from '$lib/db'
+import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types'
+import {RegionType} from '$lib/types'
+
+const coolGray = {
+	600: '#4b5563',
+}
 
 const debug = true;
 
@@ -52,9 +57,31 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
-	let cardUses: CardUse[] = [];
+	let categories: string[] = []
+	let cardUses: CardUse[] = []
+	let regions = []
+	let analysisRegions = analysis.regions
+	if (!analysisRegions) {
+		analysisRegions = []
+	}
 	for (let bi in boards) {
 		const board = boards[bi];
+		let region = regions.find((reg) => reg.name === board.id)
+		if (!region) {
+			const analysisRegion = analysisRegions.find((analysisRegion) => analysisRegion.name === board.id)
+			region = {
+				name: board.id,
+				regions: []
+			}
+			if (analysisRegion) {
+				region.type = analysisRegion.type
+				region.colour = analysisRegion.colour
+			} else {
+				region.type = RegionType.Category
+				region.color = "magma"
+			}
+			regions.push(region)
+		}
 		for (let cardInfo of board.cards) {
 			let cardUse: CardUse = cardUses.find((cu) => cu.id === cardInfo.id);
 			if (!cardUse) {
@@ -65,6 +92,19 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				}
 
 				cardUses.push(cardUse);
+			}
+
+			for (let zone of cardInfo.zones) {
+				if (zone.zoneId && region.regions.indexOf(zone.zoneId) === -1) {
+					region.regions.push(zone.zoneId)
+				}
+			}
+
+			if (cardUse.info && cardUse.info.category) {
+				let index = categories.indexOf(cardUse.info.category)
+				if (index == -1) {
+					categories.push(cardUse.info.category)
+				}
 			}
 			if (cardUse.use[bi]) {
 				cardUse.use[bi].push(cardInfo);
@@ -83,20 +123,30 @@ export async function analysisNodeGraph(analysis: Analysis) {
 	for (let cardIndex1 = 0; cardIndex1 < cardUses.length; cardIndex1++) {
 		const cardUse1 = cardUses[cardIndex1]
 		let cardColors: number[] = []
-		let include = false
+		let count = 0
 		for (const bi in boards) {
 			const cu = cardUse1.use[bi]
 			if (cu) {
-				for (const use of cu) {
-					if (use.x) {
-						cardColors.push(use.x)
+				const board = boards[bi]
+				const region = regions.find((region) => region.name === board.id)
+				if (region.type !== RegionType.Ignore) {
+					for (const use of cu) {
+						if (region.type === RegionType.XAxis && use.x) {
+							cardColors.push(use.x)
+						} else if (region.type === RegionType.YAxis && use.y) {
+							cardColors.push(use.y)
+						} else if (region.type === RegionType.Category && cardUse1.info && cardUse1.info.category) {
+							const index = categories.indexOf(cardUse1.info.category)
+							const mix = index / (categories.length - 1)
+							cardColors.push(mix)
+						}
+						count++
 					}
-					include = true
 				}
 			}
 		}
-		if (include) {
-			let colour = '#666'
+		if (count > 0) {
+			let colour = coolGray["600"]
 			if (cardColors.length > 0) {
 				const colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
 				colour = hexValue(plasmaColour(colourMix))
@@ -106,15 +156,34 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				data: {
 					id: cardUse1.id,
 					label: cardUse1.info && cardUse1.info.name || cardUse1.id,
-					colour: colour
+					colour: colour,
+					count: count
 				}
 			})
 			for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {
 				const cardUse2 = cardUses[cardIndex2]
 				let count = 0;
 				for (const bi in boards) {
-					if (cardUse1.use[bi] && cardUse2.use[bi]) {
-						count++;
+					const board = boards[bi]
+					const region = regions.find((region) => region.name === board.id)
+					if (region.type !== RegionType.Ignore) {
+						if (cardUse1.use[bi] && cardUse2.use[bi]) {
+							if(true) {
+								console.log(count)
+								for(let use1 of cardUse1.use[bi]) {
+									for(let zone of use1.zones) {
+										for (let use2 of cardUse2.use[bi]) {
+											if(use2.zones.find((zone2) => zone2.zoneId === zone.zoneId) !== undefined) {
+												count++
+											}
+										}
+									}
+								}
+								console.log(count + ': ' + JSON.stringify(cardUse1.use[bi][0].zones) + '===' + JSON.stringify(cardUse2.use[bi][0].zones))
+							} else {
+								count++;
+							}
+						}
 					}
 				}
 				if (count != 0) {
@@ -131,11 +200,16 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
-	//nodes.sort((node1, node2) => node1.colour.localeCompare(node2.colour))
+	const max = Math.max(...nodes.map((node) => node.data.count))
+	nodes.forEach((node) => {
+		node.data.size = (((node.data.count - 1) / (max - 1)) + 1) * 20
+		delete node.data.count
+	})
 
 	return {
 		nodes: nodes,
-		edges: edges
+		edges: edges,
+		regions: regions
 	}
 }
 
@@ -277,12 +351,12 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 		}
 
 		let boards = info.boards
-		if (session.board) {
-			boards = info.boards.filter((board) => {
-				const region = session.board.regions.find((region) => region.id === board.id)
-				return !region || region.analyse
-			})
-		}
+		// if (session.board) {
+		// 	boards = info.boards.filter((board) => {
+		// 		const region = session.board.regions.find((region) => region.id === board.id)
+		// 		return !region || region.analyse
+		// 	})
+		// }
 		if (session.decks) {
 			for (let sessionDeck of session.decks) {
 				const deck = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({

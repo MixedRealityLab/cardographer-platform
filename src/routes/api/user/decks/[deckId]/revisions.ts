@@ -1,22 +1,20 @@
-import {copyBuild} from '$lib/builders';
-import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
-import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import {CardDeckRevisionSummary, DeckBuildStatus} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
-import type {Db} from "mongodb";
+import {copyBuild} from '$lib/builders'
+import {getDb} from '$lib/db'
+import type {ServerLocals} from '$lib/systemtypes'
+import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from '$lib/types'
+import {DeckBuildStatus} from '$lib/types'
+import type {EndpointOutput, Request} from '@sveltejs/kit'
+import type {Db} from "mongodb"
 
 const debug = true;
 
-
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+		if (debug) console.log(`locals`, locals)
 		return {status: 401}
 	}
-	const {deckId} = request.params;
-	if (debug) console.log(`get revisions for ${deckId}`);
+	const {deckId} = params;
+	if (debug) console.log(`get revisions for ${deckId}`)
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({

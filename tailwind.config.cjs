@@ -7,6 +7,7 @@ module.exports = {
 	],
 	theme: {
 		fontFamily: {
+			'title': ['Lato', 'Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 			'sans': ['Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 		},
 		extend: {},
@@ -18,8 +19,7 @@ module.exports = {
 			gray: colors.coolGray,
 			blue: colors.indigo,
 			red: colors.red,
-			green: colors.emerald,
-			lblue: '#F4F8FD'
+			green: colors.emerald
 		}
 	},
 	variants: {},

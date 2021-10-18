@@ -1,6 +1,8 @@
-<script context="module">
-	export function load({ error, status }) {
-		console.log(`${error.name}: ${error.message}`, error.stack);
+<script context="module" lang="ts">
+	import type {ErrorLoadInput, LoadOutput} from "@sveltejs/kit"
+
+	export async function load({error, status}: ErrorLoadInput): Promise<LoadOutput> {
+		console.log(`${error.name}: ${error.message}`, error.stack)
 		return {
 			props: {
 				title: `${status}: ${error.message}`

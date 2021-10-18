@@ -274,6 +274,22 @@ export interface Analysis {
 	owners: string[]
 	isPublic: boolean
 	snapshotIds: string[]
+	regions: AnalysisRegion[]
+}
+
+export interface AnalysisRegion {
+	name: string
+	type: RegionType
+	colour: string
+}
+
+export enum RegionType {
+	SubRegions = "SubRegions",
+	Category = "Category",
+	XAxis = "XAxis",
+	YAxis = "YAxis",
+	SingleColour = "SingleColour",
+	Ignore = "Ignore"
 }
 
 //EOF

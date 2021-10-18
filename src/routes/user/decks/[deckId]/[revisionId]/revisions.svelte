@@ -81,11 +81,7 @@
 
 <style>
     .border-highlight {
-        @apply border-gray-500;
-    }
-
-    .border-highlight:hover {
-        @apply border-gray-600;
+        @apply border-blue-200 hover:border-blue-400;
     }
 </style>
 
@@ -95,7 +91,7 @@
 	</div>
 </AppBar>
 
-<div class="w-full flex flex-col mb-4 text-sm font-medium p-6">
+<div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each revisions as revision}
 		<a class:border-highlight={revision.revision === selectedRevision.revision} class="listItem items-center"
 		   href="{base}/user/decks/{revision.deckId}/{revision.revision}">

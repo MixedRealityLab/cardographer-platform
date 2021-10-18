@@ -46,7 +46,8 @@
 			created: "",
 			lastModified: new Date().toISOString(),
 			owners: [],
-			snapshotIds: []
+			snapshotIds: [],
+			regions: []
 		}
 		let res = await fetch(`${base}/api/user/analyses`, authenticateRequest($session,{
 			method: 'POST',

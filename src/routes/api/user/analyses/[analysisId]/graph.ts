@@ -1,19 +1,46 @@
 import {analysisNodeGraph} from '$lib/analysis';
 import {getDb} from '$lib/db';
 import type {ServerLocals} from '$lib/systemtypes';
-import type {Analysis} from '$lib/types';
+import type {Analysis, AnalysisRegion} from '$lib/types';
+import {RegionType} from "$lib/types";
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+		if (debug) console.log(`locals`, locals)
 		return {status: 401}
 	}
-	const {analysisId} = request.params;
-	const db = await getDb();
+	const {analysisId} = params
+	const db = await getDb()
+	// permission check
+	const analysis = await db.collection<Analysis>('Analyses').findOne({
+		_id: analysisId, owners: locals.email
+	})
+	if (!analysis) {
+		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`)
+		return {status: 404}
+	}
+	const graph = await analysisNodeGraph(analysis)
+	return {
+		body: graph as any
+	}
+}
+
+export async function put({locals, body, params}: Request): Promise<EndpointOutput> {
+	if (!locals.authenticated) {
+		if (debug) console.log(`locals`, locals)
+		return {status: 401}
+	}
+	const regions = body as unknown as AnalysisRegion[]
+	for (const region of regions) {
+		if (region.type === RegionType.SubRegions) {
+		}
+		delete region['regions']
+	}
+	const {analysisId} = params
+	const db = await getDb()
 	// permission check
 	const analysis = await db.collection<Analysis>('Analyses').findOne({
 		_id: analysisId, owners: locals.email
@@ -22,9 +49,24 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`);
 		return {status: 404};
 	}
+	// update analysis
+	const now = new Date().toISOString();
+	analysis.regions = regions
+	analysis.lastModified = now
+	const upd = await db.collection<Analysis>('Analyses').updateOne({
+		_id: analysisId
+	}, {
+		$set: {
+			regions: regions,
+			lastModified: now,
+		}
+	});
+	if (!upd.matchedCount) {
+		if (debug) console.log(`analysis ${analysisId} not matched`, upd);
+		return {status: 404};
+	}
 	const graph = await analysisNodeGraph(analysis)
 	return {
 		body: graph as any
 	}
 }
-

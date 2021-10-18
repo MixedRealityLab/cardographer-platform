@@ -105,11 +105,11 @@
 	}
 </script>
 
-<DeckTabs tab="cards" revision="{revision}"/>
+<DeckTabs revision="{revision}"/>
 
-<div class="p-6 flex flex-col">
+<div class="p-6 flex flex-col gap-2">
 	{#each revision.cards as card}
-		<ExpandableSection>
+		<ExpandableSection class="py-1">
 			<div slot="title">
 				<div class="flex items-center">
 					<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
@@ -118,7 +118,7 @@
 				</div>
 			</div>
 			<div>
-				<div class="ml-9 mb-4">
+				<div class="ml-9">
 					<div class="flex">
 						{#if card.frontUrl}
 							<img src={card.frontUrl} class="h-48" alt="Card"/>
@@ -150,7 +150,7 @@
 	{/if}
 	<div class="flex justify-center">
 		<UploadButton class="button m-3" on:upload={uploadCards} types=".csv,text/csv">
-			<img src="{base}/icons/upload.svg" alt="" class="w-3.5 mr-1"/>Upload CSV
+			<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
 		</UploadButton>
 		{#if revision.cards.length > 0}
 			<button class="button m-3" on:click={() => exportCsv(false)}>

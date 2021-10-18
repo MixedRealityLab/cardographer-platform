@@ -22,6 +22,9 @@
 	<Tab url="{base}/user/analyses/{analysisId}/graph">
 		Graph
 	</Tab>
-	<div slot="subheader">{analysis.name}</div>
+	<div slot="subheader" class="flex items-center">
+		<div class="flex-1">{analysis.name}</div>
+		<slot/>
+	</div>
 </AppBar>
 

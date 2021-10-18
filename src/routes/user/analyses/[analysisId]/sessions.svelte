@@ -119,7 +119,7 @@
 			<div class="flex flex-1 flex-col">
 				<div class="flex">
 					<div class="flex-1 font-semibold">{snapshot.sessionName}</div>
-					<div class="text-sm font-light">{formatDate(snapshot.originallyCreated)}</div>
+					<div class="text-sm font-light text-gray-700">{formatDate(snapshot.originallyCreated)}</div>
 				</div>
 
 				<div class="text-sm font-light">{snapshot.sessionDescription}</div>

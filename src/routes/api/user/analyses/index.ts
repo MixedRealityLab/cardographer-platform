@@ -1,12 +1,10 @@
 import {getDb, getNewId} from '$lib/db'
-import type {ServerLocals} from '$lib/systemtypes'
 import type {Analysis} from '$lib/types'
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals
+export async function get({locals}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals)
 		return {status: 401}
@@ -25,13 +23,12 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function post({locals, body}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	let an = request.body as unknown as Analysis;
+	let an = body as unknown as Analysis;
 	//if (debug) console.log(`add analysis`, analysis);
 	const db = await getDb()
 	const newId = getNewId()
@@ -46,6 +43,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		owners: [locals.email],
 		isPublic: false,
 		snapshotIds: [],
+		regions: [],
 	};
 	// add
 	let result = await db.collection<Analysis>('Analyses').insertOne(analysis);

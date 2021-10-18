@@ -143,7 +143,8 @@
 						<div class="flex-1 flex items-center gap-1">
 							<span class="font-semibold">{deck.revisions[deck.index].deckName}</span>
 							{#if deck.revisions.length > 1}
-								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0}>
+								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0}
+								        class="disabled:opacity-10 transition-opacity duration-500 text-gray-800 hover:text-blue-600 disabled:cursor-default">
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
 									     fill="currentColor">
 										<path fill-rule="evenodd"
@@ -153,6 +154,7 @@
 								</button>
 								<span class="text-gray-600 font-semibold">v{deck.revisions[deck.index].revision}</span>
 								<button on:click|preventDefault={() => {deck.index++}}
+								        class="disabled:opacity-10 transition-opacity duration-500 text-gray-800 hover:text-blue-600 disabled:cursor-default"
 								        disabled={deck.index >= deck.revisions.length - 1}>
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
 									     fill="currentColor">

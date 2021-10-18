@@ -10,7 +10,7 @@
 
 <style>
     .tab {
-        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500;
+        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 text-gray-200;
     }
 
     .tabSelected {
@@ -18,7 +18,7 @@
     }
 
     .tab:hover:not(.tabSelected) {
-        @apply bg-gray-500;
+        @apply bg-gray-600;
     }
 </style>
 

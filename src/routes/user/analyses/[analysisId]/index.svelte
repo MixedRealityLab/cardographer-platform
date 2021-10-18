@@ -55,21 +55,21 @@
 
 <AnalysisTabs analysis="{analysis}"/>
 <div class="p-6">
-	<form class="flex flex-col text-sm" on:submit|preventDefault={handleSubmit}>
+	<form class="flex flex-col text-sm gap-4" on:submit|preventDefault={handleSubmit}>
 		<label>
 			<span class="font-light">Analysis name</span>
 			<input bind:value="{analysis.name}" class="mt-1 block w-full" required type="text"/>
 		</label>
-		<label class="mt-2">
+		<label>
 			<span class="font-light">Description</span>
 			<textarea bind:value="{analysis.description}" class="mt-1 block w-full" rows="3" type="text"></textarea>
 		</label>
-		<label class="mt-2">
+		<label>
 			<span class="font-light">Credits</span>
 			<input bind:value="{analysis.credits}" class="mt-1 block w-full" type="text"/>
 		</label>
-		<div class="my-4">
-			<label class="flex justify-center">
+		<div class="py-1">
+			<label class="flex justify-center items-center">
 				<input bind:checked="{analysis.isPublic}" class="form-checkbox" type="checkbox">
 				<span class="ml-2">Public</span>
 			</label>

@@ -1,18 +1,16 @@
 import type {CopySessionRequest} from '$lib/apitypes';
 import {getDb, getNewId} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
 import type {Session} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function post({locals, body}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	let copyReq = request.body as unknown as CopySessionRequest
+	let copyReq = body as unknown as CopySessionRequest
 	if (!copyReq.sessionId) {
 		if (debug) console.log(`no sessionId in copy`, copyReq)
 		return {status: 400}
@@ -34,7 +32,6 @@ export async function post(request: Request): Promise<EndpointOutput> {
 			isArchived: false,
 			isPublic: false,
 			isTemplate: false,
-			players: [],
 			lastModified: now,
 			name: "Blank Session",
 			owners: [locals.email],
@@ -60,7 +57,6 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		session.owners = [locals.email]
 		session.isPublic = false
 		session.isTemplate = false
-		session.players = []
 	}
 
 	// add
