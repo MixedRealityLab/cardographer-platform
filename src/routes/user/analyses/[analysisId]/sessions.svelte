@@ -46,7 +46,6 @@
 <script lang="ts">
 	import {page, session} from '$app/stores'
 	import {base} from '$app/paths'
-	import type {Analysis} from '$lib/types'
 	import AnalysisTabs from "./_AnalysisTabs.svelte"
 
 	export let analysis: Analysis;

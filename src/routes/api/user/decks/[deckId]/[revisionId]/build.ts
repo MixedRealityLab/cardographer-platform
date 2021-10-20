@@ -1,6 +1,5 @@
 import {buildRevision} from '$lib/builders'
 import {getDb} from '$lib/db'
-import type {ServerLocals} from '$lib/systemtypes'
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types'
 import {DeckBuildStatus} from "$lib/types";
 import type {EndpointOutput, Request} from '@sveltejs/kit'
@@ -8,19 +7,18 @@ import type {EndpointOutput, Request} from '@sveltejs/kit'
 const debug = true;
 
 export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+	if (!request.locals.authenticated) {
+		if (debug) console.log(`locals`, request.locals)
 		return {status: 401}
 	}
 	const {deckId, revisionId} = request.params;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
-		_id: deckId, owners: locals.email
+		_id: deckId, owners: request.locals.email
 	})
 	if (!deck) {
-		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
+		if (debug) console.log(`deck ${deckId} not found for ${request.locals.email}`);
 		return {status: 404};
 	}
 	// current revision
@@ -52,7 +50,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	const result = await buildRevision(revision)
 	// update revision
 	if (!result.error && result.cards) {
-		for (let card of result.cards) {
+		for (const card of result.cards) {
 			const update = revision.cards.find((c) => c.id == card.id);
 			if (!update) {
 				console.log(`Error: could not find card ${card.id} to update`);

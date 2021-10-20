@@ -8,13 +8,12 @@ import path from 'path'
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	const {deckId, revisionId, file} = request.params;
+	const {deckId, revisionId, file} = params;
 	if (debug) console.log(`Get file ${deckId}/${revisionId}/${file}`);
 	const db = await getDb();
 	// permission check
@@ -36,15 +35,14 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function post({locals, params, body}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	const req = await request.body as unknown as PostFilesRequest;
-	const {deckId, revisionId} = request.params;
-	const path = request.params.file;
+	const req = await body as unknown as PostFilesRequest
+	const {deckId, revisionId} = params
+	const path = params.file;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
@@ -66,7 +64,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`revision ${revisionId} for ${deckId} locked`)
 		return {status: 401};
 	}
-	for (let file of req.files) {
+	for (const file of req.files) {
 		if (debug) console.log(`upload ${file.name}`);
 		await writeFile(deckId, revisionId, path, file.name, file.content);
 	}
@@ -81,14 +79,13 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function del(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
+export async function del({locals, params}: Request): Promise<EndpointOutput> {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	const {deckId, revisionId} = request.params;
-	const file = request.params.file;
+	const {deckId, revisionId} = params;
+	const file = params.file;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({

@@ -16,7 +16,7 @@ type Builders = {
 	[key: string]: BuildFn;
 }
 
-let builders: Builders = {
+const builders: Builders = {
 	'squib': squibBuild,
 };
 
@@ -26,12 +26,12 @@ export async function buildRevision(revision: CardDeckRevision): Promise<BuildRe
 	if (!revision.build?.builderId) {
 		return {error: "No builder defined", messages: []};
 	}
-	let builder = builders[revision.build.builderId];
+	const builder = builders[revision.build.builderId];
 	if (!builder) {
 		return {error: `Builder ${revision.build.builderId} not known`, messages: []};
 	}
 	// ??
-	let config: BuilderConfig = {
+	const config: BuilderConfig = {
 		baseUrl: `/uploads`,
 		filePath: FILE_PATH,
 	};
@@ -112,7 +112,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 		return [];
 	}
 	const files = await fsPromises.readdir(relPath, {withFileTypes: true});
-	let fis: FileInfo[] = [];
+	const fis: FileInfo[] = [];
 	for (const file of files) {
 		if (file.isDirectory() || file.isFile()) {
 			fis.push({

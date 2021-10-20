@@ -23,8 +23,8 @@ export async function post(request: Request): Promise<EndpointOutput> {
 	const db = await getDb();
 	//const now = new Date().toISOString();
 	let message = '';
-	for (let si in ss) {
-		let s = ss[si];
+	for (const si in ss) {
+		const s = ss[si];
 		//if(debug) console.log(`import`, s);
 		if (!s._id) {
 			console.log(`no _id in import session ${si} - ignored`);
@@ -49,7 +49,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		console.log(`SessionType: ${sessionType}`);
 		const client = getClient(sessionType);
 		// session already imported?
-		let squery = client.getExistingSessionQuery(s) as Filter<Session>
+		const squery = client.getExistingSessionQuery(s) as Filter<Session>
 		let session: Session;
 		let addSession = true;
 		if (squery) {
@@ -64,7 +64,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		if (!session) {
 			session = client.makeSession(s);
 		}
-		let snapshot = client.makeSessionSnapshot(s);
+		const snapshot = client.makeSessionSnapshot(s);
 		if (!session || !snapshot) {
 			console.log(`Problem making session/snapshot for import ${s._id} (${sessionType})`);
 			continue;
@@ -79,13 +79,13 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		}
 		snapshot.owners.push(locals.email);
 		if (addSession) {
-			let r1 = await db.collection<Session>('Sessions').insertOne(session);
+			const r1 = await db.collection<Session>('Sessions').insertOne(session);
 			if (!r1.insertedId) {
 				console.log(`Error adding new imported session`);
 				continue;
 			}
 		}
-		let r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
+		const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
 		if (!r2.insertedId) {
 			console.log(`Error adding new imported snapshot`);
 			continue;

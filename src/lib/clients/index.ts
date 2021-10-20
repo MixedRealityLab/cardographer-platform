@@ -9,7 +9,7 @@ const clients: Client[] = [
 ];
 
 export function guessSessionType(data : any): string {
-	for (let c of clients) {
+	for (const c of clients) {
 		//console.log(`client`, c);
 		if (c.acceptsImport(data)) {
 			return c.sessionType();
@@ -19,7 +19,7 @@ export function guessSessionType(data : any): string {
 }
 
 export function getClient(sessionType:string): Client {
-	for (let c of clients) {
+	for (const c of clients) {
 		if (c.sessionType() == sessionType) {
 			return c;
 		}

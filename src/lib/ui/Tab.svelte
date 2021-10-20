@@ -2,8 +2,8 @@
 	import {base} from '$app/paths'
 	import {page} from '$app/stores'
 
-	export let url: string = ""
-	export let checkPath: boolean = false
+	export let url = ""
+	export let checkPath = false
 	let path = base + $page.path
 	let selected = path === url || (checkPath && path.startsWith(url))
 </script>

@@ -45,7 +45,7 @@ async function sendFile(request: Request, path: string, mimeType: string): Promi
 			body: fs.createReadStream(path)
 		};
 	*/
-	return new Promise<EndpointOutput>((resolve, reject) => {
+	return new Promise<EndpointOutput>((resolve) => {
 		fs.readFile(path, (err, data) => {
 			if (err) {
 				if (debug) console.log(`error reading ${path}: ${err}`);

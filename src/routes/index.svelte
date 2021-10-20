@@ -11,7 +11,6 @@
 	let password: string
 	let code: string
 
-	let statusCode = "";
 	let error = ''
 	let working = false;
 	let register = false;

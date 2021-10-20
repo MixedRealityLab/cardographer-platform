@@ -25,19 +25,21 @@ interface CardUse {
 	use: CardSnapshot[][];
 }
 
+const useZones = true
+
 export async function analysisNodeGraph(analysis: Analysis) {
-	let rawDesigns: DesignInfo[] = await readDesigns(analysis);
-	for (let design of rawDesigns) {
-		for (let board of design.boards) {
-			for (let cardInfo of board.cards) {
+	const rawDesigns: DesignInfo[] = await readDesigns(analysis);
+	for (const design of rawDesigns) {
+		for (const board of design.boards) {
+			for (const cardInfo of board.cards) {
 				let id = cardInfo.id;
 				// URL or file path?
-				let six = id.lastIndexOf('/');
+				const six = id.lastIndexOf('/');
 				if (six >= 0) {
 					id = id.substring(six + 1);
 				}
 				// extension?
-				let dix = id.lastIndexOf('.');
+				const dix = id.lastIndexOf('.');
 				if (dix >= 0) {
 					id = id.substring(0, dix);
 				}
@@ -49,22 +51,22 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
-	let boards: BoardInfo[] = []
-	for (let design of rawDesigns) {
-		for (let bi in design.boards) {
-			let board = design.boards[bi];
+	const boards: BoardInfo[] = []
+	for (const design of rawDesigns) {
+		for (const bi in design.boards) {
+			const board = design.boards[bi];
 			boards.push(board)
 		}
 	}
 
-	let categories: string[] = []
-	let cardUses: CardUse[] = []
-	let regions = []
+	const categories: string[] = []
+	const cardUses: CardUse[] = []
+	const regions = []
 	let analysisRegions = analysis.regions
 	if (!analysisRegions) {
 		analysisRegions = []
 	}
-	for (let bi in boards) {
+	for (const bi in boards) {
 		const board = boards[bi];
 		let region = regions.find((reg) => reg.name === board.id)
 		if (!region) {
@@ -82,7 +84,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 			}
 			regions.push(region)
 		}
-		for (let cardInfo of board.cards) {
+		for (const cardInfo of board.cards) {
 			let cardUse: CardUse = cardUses.find((cu) => cu.id === cardInfo.id);
 			if (!cardUse) {
 				cardUse = {
@@ -94,14 +96,14 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				cardUses.push(cardUse);
 			}
 
-			for (let zone of cardInfo.zones) {
+			for (const zone of cardInfo.zones) {
 				if (zone.zoneId && region.regions.indexOf(zone.zoneId) === -1) {
 					region.regions.push(zone.zoneId)
 				}
 			}
 
 			if (cardUse.info && cardUse.info.category) {
-				let index = categories.indexOf(cardUse.info.category)
+				const index = categories.indexOf(cardUse.info.category)
 				if (index == -1) {
 					categories.push(cardUse.info.category)
 				}
@@ -117,12 +119,13 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
-	let nodes = []
-	let edges = []
+	const nodes = []
+	const edges = []
 
 	for (let cardIndex1 = 0; cardIndex1 < cardUses.length; cardIndex1++) {
 		const cardUse1 = cardUses[cardIndex1]
-		let cardColors: number[] = []
+		const cardColors: number[] = []
+		const zones: string[] = []
 		let count = 0
 		for (const bi in boards) {
 			const cu = cardUse1.use[bi]
@@ -140,11 +143,22 @@ export async function analysisNodeGraph(analysis: Analysis) {
 							const mix = index / (categories.length - 1)
 							cardColors.push(mix)
 						}
-						count++
+
+						for (const zone of use.zones) {
+							if (zone.zoneId === "") {
+								if (zones.indexOf(board.id) === -1) {
+									zones.push(board.id)
+								}
+							} else if (zones.indexOf(zone.zoneId) === -1) {
+								zones.push(zone.zoneId)
+							}
+							count++
+						}
 					}
 				}
 			}
 		}
+		zones.sort()
 		if (count > 0) {
 			let colour = coolGray["600"]
 			if (cardColors.length > 0) {
@@ -156,7 +170,9 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				data: {
 					id: cardUse1.id,
 					label: cardUse1.info && cardUse1.info.name || cardUse1.id,
+					description: cardUse1.info.description,
 					colour: colour,
+					zones: zones,
 					count: count
 				}
 			})
@@ -168,12 +184,11 @@ export async function analysisNodeGraph(analysis: Analysis) {
 					const region = regions.find((region) => region.name === board.id)
 					if (region.type !== RegionType.Ignore) {
 						if (cardUse1.use[bi] && cardUse2.use[bi]) {
-							if(true) {
-								console.log(count)
-								for(let use1 of cardUse1.use[bi]) {
-									for(let zone of use1.zones) {
-										for (let use2 of cardUse2.use[bi]) {
-											if(use2.zones.find((zone2) => zone2.zoneId === zone.zoneId) !== undefined) {
+							if (useZones) {
+								for (const use1 of cardUse1.use[bi]) {
+									for (const zone of use1.zones) {
+										for (const use2 of cardUse2.use[bi]) {
+											if (use2.zones.find((zone2) => zone2.zoneId === zone.zoneId) !== undefined) {
 												count++
 											}
 										}
@@ -203,7 +218,6 @@ export async function analysisNodeGraph(analysis: Analysis) {
 	const max = Math.max(...nodes.map((node) => node.data.count))
 	nodes.forEach((node) => {
 		node.data.size = (((node.data.count - 1) / (max - 1)) + 1) * 20
-		delete node.data.count
 	})
 
 	return {
@@ -214,21 +228,21 @@ export async function analysisNodeGraph(analysis: Analysis) {
 }
 
 export async function exportAnalysisAsCsv(analysis: Analysis, exportType: AnalysisExportTypes, splitByBoard: boolean, includeDetail: boolean, boardNames: string[]): Promise<string> {
-	let rawDesigns: DesignInfo[] = await readDesigns(analysis);
+	const rawDesigns: DesignInfo[] = await readDesigns(analysis);
 	// canonicalize card ids and filter boards
-	for (let design of rawDesigns) {
+	for (const design of rawDesigns) {
 		// filter boards
 		design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
-		for (let board of design.boards) {
-			for (let cardInfo of board.cards) {
+		for (const board of design.boards) {
+			for (const cardInfo of board.cards) {
 				let id = cardInfo.id;
 				// URL or file path?
-				let six = id.lastIndexOf('/');
+				const six = id.lastIndexOf('/');
 				if (six >= 0) {
 					id = id.substring(six + 1);
 				}
 				// extension?
-				let dix = id.lastIndexOf('.');
+				const dix = id.lastIndexOf('.');
 				if (dix >= 0) {
 					id = id.substring(0, dix);
 				}
@@ -243,10 +257,10 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 	let designs = rawDesigns.filter((d) => d.boards && d.boards.length > 0);
 	if (splitByBoard) {
 		designs = [];
-		for (let design of rawDesigns) {
-			for (let bi in design.boards) {
-				let board = design.boards[bi];
-				let id = board.id ? `${design.id}:${board.id}` : design.id;
+		for (const design of rawDesigns) {
+			for (const bi in design.boards) {
+				const board = design.boards[bi];
+				const id = board.id ? `${design.id}:${board.id}` : design.id;
 				designs.push({
 					id: id,
 					snapshot: design.snapshot,
@@ -257,11 +271,11 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 	}
 	if (debug) console.log(`found ${designs.length} designs`);
 	// find all cards
-	let cardUses: CardUse[] = [];
-	for (let di in designs) {
+	const cardUses: CardUse[] = [];
+	for (const di in designs) {
 		const design = designs[di];
-		for (let board of design.boards) {
-			for (let cardInfo of board.cards) {
+		for (const board of design.boards) {
+			for (const cardInfo of board.cards) {
 				let cardUse: CardUse = cardUses.find((cu) => cu.id == cardInfo.id);
 				if (!cardUse) {
 					//if (debug) console.log(`add cardUse ${cardinfo.id} (design ${design.id})`);
@@ -295,22 +309,22 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 }
 
 async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], includeDetail: boolean): Promise<string> {
-	let rows: string[][] = [];
+	const rows: string[][] = [];
 	// titles
-	let columns: string[] = [];
+	const columns: string[] = [];
 	columns.push('Id');
-	for (let di in designs) {
+	for (const di in designs) {
 		columns.push(designs[di].id);
 	}
 	rows.push(columns);
-	for (let cardUse of cardUses) {
-		let row: string[] = [];
+	for (const cardUse of cardUses) {
+		const row: string[] = [];
 		row.push(cardUse.id);
-		for (let di in designs) {
-			let use = cardUse.use[di];
+		for (const di in designs) {
+			const use = cardUse.use[di];
 			if (use) {
 				if (includeDetail) {
-					let detail = use.map((u) => u.zones.map((z) => z.zoneId));
+					const detail = use.map((u) => u.zones.map((z) => z.zoneId));
 					row.push(JSON.stringify(detail));
 				} else {
 					row.push(`${use.length}`);
@@ -327,8 +341,8 @@ async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], include
 async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 	const db = await getDb();
 	// get real snapshots
-	let designs: DesignInfo[] = [];
-	for (let snapshotId of analysis.snapshotIds) {
+	const designs: DesignInfo[] = [];
+	for (const snapshotId of analysis.snapshotIds) {
 		const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({
 			_id: snapshotId
 		});
@@ -350,7 +364,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			continue;
 		}
 
-		let boards = info.boards
+		const boards = info.boards
 		// if (session.board) {
 		// 	boards = info.boards.filter((board) => {
 		// 		const region = session.board.regions.find((region) => region.id === board.id)
@@ -358,14 +372,14 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 		// 	})
 		// }
 		if (session.decks) {
-			for (let sessionDeck of session.decks) {
+			for (const sessionDeck of session.decks) {
 				const deck = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
 					deckId: sessionDeck.deckId,
 					revision: sessionDeck.revision
 				})
 				if (deck && deck.cards) {
-					for (let board of boards) {
-						for (let card of board.cards) {
+					for (const board of boards) {
+						for (const card of board.cards) {
 							const info = deck.cards.find((deckCard) => deckCard.id === card.id)
 							if (info) {
 								card.info = info
@@ -387,21 +401,21 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 }
 
 async function exportCardAdjacency(designs: DesignInfo[], cardUses: CardUse[]): Promise<string> {
-	let rows: string[][] = [];
-	let columns: string[] = [''];
-	for (let cardUse of cardUses) {
+	const rows: string[][] = [];
+	const columns: string[] = [''];
+	for (const cardUse of cardUses) {
 		columns.push(cardUse.id);
 	}
 	rows.push(columns);
-	for (let cu1 of cardUses) {
-		let row: string[] = [cu1.id];
-		for (let cu2 of cardUses) {
+	for (const cu1 of cardUses) {
+		const row: string[] = [cu1.id];
+		for (const cu2 of cardUses) {
 			if (cu1.id == cu2.id) {
 				row.push('0');
 				continue;
 			}
 			let count = 0;
-			for (let di in designs) {
+			for (const di in designs) {
 				if (cu1.use[di] && cu2.use[di]) {
 					count++;
 				}

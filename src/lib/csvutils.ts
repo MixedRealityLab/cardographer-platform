@@ -18,8 +18,8 @@ const debug = true;
 // CSV file as string[][]
 // to updated propertyDefs and cards
 export function readCards(revision: CardDeckRevision, cells: string[][], addColumns: boolean): CardDeckRevision {
-	let propDefs: CardPropertyDef[] = revision.propertyDefs;
-	let oldCards: CardInfo[] = revision.cards.slice();
+	const propDefs: CardPropertyDef[] = revision.propertyDefs;
+	const oldCards: CardInfo[] = revision.cards.slice();
 	let defaults = revision.defaults;
 //	let back = revision.back;
 
@@ -41,14 +41,14 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 	const hasDescription = descriptionRow >= 0;
 	//if (debug) console.log(`rows: default ${defaultRow} export ${exportRow} description ${descriptionRow} use ${useRow}`);
 
-	let columns: CardPropertyDef[] = [];
+	const columns: CardPropertyDef[] = [];
 	if (hasRowtype) {
 		columns.push({} as CardPropertyDef);
 	}
 	// check columns = property defs
 	for (let i = (hasRowtype ? 1 : 0); i < headers.length; i++) {
 		const title = headers[i];
-		let prop = revision.propertyDefs.find((pd) => pd.title ? pd.title == title : pd.use == title);
+		const prop = revision.propertyDefs.find((pd) => pd.title ? pd.title == title : pd.use == title);
 		const use = hasUse && cells[useRow].length > i ? guessUse(cells[useRow][i]) : guessUse(title);
 		const defaultExport = hasExport && cells[exportRow].length > i ? isTrue(cells[exportRow][i]) : false;
 		const sortBy = i + (hasRowtype ? 0 : 1);
@@ -91,7 +91,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 		}
 	}
 	updateCustomFieldNames(propDefs);
-	let now = new Date().toISOString();
+	const now = new Date().toISOString();
 	// default
 	if (hasDefault) {
 		if (!defaults) {
@@ -105,7 +105,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 		}
 		defaults = updateCardInfo(defaults, cells[defaultRow], columns);
 	}
-	let newCards: CardInfo[] = [];
+	const newCards: CardInfo[] = [];
 	// cards
 	// explicit ID?
 	const idColumn = columns.findIndex((c) => c.use == CardPropertyUse.Id);
@@ -139,9 +139,9 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 }
 
 function updateCustomFieldNames(props: CardPropertyDef[]) {
-	let counts = {};
-	for (let p in props) {
-		let prop = props[p];
+	const counts = {};
+	for (const p in props) {
+		const prop = props[p];
 		if (counts[prop.use]) {
 			prop.customFieldName = prop.title;
 			if (debug) console.log(`${prop.title} is custom ${prop.use} field`);
@@ -167,8 +167,7 @@ function updateCardInfo(info: CardInfo, values: string[], columns: CardPropertyD
 			}
 			info.custom[columns[i].customFieldName] = value;
 		} else {
-			// @ts-ignore
-			info[columns[i].use] = value;
+			info[columns[i].use.toString()] = value;
 		}
 	}
 	return info;
@@ -194,7 +193,7 @@ function getValue(column: BoardProperty, columns: BoardProperty[], values: strin
 	}
 }
 
-function getBooleanValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: boolean = true): boolean {
+function getBooleanValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue = true): boolean {
 	const value = getValue(column, columns, values).toLowerCase()
 	if (defaultValue) {
 		return value != 'n' && value != 'false'
@@ -221,14 +220,14 @@ export function readBoard(cells: string[][]): BoardInfo {
 		throw new Error('Headers missing');
 	}
 	const hasRowtype = headers[0] == ROWTYPE_TITLE
-	let columns: BoardProperty[] = [];
+	const columns: BoardProperty[] = [];
 	if (hasRowtype) {
 		columns.push(null);
 	}
 	for (let i = (hasRowtype ? 1 : 0); i < headers.length; i++) {
 		columns.push(guessBoardProperty(headers[i]))
 	}
-	let board: BoardInfo = {
+	const board: BoardInfo = {
 		name: "New Board",
 		regions: []
 	}
@@ -286,7 +285,7 @@ function fixSortBy(i?: number): number {
 }
 
 export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: boolean, withRowTypes: boolean, cards: CardInfo[]): Promise<string> {
-	let rows: string[][] = [];
+	const rows: string[][] = [];
 	let columns = revision.propertyDefs.slice();
 	if (!allColumns) {
 		columns = columns.filter((c) => c.defaultExport);
@@ -349,7 +348,7 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 	}
 	for (let c = 0; c < cards.length; c++) {
 		const card = cards[c];
-		let row = [];
+		const row = [];
 		if (withRowTypes) {
 			row.push(ROWTYPE_CARD);
 		}
@@ -385,7 +384,7 @@ export async function arrayToCsv(rows: string[][]): Promise<string> {
 			const text = data.join('');
 			resolve(text);
 		});
-		for (let row in rows) {
+		for (const row in rows) {
 			stringifier.write(rows[row]);
 		}
 		stringifier.end()

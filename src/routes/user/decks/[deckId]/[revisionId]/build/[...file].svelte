@@ -28,8 +28,7 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import {page, session} from '$app/stores'
-	import {DeckBuildStatus} from "$lib/types";
-	import type {CardDeckRevision} from "$lib/types"
+	import {DeckBuildStatus} from "$lib/types"
 	import DeckTabs from "../_DeckTabs.svelte"
 	import FileUploadForm from '$lib/ui/FileUploadForm.svelte'
 
@@ -48,7 +47,6 @@
 	}
 
 	async function refreshRevision() {
-		const {deckId, revisionId} = $page.params
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest($session));
 		if (res.ok) {
 			revision = await res.json() as CardDeckRevision
@@ -59,7 +57,6 @@
 	}
 
 	async function refreshFiles() {
-		const {deckId, revisionId, file} = $page.params
 		const path = file.length > 0 ? '/' + file : ''
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files${path}`, authenticateRequest($session));
 		if (res.ok) {
@@ -75,7 +72,6 @@
 	}
 
 	async function deleteFile(path: string) {
-		const {deckId, revisionId} = $page.params
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files/${path}`,
 			authenticateRequest($session, {
 				method: 'delete'
@@ -88,7 +84,6 @@
 	}
 
 	async function build() {
-		const {deckId, revisionId} = $page.params
 		building = true
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/build`,
 			authenticateRequest($session, {

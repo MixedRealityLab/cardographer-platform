@@ -23,7 +23,6 @@
 	import {base} from '$app/paths'
 	import {page, session} from '$app/stores'
 	import {AnalysisExportTypes} from '$lib/analysistypes'
-	import type {Analysis} from '$lib/types'
 	import AnalysisTabs from "./_AnalysisTabs.svelte"
 
 	export let analysis: Analysis

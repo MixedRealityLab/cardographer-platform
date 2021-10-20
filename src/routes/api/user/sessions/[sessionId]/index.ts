@@ -52,6 +52,9 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	}
 	// update session
 	const now = new Date().toISOString();
+	if(!sess.owners) {
+		sess.owners = [locals.email]
+	}
 	const upd = await db.collection<Session>('Sessions').updateOne({
 		_id: sessionId
 	}, {
@@ -64,6 +67,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 			isPublic: sess.isPublic,
 			isArchived: sess.isArchived,
 			isTemplate: sess.isTemplate,
+			owners: sess.owners
 			// others should get set in other ways
 		}
 	});

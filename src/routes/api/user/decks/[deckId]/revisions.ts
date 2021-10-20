@@ -54,7 +54,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	let revision = request.body as unknown as CardDeckRevision;
+	const revision = request.body as unknown as CardDeckRevision;
 	//if (debug) console.log(`add deck`, revision);
 	const db = await getDb();
 	// check deck & access

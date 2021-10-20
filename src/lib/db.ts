@@ -8,7 +8,7 @@ const url = MONGODB ? MONGODB : 'mongodb://mongo:27017';
 const dbname = 'cardographer-platform-1';
 const RETRY_DELAY = 3000;
 
-let db: Promise<Db> = new Promise<Db>((resolve, reject) => {
+const db: Promise<Db> = new Promise<Db>((resolve, reject) => {
 	attemptConnection(resolve, reject);
 })
 

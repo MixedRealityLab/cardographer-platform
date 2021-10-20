@@ -32,10 +32,10 @@ export async function get(request): Promise<EndpointOutput> {
 		}
 	}
 	if (revision.output?.atlases && revision.output.atlases.length > 0) {
-		let atlases = revision.output.atlases;
+		const atlases = revision.output.atlases;
 		if (debug) console.log(`fix external URLs with ${EXTERNAL_SERVER_URL} and ${sbase}`);
 		// fix URLs
-		for (let atlas of atlases) {
+		for (const atlas of atlases) {
 			for (let i = 0; i < atlas.atlasURLs.length; i++) {
 				if (!atlas.atlasURLs[i].startsWith('http')) {
 					atlas.atlasURLs[i] = `${EXTERNAL_SERVER_URL}${sbase}${atlas.atlasURLs[i]}`;

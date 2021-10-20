@@ -67,7 +67,7 @@ export class Appv1 extends Client {
 	makeSessionSnapshot(d: any): SessionSnapshot {
 		const data = d as Appv1Data;
 		const now = new Date().toISOString();
-		let deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown';
+		const deck = data.design_decks && data.design_decks[0] ? data.design_decks[0].deck_name : 'unknown';
 		return {
 			_id: '',
 			sessionId: '',
@@ -87,27 +87,27 @@ export class Appv1 extends Client {
 	}
 
 	getSnapshotInfo(snapshot: SessionSnapshot): SnapshotInfo {
-		let board: BoardInfo = {
+		const board: BoardInfo = {
 			id: "",//default
 			cards: [],
 			comments: [],
 		};
-		let info: SnapshotInfo = {
+		const info: SnapshotInfo = {
 			boards: [board],
 		};
-		let data = snapshot.data as Appv1Data;
+		const data = snapshot.data as Appv1Data;
 		if (!data) {
 			console.log(`no appv1Data found in snapshot ${snapshot._id}`);
 			return info;
 
 		}
-		let cards = data.design_cards;
+		const cards = data.design_cards;
 		if (!cards) {
 			console.log(`no cards in appv1 snapshot ${snapshot._id}`);
 			return info;
 		}
-		for (let card of cards) {
-			let ci: CardSnapshot = {
+		for (const card of cards) {
+			const ci: CardSnapshot = {
 				id: card.card_id,
 			}
 			board.cards.push(ci);

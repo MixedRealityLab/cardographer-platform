@@ -3,8 +3,8 @@ import type {ServerLocals, UserSession} from '$lib/systemtypes';
 import type {GetSession, Handle} from '@sveltejs/kit';
 import cookie from 'cookie';
 
-const USER_PATH = "/user";
-const API_PATH = "/api";
+//const USER_PATH = "/user";
+//const API_PATH = "/api";
 
 const debug = false;
 
@@ -19,7 +19,7 @@ export const handle: Handle = async ({request, resolve}) => {
 		|| '';
 	const token = await checkUserToken(userToken);
 
-	let locals = request.locals as ServerLocals;
+	const locals = request.locals as ServerLocals;
 	locals.email = token.email;
 	locals.authenticated = token.valid;
 	if (token.valid) {
@@ -30,15 +30,15 @@ export const handle: Handle = async ({request, resolve}) => {
 		request.method = request.query.get('_method').toUpperCase();
 	}
 
-	const response = await resolve(request);
+	return resolve(request);
 
 	//response.headers['set-cookie'] = `userid=${request.locals.userid}; Path=/; HttpOnly`;
 
-	return response;
+	//return response;
 };
 
 export const getSession: GetSession = (request) => {
-	let locals = request.locals as ServerLocals;
+	const locals = request.locals as ServerLocals;
 	const user: UserSession = {
 		email: locals.email,
 		authenticated: locals.authenticated,

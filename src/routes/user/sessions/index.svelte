@@ -29,7 +29,6 @@
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import {session} from '$app/stores'
-	import type {Session} from '$lib/types'
 
 	export let sessions: Session[]
 	let showArchived = false

@@ -28,7 +28,7 @@ export async function post({locals, body}: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	let an = body as unknown as Analysis;
+	const an = body as unknown as Analysis;
 	//if (debug) console.log(`add analysis`, analysis);
 	const db = await getDb()
 	const newId = getNewId()
@@ -46,7 +46,7 @@ export async function post({locals, body}: Request): Promise<EndpointOutput> {
 		regions: [],
 	};
 	// add
-	let result = await db.collection<Analysis>('Analyses').insertOne(analysis);
+	const result = await db.collection<Analysis>('Analyses').insertOne(analysis);
 	if (!result.insertedId) {
 		console.log(`Error adding new analysis ${newId}`);
 		return {status: 500};

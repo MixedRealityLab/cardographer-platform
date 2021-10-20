@@ -62,18 +62,18 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	})
 	await rmAll(outputDir)
 	// cards updates...
-	let now = new Date().toISOString();
-	let allCards: CardInfo[] = [];
+	const now = new Date().toISOString();
+	const allCards: CardInfo[] = [];
 	let allMessages: string[] = [];
-	let atlases: AtlasInfo[] = [];
+	const atlases: AtlasInfo[] = [];
 	const frontUrlProp = revision.propertyDefs.find((p) => p.use == CardPropertyUse.FrontUrl);
 	const frontFileProp = revision.propertyDefs.find((p) => p.use == CardPropertyUse.FrontFile);
 	const frontUrlPropName = frontUrlProp && frontUrlProp.title ? frontUrlProp.title : CardPropertyUse.FrontUrl;
 	const frontFilePropName = frontFileProp && frontFileProp.title ? frontFileProp.title : CardPropertyUse.FrontFile;
 	// each back	
-	for (let back of backs) {
+	for (const back of backs) {
 		if (debug) console.log(`process back ${back}`);
-		let cards = revision.cards.filter((c) => back == (c.back ? c.back : '') && !c.id.startsWith('back:'));
+		const cards = revision.cards.filter((c) => back == (c.back ? c.back : '') && !c.id.startsWith('back:'));
 		let backCard = revision.cards.find((c) => `back:${back}` == c.id);
 		if (!backCard) {
 			if (debug) console.log(`missing card back back:${back}`);
@@ -94,7 +94,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		await fsPromises.writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
-		let localOpts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
+		const localOpts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
 		localOpts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
 		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
 		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
@@ -120,7 +120,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		// squib currently generates _output/card_NN.png
 		for (let cix = 0; cix < cards.length; cix++) {
 			const card = cards[cix];
-			let newCard: CardInfo = {
+			const newCard: CardInfo = {
 				id: card.id,
 				revision: card.revision,
 				lastModified: card.lastModified,
@@ -132,9 +132,9 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			allCards.push(newCard);
 		}
 		// atlas
-		let countX = Number(localOpts.sheet.columns);
-		let countY = Number(localOpts.sheet.rows);
-		let atlas: AtlasInfo = {
+		const countX = Number(localOpts.sheet.columns);
+		const countY = Number(localOpts.sheet.rows);
+		const atlas: AtlasInfo = {
 			name: `${revision.deckName}${back.length > 0 ? ' - ' : ''}${back}`,
 			atlasURLs: [],
 			countX: [], //Number(localopts.sheet.columns),
@@ -185,10 +185,10 @@ const WORKER_TIMEOUT = 30000;
 
 async function callWorker(revPath: string, optionsFile: string): Promise<CallRes> {
 	let state = WState.AWAIT_CONNECT;
-	let output = [];
+	const output = [];
 	return new Promise<CallRes>((resolve) => {
-		let sock = new net.Socket();
-		let timeout = setTimeout(() => {
+		const sock = new net.Socket();
+		const timeout = setTimeout(() => {
 			if (debug) console.log('socket timeout');
 			if (state != WState.DONE && state != WState.ERROR) {
 				resolve({ok: false, error: 'Took too long'});

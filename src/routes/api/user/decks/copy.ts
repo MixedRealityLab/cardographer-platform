@@ -12,7 +12,7 @@ export async function post(request: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals)
 		return {status: 401}
 	}
-	let revisionId = request.body as string
+	const revisionId = request.body as string
 	console.log(revisionId)
 
 	if (!revisionId) {

@@ -51,6 +51,9 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	}
 	// update analysis
 	const now = new Date().toISOString();
+	if(!analysis.owners) {
+		analysis.owners = [locals.email]
+	}
 	const upd = await db.collection<Analysis>('Analyses').updateOne({
 		_id: analysisId
 	}, {
@@ -62,6 +65,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 			lastModified: now,
 			isPublic: analysis.isPublic,
 			snapshotIds: analysis.snapshotIds, //?
+			owners: analysis.owners
 		}
 	});
 	if (!upd.matchedCount) {

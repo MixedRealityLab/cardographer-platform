@@ -26,8 +26,7 @@
 </script>
 
 <script lang="ts">
-	import UserTabs from '$lib/ui/UserTabs.svelte';
-	import type {CardDeckSummary} from '$lib/types'
+	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import {base} from '$app/paths'
 
 	export let decks: CardDeckSummary[];

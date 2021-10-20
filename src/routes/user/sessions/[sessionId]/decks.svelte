@@ -69,7 +69,6 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import SessionTabs from './_SessionTabs.svelte'
-	import type {CardDeckRevisionSummary, Session} from '$lib/types'
 	import {page, session as pageSession} from '$app/stores'
 
 	export let session: Session

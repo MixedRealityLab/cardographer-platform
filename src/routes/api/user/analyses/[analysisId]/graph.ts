@@ -1,9 +1,7 @@
 import {analysisNodeGraph} from '$lib/analysis';
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
-import type {Analysis, AnalysisRegion} from '$lib/types';
-import {RegionType} from "$lib/types";
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {Analysis, AnalysisRegion} from '$lib/types'
+import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true;
 
@@ -22,9 +20,8 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`)
 		return {status: 404}
 	}
-	const graph = await analysisNodeGraph(analysis)
 	return {
-		body: graph as any
+		body: await analysisNodeGraph(analysis)
 	}
 }
 
@@ -35,8 +32,8 @@ export async function put({locals, body, params}: Request): Promise<EndpointOutp
 	}
 	const regions = body as unknown as AnalysisRegion[]
 	for (const region of regions) {
-		if (region.type === RegionType.SubRegions) {
-		}
+		// if (region.type === RegionType.SubRegions) {
+		// }
 		delete region['regions']
 	}
 	const {analysisId} = params
@@ -65,8 +62,7 @@ export async function put({locals, body, params}: Request): Promise<EndpointOutp
 		if (debug) console.log(`analysis ${analysisId} not matched`, upd);
 		return {status: 404};
 	}
-	const graph = await analysisNodeGraph(analysis)
 	return {
-		body: graph as any
+		body: await analysisNodeGraph(analysis)
 	}
 }

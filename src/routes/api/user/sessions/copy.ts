@@ -10,7 +10,7 @@ export async function post({locals, body}: Request): Promise<EndpointOutput> {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	let copyReq = body as unknown as CopySessionRequest
+	const copyReq = body as unknown as CopySessionRequest
 	if (!copyReq.sessionId) {
 		if (debug) console.log(`no sessionId in copy`, copyReq)
 		return {status: 400}
@@ -60,7 +60,7 @@ export async function post({locals, body}: Request): Promise<EndpointOutput> {
 	}
 
 	// add
-	let result = await db.collection<Session>('Sessions').insertOne(session);
+	const result = await db.collection<Session>('Sessions').insertOne(session);
 	if (!result.acknowledged) {
 		console.log(`Error adding new session ${newId}`);
 		return {status: 500};

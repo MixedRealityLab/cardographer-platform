@@ -35,6 +35,7 @@
 	}
 
 	export let analysis: Analysis
+	let selectedCard = null
 	let graphElement: HTMLElement
 	let graph: cytoscape.Core
 	let layout: LayoutOptions = {
@@ -53,6 +54,7 @@
 		graph.nodes().removeClass('unused')
 		graph.edges().removeClass('unused')
 		graph.fit(null, 24)
+		selectedCard = null
 	}
 
 	async function zoomIn() {
@@ -61,6 +63,35 @@
 
 	async function zoomOut() {
 		graph.zoom(graph.zoom() / 1.2)
+	}
+
+	function selectNode(e) {
+		const edges = e.target.connectedEdges()
+		const nodes = edges.connectedNodes().union(e.target)
+		const edges2 = nodes.connectedEdges()
+
+		selectedCard = e.target.data()
+
+		nodes.removeClass('unused')
+		edges2.removeClass('unused')
+		graph.nodes().subtract(nodes).addClass('unused')
+		graph.edges().subtract(edges2).addClass('unused')
+
+		graph.layout({
+			name: "concentric",
+			animate: true,
+			fit: false,
+			nodeDimensionsIncludeLabels: true,
+			concentric: function (node) {
+				if (e.target.contains(node)) {
+					return 100
+				} else if (nodes.contains(node)) {
+					return 10
+				} else {
+					return 1
+				}
+			},
+		}).run()
 	}
 
 	async function updateRegions() {
@@ -136,32 +167,8 @@
 					}
 				],
 			})
-			graph.nodes().on('click', (e) => {
-				const edges = e.target.connectedEdges()
-				const nodes = edges.connectedNodes()
-				const edges2 = nodes.connectedEdges()
-
-				nodes.removeClass('unused')
-				edges2.removeClass('unused')
-				graph.nodes().subtract(nodes).addClass('unused')
-				graph.edges().subtract(edges2).addClass('unused')
-
-				graph.layout({
-					name: "concentric",
-					animate: true,
-					fit: false,
-					nodeDimensionsIncludeLabels: true,
-					concentric: function (node) {
-						if (e.target.contains(node)) {
-							return 100
-						} else if (nodes.contains(node)) {
-							return 10
-						} else {
-							return 1
-						}
-					},
-				}).run()
-			})
+			graph.nodes().on('click', selectNode)
+			graph.nodes().on('tap', selectNode)
 		}
 	})
 </script>
@@ -211,8 +218,16 @@
 	</div>
 	{#if sidebar}
 		<div transition:fly="{{ x: sidebarWidth, duration: 500 }}" bind:clientWidth={sidebarWidth}
-		     class="absolute right-0 top-0 bottom-0 p-6 bg-white border-l border-gray-200 backdrop-blur-sm flex flex-col gap-2"
+		     class="max-w-md absolute overflow-y-auto right-0 top-0 bottom-0 p-6 bg-white border-l border-gray-200 backdrop-blur-sm flex flex-col gap-2"
 		     style="background-color: rgba(255, 255, 255, 0.8)">
+			{#if selectedCard}
+				<div class="font-semibold">{selectedCard.label}</div>
+				<div>{selectedCard.description}</div>
+				<div>Used {selectedCard.count} times</div>
+				<div>Used in {selectedCard.zones.join(", ")}</div>
+				<div class="font-semibold mt-4">Boards</div>
+			{/if}
+
 			{#each regions as region}
 				<RegionOptions region={region}/>
 			{/each}

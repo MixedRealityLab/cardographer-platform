@@ -16,7 +16,7 @@ export async function checkUserToken(rawToken: string): Promise<UserToken> {
 			valid: false
 		}
 	}
-	return new Promise<UserToken>((resolve, reject) => {
+	return new Promise<UserToken>((resolve) => {
 		jwt.verify(rawToken, jwtSecret, (err, decoded) => {
 			if (err) {
 				if (debug) console.log(`invalid token: ${err}`);

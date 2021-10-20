@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let title: string = 'Cardographer';
+	export let title = 'Cardographer';
 	export let back: string = null;
 </script>
 
