@@ -12,7 +12,7 @@
 			const filterValue = userFilter.toLowerCase()
 			filtered = users
 				.filter((user) => owners.indexOf(user.email) === -1)
-				.filter((user) => user.name.toLowerCase().indexOf(filterValue) > -1 || user.email.toLowerCase().indexOf(filterValue) > -1)
+				.filter((user) => (user.name && user.name.toLowerCase().indexOf(filterValue) > -1) || user.email.toLowerCase().indexOf(filterValue) > -1)
 				.slice(0, 5)
 			console.log(filtered)
 		} else {
