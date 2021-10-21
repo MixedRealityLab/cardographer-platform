@@ -12,7 +12,13 @@
 </script>
 
 <script>
+	import AppBar from "$lib/ui/AppBar.svelte";
+	import {base} from "$app/paths";
+
 	export let title;
 </script>
 
-<h1>{title}</h1>
+<AppBar back="{base}/user/decks"/>
+
+
+<h1 class="p-6">{title}</h1>
