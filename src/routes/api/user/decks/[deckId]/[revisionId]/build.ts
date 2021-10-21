@@ -1,24 +1,24 @@
 import {buildRevision} from '$lib/builders'
 import {getDb} from '$lib/db'
+import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types'
 import {DeckBuildStatus} from "$lib/types";
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true;
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	if (!request.locals.authenticated) {
-		if (debug) console.log(`locals`, request.locals)
+export async function post({locals, params}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {deckId, revisionId} = request.params;
-	const db = await getDb();
+	const {deckId, revisionId} = params
+	const db = await getDb()
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
-		_id: deckId, owners: request.locals.email
+		_id: deckId, owners: locals.email
 	})
 	if (!deck) {
-		if (debug) console.log(`deck ${deckId} not found for ${request.locals.email}`);
+		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
 		return {status: 404};
 	}
 	// current revision

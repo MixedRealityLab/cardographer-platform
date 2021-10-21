@@ -1,17 +1,16 @@
 import {getDb} from '$lib/db';
+import {isNotAuthenticated} from "$lib/security";
 import type {ServerLocals} from '$lib/systemtypes';
 import type {Analysis} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {analysisId} = request.params;
+	const {analysisId} = params;
 	if (debug) console.log(`get analysis ${analysisId}`);
 	const db = await getDb();
 	// permission check
@@ -51,7 +50,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	}
 	// update analysis
 	const now = new Date().toISOString();
-	if(!analysis.owners) {
+	if (!analysis.owners) {
 		analysis.owners = [locals.email]
 	}
 	const upd = await db.collection<Analysis>('Analyses').updateOne({

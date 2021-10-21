@@ -185,7 +185,7 @@
 
 <style>
     .iconButton {
-        @apply p-1 text-gray-900 hover:text-gray-600;
+        @apply p-1 transition-colors duration-500 text-gray-900 hover:text-blue-700;
     }
 </style>
 
@@ -239,7 +239,7 @@
 					<div>Used {selectedCard.count} times</div>
 					<div class="text-sm">Used in {selectedCard.zones.join(", ")}</div>
 				</div>
-				<div class="font-semibold mt-4">Boards</div>
+				<div class="font-semibold mt-4">Board Regions</div>
 			{/if}
 
 			{#each regions as region}

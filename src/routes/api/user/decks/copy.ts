@@ -1,18 +1,16 @@
 import {getDb, getNewId} from "$lib/db"
-import type {ServerLocals} from "$lib/systemtypes"
+import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types"
 import type {EndpointOutput, Request} from "@sveltejs/kit"
 import {cleanRevision} from "./[deckId]/revisions";
 
 const debug = true
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+export async function post({locals, body}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revisionId = request.body as string
+	const revisionId = body as string
 	console.log(revisionId)
 
 	if (!revisionId) {

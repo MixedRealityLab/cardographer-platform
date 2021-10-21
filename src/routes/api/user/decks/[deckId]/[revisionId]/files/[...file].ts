@@ -1,7 +1,7 @@
 import type {PostFilesRequest} from '$lib/apitypes';
 import {deleteFile, getFileInfo, writeFile} from '$lib/builders/index';
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 import path from 'path'
@@ -9,8 +9,7 @@ import path from 'path'
 const debug = true;
 
 export async function get({locals, params}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	const {deckId, revisionId, file} = params;
@@ -36,11 +35,10 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 }
 
 export async function post({locals, params, body}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const req = await body as unknown as PostFilesRequest
+	const req = body as unknown as PostFilesRequest
 	const {deckId, revisionId} = params
 	const path = params.file;
 	const db = await getDb();

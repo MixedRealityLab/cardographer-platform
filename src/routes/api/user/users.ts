@@ -1,14 +1,12 @@
 import {getDb} from '$lib/db'
-import type {ServerLocals} from '$lib/systemtypes'
+import {isNotAuthenticated} from "$lib/security";
 import type {User} from '$lib/types'
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = false;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function get({locals}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	if (debug) console.log(`get sessions`);

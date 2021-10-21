@@ -1,13 +1,13 @@
 import {analysisNodeGraph} from '$lib/analysis';
 import {getDb} from '$lib/db';
+import {isNotAuthenticated} from "$lib/security";
 import type {Analysis, AnalysisRegion} from '$lib/types'
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true;
 
 export async function get({locals, params}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	const {analysisId} = params
@@ -26,8 +26,7 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 }
 
 export async function put({locals, body, params}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	const regions = body as unknown as AnalysisRegion[]

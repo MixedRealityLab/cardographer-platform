@@ -194,7 +194,6 @@ export async function analysisNodeGraph(analysis: Analysis) {
 										}
 									}
 								}
-								console.log(count + ': ' + JSON.stringify(cardUse1.use[bi][0].zones) + '===' + JSON.stringify(cardUse2.use[bi][0].zones))
 							} else {
 								count++;
 							}

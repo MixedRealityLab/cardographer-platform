@@ -1,25 +1,23 @@
 import type {PutCardsRequest} from '$lib/apitypes';
 import {readCards} from '$lib/csvutils';
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security"
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 import parse from 'csv-parse';
 
 const debug = true;
 
-export async function put(request: Request): Promise<EndpointOutput> {
-	const req = await request.body as unknown as PutCardsRequest;
+export async function put({locals, body, params}: Request): Promise<EndpointOutput> {
+	const req = await body as unknown as PutCardsRequest;
 	if (!req.csvFile) {
 		if (debug) console.log(`no csvFile in PutCardsRequest`);
 		return {status: 400}
 	}
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {deckId, revisionId} = request.params;
+	const {deckId, revisionId} = params;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({

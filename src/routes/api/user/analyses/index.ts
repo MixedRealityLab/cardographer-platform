@@ -1,12 +1,12 @@
 import {getDb, getNewId} from '$lib/db'
+import {isNotAuthenticated} from "$lib/security";
 import type {Analysis} from '$lib/types'
 import type {EndpointOutput, Request} from '@sveltejs/kit'
 
 const debug = true
 
 export async function get({locals}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	if (debug) console.log(`get analyses`)
@@ -24,8 +24,7 @@ export async function get({locals}: Request): Promise<EndpointOutput> {
 }
 
 export async function post({locals, body}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	const an = body as unknown as Analysis;

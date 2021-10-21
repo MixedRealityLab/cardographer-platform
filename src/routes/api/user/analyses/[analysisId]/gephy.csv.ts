@@ -1,19 +1,17 @@
 import {exportAnalysisAsCsv} from '$lib/analysis';
 import {AnalysisExportTypes} from '$lib/analysistypes';
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security";
 import type {Analysis} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function get({locals, params, query}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {analysisId} = request.params;
+	const {analysisId} = params;
 	const db = await getDb();
 	// permission check
 	const analysis = await db.collection<Analysis>('Analyses').findOne({
@@ -24,25 +22,25 @@ export async function get(request: Request): Promise<EndpointOutput> {
 		return {status: 404};
 	}
 	let exportType = AnalysisExportTypes.CARD_USE;
-	if (request.query.has('type')) {
-		exportType = request.query.get('type') as AnalysisExportTypes;
+	if (query.has('type')) {
+		exportType = query.get('type') as AnalysisExportTypes;
 	}
-	const splitByBoard = request.query.has('splitByBoard');
-	const includeDetail = request.query.has('includeDetail');
+	const splitByBoard = query.has('splitByBoard');
+	const includeDetail = query.has('includeDetail');
 	let boardNames: string[] = null;
-	if (request.query.has('boards')) {
-		boardNames = request.query.get('boards').split(',').map((n) => n.trim());
+	if (query.has('boards')) {
+		boardNames = query.get('boards').split(',').map((n) => n.trim());
 	}
 	const csv = await exportAnalysisAsCsv(analysis, exportType, splitByBoard, includeDetail, boardNames);
 	let typeName = "Card Use"
-	if(exportType == AnalysisExportTypes.CARD_ADJACENCY) {
-		typeName = "Card Adhacency"
+	if (exportType == AnalysisExportTypes.CARD_ADJACENCY) {
+		typeName = "Card Adjacency"
 	}
 	const name = analysis.name + " " + typeName + ".csv"
 	return {
 		headers: {
 			'Content-Type': 'text/csv; charset=utf-8',
-			'Content-Disposition': 'attachment; filename="' + name +  '"'
+			'Content-Disposition': 'attachment; filename="' + name + '"'
 		},
 		body: csv
 	}

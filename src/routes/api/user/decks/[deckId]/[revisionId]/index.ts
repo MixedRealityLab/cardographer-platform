@@ -1,17 +1,15 @@
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {deckId, revisionId} = request.params;
+	const {deckId, revisionId} = params;
 	if (debug) console.log(`get revision ${revisionId} for ${deckId}`);
 	const db = await getDb();
 	// permission check
@@ -36,14 +34,12 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function put(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function put({locals, params, body}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revision = request.body as unknown as CardDeckRevision;
-	const {deckId, revisionId} = request.params;
+	const revision = body as unknown as CardDeckRevision;
+	const {deckId, revisionId} = params;
 	if (deckId != revision.deckId || revisionId != String(revision.revision)) {
 		if (debug) console.log(`revision doesnt match url`, revision);
 		return {status: 400};

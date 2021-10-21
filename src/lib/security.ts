@@ -1,3 +1,4 @@
+import type {ServerLocals} from "$lib/systemtypes";
 import jwt from 'jsonwebtoken';
 
 interface UserToken {
@@ -9,6 +10,15 @@ const cookieSecret = "something2";
 const jwtSecret = "somethingelse";
 
 const debug = false;
+
+export function isNotAuthenticated(locals: Record<string, any>): boolean {
+	if(locals.authenticated) {
+		return false
+	}
+	// TODO Logging
+
+	return true
+}
 
 export async function checkUserToken(rawToken: string): Promise<UserToken> {
 	if (!rawToken) {

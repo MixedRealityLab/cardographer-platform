@@ -1,17 +1,15 @@
 import {getDb} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security";
 import type {Session} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function get({locals, params}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const {sessionId} = request.params;
+	const {sessionId} = params;
 	if (debug) console.log(`get session ${sessionId}`);
 	const db = await getDb();
 	// permission check
@@ -29,14 +27,12 @@ export async function get(request: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function put(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function put({locals, body, params}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const sess = request.body as unknown as Session;
-	const {sessionId} = request.params;
+	const sess = body as unknown as Session
+	const {sessionId} = params
 	if (sessionId != sess._id) {
 		if (debug) console.log(`session doesnt match url`, sess);
 		return {status: 400};
@@ -52,7 +48,7 @@ export async function put(request: Request): Promise<EndpointOutput> {
 	}
 	// update session
 	const now = new Date().toISOString();
-	if(!sess.owners) {
+	if (!sess.owners) {
 		sess.owners = [locals.email]
 	}
 	const upd = await db.collection<Session>('Sessions').updateOne({

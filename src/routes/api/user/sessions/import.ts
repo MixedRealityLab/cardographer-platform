@@ -1,23 +1,21 @@
 import {getClient, guessSessionType} from '$lib/clients/index';
 import {getDb, getNewId} from '$lib/db';
-import type {ServerLocals} from '$lib/systemtypes';
+import {isNotAuthenticated} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 import type {Filter} from "mongodb/mongodb.ts34";
 
 const debug = true;
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function post({locals, body}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	let ss: any[];
-	if (!Array.isArray(request.body)) {
-		ss = [request.body];
+	if (!Array.isArray(body)) {
+		ss = [body];
 	} else {
-		ss = request.body
+		ss = body
 	}
 	//if (debug) console.log(`add session`, copyreq);
 	const db = await getDb();

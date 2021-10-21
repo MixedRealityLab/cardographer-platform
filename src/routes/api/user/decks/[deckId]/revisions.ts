@@ -1,6 +1,6 @@
 import {copyBuild} from '$lib/builders'
 import {getDb} from '$lib/db'
-import type {ServerLocals} from '$lib/systemtypes'
+import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from '$lib/types'
 import {DeckBuildStatus} from '$lib/types'
 import type {EndpointOutput, Request} from '@sveltejs/kit'
@@ -9,8 +9,7 @@ import type {Db} from "mongodb"
 const debug = true;
 
 export async function get({locals, params}: Request): Promise<EndpointOutput> {
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals)
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	const {deckId} = params;
@@ -48,17 +47,15 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const locals = request.locals as ServerLocals;
-	if (!locals.authenticated) {
-		if (debug) console.log(`locals`, locals);
+export async function post({locals, params, body}: Request): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revision = request.body as unknown as CardDeckRevision;
+	const revision = body as unknown as CardDeckRevision;
 	//if (debug) console.log(`add deck`, revision);
 	const db = await getDb();
 	// check deck & access
-	const {deckId} = request.params;
+	const {deckId} = params;
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
 		_id: deckId, owners: locals.email
 	})
