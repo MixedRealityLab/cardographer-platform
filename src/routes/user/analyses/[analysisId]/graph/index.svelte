@@ -40,6 +40,7 @@
 	let graph: cytoscape.Core
 	let layout: LayoutOptions = {
 		name: 'circle',
+		fit: true,
 		//name: 'cose',
 		//nodeDimensionsIncludeLabels: true,
 		//nodeOverlap: 32,
@@ -49,11 +50,15 @@
 	let sidebarWidth: number
 	let regions = []
 
-	async function fit() {
-		graph.layout(layout).run()
+	async function fit(animate = false) {
+		const newLayout = {
+			...layout,
+			animate: animate
+		}
+		graph.layout(newLayout).run()
 		graph.nodes().removeClass('unused')
 		graph.edges().removeClass('unused')
-		graph.fit(null, 24)
+		//graph.fit(null, 30)
 		selectedCard = null
 	}
 
@@ -66,32 +71,38 @@
 	}
 
 	function selectNode(e) {
-		const edges = e.target.connectedEdges()
-		const nodes = edges.connectedNodes().union(e.target)
-		const edges2 = nodes.connectedEdges()
+		if(selectedCard && selectedCard.id === e.target.data().id) {
+			selectedCard = null
+			fit(true)
+		} else {
 
-		selectedCard = e.target.data()
+			const edges = e.target.connectedEdges()
+			const nodes = edges.connectedNodes().union(e.target)
+			const edges2 = nodes.connectedEdges()
 
-		nodes.removeClass('unused')
-		edges2.removeClass('unused')
-		graph.nodes().subtract(nodes).addClass('unused')
-		graph.edges().subtract(edges2).addClass('unused')
+			selectedCard = e.target.data()
 
-		graph.layout({
-			name: "concentric",
-			animate: true,
-			fit: false,
-			nodeDimensionsIncludeLabels: true,
-			concentric: function (node) {
-				if (e.target.contains(node)) {
-					return 100
-				} else if (nodes.contains(node)) {
-					return 10
-				} else {
-					return 1
-				}
-			},
-		}).run()
+			nodes.removeClass('unused')
+			edges2.removeClass('unused')
+			graph.nodes().subtract(nodes).addClass('unused')
+			graph.edges().subtract(edges2).addClass('unused')
+
+			graph.layout({
+				name: "concentric",
+				animate: true,
+				fit: false,
+				nodeDimensionsIncludeLabels: true,
+				concentric: function (node) {
+					if (e.target.contains(node)) {
+						return 100
+					} else if (nodes.contains(node)) {
+						return 10
+					} else {
+						return 1
+					}
+				},
+			}).run()
+		}
 	}
 
 	async function updateRegions() {
@@ -167,7 +178,6 @@
 					}
 				],
 			})
-			graph.nodes().on('click', selectNode)
 			graph.nodes().on('tap', selectNode)
 		}
 	})
@@ -181,7 +191,7 @@
 
 <AnalysisTabs analysis="{analysis}">
 	{#if graph}
-		<button class="iconButton" on:click={fit} title="Fit Graph to Screen">
+		<button class="iconButton" on:click={() => fit(true)} title="Fit Graph to Screen">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path d="M3 8V4m0 0h4M3 4l4 4m8 0V4m0 0h-4m4 0l-4 4m-8 4v4m0 0h4m-4 0l4-4m8 4l-4-4m4 4v-4m0 4h-4"
 				      stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
