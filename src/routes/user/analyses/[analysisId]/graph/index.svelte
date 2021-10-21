@@ -71,7 +71,7 @@
 	}
 
 	function selectNode(e) {
-		if(selectedCard && selectedCard.id === e.target.data().id) {
+		if (selectedCard && selectedCard.id === e.target.data().id) {
 			selectedCard = null
 			fit(true)
 		} else {
@@ -231,10 +231,14 @@
 		     class="max-w-md absolute overflow-y-auto right-0 top-0 bottom-0 p-6 bg-white border-l border-gray-200 backdrop-blur-sm flex flex-col gap-2"
 		     style="background-color: rgba(255, 255, 255, 0.8)">
 			{#if selectedCard}
-				<div class="font-semibold">{selectedCard.label}</div>
-				<div>{selectedCard.description}</div>
-				<div>Used {selectedCard.count} times</div>
-				<div>Used in {selectedCard.zones.join(", ")}</div>
+				<div>
+					<div class="font-semibold">{selectedCard.label}</div>
+					<div class="text-sm">{selectedCard.description}</div>
+				</div>
+				<div>
+					<div>Used {selectedCard.count} times</div>
+					<div class="text-sm">Used in {selectedCard.zones.join(", ")}</div>
+				</div>
 				<div class="font-semibold mt-4">Boards</div>
 			{/if}
 
