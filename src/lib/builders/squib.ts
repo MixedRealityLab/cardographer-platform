@@ -44,8 +44,8 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	const optionsFile = `${filePath}/${DEFAULT_OPTIONS_FILE}`;
 	let options: any = {};
 	try {
-		const yoptions = await fsPromises.readFile(optionsFile);
-		options = yaml.load(yoptions);
+		const yamlOptions = await fsPromises.readFile(optionsFile);
+		options = yaml.load(yamlOptions);
 	} catch (err) {
 		if (debug) console.log(`error reading ${optionsFile}: ${err.mesage}`, err);
 		return {
@@ -126,7 +126,14 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 				lastModified: card.lastModified,
 				created: card.created
 			};
-			const fileName = `${localOpts.png.prefix}${Math.floor(cix / 10)}${cix % 10}.png`;
+			const originalFileName = `${localOpts.png.prefix}${Math.floor(cix / 10)}${cix % 10}.png`
+			const fileName = `${card.id}.png`
+
+			const oldPath = `${filePath}/${localOpts.output}/${originalFileName}`
+			const newPath = `${filePath}/${localOpts.output}/${fileName}`
+
+			await fsPromises.rename(oldPath, newPath)
+
 			newCard[frontFilePropName] = fileName;
 			newCard[frontUrlPropName] = `${config.baseUrl}/${revPath}/${localOpts.output}/${fileName}`;
 			allCards.push(newCard);
