@@ -183,12 +183,6 @@
 	})
 </script>
 
-<style>
-    .iconButton {
-        @apply p-1 transition-colors duration-500 text-gray-900 hover:text-blue-700;
-    }
-</style>
-
 <AnalysisTabs analysis="{analysis}">
 	{#if graph}
 		<button class="iconButton" on:click={() => fit(true)} title="Fit Graph to Screen">

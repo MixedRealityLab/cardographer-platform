@@ -22,6 +22,7 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import type {CardDeckRevision} from "$lib/types"
+	import {downloadFile} from "$lib/ui/download";
 	import DeckTabs from "./_DeckTabs.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
@@ -66,20 +67,6 @@
 		}
 	}
 
-	//https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
-	function download(filename: string, text: string) {
-		const element = document.createElement('a');
-		element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(text));
-		element.setAttribute('download', filename);
-
-		element.style.display = 'none';
-		document.body.appendChild(element);
-
-		element.click();
-
-		document.body.removeChild(element);
-	}
-
 	async function exportCsv() {
 		console.log(`export...`);
 		message = error = '';
@@ -97,11 +84,10 @@
 		if (res.ok) {
 			const text = await res.text();
 			let filename = (revision.slug ? revision.slug : `${revision.deckName} v${revision.revision}`) + '.csv';
-			download(filename, text);
+			downloadFile(filename, text);
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}
-
 	}
 </script>
 

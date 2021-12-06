@@ -26,11 +26,14 @@
 	}
 </script>
 <script lang="ts">
+	import {dev} from "$app/env";
 	import {base} from '$app/paths'
 	import {page, session} from '$app/stores'
+	import {PostFilesRequest} from "$lib/apitypes";
 	import {DeckBuildStatus} from "$lib/types"
+	import {toBase64} from "$lib/ui/download";
+	import UploadButton from "$lib/ui/UploadButton.svelte";
 	import DeckTabs from "../_DeckTabs.svelte"
-	import FileUploadForm from '$lib/ui/FileUploadForm.svelte'
 
 	let {deckId, revisionId, file} = $page.params
 	export let files: FileInfo[]
@@ -66,11 +69,6 @@
 		}
 	}
 
-	async function uploadFinished(event: CustomEvent) {
-		console.log(event)
-		files = event.detail as FileInfo[]
-	}
-
 	async function deleteFile(path: string) {
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files/${path}`,
 			authenticateRequest($session, {
@@ -93,8 +91,8 @@
 			//files = await res.json() as FileInfo[]
 			await refresh()
 			const result = await res.json()
-			if(result.error) {
-				if(result.messages && result.messages.length > 0) {
+			if (result.error) {
+				if (result.messages && result.messages.length > 0) {
 					error = result.messages.join('')
 				} else {
 					error = result.error
@@ -114,16 +112,96 @@
 			return '/' + path.substring(0, index)
 		}
 	}
+
+	async function handleUpload(event: CustomEvent<FileList>) {
+		const uploadFiles = event.detail
+		if (uploadFiles.length == 0) {
+			console.log(`no file`);
+			return;
+		}
+		//console.log(`submit`, files);
+		error = '';
+
+		//working = true;
+		const {deckId, revisionId, file} = $page.params;
+		let req: PostFilesRequest = {
+			files: []
+		}
+		for (let fi = 0; fi < uploadFiles.length; fi++) {
+			const file = uploadFiles[fi];
+
+			const content = await toBase64(file);
+			//console.log(`ready file ${file.name}`, content);
+			req.files.push({
+				name: file.name,
+				content: content
+			});
+		}
+		const url = `${base}/api/user/decks/${deckId}/${revisionId}/files${file.length == 0 ? '' : '/' + file}`;
+		//console.log(`upload to ${url}`);
+		const res = await fetch(url, authenticateRequest($session, {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			},
+			body: JSON.stringify(req)
+		}));
+		//console.log(`done`, res);
+		//working = false;
+		if (res.ok) {
+			files = await res.json() as FileInfo[]
+		} else {
+			error = `Sorry, there was a problem (${res.statusText})`;
+		}
+	}
+
+
+	function downloadZip() {
+		const path = file.length > 0 ? file : ''
+		window.location.href = `${base}/api/user/decks/${deckId}/${revisionId}/zip/${path}`
+	}
+
+	function urlFor(file: string): string {
+		if(dev) {
+			return `${base}/api/cards/files/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
+		} else {
+			return `${base}/uploads/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
+		}
+	}
 </script>
 
-<DeckTabs revision="{revision}"/>
+<DeckTabs revision="{revision}">
+	<button class="iconButton mr-3" disabled={building} on:click={build} title="Build">
+		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<g>
+				<path d="M17.59,3.41L15,6V5c0-1.1-0.9-2-2-2H9C6.24,3,4,5.24,4,8h5v3h6V8l2.59,2.59c0.26,0.26,0.62,0.41,1,0.41h0.01 C19.37,11,20,10.37,20,9.59V4.41C20,3.63,19.37,3,18.59,3h-0.01C18.21,3,17.85,3.15,17.59,3.41z"/>
+			</g>
+			<g>
+				<path d="M9,13v7c0,0.55,0.45,1,1,1h4c0.55,0,1-0.45,1-1v-7H9z"/>
+			</g>
+		</svg>
+	</button>
+	{#if files.length > 0}
+		<button class="iconButton" title="Download Files" on:click={downloadZip}>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd"
+				      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+				      clip-rule="evenodd"/>
+			</svg>
+		</button>
+	{/if}
+	<UploadButton class="iconButton" multiple="true" on:upload={handleUpload} title="Upload Files">
+		<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+			<path clip-rule="evenodd"
+			      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+			      fill-rule="evenodd"/>
+		</svg>
+	</UploadButton>
+</DeckTabs>
 <div class="flex items-center px-6 py-2">
 	<div class="flex-1 block font-semibold">
 		Files /{$page.params.file}
 	</div>
-	<button class="button button-slim mr-4" disabled={building} on:click={build}>Build</button>
-
-	<FileUploadForm on:finished={uploadFinished}/>
 </div>
 {#if error}
 	<div class="message-error mx-6 whitespace-pre-line">{error}</div>
@@ -148,15 +226,15 @@
 				</a>
 			{:else}
 				<a class="flex flex-1 items-center py-1.5" target="_blank"
-				   href="{base}/uploads/{deckId}/{revisionId}/{$page.params.file.length > 0 ? $page.params.file + '/' : ''}{file.name}">
+				   href={urlFor(file.name)}>
 					<img src="{base}/icons/file.svg" class="w-6 mx-4" alt="File"/>
 					<div>{file.name}</div>
 				</a>
 			{/if}
 			<button class="opacity-25 transition-opacity duration-500 hover:opacity-100"
 			        on:click={() => {deleteFile(($page.params.file.length > 0 ? $page.params.file + '/' : '')+ file.name)}}>
-				<img
-						src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/></button>
+				<img src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/>
+			</button>
 		</div>
 	{/each}
 </div>

@@ -18,6 +18,6 @@
 <input class="hidden" type="file" accept="{types}" multiple={multiple}
        bind:files bind:this={fileInput} on:change={handleSubmit}/>
 
-<button class={$$props.class} on:click={() => fileInput.click()}>
+<button class={$$props.class} on:click={() => fileInput.click()} title={$$props.title}>
 	<slot></slot>
 </button>

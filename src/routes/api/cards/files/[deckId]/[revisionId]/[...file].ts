@@ -1,45 +1,39 @@
-// DEPRECATED
-// Should be obtained from (static)/uploads/...
-
+import {dev} from "$app/env";
 import {getDb} from '$lib/db';
 import type {CardDeckRevision} from '$lib/types';
 import type {EndpointOutput, Request} from '@sveltejs/kit';
 import fs from 'fs';
+import mime from 'mime'
 
 const debug = true;
 
 export async function get(request: Request): Promise<EndpointOutput> {
+	if (!dev) {
+		return {status: 404}
+	}
 	// No auth!
-	const {deckId, revId, file} = request.params;
+	const {deckId, revisionId, file} = request.params;
 	const db = await getDb();
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		deckId: deckId, revision: Number(revId)
+		deckId: deckId, revision: Number(revisionId)
 	})
 	if (!revision) {
-		if (debug) console.log(`revision ${revId} not found for deck ${deckId}`);
+		if (debug) console.log(`revision ${revisionId} not found for deck ${deckId}`);
 		return {status: 404};
 	}
-	if (debug) console.log(`get file ${file} for deck ${deckId} ${revId}`);
+	if (debug) console.log(`get file ${file} for deck ${deckId} ${revisionId}`);
 	if (file.indexOf('..') >= 0) {
 		if (debug) console.log(`refuse back path ${file}`);
 		return {status: 401};
 	}
-	const path = `uploads/${deckId}/${revId}/_output/${file}`;
-	if (debug) console.log(`get file ${file} for deck ${deckId} ${revId} = ${path}`);
-	const ix = file.lastIndexOf('.');
-	if (ix < 0) {
-		if (debug) console.log(`refuse file without extension: ${file}`);
-		return {status: 401};
-	}
-	const ext = file.substring(ix + 1).toLowerCase();
-	if ("png" == ext || "jpg" == ext) {
-		return sendFile(request, path, "image/" + ext);
-	}
-	if (debug) console.log(`refuse file ${file}`);
-	return {status: 401};
+	const path = `/app/uploads/${deckId}/${revisionId}/${file}`;
+	if (debug) console.log(`get file ${file} for deck ${deckId} ${revisionId} = ${path}`);
+	return sendFile(request, path);
+	//if (debug) console.log(`refuse file ${file}`);
+	//return {status: 401};
 }
 
-async function sendFile(request: Request, path: string, mimeType: string): Promise<EndpointOutput> {
+async function sendFile(request: Request, path: string): Promise<EndpointOutput> {
 	/*	return {
 			headers: { 'content-type': mimeType },
 			body: fs.createReadStream(path)
@@ -54,7 +48,7 @@ async function sendFile(request: Request, path: string, mimeType: string): Promi
 			resolve({
 				headers: {
 					// sveltekit won't let me use an image mime type
-					'content-type': 'application/octet-stream' //mimeType,
+					'content-type': mime.getType(path)
 				},
 				body: data
 			});

@@ -96,6 +96,19 @@ async function checkDirectoryExists(file) {
 		.catch(() => false)
 }
 
+export async function getFilePath(deckId: string, revId: string, path: string): Promise<string> {
+	const revPath = `${FILE_PATH}/${deckId}/${revId}`
+	if (!await checkDirectoryExists(revPath)) {
+		return null
+	}
+	const relPath = `${revPath}/${path}`;
+	if (!await checkDirectoryExists(relPath)) {
+		return null
+	}
+
+	return relPath
+}
+
 export async function getFileInfo(deckId: string, revId: string, path: string): Promise<FileInfo[]> {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
 	if (!await checkDirectoryExists(revPath)) {
