@@ -385,7 +385,7 @@ export async function arrayToCsv(rows: string[][]): Promise<string> {
 			reject(err.message);
 		});
 		stringifier.on('finish', function () {
-			const text = data.join('');
+			const text = "\ufeff" + data.join('');
 			resolve(text);
 		});
 		for (const row in rows) {
