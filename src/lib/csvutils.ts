@@ -346,16 +346,20 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 	if (!cards) {
 		cards = revision.cards;
 	}
-	for (let c = 0; c < cards.length; c++) {
-		const card = cards[c];
+	for(const card of cards) {
+		console.log(card)
 		const row = [];
 		if (withRowTypes) {
 			row.push(ROWTYPE_CARD);
 		}
-		for (let i = 0; i < columns.length; i++) {
-			const column = columns[i];
+		for (const column of columns) {
+			console.log(column)
 			if (column.customFieldName) {
-				row.push(card.custom[column.customFieldName]);
+				if(card.custom) {
+					row.push(card.custom[column.customFieldName]);
+				} else {
+					row.push('')
+				}
 			} else {
 				row.push(card[column.use]);
 			}
