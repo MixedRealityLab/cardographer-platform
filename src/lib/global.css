@@ -80,6 +80,12 @@ input, textarea, select, .input {
     min-width: 80px;
 }
 
+.button-delete {
+    @apply bg-red-200 hover:bg-red-300 hover:disabled:bg-gray-100 hover:disabled:drop-shadow-none hover:drop-shadow hover:text-black
+    border border-red-200 hover:border-red-500
+
+}
+
 .button-slim {
     @apply px-3 py-1;
     min-width: auto;

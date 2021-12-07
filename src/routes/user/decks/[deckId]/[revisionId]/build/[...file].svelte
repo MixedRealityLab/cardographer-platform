@@ -35,7 +35,7 @@
 	import UploadButton from "$lib/ui/UploadButton.svelte";
 	import DeckTabs from "../_DeckTabs.svelte"
 
-	let {deckId, revisionId, file} = $page.params
+	//let {deckId, revisionId, file} = $page.params
 	export let files: FileInfo[]
 	export let revision: CardDeckRevision
 	export let error = ""
@@ -50,7 +50,7 @@
 	}
 
 	async function refreshRevision() {
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest($session));
+		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}`, authenticateRequest($session));
 		if (res.ok) {
 			revision = await res.json() as CardDeckRevision
 			building = revision.build && revision.build.status === DeckBuildStatus.Building
@@ -60,8 +60,8 @@
 	}
 
 	async function refreshFiles() {
-		const path = file.length > 0 ? '/' + file : ''
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files${path}`, authenticateRequest($session));
+		const path = $page.params.file.length > 0 ? '/' + $page.params.file : ''
+		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files${path}`, authenticateRequest($session));
 		if (res.ok) {
 			files = await res.json() as FileInfo[]
 		} else {
@@ -69,8 +69,12 @@
 		}
 	}
 
-	async function deleteFile(path: string) {
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files/${path}`,
+	function getPathFor(fileName: string): string {
+		return `${$page.params.file.length == 0 ? '' : $page.params.file + '/'}${fileName}`
+	}
+
+	async function deleteFile(fileName: string) {
+		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files/${getPathFor(fileName)}`,
 			authenticateRequest($session, {
 				method: 'delete'
 			}));
@@ -83,7 +87,7 @@
 
 	async function build() {
 		building = true
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/build`,
+		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/build`,
 			authenticateRequest($session, {
 				method: 'post'
 			}));
@@ -123,7 +127,6 @@
 		error = '';
 
 		//working = true;
-		const {deckId, revisionId, file} = $page.params;
 		let req: PostFilesRequest = {
 			files: []
 		}
@@ -137,7 +140,7 @@
 				content: content
 			});
 		}
-		const url = `${base}/api/user/decks/${deckId}/${revisionId}/files${file.length == 0 ? '' : '/' + file}`;
+		const url = `${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files${$page.params.file.length == 0 ? '' : '/' + file}`;
 		//console.log(`upload to ${url}`);
 		const res = await fetch(url, authenticateRequest($session, {
 			method: 'POST',
@@ -157,15 +160,15 @@
 
 
 	function downloadZip() {
-		const path = file.length > 0 ? file : ''
-		window.location.href = `${base}/api/user/decks/${deckId}/${revisionId}/zip/${path}`
+		const path = $page.params.file.length > 0 ? $page.params.file : ''
+		window.location.href = `${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/zip/${path}`
 	}
 
-	function urlFor(file: string): string {
+	function urlFor(fileName: string): string {
 		if (dev) {
-			return `${base}/api/cards/files/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
+			return `${base}/api/cards/files/${$page.params.deckId}/${$page.params.revisionId}/${getPathFor(fileName)}`
 		} else {
-			return `${base}/uploads/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
+			return `${base}/uploads/${$page.params.deckId}/${$page.params.revisionId}/${getPathFor(fileName)}`
 		}
 	}
 </script>
@@ -214,28 +217,27 @@
 <div class="p-6">
 	{#if $page.params.file.length > 0}
 		<a class="flex flex-1 items-center py-1.5"
-		   href="{base}/user/decks/{deckId}/{revisionId}/build{removeLastPathSegment($page.params.file)}">
+		   href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build{removeLastPathSegment($page.params.file)}">
 			<img src="{base}/icons/up.svg" class="w-6 mx-4" alt="back"/>
 			<div>Back to /{removeLastPathSegment($page.params.file)}</div>
 		</a>
 	{/if}
-	{#each files as file}
+	{#each files as childFile}
 		<div class="flex items-center">
-			{#if file.isDirectory}
+			{#if childFile.isDirectory}
 				<!-- TODO: fix files/ to actual path to handle sub-sub-directories -->
-				<a class="flex flex-1 items-center py-1.5" href="{'build/'+file.name}">
+				<a class="flex flex-1 items-center py-1.5" href="{'build/'+childFile.name}">
 					<img src="{base}/icons/folder.svg" class="w-6 mx-4" alt="Directory"/>
-					<div>{file.name}</div>
+					<div>{childFile.name}</div>
 				</a>
 			{:else}
-				<a class="flex flex-1 items-center py-1.5" target="_blank"
-				   href={urlFor(file.name)}>
+				<a class="flex flex-1 items-center py-1.5" target="_blank" href={urlFor(childFile.name)}>
 					<img src="{base}/icons/file.svg" class="w-6 mx-4" alt="File"/>
-					<div>{file.name}</div>
+					<div>{childFile.name}</div>
 				</a>
 			{/if}
 			<button class="opacity-25 transition-opacity duration-500 hover:opacity-100"
-			        on:click={() => {deleteFile(($page.params.file.length > 0 ? $page.params.file + '/' : '')+ file.name)}}>
+			        on:click={() => {deleteFile(childFile.name)}}>
 				<img src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/>
 			</button>
 		</div>

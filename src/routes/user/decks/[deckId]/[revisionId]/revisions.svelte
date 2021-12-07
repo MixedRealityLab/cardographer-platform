@@ -77,6 +77,23 @@
 		}
 	}
 
+	async function deleteDeck() {
+		if (confirm("Are you sure you want to delete this deck?")) {
+			message = error = '';
+			working = true;
+			const {deckId} = $page.params;
+			const res = await fetch(`${base}/api/user/decks/${deckId}`, authenticateRequest($session, {
+				method: 'DELETE'
+			}))
+			working = false;
+			if (res.ok) {
+				await goto(`${base}/user/decks`);
+			} else {
+				error = `Sorry, there was a problem (${res.statusText})`;
+			}
+		}
+	}
+
 </script>
 
 <style>
@@ -122,8 +139,12 @@
 		</a>
 	{/each}
 
-
-	<button class="button self-center m-2" disabled={working} on:click={createNewRevision}>
-		<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision
-	</button>
+	<div class="flex justify-center">
+		<button class="button-delete button m-2" disabled={working} on:click={deleteDeck}>
+			<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
+		</button>
+		<button class="button m-2" disabled={working} on:click={createNewRevision}>
+			<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision
+		</button>
+	</div>
 </div>
