@@ -104,3 +104,7 @@ input, textarea, select, .input {
 #svelte-announcer {
     display: none;
 }
+
+.loader-small {
+    @apply rounded-full animate-spin w-4 h-4 mr-1 border-2 border-solid border-gray-400 border-t-blue-600;
+}

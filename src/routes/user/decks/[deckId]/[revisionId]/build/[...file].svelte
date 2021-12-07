@@ -162,7 +162,7 @@
 	}
 
 	function urlFor(file: string): string {
-		if(dev) {
+		if (dev) {
 			return `${base}/api/cards/files/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
 		} else {
 			return `${base}/uploads/${deckId}/${revisionId}/${$page.params.file.length > 0 ? $page.params.file + '/' : ''}${file}`
@@ -171,6 +171,9 @@
 </script>
 
 <DeckTabs revision="{revision}">
+	{#if building}
+		<div class="loader-small">&nbsp;</div>
+	{/if}
 	<button class="iconButton mr-3" disabled={building} on:click={build} title="Build">
 		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 			<g>
