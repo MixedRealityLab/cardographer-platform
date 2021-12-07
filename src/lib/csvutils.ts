@@ -335,7 +335,11 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 			if (!revision.defaults) {
 				row.push('');
 			} else if (column.customFieldName) {
-				row.push(revision.defaults.custom[column.customFieldName]);
+				if(revision.defaults.custom) {
+					row.push(revision.defaults.custom[column.customFieldName]);
+				} else {
+					row.push('')
+				}
 			} else {
 				row.push(<string>revision.defaults[column.use]);
 			}
