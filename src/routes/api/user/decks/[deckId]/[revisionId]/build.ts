@@ -47,33 +47,50 @@ export async function post({locals, params}: Request): Promise<EndpointOutput> {
 	// build...
 	revision.build.status = DeckBuildStatus.Building
 	await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
-	const result = await buildRevision(revision)
-	// update revision
-	if (!result.error && result.cards) {
-		for (const card of result.cards) {
-			const update = revision.cards.find((c) => c.id == card.id);
-			if (!update) {
-				console.log(`Error: could not find card ${card.id} to update`);
-				continue;
-			}
-			for (const k in card) {
-				update[k] = card[k];
+	try {
+		const result = await buildRevision(revision)
+		// update revision
+		if (!result.error && result.cards) {
+			for (const card of result.cards) {
+				const update = revision.cards.find((c) => c.id == card.id);
+				if (!update) {
+					console.log(`Error: could not find card ${card.id} to update`);
+					continue;
+				}
+				for (const k in card) {
+					update[k] = card[k];
+				}
 			}
 		}
-	}
-	const now = new Date().toISOString();
-	revision.build.status = (result.error ? DeckBuildStatus.Failed : DeckBuildStatus.Built)
-	revision.build.messages = result.messages
-	revision.build.lastBuilt = now
-	revision.lastModified = now
-	revision.output = {isUserModified: false, atlases: result.atlases}
-	const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
-	if (!upd.matchedCount) {
-		if (debug) console.log(`revision ${revisionId} not matched for deck ${deckId}`, upd);
-		return {status: 404};
-	}
-	return {
-		body: result as any
+		const now = new Date().toISOString();
+		revision.build.status = (result.error ? DeckBuildStatus.Failed : DeckBuildStatus.Built)
+		revision.build.messages = result.messages
+		revision.build.lastBuilt = now
+		revision.lastModified = now
+		revision.output = {isUserModified: false, atlases: result.atlases}
+		const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
+		if (!upd.matchedCount) {
+			if (debug) console.log(`revision ${revisionId} not matched for deck ${deckId}`, upd);
+			return {status: 404};
+		}
+		return {
+			body: result as any
+		}
+	} catch (e) {
+		revision.build.status = DeckBuildStatus.Failed
+		revision.build.messages = ["Build Failed", e.toString()]
+		const now = new Date().toISOString();
+		revision.build.lastBuilt = now
+		revision.lastModified = now
+		const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
+		if (!upd.matchedCount) {
+			if (debug) console.log(`revision ${revisionId} not matched for deck ${deckId}`, upd);
+			return {status: 404};
+		}
+		return {
+			body: {},
+			status: 500
+		}
 	}
 }
   
