@@ -170,7 +170,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				data: {
 					id: cardUse1.id,
 					label: cardUse1.info && cardUse1.info.name || cardUse1.id,
-					description: cardUse1.info.description,
+					description: cardUse1.info && cardUse1.info.description || '',
 					colour: colour,
 					zones: zones,
 					count: count
