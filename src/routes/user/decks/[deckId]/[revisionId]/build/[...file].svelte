@@ -123,7 +123,7 @@
 			console.log(`no file`);
 			return;
 		}
-		//console.log(`submit`, files);
+		console.log(`submit`, uploadFiles);
 		error = '';
 
 		//working = true;
@@ -175,7 +175,7 @@
 	{#if building}
 		<div class="loader-small">&nbsp;</div>
 	{/if}
-	<button class="iconButton mr-3" disabled={building} on:click={build} title="Build">
+	<button class="iconButton mr-3" disabled={building || revision.isLocked} on:click={build} title={revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 			<g>
 				<path d="M17.59,3.41L15,6V5c0-1.1-0.9-2-2-2H9C6.24,3,4,5.24,4,8h5v3h6V8l2.59,2.59c0.26,0.26,0.62,0.41,1,0.41h0.01 C19.37,11,20,10.37,20,9.59V4.41C20,3.63,19.37,3,18.59,3h-0.01C18.21,3,17.85,3.15,17.59,3.41z"/>
@@ -194,7 +194,7 @@
 			</svg>
 		</button>
 	{/if}
-	<UploadButton class="iconButton" multiple="true" on:upload={handleUpload} title="Upload Files">
+	<UploadButton class="iconButton" multiple="true" on:upload={handleUpload} disabled={revision.isLocked} title={revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 		<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 			<path clip-rule="evenodd"
 			      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
