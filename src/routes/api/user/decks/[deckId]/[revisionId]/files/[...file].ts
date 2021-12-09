@@ -40,7 +40,6 @@ export async function post({locals, params, body}: Request): Promise<EndpointOut
 	}
 	const req = body as unknown as PostFilesRequest
 	const {deckId, revisionId} = params
-	const path = params.file;
 	const db = await getDb();
 	// permission check
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
@@ -62,6 +61,8 @@ export async function post({locals, params, body}: Request): Promise<EndpointOut
 		if (debug) console.log(`revision ${revisionId} for ${deckId} locked`)
 		return {status: 401};
 	}
+	const path = params.file;
+
 	for (const file of req.files) {
 		if (debug) console.log(`upload ${file.name}`);
 		await writeFile(deckId, revisionId, path, file.name, file.content);

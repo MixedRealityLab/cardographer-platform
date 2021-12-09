@@ -110,15 +110,15 @@
 							<img src={card.frontUrl} class="h-48" alt="Card"/>
 						{/if}
 						<div>
-							<div>
-								Type: {card.category}
-							</div>
 							{#if card.description}
-								<div>{card.description}</div>
+								<div class="text-sm">{card.description}</div>
 							{/if}
 							{#if card.content}
 								<div>{card.content}</div>
 							{/if}
+							<div>
+								Type: {card.category}
+							</div>
 						</div>
 					</div>
 				</div>

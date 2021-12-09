@@ -47,7 +47,7 @@ export interface PostUserRevisionResponse {
 export interface FileInfo {
 	name: string;
 	isDirectory: boolean;
-	relPath?: string; // internal?
+	path: string;
 }
 
 export interface UploadFile {

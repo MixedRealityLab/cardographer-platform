@@ -114,11 +114,12 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	if (!await checkDirectoryExists(revPath)) {
 		return []
 	}
-	const relPath = `${revPath}/${path}`;
+	const normalizedPath = path.replace(/^\//, '')
+	const relPath = `${revPath}/${normalizedPath}`;
 	const stats = await fsPromises.stat(relPath);
 	if (stats.isFile()) {
 		if (debug) console.log(`getDirInfo for file ${relPath}`);
-		return [{name: path, relPath: relPath, isDirectory: false}];
+		return [{name: path, path: relPath, isDirectory: false}];
 	}
 	if (!stats.isDirectory()) {
 		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
@@ -130,6 +131,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 		if (file.isDirectory() || file.isFile()) {
 			fis.push({
 				name: file.name,
+				path: `${normalizedPath}/${file.name}`.replace(/^\//, ''),
 				isDirectory: file.isDirectory()
 			});
 		}
@@ -146,7 +148,7 @@ export async function writeFile(deckId: string, revId: string, path: string, nam
 	const data = Buffer.from(base64, 'base64')
 	if (name.endsWith('.zip')) {
 		const zip = new AdmZip(data)
-		zip.extractAllTo(revPath, true)
+		zip.extractAllTo(`${revPath}/${path}`, true)
 	} else {
 		await fsPromises.writeFile(relPath, data)
 	}

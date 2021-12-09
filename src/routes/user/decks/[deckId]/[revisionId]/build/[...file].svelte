@@ -113,7 +113,7 @@
 		if (index <= 0) {
 			return ''
 		} else {
-			return '/' + path.substring(0, index)
+			return path.substring(0, index).replace(/^\//,'')
 		}
 	}
 
@@ -130,9 +130,7 @@
 		let req: PostFilesRequest = {
 			files: []
 		}
-		for (let fi = 0; fi < uploadFiles.length; fi++) {
-			const file = uploadFiles[fi];
-
+		for (const file of uploadFiles) {
 			const content = await toBase64(file);
 			//console.log(`ready file ${file.name}`, content);
 			req.files.push({
@@ -140,7 +138,7 @@
 				content: content
 			});
 		}
-		const url = `${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files${$page.params.file.length == 0 ? '' : '/' + file}`;
+		const url = `${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files${$page.params.file.length == 0 ? '' : '/' + $page.params.file}`;
 		//console.log(`upload to ${url}`);
 		const res = await fetch(url, authenticateRequest($session, {
 			method: 'POST',
@@ -164,11 +162,11 @@
 		window.location.href = `${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/zip/${path}`
 	}
 
-	function urlFor(fileName: string): string {
+	function urlFor(path: string): string {
 		if (dev) {
-			return `${base}/api/cards/files/${$page.params.deckId}/${$page.params.revisionId}/${getPathFor(fileName)}`
+			return `${base}/api/cards/files/${$page.params.deckId}/${$page.params.revisionId}/${path}`
 		} else {
-			return `${base}/uploads/${$page.params.deckId}/${$page.params.revisionId}/${getPathFor(fileName)}`
+			return `${base}/uploads/${$page.params.deckId}/${$page.params.revisionId}/${path}`
 		}
 	}
 </script>
@@ -217,7 +215,7 @@
 <div class="p-6">
 	{#if $page.params.file.length > 0}
 		<a class="flex flex-1 items-center py-1.5"
-		   href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build{removeLastPathSegment($page.params.file)}">
+		   href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{removeLastPathSegment($page.params.file)}">
 			<img src="{base}/icons/up.svg" class="w-6 mx-4" alt="back"/>
 			<div>Back to /{removeLastPathSegment($page.params.file)}</div>
 		</a>
@@ -225,13 +223,12 @@
 	{#each files as childFile}
 		<div class="flex items-center">
 			{#if childFile.isDirectory}
-				<!-- TODO: fix files/ to actual path to handle sub-sub-directories -->
-				<a class="flex flex-1 items-center py-1.5" href="{'build/'+childFile.name}">
+				<a class="flex flex-1 items-center py-1.5" href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{childFile.path}">
 					<img src="{base}/icons/folder.svg" class="w-6 mx-4" alt="Directory"/>
 					<div>{childFile.name}</div>
 				</a>
 			{:else}
-				<a class="flex flex-1 items-center py-1.5" target="_blank" href={urlFor(childFile.name)}>
+				<a class="flex flex-1 items-center py-1.5" rel="external" target="_blank" href={urlFor(childFile.path)}>
 					<img src="{base}/icons/file.svg" class="w-6 mx-4" alt="File"/>
 					<div>{childFile.name}</div>
 				</a>
