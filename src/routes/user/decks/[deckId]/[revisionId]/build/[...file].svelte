@@ -113,7 +113,7 @@
 		if (index <= 0) {
 			return ''
 		} else {
-			return path.substring(0, index).replace(/^\//,'')
+			return path.substring(0, index).replace(/^\//, '')
 		}
 	}
 
@@ -151,6 +151,8 @@
 		//working = false;
 		if (res.ok) {
 			files = await res.json() as FileInfo[]
+		} else if (res.status == 413) {
+			error = "Upload too large"
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`;
 		}
@@ -175,7 +177,8 @@
 	{#if building}
 		<div class="loader-small">&nbsp;</div>
 	{/if}
-	<button class="iconButton mr-3" disabled={building || revision.isLocked} on:click={build} title={revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
+	<button class="iconButton mr-3" disabled={building || revision.isLocked} on:click={build}
+	        title={revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 			<g>
 				<path d="M17.59,3.41L15,6V5c0-1.1-0.9-2-2-2H9C6.24,3,4,5.24,4,8h5v3h6V8l2.59,2.59c0.26,0.26,0.62,0.41,1,0.41h0.01 C19.37,11,20,10.37,20,9.59V4.41C20,3.63,19.37,3,18.59,3h-0.01C18.21,3,17.85,3.15,17.59,3.41z"/>
@@ -194,7 +197,8 @@
 			</svg>
 		</button>
 	{/if}
-	<UploadButton class="iconButton" multiple="true" on:upload={handleUpload} disabled={revision.isLocked} title={revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
+	<UploadButton class="iconButton" disabled={revision.isLocked} multiple="true" on:upload={handleUpload}
+	              title={revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 		<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 			<path clip-rule="evenodd"
 			      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
@@ -211,6 +215,11 @@
 	<div class="message-error mx-6 whitespace-pre-line">{error}</div>
 {/if}
 
+<style>
+    .fileItem {
+        @apply flex flex-1 items-center py-1.5 transition-colors duration-500 hover:text-blue-700;
+    }
+</style>
 
 <div class="p-6">
 	{#if $page.params.file.length > 0}
@@ -223,19 +232,32 @@
 	{#each files as childFile}
 		<div class="flex items-center">
 			{#if childFile.isDirectory}
-				<a class="flex flex-1 items-center py-1.5" href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{childFile.path}">
-					<img src="{base}/icons/folder.svg" class="w-6 mx-4" alt="Directory"/>
+				<a class="fileItem"
+				   href="{base}/user/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{childFile.path}">
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-6 mx-4" fill="none" viewBox="0 0 24 24"
+					     stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+					</svg>
 					<div>{childFile.name}</div>
 				</a>
 			{:else}
-				<a class="flex flex-1 items-center py-1.5" rel="external" target="_blank" href={urlFor(childFile.path)}>
-					<img src="{base}/icons/file.svg" class="w-6 mx-4" alt="File"/>
+				<a class="fileItem" rel="external" target="_blank" href={urlFor(childFile.path)}>
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-6 mx-4" fill="none" viewBox="0 0 24 24"
+					     stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+						      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+					</svg>
 					<div>{childFile.name}</div>
 				</a>
 			{/if}
-			<button class="opacity-25 transition-opacity duration-500 hover:opacity-100"
+			<button class="text-gray-300 transition-colors duration-500 hover:text-red-500"
 			        on:click={() => {deleteFile(childFile.name)}}>
-				<img src="{base}/icons/delete.svg" class="w-5 mx-4 my-2" alt="Delete"/>
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-5 mx-4 my-2" viewBox="0 0 20 20" fill="currentColor">
+					<path fill-rule="evenodd"
+					      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+					      clip-rule="evenodd"/>
+				</svg>
 			</button>
 		</div>
 	{/each}
