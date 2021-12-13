@@ -29,28 +29,6 @@ const useZones = true
 
 export async function analysisNodeGraph(analysis: Analysis) {
 	const rawDesigns: DesignInfo[] = await readDesigns(analysis);
-	for (const design of rawDesigns) {
-		for (const board of design.boards) {
-			for (const cardInfo of board.cards) {
-				let id = cardInfo.id;
-				// URL or file path?
-				const six = id.lastIndexOf('/');
-				if (six >= 0) {
-					id = id.substring(six + 1);
-				}
-				// extension?
-				const dix = id.lastIndexOf('.');
-				if (dix >= 0) {
-					id = id.substring(0, dix);
-				}
-				if (cardInfo.id != id) {
-					if (debug) console.log(`canonical card ${id} from ${cardInfo.id}`);
-					cardInfo.id = id;
-				}
-			}
-		}
-	}
-
 	const boards: BoardInfo[] = []
 	for (const design of rawDesigns) {
 		for (const bi in design.boards) {
@@ -232,25 +210,6 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 	for (const design of rawDesigns) {
 		// filter boards
 		design.boards = design.boards.filter((b) => !boardNames || boardNames.indexOf(b.id) >= 0);
-		for (const board of design.boards) {
-			for (const cardInfo of board.cards) {
-				let id = cardInfo.id;
-				// URL or file path?
-				const six = id.lastIndexOf('/');
-				if (six >= 0) {
-					id = id.substring(six + 1);
-				}
-				// extension?
-				const dix = id.lastIndexOf('.');
-				if (dix >= 0) {
-					id = id.substring(0, dix);
-				}
-				if (cardInfo.id != id) {
-					if (debug) console.log(`canonical card ${id} from ${cardInfo.id}`);
-					cardInfo.id = id;
-				}
-			}
-		}
 	}
 	// split by board?
 	let designs = rawDesigns.filter((d) => d.boards && d.boards.length > 0);
@@ -364,12 +323,33 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 		}
 
 		const boards = info.boards
+		for (const board of boards) {
+			for (const cardInfo of board.cards) {
+				let id = cardInfo.id;
+				// URL or file path?
+				const six = id.lastIndexOf('/');
+				if (six >= 0) {
+					id = id.substring(six + 1);
+				}
+				// extension?
+				const dix = id.lastIndexOf('.');
+				if (dix >= 0) {
+					id = id.substring(0, dix);
+				}
+				if (cardInfo.id != id) {
+					if (debug) console.log(`canonical card ${id} from ${cardInfo.id}`);
+					cardInfo.id = id;
+				}
+			}
+		}
 		// if (session.board) {
 		// 	boards = info.boards.filter((board) => {
 		// 		const region = session.board.regions.find((region) => region.id === board.id)
 		// 		return !region || region.analyse
 		// 	})
 		// }
+
+
 		if (session.decks) {
 			for (const sessionDeck of session.decks) {
 				const deck = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
