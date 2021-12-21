@@ -5,6 +5,7 @@ MAINTAINER chris.greenhalgh@nottingham.ac.uk
 WORKDIR /root
 RUN apt update
 RUN gem install squib
+RUN gem install rmagick
 
 COPY . /root/work/
 VOLUME /root/work/uploads
