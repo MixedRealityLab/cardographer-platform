@@ -17,10 +17,10 @@ const config = {
 
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte',
+		//target: '#svelte',
 		paths: {
 			base: (production ? PRODUCTION_BASE : ''),
-			//assets: ''                  
+			assets: ''
 		},
 		adapter: adapter({
 			// default options are shown

@@ -1,0 +1,554 @@
+{
+	"Atlases": [],
+	"Decks": [
+		{
+			"deckName": "VisitorBox:Assets",
+			"deckCards": [
+				{
+					"cardID": 0,
+					"globalID": 0,
+					"cardName": "? - Assets",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 1,
+					"globalID": 1,
+					"cardName": "Digital Resource",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 2,
+					"globalID": 2,
+					"cardName": "Exhibits",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 3,
+					"globalID": 3,
+					"cardName": "Fame",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 4,
+					"globalID": 4,
+					"cardName": "Guides",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 5,
+					"globalID": 5,
+					"cardName": "Learning Activity",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				},
+				{
+					"cardID": 6,
+					"globalID": 6,
+					"cardName": "Location",
+					"cardDeck": "VisitorBox:Assets",
+					"cardSize": {
+						"x": 120.0,
+						"y": 0.0,
+						"z": 70.0
+					}
+				}
+			],
+			"deckPos": {
+				"x": -5.408945560455322,
+				"y": 0.031377244740724567,
+				"z": 0.927474319934845
+			},
+			"deckRot": {
+				"x": -0.00009446430340176448,
+				"y": -0.00038709232467226684,
+				"z": 0.9999998211860657,
+				"w": 0.0004511532315518707
+			},
+			"deckCardSize": {
+				"x": 120.0,
+				"y": 0.0,
+				"z": 70.0
+			}
+		},
+		{
+			"deckName": "MoralIT:Law",
+			"deckCards": [
+				{
+					"cardID": 0,
+					"globalID": 9,
+					"cardName": "Ace-Law",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 1,
+					"globalID": 10,
+					"cardName": "Environmental Protection",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 2,
+					"globalID": 11,
+					"cardName": "Accessibility",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 3,
+					"globalID": 12,
+					"cardName": "Consumer Protection",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 4,
+					"globalID": 13,
+					"cardName": "Rule of Law",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 5,
+					"globalID": 14,
+					"cardName": "Due Process ",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 6,
+					"globalID": 15,
+					"cardName": "Risk Minimisation",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 7,
+					"globalID": 16,
+					"cardName": "Liability",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 8,
+					"globalID": 17,
+					"cardName": "Proportionality",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 9,
+					"globalID": 18,
+					"cardName": "Precautionary Principle",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 10,
+					"globalID": 19,
+					"cardName": "Duty of Care",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 11,
+					"globalID": 20,
+					"cardName": "Intellectual Property",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 12,
+					"globalID": 21,
+					"cardName": "Criminality",
+					"cardDeck": "MoralIT:Law",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				}
+			],
+			"deckPos": {
+				"x": 4.204367637634277,
+				"y": 0.0314054898917675,
+				"z": -2.4048471450805666
+			},
+			"deckRot": {
+				"x": -0.00007305783947231248,
+				"y": -0.00034925731597468257,
+				"z": 1.0,
+				"w": 0.0002278944302815944
+			},
+			"deckCardSize": {
+				"x": 57.0,
+				"y": 0.0,
+				"z": 89.0
+			}
+		},
+		{
+			"deckName": "MoralIT:Security",
+			"deckCards": [
+				{
+					"cardID": 0,
+					"globalID": 23,
+					"cardName": "Ace-Security",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 1,
+					"globalID": 24,
+					"cardName": " Identities Management",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 2,
+					"globalID": 25,
+					"cardName": "Obfuscation",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 3,
+					"globalID": 26,
+					"cardName": "Secrecy",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 4,
+					"globalID": 27,
+					"cardName": "Trustworthiness",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 5,
+					"globalID": 28,
+					"cardName": "Confidentiality",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 6,
+					"globalID": 29,
+					"cardName": "Usable Security",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 7,
+					"globalID": 30,
+					"cardName": "Resilience & Low Redundancy",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 8,
+					"globalID": 31,
+					"cardName": "Data Breach Management",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 9,
+					"globalID": 32,
+					"cardName": "Physical Safety",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 10,
+					"globalID": 33,
+					"cardName": "Attribution and Responsibility",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 11,
+					"globalID": 34,
+					"cardName": "Integrity",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 12,
+					"globalID": 35,
+					"cardName": "Secure for Whom",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				},
+				{
+					"cardID": 13,
+					"globalID": 36,
+					"cardName": "Security - Blank Card 1",
+					"cardDeck": "MoralIT:Security",
+					"cardSize": {
+						"x": 57.0,
+						"y": 0.0,
+						"z": 89.0
+					}
+				}
+			],
+			"deckPos": {
+				"x": 2.511639356613159,
+				"y": 0.012472664006054402,
+				"z": 2.1809136867523195
+			},
+			"deckRot": {
+				"x": -0.00016896896704565734,
+				"y": -7.094175202837505e-8,
+				"z": 1.0,
+				"w": 4.872084673479549e-7
+			},
+			"deckCardSize": {
+				"x": 57.0,
+				"y": 0.0,
+				"z": 89.0
+			}
+		}
+	],
+	"Cards": [
+		{
+			"cardDeckID": 8,
+			"cardGlobalID": 8,
+			"cardName": "Retail",
+			"cardDeckOrigin": "VisitorBox:Assets",
+			"cardPos": {
+				"x": -8.775279998779297,
+				"y": 0.012471314519643784,
+				"z": 2.8979735374450685
+			},
+			"cardRot": {
+				"x": 4.434287745880283e-7,
+				"y": -7.548161420345423e-7,
+				"z": 5.669777181083191e-8,
+				"w": -1.0
+			},
+			"cardSize": {
+				"x": 120.0,
+				"y": 0.0,
+				"z": 70.0
+			}
+		},
+		{
+			"cardDeckID": 7,
+			"cardGlobalID": 7,
+			"cardName": "Outreach Activity",
+			"cardDeckOrigin": "VisitorBox:Assets",
+			"cardPos": {
+				"x": -4.824485778808594,
+				"y": 0.03139609470963478,
+				"z": -2.1464691162109377
+			},
+			"cardRot": {
+				"x": -0.0004965356201864779,
+				"y": 0.00006753081106580794,
+				"z": -0.00046366426977328956,
+				"w": -0.9999998211860657
+			},
+			"cardSize": {
+				"x": 120.0,
+				"y": 0.0,
+				"z": 70.0
+			}
+		},
+		{
+			"cardDeckID": 14,
+			"cardGlobalID": 23,
+			"cardName": "Law - Blank Card 2",
+			"cardDeckOrigin": "MoralIT:Law",
+			"cardPos": {
+				"x": -0.9561254978179932,
+				"y": 0.012471606023609639,
+				"z": -3.1976563930511476
+			},
+			"cardRot": {
+				"x": 2.7309098982186699e-7,
+				"y": 0.5428842306137085,
+				"z": -1.284695798631219e-7,
+				"w": -0.8398076295852661
+			},
+			"cardSize": {
+				"x": 57.0,
+				"y": 0.0,
+				"z": 89.0
+			}
+		},
+		{
+			"cardDeckID": 14,
+			"cardGlobalID": 37,
+			"cardName": "Security - Blank Card 2",
+			"cardDeckOrigin": "MoralIT:Security",
+			"cardPos": {
+				"x": -2.5632407665252687,
+				"y": 0.012471661902964116,
+				"z": 3.2721517086029054
+			},
+			"cardRot": {
+				"x": -1.737533068535413e-7,
+				"y": -4.2741501715681809e-7,
+				"z": -4.500306260979414e-7,
+				"w": -1.0
+			},
+			"cardSize": {
+				"x": 57.0,
+				"y": 0.0,
+				"z": 89.0
+			}
+		},
+		{
+			"cardDeckID": 13,
+			"cardGlobalID": 22,
+			"cardName": "Law - Blank Card 1",
+			"cardDeckOrigin": "MoralIT:Law",
+			"cardPos": {
+				"x": 6.376986026763916,
+				"y": 0.012471906840801239,
+				"z": -2.1632184982299806
+			},
+			"cardRot": {
+				"x": 1.262610993535418e-7,
+				"y": 0.000021914140234002843,
+				"z": -2.1115300796736847e-7,
+				"w": -1.0
+			},
+			"cardSize": {
+				"x": 57.0,
+				"y": 0.0,
+				"z": 89.0
+			}
+		}
+	]
+}

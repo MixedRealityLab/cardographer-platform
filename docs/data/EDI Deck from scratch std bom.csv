@@ -1,0 +1,9 @@
+﻿number,id,category,back,colour,name,description
+1,EDI_1,Definitions,Definitions,,Equality,
+2,EDI_2,Definitions,Definitions,,Diversity,
+3,EDI_3,Definitions,Definitions,,Inclusion,
+4,EDI_4,Definitions,Definitions,,Equity,"Equity means treating people according to need as opposed to treating them all exactly the same. It is bound up in equality and concerns equality of opportunity for participation and access depending on individual characteristics. Canada , for example calls EDI for research, Equity Diversity and Inclusion."
+5,EDI_5,Definitions,Definitions,,Intersectionality.,
+6,EDI_6,Definitions,Definitions,,Equality Act ( Protected Characteristics),
+7,EDI_7,Definitions,Definitions,,liberation,
+,back:Definitions,,,#ee8080,Definitions,

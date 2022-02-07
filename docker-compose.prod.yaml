@@ -30,7 +30,7 @@ services:
         build:
             context: src/docker/squib
             dockerfile: Dockerfile
-        ports:
+        expose:
             - "3001"
         volumes:
             - uploads:/root/work/uploads

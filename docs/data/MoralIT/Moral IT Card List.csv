@@ -1,4 +1,4 @@
-﻿Id,Label,CARD USAGE COUNT,DECK,Category,PLAYING CARD EQUIVALENCY,TITLE NOSPACE,Name,Description,CARD_IMAGE_FRONT,CARD_IMAGE_BACK,CARD_MIRO_NAME
+﻿Id,Title,CARD USAGE COUNT,DECK,Category,PLAYING CARD EQUIVALENCY,TITLE NOSPACE,Name,Description,CARD_IMAGE_FRONT,CARD_IMAGE_BACK,CARD_MIRO_NAME
 Moral-IT_Privacy_A_Ace,Privacy Ace,0,Moral-IT,Privacy,A,Ace,Ace,Think of a time that you were amazed by a new technology. Why?,2019_ACE_DP,6_Card_BacksPrivacy,Moral-IT_Privacy_A_Ace
 Moral-IT_Privacy_2_LimitedDataCollection,Limited Data Collection,15,Moral-IT,Privacy,2,LimitedDataCollection,Limited Data Collection,"Does your technology collect the minimal data necessary, for a specific purpose? Is it stored for a limited time?",4_Data_Protection_Cards2,6_Card_BacksPrivacy,Moral-IT_Privacy_2_LimitedDataCollection
 Moral-IT_Privacy_3_InternationalDataTransfer,International Data Transfer,0,Moral-IT,Privacy,3,InternationalDataTransfer,International Data Transfer,How does your technology protect data sent overseas? ,4_Data_Protection_Cards3,6_Card_BacksPrivacy,Moral-IT_Privacy_3_InternationalDataTransfer
