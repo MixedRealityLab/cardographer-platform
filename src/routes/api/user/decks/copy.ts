@@ -1,16 +1,16 @@
 import {getDb, getNewId} from "$lib/db"
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types"
-import type {EndpointOutput, Request} from "@sveltejs/kit"
+import type {EndpointOutput, RequestEvent} from "@sveltejs/kit"
 import {cleanRevision} from "./[deckId]/revisions";
 
 const debug = true
 
-export async function post({locals, body}: Request): Promise<EndpointOutput> {
+export async function post({locals, request}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revisionId = body as string
+	const revisionId = await request.text()
 	console.log(revisionId)
 
 	if (!revisionId) {

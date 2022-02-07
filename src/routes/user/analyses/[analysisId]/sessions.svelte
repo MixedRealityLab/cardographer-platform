@@ -8,9 +8,9 @@
 		selected: boolean
 	}
 
-	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const headers = authenticateRequest(session)
-		const {analysisId} = page.params
+		const {analysisId} = params
 		const responses = await Promise.all([
 			fetch(`${loadBase}/api/user/analyses/${analysisId}`, headers),
 			fetch(`${loadBase}/api/user/snapshots`, headers)

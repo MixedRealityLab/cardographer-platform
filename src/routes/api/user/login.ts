@@ -2,7 +2,7 @@ import type {LoginRequest} from '$lib/apitypes';
 import {getDb} from '$lib/db';
 import {makeTokenCookie, signUserToken} from '$lib/security';
 import type {User} from "$lib/types";
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 import {scrypt} from 'crypto';
 
 const debug = true;
@@ -10,8 +10,8 @@ const debug = true;
 // from .env
 export const REGISTER_CODE = process.env['REGISTER_CODE'];
 
-export async function post(request: Request): Promise<EndpointOutput> {
-	const login = request.body as unknown as LoginRequest;
+export async function post({request}: RequestEvent): Promise<EndpointOutput> {
+	const login =  await request.json() as unknown as LoginRequest;
 	if (!login.email || !login.password) {
 		return {
 			status: 400

@@ -5,8 +5,8 @@
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
-	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const {deckId, revisionId, file} = page.params
+	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+		const {deckId, revisionId, file} = params
 		const path = file.length > 0 ? '/' + file : ''
 		const authHeader = authenticateRequest(session)
 		const responses = await Promise.all([

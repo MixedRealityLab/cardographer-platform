@@ -28,7 +28,7 @@ interface CardUse {
 const useZones = true
 
 export async function analysisNodeGraph(analysis: Analysis) {
-	const rawDesigns: DesignInfo[] = await readDesigns(analysis);
+	const rawDesigns: DesignInfo[] = await readDesigns(analysis)
 	const boards: BoardInfo[] = []
 	for (const design of rawDesigns) {
 		for (const bi in design.boards) {

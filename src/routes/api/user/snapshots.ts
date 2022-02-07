@@ -1,11 +1,11 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {SessionSnapshot} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 
 const debug = false;
 
-export async function get({locals}: Request): Promise<EndpointOutput> {
+export async function get({locals}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

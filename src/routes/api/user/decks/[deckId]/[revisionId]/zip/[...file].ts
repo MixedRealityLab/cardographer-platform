@@ -2,12 +2,12 @@ import {getFilePath} from '$lib/builders';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 import AdmZip from "adm-zip";
 
 const debug = true;
 
-export async function get({locals, params}: Request): Promise<EndpointOutput> {
+export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

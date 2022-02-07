@@ -4,9 +4,9 @@
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
-	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const requestInfo = authenticateRequest(session)
-		const {analysisId} = page.params;
+		const {analysisId} = params;
 		const responses = await Promise.all([
 			fetch(`${loadBase}/api/user/analyses/${analysisId}`, requestInfo),
 			fetch(`${loadBase}/api/user/users`, requestInfo)

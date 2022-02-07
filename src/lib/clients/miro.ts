@@ -136,13 +136,13 @@ export class MiroClient extends Client {
 				continue;
 			}
 			const ci: CardSnapshot = {id, zones: []};
-			const frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && cardInBounds(widget, w));
+			const frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
 			let boardId = '';
 			if (frames.length == 0) {
 				if (debug) console.log(`no board for image ${id} ${widget.id}`);
 			} else {
 				if (frames.length > 1) {
-					if (debug) console.log(`${frames.length} possible boards for image ${id} ${widget.id}`);
+					if (debug) console.log(`${frames.length} possible boards for image ${id} ${widget.id}: ${JSON.stringify(frames.map((frame) => frame.title))}`);
 				}
 				boardId = frames[0].title
 				ci.x = (widget.bounds.left - frames[0].bounds.left) / (frames[0].bounds.width - widget.bounds.width)
@@ -162,6 +162,11 @@ export class MiroClient extends Client {
 			const shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
 			for (const shape of shapes) {
 				ci.zones.push({zoneId: shape.plainText});
+			}
+			if(ci.zones.length === 0) {
+				for (const frame of frames) {
+					ci.zones.push({zoneId: frame.title});
+				}
 			}
 			if (debug) console.log(`card ${id} in ${ci.zones.length} zones: ${JSON.stringify(ci.zones)}`);
 		}

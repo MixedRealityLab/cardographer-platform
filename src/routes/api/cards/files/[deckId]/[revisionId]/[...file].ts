@@ -1,18 +1,18 @@
 import {dev} from "$app/env";
 import {getDb} from '$lib/db';
 import type {CardDeckRevision} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 import fs from 'fs';
 import mime from 'mime'
 
 const debug = true;
 
-export async function get(request: Request): Promise<EndpointOutput> {
+export async function get({request, params}: RequestEvent): Promise<EndpointOutput> {
 	if (!dev) {
 		return {status: 404}
 	}
 	// No auth!
-	const {deckId, revisionId, file} = request.params;
+	const {deckId, revisionId, file} = params;
 	const db = await getDb();
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
 		deckId: deckId, revision: Number(revisionId)

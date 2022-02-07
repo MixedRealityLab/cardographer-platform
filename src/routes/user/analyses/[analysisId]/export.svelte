@@ -4,8 +4,8 @@
 	import {errorResponse, authenticateRequest} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
-	export async function load({page, fetch, session}: LoadInput): Promise<LoadOutput> {
-		const {analysisId} = page.params;
+	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+		const {analysisId} = params;
 		const res = await fetch(`${loadBase}/api/user/analyses/${analysisId}`, authenticateRequest(session));
 		if (res.ok) {
 			return {

@@ -1,11 +1,11 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params}: Request): Promise<EndpointOutput> {
+export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -34,11 +34,11 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function put({locals, params, body}: Request): Promise<EndpointOutput> {
+export async function put({locals, params, request}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revision = body as unknown as CardDeckRevision;
+	const revision = await request.json() as unknown as CardDeckRevision;
 	const {deckId, revisionId} = params;
 	if (deckId != revision.deckId || revisionId != String(revision.revision)) {
 		if (debug) console.log(`revision doesnt match url`, revision);

@@ -2,11 +2,11 @@ import {exportCardsAsCsv} from '$lib/csvutils';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params, query}: Request): Promise<EndpointOutput> {
+export async function get({locals, params, url}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -29,8 +29,8 @@ export async function get({locals, params, query}: Request): Promise<EndpointOut
 		if (debug) console.log(`revision ${revisionId} not found for deck ${deckId}`);
 		return {status: 404};
 	}
-	const allColumns = query.has('allColumns');
-	const withRowTypes = query.has('withRowTypes');
+	const allColumns = url.searchParams.has('allColumns');
+	const withRowTypes = url.searchParams.has('withRowTypes');
 	const csv = await exportCardsAsCsv(revision, allColumns, withRowTypes, null);
 	return {
 		headers: {'content-type': 'text/csv; charset=utf-8'},

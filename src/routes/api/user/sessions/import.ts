@@ -2,16 +2,17 @@ import {getClient, guessSessionType} from '$lib/clients/index';
 import {getDb, getNewId} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 import type {Filter} from "mongodb/mongodb.ts34";
 
 const debug = true;
 
-export async function post({locals, body}: Request): Promise<EndpointOutput> {
+export async function post({locals, request}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
 	let ss: any[];
+	const body = await request.json()
 	if (!Array.isArray(body)) {
 		ss = [body];
 	} else {

@@ -4,7 +4,7 @@
 
 	export let url = ""
 	export let checkPath = false
-	let path = base + $page.path
+	let path = base + $page.url.pathname
 	let selected = path === url || (checkPath && path.startsWith(url))
 </script>
 

@@ -3,12 +3,12 @@ import {getDb} from '$lib/db'
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from '$lib/types'
 import {DeckBuildStatus} from '$lib/types'
-import type {EndpointOutput, Request} from '@sveltejs/kit'
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit'
 import type {Db} from "mongodb"
 
 const debug = true;
 
-export async function get({locals, params}: Request): Promise<EndpointOutput> {
+export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -47,11 +47,11 @@ export async function get({locals, params}: Request): Promise<EndpointOutput> {
 	}
 }
 
-export async function post({locals, params, body}: Request): Promise<EndpointOutput> {
+export async function post({locals, params, request}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const revision = body as unknown as CardDeckRevision;
+	const revision = await request.json() as unknown as CardDeckRevision;
 	//if (debug) console.log(`add deck`, revision);
 	const db = await getDb();
 	// check deck & access

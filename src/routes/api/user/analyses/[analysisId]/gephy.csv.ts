@@ -3,11 +3,11 @@ import {AnalysisExportTypes} from '$lib/analysistypes';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Analysis} from '$lib/types';
-import type {EndpointOutput, Request} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params, query}: Request): Promise<EndpointOutput> {
+export async function get({locals, params, url}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -22,14 +22,14 @@ export async function get({locals, params, query}: Request): Promise<EndpointOut
 		return {status: 404};
 	}
 	let exportType = AnalysisExportTypes.CARD_USE;
-	if (query.has('type')) {
-		exportType = query.get('type') as AnalysisExportTypes;
+	if (url.searchParams.has('type')) {
+		exportType = url.searchParams.get('type') as AnalysisExportTypes;
 	}
-	const splitByBoard = query.has('splitByBoard');
-	const includeDetail = query.has('includeDetail');
+	const splitByBoard = url.searchParams.has('splitByBoard');
+	const includeDetail = url.searchParams.has('includeDetail');
 	let boardNames: string[] = null;
-	if (query.has('boards')) {
-		boardNames = query.get('boards').split(',').map((n) => n.trim());
+	if (url.searchParams.has('boards')) {
+		boardNames = url.searchParams.get('boards').split(',').map((n) => n.trim());
 	}
 	const csv = await exportAnalysisAsCsv(analysis, exportType, splitByBoard, includeDetail, boardNames);
 	let typeName = "Card Use"

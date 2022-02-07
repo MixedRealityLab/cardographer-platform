@@ -1,14 +1,13 @@
 import {base as sbase} from '$app/paths';
 import {getDb} from '$lib/db';
 import {EXTERNAL_SERVER_URL} from '$lib/env';
-import type {ServerLocals} from '$lib/systemtypes';
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput} from '@sveltejs/kit';
+import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get(request): Promise<EndpointOutput> {
-	const {deckId, revId} = request.params;
+export async function get({params, locals}: RequestEvent): Promise<EndpointOutput> {
+	const {deckId, revId} = params;
 	const db = await getDb();
 	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
 		deckId: deckId, revision: Number(revId)
@@ -19,7 +18,6 @@ export async function get(request): Promise<EndpointOutput> {
 	}
 	if (!revision.isPublic) {
 		// permission check
-		const locals = request.locals as ServerLocals;
 		if (!locals.authenticated) {
 			return {status: 401}
 		}
