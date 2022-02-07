@@ -21,8 +21,8 @@ services:
             - REGISTER_CODE=1234
         depends_on:
             - 'mongo'
-        expose:
-            - "3000"
+        ports:
+            - "3000:3000"
         volumes:
             - uploads:/app/uploads
 

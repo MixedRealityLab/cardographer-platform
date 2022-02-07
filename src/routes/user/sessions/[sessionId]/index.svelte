@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
@@ -7,8 +7,8 @@
 		const requestInfo = authenticateRequest(session)
 		const {sessionId} = params;
 		const responses = await Promise.all([
-			fetch(`${loadBase}/api/user/sessions/${sessionId}`, requestInfo),
-			fetch(`${loadBase}/api/user/users`, requestInfo)
+			fetch(`${base}/api/user/sessions/${sessionId}`, requestInfo),
+			fetch(`${base}/api/user/users`, requestInfo)
 		])
 		if (responses.every((res) => res.ok)) {
 			const users = await responses[1].json()
@@ -24,7 +24,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import {page, session as pageSession} from "$app/stores"
 	import type {Session} from '$lib/types'
 	import SessionTabs from "./_SessionTabs.svelte"

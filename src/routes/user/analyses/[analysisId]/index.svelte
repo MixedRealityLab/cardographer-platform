@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import type {Analysis} from "$lib/types";
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
@@ -8,8 +8,8 @@
 		const requestInfo = authenticateRequest(session)
 		const {analysisId} = params;
 		const responses = await Promise.all([
-			fetch(`${loadBase}/api/user/analyses/${analysisId}`, requestInfo),
-			fetch(`${loadBase}/api/user/users`, requestInfo)
+			fetch(`${base}/api/user/analyses/${analysisId}`, requestInfo),
+			fetch(`${base}/api/user/users`, requestInfo)
 		])
 		if (responses.every((res) => res.ok)) {
 			const users = await responses[1].json()
@@ -25,7 +25,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import {page, session} from '$app/stores'
 	import UserSelect from "$lib/ui/UserSelect.svelte"
 	import AnalysisTabs from "./_AnalysisTabs.svelte"

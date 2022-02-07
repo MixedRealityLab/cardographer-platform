@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = params
-		const res = await fetch(`${loadBase}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -20,7 +20,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import type {CardDeckRevision} from "$lib/types"
 	import {downloadFile} from "$lib/ui/download";
 	import DeckTabs from "./_DeckTabs.svelte"

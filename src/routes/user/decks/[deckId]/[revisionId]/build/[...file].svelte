@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import type {FileInfo} from '$lib/apitypes'
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import type {CardDeckRevision} from "$lib/types"
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
@@ -10,8 +10,8 @@
 		const path = file.length > 0 ? '/' + file : ''
 		const authHeader = authenticateRequest(session)
 		const responses = await Promise.all([
-			fetch(`${loadBase}/api/user/decks/${deckId}/${revisionId}/files${path}`, authHeader),
-			fetch(`${loadBase}/api/user/decks/${deckId}/${revisionId}`, authHeader)
+			fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files${path}`, authHeader),
+			fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authHeader)
 		])
 
 		if (responses.every((res) => res.ok)) {
@@ -26,8 +26,7 @@
 	}
 </script>
 <script lang="ts">
-	import {dev} from "$app/env";
-	import {base} from '$app/paths'
+	import {dev} from "$app/env"
 	import {page, session} from '$app/stores'
 	import {PostFilesRequest} from "$lib/apitypes";
 	import {DeckBuildStatus} from "$lib/types"

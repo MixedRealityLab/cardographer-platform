@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import type {CardDeckSummary} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const res = await fetch(`${loadBase}/api/user/decks`, authenticateRequest(session));
+		const res = await fetch(`${base}/api/user/decks`, authenticateRequest(session));
 		if (res.ok) {
 			return {
 				props: {
@@ -27,7 +27,6 @@
 
 <script lang="ts">
 	import UserTabs from '$lib/ui/UserTabs.svelte'
-	import {base} from '$app/paths'
 
 	export let decks: CardDeckSummary[];
 </script>

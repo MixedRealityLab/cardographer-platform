@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const res = await fetch(`${loadBase}/api/user/sessions/templates`, authenticateRequest(session))
+		const res = await fetch(`${base}/api/user/sessions/templates`, authenticateRequest(session))
 		if (res.ok) {
 			return {
 				props: {
@@ -24,7 +24,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import AppBar from '$lib/ui/AppBar.svelte';
 	import type {Session} from '$lib/types';
 	import type {CopySessionResponse} from '$lib/apitypes';

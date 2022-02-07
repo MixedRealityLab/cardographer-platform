@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
 		const {deckId, revisionId} = params;
-		const res = await fetch(`${loadBase}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
+		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
 
 		if (res.ok) {
 			const revisions = (await res.json()).revisions.sort(compareRevisions)
@@ -28,7 +28,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import {goto} from "$app/navigation"
 	import {page, session} from "$app/stores"
 	import {PostUserRevisionResponse} from "$lib/apitypes"

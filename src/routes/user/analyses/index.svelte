@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
 
 	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
-		const res = await fetch(`${loadBase}/api/user/analyses`, authenticateRequest(session));
+		const res = await fetch(`${base}/api/user/analyses`, authenticateRequest(session));
 
 		if (res.ok) {
 			return {
@@ -26,7 +26,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import type {Analysis} from '$lib/types'
 	import {session} from '$app/stores'

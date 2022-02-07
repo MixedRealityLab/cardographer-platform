@@ -1,16 +1,21 @@
 import {checkUserToken, getAuthorizationToken, getCookieName} from '$lib/security';
 import type {ServerLocals, UserSession} from '$lib/systemtypes';
-import type {GetSession} from '@sveltejs/kit';
+import type {RequestEvent} from '@sveltejs/kit';
+import type {MaybePromise} from "@sveltejs/kit/types/helper";
+import type {ResolveOpts} from "@sveltejs/kit/types/hooks";
 import cookie from 'cookie';
 
 //const USER_PATH = "/user";
 //const API_PATH = "/api";
 
-const debug = false;
+const debug = false
 
 //export const handle: Handle = async ({request, resolve}) => {
-export async function handle({event, resolve}) {
-	if (debug) console.log(`handle ${event.path}`, event.request.headers)
+export async function handle({event, resolve}: {
+	event: RequestEvent;
+	resolve(event: RequestEvent, opts?: ResolveOpts): MaybePromise<Response>;
+}) {
+	if (debug) console.log(`handle ${JSON.stringify(event.url)}`)
 
 	// just a cookie for now (and not a proper one either...)
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
@@ -26,14 +31,14 @@ export async function handle({event, resolve}) {
 		locals.userToken = userToken;
 	}
 	// TODO https://github.com/sveltejs/kit/issues/1046
-	if (event.url.searchParams.has('_method')) {
-		event.method = event.url.searchParams.get('_method').toUpperCase();
-	}
+	//if (event.url.searchParams.has('_method')) {
+	//	event.request.method = event.url.searchParams.get('_method').toUpperCase();
+	//}
 
 	return resolve(event);
 }
 
-export const getSession: GetSession = (request) => {
+export function getSession(request: RequestEvent): MaybePromise<App.Session> {
 	const locals = request.locals as ServerLocals;
 	const user: UserSession = {
 		email: locals.email,

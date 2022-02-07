@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import {loadBase} from '$lib/paths'
+	import {base} from '$app/paths'
 	import {CardDeckRevisionSummary, Session} from "$lib/types";
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
 	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
@@ -15,8 +15,8 @@
 		const requestInfo = authenticateRequest(session)
 		const {sessionId} = params;
 		const responses = await Promise.all([
-			fetch(`${loadBase}/api/user/sessions/${sessionId}`, requestInfo),
-			fetch(`${loadBase}/api/user/decks/revisions`, requestInfo)
+			fetch(`${base}/api/user/sessions/${sessionId}`, requestInfo),
+			fetch(`${base}/api/user/decks/revisions`, requestInfo)
 		])
 
 		if (responses.every((res) => res.ok)) {
@@ -67,7 +67,6 @@
 </script>
 
 <script lang="ts">
-	import {base} from '$app/paths'
 	import SessionTabs from './_SessionTabs.svelte'
 	import {page, session as pageSession} from '$app/stores'
 
