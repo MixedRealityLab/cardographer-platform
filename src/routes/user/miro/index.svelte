@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {Miro} from "$lib/miro";
 	import {onMount} from "svelte";
+	import {base} from '$app/paths'
 
 	declare const miro: Miro
 
@@ -16,7 +17,7 @@
 						title: 'Cardographer',
 						svgIcon: icon,
 						onClick: async () => {
-							await miro.board.ui.openLeftSidebar('/miro/sidebar')
+							await miro.board.ui.openLeftSidebar(`${base}/user/miro/sidebar`)
 						},
 					},
 				},
