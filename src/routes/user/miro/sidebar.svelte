@@ -31,13 +31,24 @@
 </script>
 
 <script lang="ts">
+	import {goto} from "$app/navigation";
+	import {base} from "$app/paths";
+	import {session} from "$app/stores";
+	import {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
+	import {UserSession} from "$lib/systemtypes";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
 
 	export let authenticated: boolean
 	export let sessions: Session[]
+
+	let showLogin = false
+
+	let email: string
+	let password: string
+	let working: boolean = false
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -100,6 +111,39 @@
 		}, 150)
 	}
 
+	async function handleLogin() {
+		if (!email) {
+			return;
+		}
+		working = true
+		const response = await fetch(`${base}/api/user/login`, {
+			method: 'POST',
+			headers: {'content-type': 'application/json'},
+			body: JSON.stringify({
+				email: email,
+				password: password
+			})
+		});
+		if (response.ok) {
+			const login = await response.json() as LoginResponse;
+			if (login.error) {
+				warning = login.error;
+				return;
+			}
+			const user: UserSession = {
+				email: email,
+				authenticated: true,
+				token: login.token
+			};
+			$session.user = user
+			await goto(`${base}/user/decks`)
+			console.log(`logged in as ${email} with ${user.token}`)
+		} else {
+			warning = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
+		}
+		working = false
+	}
+
 	async function getBoard() {
 		const widgets = await miro.board.widgets.get()
 		const filtered = widgets.filter((widget) => widget.type !== "IMAGE" || widget.url || widget.title)
@@ -124,7 +168,22 @@
 	<h1 class="text-2xl font-extrabold items-center p-4">Cardographer</h1>
 	<button disabled={!allowUpload} on:click={download}>Download Board</button>
 	{#if !authenticated}
-		Login Here...
+		{#if !showLogin}
+			<button disabled={!allowUpload} on:click={() => {showLogin = true}}>Login</button>
+		{:else}
+			<form>
+				<label>
+					<span>Email</span>
+					<input bind:value="{email}" class="w-full" id="email" required type="text"/>
+				</label>
+				<label>
+					<span>Password</span>
+					<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+				</label>
+				<input class="button self-center" disabled={working} type='submit'
+				       value='Log in'>
+			</form>
+		{/if}
 	{/if}
 
 	{#if warning}
