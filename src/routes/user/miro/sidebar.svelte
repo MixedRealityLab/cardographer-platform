@@ -1,8 +1,43 @@
+<script context="module" lang="ts">
+	import {base} from '$app/paths'
+	import type {Session} from "$lib/types";
+	import {authenticateRequest} from "$lib/ui/token"
+	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+
+	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
+		if (res.ok) {
+			return {
+				props: {
+					authenticated: true,
+					sessions: (await res.json()).values.sort(compareSessions)
+				}
+			};
+		}
+
+		return {
+			props: {
+				authenticated: false,
+				sessions: []
+			}
+		}
+	}
+
+	function compareSessions(a: Session, b: Session) {
+		const aName = `${a.name} ${a.owners[0]} ${a.created}`
+		const bName = `${b.name} ${b.owners[0]} ${b.created}`
+		return String(aName).localeCompare(bName)
+	}
+</script>
+
 <script lang="ts">
 	import type {IWidget, Miro} from "$lib/miro"
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
+
+	export let authenticated: boolean
+	export let sessions: Session[]
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -58,7 +93,7 @@
 
 		const a = document.createElement('a')
 		a.href = url
-		a.download = 'Miro ' + board.title + ' ' + new Date().toISOString().replaceAll(':','-').slice(0,-5) + 'Z.json'
+		a.download = 'Miro ' + board.title + ' ' + new Date().toISOString().replaceAll(':', '-').slice(0, -5) + 'Z.json'
 		a.click()
 		setTimeout(() => {
 			URL.revokeObjectURL(url);
@@ -73,29 +108,6 @@
 		board.widgets = filtered
 		return board
 	}
-
-	async function upload() {
-		try {
-			allowUpload = false
-			const board = await getBoard()
-			const json = JSON.stringify(board)
-
-			const response = await fetch('https://cardographer.cs.nott.ac.uk/api/dump', {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: json
-			});
-
-			await updateWidgets()
-			if (response.ok) {
-				warning = "Successfully Uploaded"
-			} else {
-				warning = response.statusText
-			}
-		} catch (e) {
-			warning = e.message
-		}
-	}
 </script>
 
 <style>
@@ -109,22 +121,24 @@
 </style>
 
 <div class="flex flex-col" style="font: 14px OpenSans, Arial, Helvetica, sans-serif;">
-	<h1 class="text-2xl font-extrabold items-center p-4">Cardographer Data</h1>
-	<button on:click={upload} disabled={!allowUpload}>Upload</button>
-	<button on:click={download} disabled={!allowUpload}>Download</button>
+	<h1 class="text-2xl font-extrabold items-center p-4">Cardographer</h1>
+	<button disabled={!allowUpload} on:click={download}>Download Board</button>
+	{#if !authenticated}
+		Login Here...
+	{/if}
 
 	{#if warning}
 		<div class="warn">{warning}</div>
 	{/if}
 	{#if widgets.length !== 0}
-		<div class="warn">{widgets.length} images will not be uploaded. Give them titles to include them in
-			the
-			upload
+		<div class="warn">
+			{widgets.length} images will not be downloaded. Give them titles to include them in the upload
 		</div>
 	{/if}
 	{#each widgets as widget (widget.id)}
 		<div on:click={() => selectWidget(widget)}
 		     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
-			Image {widget.id}</div>
+			Image {widget.id}
+		</div>
 	{/each}
 </div>
