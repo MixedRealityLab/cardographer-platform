@@ -170,7 +170,7 @@
 		{#if !showLogin}
 			<button disabled={!allowUpload} on:click={() => {showLogin = true}}>Login</button>
 		{:else}
-			<form>
+			<form on:submit|preventDefault={handleLogin}>
 				<label>
 					<span>Email</span>
 					<input bind:value="{email}" class="w-full" id="email" required type="text"/>
