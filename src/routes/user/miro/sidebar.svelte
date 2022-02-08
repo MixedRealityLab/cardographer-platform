@@ -32,7 +32,6 @@
 
 <script lang="ts">
 	import {goto} from "$app/navigation";
-	import {base} from "$app/paths";
 	import {session} from "$app/stores";
 	import {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
@@ -180,8 +179,7 @@
 					<span>Password</span>
 					<input bind:value="{password}" class="w-full" id="password" required type="password"/>
 				</label>
-				<input class="button self-center" disabled={working} type='submit'
-				       value='Log in'>
+				<input class="button self-center" disabled={working} type='submit' value='Log in'>
 			</form>
 		{/if}
 	{/if}
