@@ -136,7 +136,7 @@ export class MiroClient extends Client {
 				continue;
 			}
 			const ci: CardSnapshot = {id, zones: []};
-			const frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
+			const frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && w.childrenIds.includes(widget.id))//&& cardInBounds(widget, w));
 			let boardId = '';
 			if (frames.length == 0) {
 				if (debug) console.log(`no board for image ${id} ${widget.id}`);
