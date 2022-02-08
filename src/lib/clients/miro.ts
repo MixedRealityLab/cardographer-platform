@@ -161,9 +161,11 @@ export class MiroClient extends Client {
 			board.cards.push(ci);
 			const shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
 			for (const shape of shapes) {
-				ci.zones.push({zoneId: shape.plainText});
+				if (shape.plainText) {
+					ci.zones.push({zoneId: shape.plainText});
+				}
 			}
-			if(ci.zones.length === 0) {
+			if (ci.zones.length === 0) {
 				for (const frame of frames) {
 					ci.zones.push({zoneId: frame.title});
 				}
