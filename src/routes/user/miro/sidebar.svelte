@@ -122,7 +122,10 @@
 				password: password
 			})
 		});
+		console.log(response.ok)
+		console.log(response)
 		if (response.ok) {
+			console.log("...")
 			const login = await response.json() as LoginResponse;
 			console.log(login)
 			if (login.error) {
@@ -182,13 +185,13 @@
 			<form on:submit|preventDefault={handleLogin}>
 				<label>
 					<span>Email</span>
-					<input bind:value="{email}" class="w-full" id="email" required type="text"/>
+					<input bind:value="{email}" class="w-full mx-8" id="email" required type="text"/>
 				</label>
 				<label>
 					<span>Password</span>
-					<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+					<input bind:value="{password}" class="w-full mx-8" id="password" required type="password"/>
 				</label>
-				<input class="button self-center" disabled={working} type='submit' value='Log in'>
+				<input class="button self-center " disabled={working} type='submit' value='Log in'>
 			</form>
 		{/if}
 	{/if}
