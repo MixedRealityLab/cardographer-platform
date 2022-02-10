@@ -133,8 +133,11 @@
 				authenticated: true,
 				token: login.token
 			}
-			session.user = user
-			const response = await fetch(`${base}/api/user/sessions`, authenticateRequest(session));
+			const sess = {
+				user: user
+			}
+			$session.user = user
+			const response = await fetch(`${base}/api/user/sessions`, authenticateRequest(sess));
 			if(response.ok) {
 				sessions = (await response.json()).values.sort(compareSessions)
 			}
