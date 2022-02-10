@@ -31,12 +31,10 @@
 </script>
 
 <script lang="ts">
-	import {goto} from "$app/navigation";
 	import {session} from "$app/stores";
 	import {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
 	import {UserSession} from "$lib/systemtypes";
-	import {authenticateRequest} from "$lib/ui/token";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
