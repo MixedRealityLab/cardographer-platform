@@ -124,6 +124,7 @@
 		});
 		if (response.ok) {
 			const login = await response.json() as LoginResponse;
+			console.log(login)
 			if (login.error) {
 				warning = login.error;
 				return;
@@ -136,7 +137,10 @@
 			const sess = {
 				user: user
 			}
-			$session.user = user
+			console.log(sess)
+			console.log(session)
+			session.user = user
+			console.log(session)
 			const response = await fetch(`${base}/api/user/sessions`, authenticateRequest(sess));
 			if(response.ok) {
 				sessions = (await response.json()).values.sort(compareSessions)
