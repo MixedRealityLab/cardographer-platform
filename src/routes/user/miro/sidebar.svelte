@@ -36,6 +36,7 @@
 	import {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
 	import {UserSession} from "$lib/systemtypes";
+	import {authenticateRequest} from "$lib/ui/token";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
@@ -133,9 +134,12 @@
 				email: email,
 				authenticated: true,
 				token: login.token
-			};
-			$session.user = user
-			await goto(`${base}/user/decks`)
+			}
+			session.user = user
+			const response = await fetch(`${base}/api/user/sessions`, authenticateRequest(session));
+			if(response.ok) {
+				sessions = (await response.json()).values.sort(compareSessions)
+			}
 			console.log(`logged in as ${email} with ${user.token}`)
 		} else {
 			warning = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
