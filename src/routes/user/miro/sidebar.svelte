@@ -163,8 +163,8 @@
 				authenticated: true,
 				token: login.token
 			}
-			session.user = user
-			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
+			$session.user = user
+			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest($session))
 			if (response2.ok) {
 				sessions = (await response2.json()).values.sort(compareSessions)
 				updateSelected()
@@ -193,7 +193,7 @@
 </style>
 
 <div class="w-full flex flex-col">
-	<div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
+	<div class="w-full py-2 px-2 bg-gray-700 text-2xl text-white flex items-center">
 		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
 	</div>
 	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
@@ -206,14 +206,15 @@
 				Session
 			{/if}
 			{selectedSession.name}
+			<button on:click={() => selectedSession = null}>Nope</button>
 		{/if}
 	</div>
-	<div class="mb-4 text-sm font-medium gap-4 p-6">
+	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
 		{#if !$session.user?.authenticated}
 			{#if !showLogin}
-				<div class="flex p-4">
+				<div class="flex justify-center">
 					<button class="button" disabled={!allowUpload} on:click={download}>
-						<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+						<svg class="w-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"
 						     xmlns="http://www.w3.org/2000/svg">
 							<path clip-rule="evenodd"
 							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
@@ -224,7 +225,7 @@
 					<button class="button" on:click={() => {showLogin = true}}>Login</button>
 				</div>
 			{:else}
-				<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2 p-4">
+				<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2">
 					<label>
 						<span>Email</span>
 						<input bind:value="{email}" class="w-full" id="email" required type="text"/>
