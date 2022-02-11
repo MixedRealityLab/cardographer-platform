@@ -9,18 +9,11 @@
 		if (res.ok) {
 			return {
 				props: {
-					authenticated: true,
 					sessions: (await res.json()).values.sort(compareSessions)
 				}
 			};
 		}
-
-		return {
-			props: {
-				authenticated: false,
-				sessions: []
-			}
-		}
+		return {props: {sessions: []}};
 	}
 
 	function compareSessions(a: Session, b: Session) {
@@ -35,13 +28,16 @@
 	import {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
 	import {UserSession} from "$lib/systemtypes";
+	import type {CardDeckRevision} from "$lib/types";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
 
-	export let authenticated: boolean
 	export let sessions: Session[]
+	let selectedSession: Session = null
+	let decks: CardDeckRevision[] = []
 
+	let title = ''
 	let showLogin = false
 
 	let email: string
@@ -56,8 +52,19 @@
 		miro.onReady(() => {
 			miro.addListener(miro.enums.event.SELECTION_UPDATED, updateWidgets)
 			updateWidgets()
+			updateSelected()
 		})
 	})
+
+	async function updateSelected() {
+		const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
+		const filtered = sessions.filter((session) => {
+			session.url === url
+		})
+		if (filtered.length === 1) {
+			await selectSession(filtered[0])
+		}
+	}
 
 	async function updateWidgets() {
 		try {
@@ -76,6 +83,15 @@
 			allowUpload = false
 			warning = e.message
 			console.warn(e)
+		}
+	}
+
+	async function selectSession(newSession: Session) {
+		console.log(newSession)
+		selectedSession = newSession
+		const response = await fetch(`${base}/api/user/sessions/${newSession._id}/decks`, authenticateRequest(session))
+		if (response.ok) {
+			decks = await response.json()
 		}
 	}
 
@@ -109,6 +125,20 @@
 		}, 150)
 	}
 
+	async function saveSession() {
+		const board = await getBoard()
+		working = true
+		const response = await fetch(`${base}/api/sessions/${selectedSession._id}/snapshot`, {
+			method: 'PUT',
+			headers: {'content-type': 'application/json'},
+			body: JSON.stringify({
+				url: 'https://miro.com/app/board/' + board.id,
+				snapshot: board
+			})
+		})
+		working = false
+	}
+
 	async function handleLogin() {
 		if (!email) {
 			return;
@@ -121,13 +151,9 @@
 				email: email,
 				password: password
 			})
-		});
-		console.log(response.ok)
-		console.log(response)
+		})
 		if (response.ok) {
-			console.log("...")
-			const login = await response.json() as LoginResponse;
-			console.log(login)
+			const login = await response.json() as LoginResponse
 			if (login.error) {
 				warning = login.error;
 				return;
@@ -137,16 +163,11 @@
 				authenticated: true,
 				token: login.token
 			}
-			const sess = {
-				user: user
-			}
-			console.log(sess)
-			console.log(session)
 			session.user = user
-			console.log(session)
-			const response = await fetch(`${base}/api/user/sessions`, authenticateRequest(sess));
-			if(response.ok) {
-				sessions = (await response.json()).values.sort(compareSessions)
+			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
+			if (response2.ok) {
+				sessions = (await response2.json()).values.sort(compareSessions)
+				updateSelected()
 			}
 			console.log(`logged in as ${email} with ${user.token}`)
 		} else {
@@ -169,45 +190,108 @@
     .warn {
         @apply bg-yellow-100 py-2 px-4 my-2 mx-4 font-bold rounded-xl;
     }
-
-    button {
-        @apply my-2 mx-8 rounded-xl py-2 px-8 bg-blue-600 text-white font-bold transition-opacity duration-300 hover:opacity-75 disabled:opacity-25 disabled:cursor-default;
-    }
 </style>
 
-<div class="flex flex-col" style="font: 14px OpenSans, Arial, Helvetica, sans-serif;">
-	<h1 class="text-2xl font-extrabold items-center p-4">Cardographer</h1>
-	<button disabled={!allowUpload} on:click={download}>Download Board</button>
-	{#if !authenticated}
-		{#if !showLogin}
-			<button disabled={!allowUpload} on:click={() => {showLogin = true}}>Login</button>
+<div class="w-full flex flex-col">
+	<div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
+		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
+	</div>
+	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
+		{#if !$session.user?.authenticated}
+			Login
+		{:else if !selectedSession}
+			Select Session
 		{:else}
-			<form on:submit|preventDefault={handleLogin}>
-				<label>
-					<span>Email</span>
-					<input bind:value="{email}" class="w-full mx-8" id="email" required type="text"/>
-				</label>
-				<label>
-					<span>Password</span>
-					<input bind:value="{password}" class="w-full mx-8" id="password" required type="password"/>
-				</label>
-				<input class="button self-center " disabled={working} type='submit' value='Log in'>
-			</form>
+			{#if selectedSession.name.toLowerCase().indexOf('session') === -1}
+				Session
+			{/if}
+			{selectedSession.name}
 		{/if}
-	{/if}
+	</div>
+	<div class="mb-4 text-sm font-medium gap-4 p-6">
+		{#if !$session.user?.authenticated}
+			{#if !showLogin}
+				<div class="flex p-4">
+					<button class="button" disabled={!allowUpload} on:click={download}>
+						<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+						     xmlns="http://www.w3.org/2000/svg">
+							<path clip-rule="evenodd"
+							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+							      fill-rule="evenodd"/>
+						</svg>
+						Download Board
+					</button>
+					<button class="button" on:click={() => {showLogin = true}}>Login</button>
+				</div>
+			{:else}
+				<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2 p-4">
+					<label>
+						<span>Email</span>
+						<input bind:value="{email}" class="w-full" id="email" required type="text"/>
+					</label>
+					<label>
+						<span>Password</span>
+						<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+					</label>
+					<input class="button" disabled={working} type='submit' value='Log in'>
+				</form>
+			{/if}
+		{/if}
 
-	{#if warning}
-		<div class="warn">{warning}</div>
-	{/if}
-	{#if widgets.length !== 0}
-		<div class="warn">
-			{widgets.length} images will not be downloaded. Give them titles to include them in the upload
-		</div>
-	{/if}
-	{#each widgets as widget (widget.id)}
-		<div on:click={() => selectWidget(widget)}
-		     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
-			Image {widget.id}
-		</div>
-	{/each}
+		{#if warning}
+			<div class="warn">{warning}</div>
+		{/if}
+		{#if $session.user?.authenticated}
+			{#if selectedSession === null}
+				{#each sessions as session}
+					{#if !session.isArchived}
+						<a class="listItem flex-col" on:click={() => {selectSession(session)}}>
+							<div class="flex flex-row gap-1">
+								<div class="font-semibold">{session.name}</div>
+								{#if session.isPublic}
+									<div class="chip">Public</div>
+								{/if}
+								{#if session.isTemplate}
+									<div class="chip">Template</div>
+								{/if}
+								{#if session.isArchived}
+									<div class="chip">Archived</div>
+								{/if}
+							</div>
+							{#if session.description}
+								<div class="text-sm font-light">{session.description}</div>
+							{/if}
+						</a>
+					{/if}
+				{/each}
+			{:else }
+				<div class="flex gap-4 justify-center">
+					<button class="button" disabled={!allowUpload} on:click={download}>
+						<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+						     xmlns="http://www.w3.org/2000/svg">
+							<path clip-rule="evenodd"
+							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+							      fill-rule="evenodd"/>
+						</svg>
+						Download Board
+					</button>
+					<button class="button" disabled={!allowUpload} on:click={saveSession}>
+						Save Session
+					</button>
+				</div>
+			{/if}
+		{/if}
+
+		{#if widgets.length !== 0}
+			<div class="warn">
+				{widgets.length} images will not be downloaded. Give them titles to include them in the upload
+			</div>
+		{/if}
+		{#each widgets as widget (widget.id)}
+			<div on:click={() => selectWidget(widget)}
+			     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
+				Image {widget.id}
+			</div>
+		{/each}
+	</div>
 </div>

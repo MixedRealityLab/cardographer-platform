@@ -218,6 +218,7 @@ export interface User {
 export interface Session {
 	_id: string // mongo-style
 	name: string
+	url?: string
 	description?: string
 	credits?: string
 	owners: string[] // User emails

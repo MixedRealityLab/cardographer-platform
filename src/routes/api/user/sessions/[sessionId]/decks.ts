@@ -5,6 +5,30 @@ import type {EndpointOutput, RequestEvent} from "@sveltejs/kit";
 
 const debug = true;
 
+export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
+	if (isNotAuthenticated(locals)) {
+		return {status: 401}
+	}
+	const {sessionId} = params;
+	const db = await getDb();
+	// permission check
+	const session = await db.collection<Session>('Sessions').findOne({
+		_id: sessionId, owners: locals.email
+	})
+	if (!session) {
+		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
+		return {status: 404};
+	}
+	// update session
+	const cardIds = session.decks.map((deck) => deck.deckId + ":" + deck.revision)
+	const cards = await db.collection<CardDeckRevision>('CardDeckRevisions').find(
+		{_id: {$in: cardIds}}
+	).toArray()
+	return {
+		body:cards as any
+	}
+}
+
 export async function put({locals, request, params}: RequestEvent): Promise<EndpointOutput> {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}

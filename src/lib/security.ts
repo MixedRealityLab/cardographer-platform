@@ -1,4 +1,3 @@
-import type {ServerLocals} from "$lib/systemtypes";
 import jwt from 'jsonwebtoken';
 
 interface UserToken {
@@ -11,7 +10,7 @@ const jwtSecret = "somethingelse";
 
 const debug = false;
 
-export function isNotAuthenticated(locals: Record<string, any>): boolean {
+export function isNotAuthenticated(locals: App.Locals): boolean {
 	if(locals.authenticated) {
 		return false
 	}

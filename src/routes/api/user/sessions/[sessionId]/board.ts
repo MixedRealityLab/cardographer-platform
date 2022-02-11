@@ -56,4 +56,3 @@ export async function put({locals, params, request}: RequestEvent): Promise<Endp
 		}
 	}
 }
-
