@@ -33,6 +33,7 @@
 	import {page, session} from "$app/stores"
 	import type {PostUserRevisionResponse} from "$lib/apitypes"
 	import AppBar from '$lib/ui/AppBar.svelte'
+	import ConfirmDialog from "../../../../../lib/ui/ConfirmDialog.svelte";
 
 	export let revisions: CardDeckRevisionSummary[]
 	export let selectedRevision: CardDeckRevisionSummary
@@ -76,19 +77,17 @@
 	}
 
 	async function deleteDeck() {
-		if (confirm("Are you sure you want to delete this deck?")) {
-			message = error = '';
-			working = true;
-			const {deckId} = $page.params;
-			const res = await fetch(`${base}/api/user/decks/${deckId}`, authenticateRequest($session, {
-				method: 'DELETE'
-			}))
-			working = false;
-			if (res.ok) {
-				await goto(`${base}/user/decks`);
-			} else {
-				error = `Sorry, there was a problem (${res.statusText})`;
-			}
+		message = error = '';
+		working = true;
+		const {deckId} = $page.params;
+		const res = await fetch(`${base}/api/user/decks/${deckId}`, authenticateRequest($session, {
+			method: 'DELETE'
+		}))
+		working = false;
+		if (res.ok) {
+			await goto(`${base}/user/decks`);
+		} else {
+			error = `Sorry, there was a problem (${res.statusText})`;
 		}
 	}
 
@@ -138,9 +137,15 @@
 	{/each}
 
 	<div class="flex justify-center">
-		<button class="button-delete button m-2" disabled={working} on:click={deleteDeck}>
-			<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
-		</button>
+		<ConfirmDialog
+				cancelTitle="Cancel"
+				confirmTitle="Delete"
+				let:confirm="{confirmThis}"
+				title="Delete {selectedRevision.deckName}?">
+			<button class="button-delete button m-2" disabled={working} on:click={() => confirmThis(deleteDeck)}>
+				<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
+			</button>
+		</ConfirmDialog>
 		<button class="button m-2" disabled={working} on:click={createNewRevision}>
 			<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision
 		</button>

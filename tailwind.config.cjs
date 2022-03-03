@@ -10,7 +10,11 @@ module.exports = {
 			'title': ['Lato', 'Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 			'sans': ['Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 		},
-		extend: {},
+		extend: {
+				zIndex: {
+					'998': '998',
+				}
+		},
 		colors: {
 			transparent: 'transparent',
 			current: 'currentColor',

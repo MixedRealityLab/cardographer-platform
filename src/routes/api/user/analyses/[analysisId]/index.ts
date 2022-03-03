@@ -73,4 +73,23 @@ export const put: RequestHandler = async function ({request, locals, params}) {
 		body: {}
 	}
 }
-  
+
+export const del: RequestHandler = async function ({locals, params}) {
+	if (isNotAuthenticated(locals)) {
+		return {status: 401}
+	}
+	const {analysisId} = params;
+	if (debug) console.log(`get analysis ${analysisId}`);
+	const db = await getDb();
+	// permission check
+	const analysis = await db.collection<Analysis>('Analyses').deleteOne({
+		_id: analysisId, owners: locals.email
+	})
+	if (analysis.deletedCount == 0) {
+		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`);
+		return {status: 404};
+	}
+	return {
+		body: analysis as any
+	}
+}

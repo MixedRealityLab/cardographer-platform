@@ -10,7 +10,6 @@ export function authenticateRequest(session: any, request: RequestInit = {}): Re
 	} else {
 		request.headers = {authorization: `Bearer ${token}`}
 	}
-	console.log(JSON.stringify(request.headers))
 	return request
 }
 

@@ -212,6 +212,9 @@ export interface User {
 	password: string // hashed...
 	disabled: boolean
 	created: string
+
+	resetCode?: string
+	resetTime?: number
 }
 
 // session

@@ -1,6 +1,6 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
-import type {Session} from '$lib/types';
+import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
@@ -75,4 +75,23 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 		body: {}
 	}
 }
-  
+
+export const del: RequestHandler = async function ({locals, params}) {
+	if (isNotAuthenticated(locals)) {
+		return {status: 401}
+	}
+	const {sessionId} = params
+	const db = await getDb();
+	// permission check
+	const session = await db.collection<Session>('Sessions').deleteOne({
+		_id: sessionId, owners: locals.email
+	})
+	if (session.deletedCount == 0) {
+		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
+		return {status: 404};
+	}
+	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({sessionId: sessionId})
+	return {
+		body: {}
+	}
+}
