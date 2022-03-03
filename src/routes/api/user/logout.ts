@@ -1,7 +1,7 @@
 import {makeTokenCookie} from '$lib/security';
-import type {EndpointOutput} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 
-export async function post(): Promise<EndpointOutput> {
+export const post: RequestHandler = async function () {
 	console.log(`logout`);
 	// as cookie (for now)
 	return {

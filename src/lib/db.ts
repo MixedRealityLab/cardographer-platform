@@ -12,7 +12,7 @@ const db: Promise<Db> = new Promise<Db>((resolve, reject) => {
 	attemptConnection(resolve, reject);
 })
 
-function attemptConnection(resolve: (value: Db) => void, reject): void {
+function attemptConnection(resolve: (value: Db) => void, reject: () => void): void {
 	MongoClient.connect(url)
 		.then((client) => {
 			console.log("Connected to DB");

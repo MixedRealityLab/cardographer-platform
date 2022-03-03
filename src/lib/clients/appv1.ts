@@ -30,7 +30,7 @@ export interface Appv1Deck {
 }
 
 //http://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
-function fileTimeToDate(fileTime) {
+function fileTimeToDate(fileTime: number) {
 	return new Date(fileTime / 10000 - 11644473600000);
 }
 

@@ -1,11 +1,11 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Analysis} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -26,12 +26,12 @@ export async function get({locals, params}: RequestEvent): Promise<EndpointOutpu
 	}
 }
 
-export async function put({request, locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const put: RequestHandler = async function ({request, locals, params}) {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
 	}
-	const analysis = await request.json() as unknown as Analysis;
+	const analysis = await request.json() as Analysis;
 	const {analysisId} = params;
 	if (analysisId != analysis._id) {
 		if (debug) console.log(`analysis doesnt match url`, analysisId);

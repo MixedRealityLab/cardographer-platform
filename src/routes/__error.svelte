@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
-	import type {ErrorLoadInput, LoadOutput} from "@sveltejs/kit"
+	import type {ErrorLoad} from "@sveltejs/kit"
 
-	export async function load({error, status}: ErrorLoadInput): Promise<LoadOutput> {
+	export const load: ErrorLoad = async function ({error, status}) {
 		console.log(`${error.name}: ${error.message}`, error.stack)
 		return {
 			props: {
@@ -11,11 +11,11 @@
 	}
 </script>
 
-<script>
+<script lang="ts">
 	import AppBar from "$lib/ui/AppBar.svelte";
 	import {base} from "$app/paths";
 
-	export let title;
+	export let title: string;
 </script>
 
 <AppBar back="{base}/user/decks"/>

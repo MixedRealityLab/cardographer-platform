@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit'
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const {sessionId} = params
 		const res = await fetch(`${base}/api/user/sessions/${sessionId}`, authenticateRequest(session))
 		if (res.ok) {

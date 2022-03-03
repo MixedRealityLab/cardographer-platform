@@ -3,11 +3,11 @@ import {getDb} from '$lib/db'
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types'
 import {DeckBuildStatus} from "$lib/types";
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit'
+import type {RequestHandler} from '@sveltejs/kit'
 
 const debug = true;
 
-export async function post({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const post: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

@@ -1,9 +1,10 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token";
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import type {Load} from '@sveltejs/kit';
+	import type {Session} from "$lib/types";
 
-	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({fetch, session}) {
 		const res = await fetch(`${base}/api/user/sessions/templates`, authenticateRequest(session))
 		if (res.ok) {
 			return {
@@ -16,7 +17,7 @@
 		return errorResponse(res)
 	}
 
-	function compareSessions(a, b) {
+	function compareSessions(a: Session, b: Session) {
 		const aName = `${a.name} ${a.owners[0]} ${a.created}`;
 		const bName = `${b.name} ${b.owners[0]} ${b.created}`;
 		return String(aName).localeCompare(bName);
@@ -24,11 +25,10 @@
 </script>
 
 <script lang="ts">
-	import AppBar from '$lib/ui/AppBar.svelte';
-	import type {Session} from '$lib/types';
-	import type {CopySessionResponse} from '$lib/apitypes';
-	import {session} from '$app/stores';
-	import {goto} from '$app/navigation';
+	import AppBar from '$lib/ui/AppBar.svelte'
+	import type {CopySessionResponse} from '$lib/apitypes'
+	import {session} from '$app/stores'
+	import {goto} from '$app/navigation'
 
 	export let sessions: Session[]
 

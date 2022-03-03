@@ -1,11 +1,11 @@
 import {getDb} from "$lib/db";
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, Session, SessionDeck} from "$lib/types";
-import type {EndpointOutput, RequestEvent} from "@sveltejs/kit";
+import type {RequestHandler} from "@sveltejs/kit";
 
 const debug = true;
 
-export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -25,15 +25,15 @@ export async function get({locals, params}: RequestEvent): Promise<EndpointOutpu
 		{_id: {$in: cardIds}}
 	).toArray()
 	return {
-		body:cards as any
+		body: cards as any
 	}
 }
 
-export async function put({locals, request, params}: RequestEvent): Promise<EndpointOutput> {
+export const put: RequestHandler = async function ({locals, request, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const cardIds = await request.json() as unknown as string[];
+	const cardIds = await request.json() as string[];
 	const {sessionId} = params;
 	const db = await getDb();
 	// permission check

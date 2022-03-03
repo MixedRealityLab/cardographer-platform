@@ -379,7 +379,7 @@ export async function arrayToCsv(rows: string[][]): Promise<string> {
 		const stringifier = stringify({});
 		const data = []
 		stringifier.on('readable', function () {
-			let row;
+			let row: string;
 			while (row = stringifier.read()) {
 				data.push(row)
 			}

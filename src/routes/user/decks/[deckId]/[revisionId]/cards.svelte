@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit'
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const {deckId, revisionId} = params
 		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authenticateRequest(session));
 
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 	import type {CardDeckRevision} from "$lib/types"
-	import {downloadFile} from "$lib/ui/download";
+	import {downloadFile} from "$lib/ui/download"
 	import DeckTabs from "./_DeckTabs.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
@@ -39,7 +39,7 @@
 		message = ''
 		error = ''
 
-		const token = $session.user?.token
+		const token = $session.token
 		if (!token) {
 			error = "Sorry, you don't seem to be logged in"
 			return;
@@ -69,7 +69,7 @@
 	async function exportCsv() {
 		console.log(`export...`);
 		message = error = '';
-		const token = $session.user?.token;
+		const token = $session.token;
 		if (!token) {
 			error = "Sorry, you don't seem to be logged in";
 			return;
@@ -138,7 +138,7 @@
 			<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
 		</UploadButton>
 		{#if revision.cards.length > 0}
-			<button class="button m-3" on:click={() => exportCsv(false)}>
+			<button class="button m-3" on:click={exportCsv}>
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
 			</button>
 		{/if}

@@ -1,14 +1,14 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
-	import {Analysis, SessionSnapshotSummary} from "$lib/types"
+	import type {Analysis, SessionSnapshotSummary} from "$lib/types"
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit';
 
 	interface SessionSelection extends SessionSnapshotSummary {
 		selected: boolean
 	}
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const headers = authenticateRequest(session)
 		const {analysisId} = params
 		const responses = await Promise.all([

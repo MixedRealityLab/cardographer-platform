@@ -25,7 +25,7 @@ const DEFAULT_OPTIONS_FILE = "options.yml";
 // const OPTION_ROWS = "rows";
 // const OUTPUT_DIR = "_output";
 
-function onlyUnique(value, index, self) {
+function onlyUnique(value: string, index: number, self: string[]) {
 	return self.indexOf(value) === index;
 }
 

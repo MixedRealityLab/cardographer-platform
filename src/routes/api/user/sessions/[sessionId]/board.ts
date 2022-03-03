@@ -2,12 +2,12 @@ import {readBoard} from '$lib/csvutils';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 import parse from 'csv-parse';
 
 const debug = true;
 
-export async function put({locals, params, request}: RequestEvent): Promise<EndpointOutput> {
+export const put: RequestHandler = async function ({locals, params, request}) {
 	const csv = await request.text()
 	console.log(csv)
 	if (isNotAuthenticated(locals)) {

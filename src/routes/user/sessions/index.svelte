@@ -2,9 +2,9 @@
 	import {base} from '$app/paths'
 	import type {Session} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit'
 
-	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({fetch, session}) {
 		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
 			return {
@@ -121,12 +121,12 @@
 		{/if}
 
 		<a class="button mx-2 self-center" href="{base}/user/sessions/new">
-			<img src="{base}/icons/add.svg" class="button-icon" alt=""/>New Session
+			<img alt="" class="button-icon" src="{base}/icons/add.svg"/>New Session
 		</a>
 
-		<UploadButton types=".json,application/json" class="button mx-2 self-center" multiple={true}
-		              on:upload={importSession}>
-			<img src="{base}/icons/upload.svg" class="button-icon" alt=""/>Upload Sessions
+		<UploadButton class="button mx-2 self-center" multiple={true} on:upload={importSession}
+		              types=".json,application/json">
+			<img alt="" class="button-icon" src="{base}/icons/upload.svg"/>Upload Sessions
 		</UploadButton>
 	</div>
 </div>

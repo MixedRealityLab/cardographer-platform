@@ -14,9 +14,7 @@
 		statusCode = response.status;
 		working = false;
 		if (statusCode == 200) {
-			$session.user = {
-				authenticated: false
-			};
+			session.set({authenticated: false})
 			console.log(`logged out`);
 		}
 	}

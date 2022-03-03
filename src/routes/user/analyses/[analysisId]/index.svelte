@@ -2,9 +2,9 @@
 	import {base} from '$app/paths'
 	import type {Analysis} from "$lib/types";
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import type {Load} from '@sveltejs/kit';
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const requestInfo = authenticateRequest(session)
 		const {analysisId} = params;
 		const responses = await Promise.all([

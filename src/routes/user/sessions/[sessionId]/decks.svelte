@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
-	import {CardDeckRevisionSummary, Session} from "$lib/types";
+	import type {CardDeckRevisionSummary, Session} from "$lib/types";
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import type {Load} from '@sveltejs/kit';
 
 	interface DeckInfo {
 		deckId: string
@@ -11,7 +11,7 @@
 		selected: boolean
 	}
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const requestInfo = authenticateRequest(session)
 		const {sessionId} = params;
 		const responses = await Promise.all([

@@ -2,12 +2,12 @@ import {getClient, guessSessionType} from '$lib/clients/index';
 import {getDb, getNewId} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 import type {Filter} from "mongodb/mongodb.ts34";
 
 const debug = true;
 
-export async function post({locals, request}: RequestEvent): Promise<EndpointOutput> {
+export const post: RequestHandler = async function ({locals, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

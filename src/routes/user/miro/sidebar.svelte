@@ -2,9 +2,9 @@
 	import {base} from '$app/paths'
 	import type {Session} from "$lib/types";
 	import {authenticateRequest} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit'
 
-	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({fetch, session}) {
 		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
 			return {
@@ -25,9 +25,8 @@
 
 <script lang="ts">
 	import {session} from "$app/stores";
-	import {LoginResponse} from "$lib/apitypes";
+	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
-	import {UserSession} from "$lib/systemtypes";
 	import type {CardDeckRevision} from "$lib/types";
 	import {onMount} from "svelte";
 
@@ -51,8 +50,8 @@
 	onMount(async () => {
 		miro.onReady(() => {
 			miro.addListener(miro.enums.event.SELECTION_UPDATED, updateWidgets)
-			updateWidgets()
 			updateSelected()
+			updateWidgets()
 		})
 	})
 
@@ -158,18 +157,17 @@
 				warning = login.error;
 				return;
 			}
-			const user: UserSession = {
+			session.set({
 				email: email,
 				authenticated: true,
 				token: login.token
-			}
-			$session.user = user
+			})
 			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest($session))
 			if (response2.ok) {
 				sessions = (await response2.json()).values.sort(compareSessions)
-				updateSelected()
+				await updateSelected()
 			}
-			console.log(`logged in as ${email} with ${user.token}`)
+			console.log(`logged in as ${email} with ${login.token}`)
 		} else {
 			warning = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
 		}
@@ -196,8 +194,8 @@
 	<div class="w-full py-2 px-2 bg-gray-700 text-2xl text-white flex items-center">
 		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
 	</div>
-	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
-		{#if !$session.user?.authenticated}
+	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center">
+		{#if !$session.authenticated}
 			Login
 		{:else if !selectedSession}
 			Select Session
@@ -206,11 +204,24 @@
 				Session
 			{/if}
 			{selectedSession.name}
-			<button on:click={() => selectedSession = null}>Nope</button>
+			<button class="ml-1" on:click={() => selectedSession = null}>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50" viewBox="0 0 20 20" fill="currentColor">
+					<path fill-rule="evenodd"
+					      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+					      clip-rule="evenodd"/>
+				</svg>
+			</button>
+			<span class="flex-1">&nbsp;</span>
+			<a class="block" href="https://cardographer.cs.nott.ac.uk/user/sessions/{selectedSession._id}" target="_blank">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
+					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+				</svg>
+			</a>
 		{/if}
 	</div>
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
-		{#if !$session.user?.authenticated}
+		{#if !$session.authenticated}
 			{#if !showLogin}
 				<div class="flex justify-center">
 					<button class="button" disabled={!allowUpload} on:click={download}>
@@ -242,7 +253,7 @@
 		{#if warning}
 			<div class="warn">{warning}</div>
 		{/if}
-		{#if $session.user?.authenticated}
+		{#if $session.authenticated}
 			{#if selectedSession === null}
 				{#each sessions as session}
 					{#if !session.isArchived}

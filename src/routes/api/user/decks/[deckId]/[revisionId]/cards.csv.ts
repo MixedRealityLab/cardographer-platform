@@ -2,11 +2,11 @@ import {exportCardsAsCsv} from '$lib/csvutils';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params, url}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({locals, params, url}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

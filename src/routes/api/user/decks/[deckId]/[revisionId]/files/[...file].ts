@@ -3,12 +3,12 @@ import {deleteFile, getFileInfo, writeFile} from '$lib/builders/index';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 import path from 'path'
 
 const debug = true;
 
-export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -34,11 +34,11 @@ export async function get({locals, params}: RequestEvent): Promise<EndpointOutpu
 	}
 }
 
-export async function post({locals, params, request}: RequestEvent): Promise<EndpointOutput> {
+export const post: RequestHandler = async function ({locals, params, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const req = await request.json() as unknown as PostFilesRequest
+	const req = await request.json() as PostFilesRequest
 	const {deckId, revisionId} = params
 	const db = await getDb();
 	// permission check
@@ -78,7 +78,7 @@ export async function post({locals, params, request}: RequestEvent): Promise<End
 	}
 }
 
-export async function del({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const del = async function ({locals, params}) {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}

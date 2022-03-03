@@ -2,7 +2,7 @@ import {base} from "$app/paths";
 import type {LoadOutput} from "@sveltejs/kit";
 
 export function authenticateRequest(session: any, request: RequestInit = {}): RequestInit {
-	const token = session.user?.token;
+	const token = session.token;
 	if (!token) {
 		console.log(`note, no user token`, session);
 	} else if (request.headers) {

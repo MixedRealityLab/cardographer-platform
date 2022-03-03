@@ -90,7 +90,7 @@ async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	}
 }
 
-async function checkDirectoryExists(file) {
+async function checkDirectoryExists(file: fs.PathLike) {
 	return await fsPromises.stat(file)
 		.then((dir) => dir.isDirectory)
 		.catch(() => false)

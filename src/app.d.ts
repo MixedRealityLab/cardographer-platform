@@ -4,16 +4,12 @@ declare namespace App {
 	interface Locals {
 		email?: string;
 		authenticated: boolean;
-		userToken?: string;
+		token?: string;
 	}
-
-	interface Platform {}
 
 	interface Session {
 		email?: string;
 		authenticated: boolean;
-		userToken?: string;
+		token?: string;
 	}
-
-	interface Stuff {}
 }

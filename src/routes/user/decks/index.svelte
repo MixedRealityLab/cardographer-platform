@@ -2,9 +2,9 @@
 	import {base} from '$app/paths'
 	import type {CardDeckSummary} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from "@sveltejs/kit";
 
-	export async function load({fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({fetch, session}) {
 		const res = await fetch(`${base}/api/user/decks`, authenticateRequest(session));
 		if (res.ok) {
 			return {

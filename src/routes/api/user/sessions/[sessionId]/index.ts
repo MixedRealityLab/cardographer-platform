@@ -1,11 +1,11 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function get({locals, params}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -27,11 +27,11 @@ export async function get({locals, params}: RequestEvent): Promise<EndpointOutpu
 	}
 }
 
-export async function put({locals, request, params}: RequestEvent): Promise<EndpointOutput> {
+export const put: RequestHandler = async function ({locals, request, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const sess = await request.json() as unknown as Session
+	const sess = await request.json() as Session
 	const {sessionId} = params
 	if (sessionId != sess._id) {
 		if (debug) console.log(`session doesnt match url`, sess);

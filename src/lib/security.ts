@@ -31,14 +31,14 @@ export async function checkUserToken(rawToken: string): Promise<UserToken> {
 				if (debug) console.log(`invalid token: ${err}`);
 				resolve({valid: false});
 			}
-			if (!decoded.email) {
+			if (!decoded['email']) {
 				if (debug) console.log(`jwt missing email`, decoded);
 				resolve({valid: false});
 			}
-			if (debug) console.log(`valid token for ${decoded.email}`);
+			if (debug) console.log(`valid token for ${decoded['email']}`);
 			resolve({
 				valid: true,
-				email: decoded.email
+				email: decoded['email']
 			});
 		})
 	})

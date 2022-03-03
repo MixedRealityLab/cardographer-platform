@@ -2,11 +2,11 @@ import {getClient, guessSessionType} from "$lib/clients"
 import {getDb, getNewId} from "$lib/db"
 import {isNotAuthenticated} from "$lib/security"
 import type {Session, SessionSnapshot} from "$lib/types"
-import type {EndpointOutput, RequestEvent} from "@sveltejs/kit"
+import type {RequestHandler} from "@sveltejs/kit"
 
-export async function put({locals, params, request}: RequestEvent): Promise<EndpointOutput> {
+export const put: RequestHandler = async function ({locals, params, request}) {
 	const input = await request.json()
-	if(!input.url || !input.snapshot) {
+	if (!input.url || !input.snapshot) {
 		return {status: 400}
 	}
 	if (isNotAuthenticated(locals)) {
@@ -58,7 +58,7 @@ export async function put({locals, params, request}: RequestEvent): Promise<Endp
 	if (!upd.matchedCount) {
 		return {status: 404};
 	}
-	
+
 	return {
 		body: {
 			session: session as any

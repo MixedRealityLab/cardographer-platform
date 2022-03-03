@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
-	import type {FileInfo} from '$lib/apitypes'
 	import {base} from '$app/paths'
+	import type {FileInfo} from '$lib/apitypes'
 	import type {CardDeckRevision} from "$lib/types"
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit'
+	import type {Load} from '@sveltejs/kit'
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const {deckId, revisionId, file} = params
 		const path = file.length > 0 ? '/' + file : ''
 		const authHeader = authenticateRequest(session)
@@ -28,7 +28,7 @@
 <script lang="ts">
 	import {dev} from "$app/env"
 	import {page, session} from '$app/stores'
-	import {PostFilesRequest} from "$lib/apitypes";
+	import type {PostFilesRequest} from "$lib/apitypes";
 	import {DeckBuildStatus} from "$lib/types"
 	import {toBase64} from "$lib/ui/download";
 	import UploadButton from "$lib/ui/UploadButton.svelte";

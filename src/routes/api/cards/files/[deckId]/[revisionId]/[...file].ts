@@ -1,13 +1,13 @@
 import {dev} from "$app/env";
 import {getDb} from '$lib/db';
 import type {CardDeckRevision} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler, RequestHandlerOutput} from '@sveltejs/kit';
 import fs from 'fs';
 import mime from 'mime'
 
 const debug = true;
 
-export async function get({request, params}: RequestEvent): Promise<EndpointOutput> {
+export const get: RequestHandler = async function ({request, params}) {
 	if (!dev) {
 		return {status: 404}
 	}
@@ -33,13 +33,13 @@ export async function get({request, params}: RequestEvent): Promise<EndpointOutp
 	//return {status: 401};
 }
 
-async function sendFile(request: Request, path: string): Promise<EndpointOutput> {
+async function sendFile(request: Request, path: string): Promise<RequestHandlerOutput> {
 	/*	return {
 			headers: { 'content-type': mimeType },
 			body: fs.createReadStream(path)
 		};
 	*/
-	return new Promise<EndpointOutput>((resolve) => {
+	return new Promise<RequestHandlerOutput>((resolve) => {
 		fs.readFile(path, (err, data) => {
 			if (err) {
 				if (debug) console.log(`error reading ${path}: ${err}`);

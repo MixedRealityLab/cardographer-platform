@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
 	import {authenticateRequest, errorResponses} from "$lib/ui/token";
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import type {Load} from '@sveltejs/kit';
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const requestInfo = authenticateRequest(session)
 		const {sessionId} = params;
 		const responses = await Promise.all([
@@ -27,7 +27,6 @@
 	import {page, session as pageSession} from "$app/stores"
 	import type {Session} from '$lib/types'
 	import SessionTabs from "./_SessionTabs.svelte"
-	import {fade} from "svelte/transition";
 	import UserSelect from "$lib/ui/UserSelect.svelte"
 
 	export let session: Session
@@ -37,20 +36,11 @@
 	let error = ''
 	let success = false
 
-	function getUsername(email: string): string {
-		console.log(users)
-		const user = users.find((user) => user.email === email)
-		if (user && user.name) {
-			return user.name
-		}
-		return email
-	}
-
 	// submit deck edit form
 	async function handleSubmit() {
-		console.log(`submit`, session);
+		console.log(`submit`, session)
 		success = false
-		error = '';
+		error = ''
 
 		working = true;
 		const {sessionId} = $page.params;

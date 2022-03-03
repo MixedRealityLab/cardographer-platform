@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {Miro} from "$lib/miro";
+	import type {Miro} from "$lib/miro";
 	import {onMount} from "svelte";
 	import {base} from '$app/paths'
 

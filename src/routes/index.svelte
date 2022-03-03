@@ -1,9 +1,8 @@
 <script type="ts">
 	import {goto} from "$app/navigation";
 	import {base} from '$app/paths'
-	import {session} from '$app/stores';
+	import {getStores} from '$app/stores';
 	import type {LoginResponse} from '$lib/apitypes'
-	import type {UserSession} from '$lib/systemtypes'
 	import AppBar from "$lib/ui/AppBar.svelte";
 
 	let name: string
@@ -37,14 +36,14 @@
 				error = login.error;
 				return;
 			}
-			const user: UserSession = {
+			const {session} = getStores()
+			session.set({
 				email: email,
 				authenticated: true,
 				token: login.token
-			};
-			$session.user = user
+			})
 			await goto(`${base}/user/decks`)
-			console.log(`logged in as ${email} with ${user.token}`)
+			console.log(`logged in as ${email} with ${login.token}`)
 		} else {
 			error = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
 		}

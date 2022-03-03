@@ -1,14 +1,15 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
+	import type {CardDeckRevision, CardDeckRevisionSummary} from "$lib/types";
 	import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	import type {LoadInput, LoadOutput} from '@sveltejs/kit';
+	import type {Load} from '@sveltejs/kit';
 
-	export async function load({params, fetch, session}: LoadInput): Promise<LoadOutput> {
+	export const load: Load = async function ({params, fetch, session}) {
 		const {deckId, revisionId} = params;
 		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, authenticateRequest(session))
 
 		if (res.ok) {
-			const revisions = (await res.json()).revisions.sort(compareRevisions)
+			const revisions = (await res.json()).revisions.sort(compareRevisions) as CardDeckRevisionSummary[]
 			const revision = revisions.find((rev) => rev.revision == revisionId)
 
 			return {
@@ -22,7 +23,7 @@
 		return errorResponse(res)
 	}
 
-	function compareRevisions(a, b) {
+	function compareRevisions(a: CardDeckRevisionSummary, b: CardDeckRevisionSummary) {
 		return b.revision - a.revision;
 	}
 </script>
@@ -30,10 +31,8 @@
 <script lang="ts">
 	import {goto} from "$app/navigation"
 	import {page, session} from "$app/stores"
-	import {PostUserRevisionResponse} from "$lib/apitypes"
-	import {CardDeckRevision} from "$lib/types"
+	import type {PostUserRevisionResponse} from "$lib/apitypes"
 	import AppBar from '$lib/ui/AppBar.svelte'
-	import type {CardDeckRevisionSummary} from '$lib/types'
 
 	export let revisions: CardDeckRevisionSummary[]
 	export let selectedRevision: CardDeckRevisionSummary

@@ -2,15 +2,15 @@ import type {CopySessionRequest} from '$lib/apitypes';
 import {getDb, getNewId} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
 
-export async function post({locals, request}: RequestEvent): Promise<EndpointOutput> {
+export const post: RequestHandler = async function ({locals, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
-	const copyReq = await request.json() as unknown as CopySessionRequest
+	const copyReq = await request.json() as CopySessionRequest
 	if (!copyReq.sessionId) {
 		if (debug) console.log(`no sessionId in copy`, copyReq)
 		return {status: 400}

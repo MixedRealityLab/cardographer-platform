@@ -3,13 +3,13 @@ import {readCards} from '$lib/csvutils';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security"
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
-import type {EndpointOutput, RequestEvent} from '@sveltejs/kit';
+import type {RequestHandler} from '@sveltejs/kit';
 import parse from 'csv-parse';
 
 const debug = true;
 
-export async function put({locals, request, params}: RequestEvent): Promise<EndpointOutput> {
-	const req = await request.json() as unknown as PutCardsRequest;
+export const put: RequestHandler = async function ({locals, request, params}) {
+	const req = await request.json() as PutCardsRequest;
 	if (!req.csvFile) {
 		if (debug) console.log(`no csvFile in PutCardsRequest`);
 		return {status: 400}
