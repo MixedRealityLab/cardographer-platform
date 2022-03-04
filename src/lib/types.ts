@@ -214,7 +214,7 @@ export interface User {
 	created: string
 
 	resetCode?: string
-	resetTime?: number
+	resetTime?: Date
 }
 
 // session

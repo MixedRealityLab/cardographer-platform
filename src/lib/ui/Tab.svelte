@@ -1,10 +1,8 @@
 <script lang="ts">
-	import {base} from '$app/paths'
 	import {page} from '$app/stores'
 
 	export let url = ""
 	export let checkPath = false
-	console.log($page.url.pathname)
 	let path = $page.url.pathname
 	let selected = path === url || (checkPath && path.startsWith(url))
 </script>

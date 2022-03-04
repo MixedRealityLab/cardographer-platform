@@ -257,7 +257,7 @@
 			{#if selectedSession === null}
 				{#each sessions as session}
 					{#if !session.isArchived}
-						<a class="listItem flex-col" on:click={() => {selectSession(session)}}>
+						<div class="listItem flex-col" on:click={() => {selectSession(session)}}>
 							<div class="flex flex-row gap-1">
 								<div class="font-semibold">{session.name}</div>
 								{#if session.isPublic}
@@ -273,7 +273,7 @@
 							{#if session.description}
 								<div class="text-sm font-light">{session.description}</div>
 							{/if}
-						</a>
+						</div>
 					{/if}
 				{/each}
 			{:else }

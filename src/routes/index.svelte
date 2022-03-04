@@ -1,7 +1,6 @@
 <script type="ts">
 	import {goto} from "$app/navigation";
 	import {base} from '$app/paths'
-	import {getStores} from '$app/stores';
 	import type {LoginResponse} from '$lib/apitypes'
 	import AppBar from "$lib/ui/AppBar.svelte";
 
@@ -36,12 +35,6 @@
 				error = login.error;
 				return;
 			}
-			const {session} = getStores()
-			session.set({
-				email: email,
-				authenticated: true,
-				token: login.token
-			})
 			await goto(`${base}/user/decks`)
 			console.log(`logged in as ${email} with ${login.token}`)
 		} else {
@@ -91,6 +84,11 @@
 			<label>
 				<span>Password</span>
 				<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+				{#if !register}
+					<div class="flex flex-col">
+					<a href="{base}/user/password/forgotten" class="text-sm self-center pt-2 text-gray-700 hover:underline">forgot password</a>
+					</div>
+					{/if}
 			</label>
 
 			{#if register}

@@ -40,7 +40,7 @@ export const post: RequestHandler = async function ({request}) {
 			return {status: 404}
 		}
 	}
-	const hash = await hashPassword(login.password);
+	const hash = await hashPassword(login.password)
 	if (login.register) {
 		const user: User = {
 			name: login.name,
@@ -74,7 +74,7 @@ export const post: RequestHandler = async function ({request}) {
 	}
 }
 
-async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<string> {
 	return new Promise<string>((resolve, reject) => {
 		scrypt(password, "90oisa", 32, (err, derivedKey) => {
 			if (err) reject(err);
