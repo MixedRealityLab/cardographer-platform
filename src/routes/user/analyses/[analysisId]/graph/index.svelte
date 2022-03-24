@@ -232,6 +232,12 @@
 					<div>Used {selectedCard.count} times</div>
 					<div class="text-sm">Used in {selectedCard.zones.join(", ")}</div>
 				</div>
+				{#if selectedCard.comments.length > 0}
+					<div class="font-semibold">Comments</div>
+				{#each selectedCard.comments as comment}
+					<div>{comment}</div>
+				{/each}
+					{/if}
 				<div class="font-semibold mt-4">Board Regions</div>
 			{/if}
 

@@ -137,7 +137,7 @@ export class MiroClient extends Client {
 			}
 			const ci: CardSnapshot = {id, zones: []};
 			let frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && w.childrenIds.includes(widget.id))
-			if(frames.length == 0) {
+			if (frames.length == 0) {
 				frames = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
 			}
 			let boardId = '';
@@ -148,9 +148,9 @@ export class MiroClient extends Client {
 					if (debug) console.log(`${frames.length} possible boards for image ${id} ${widget.id}: ${JSON.stringify(frames.map((frame) => frame.title))}`);
 				}
 				let size = Infinity
-				for(const frame of frames) {
+				for (const frame of frames) {
 					const widgetSize = frame.bounds.width * frame.bounds.height
-					if(size < widgetSize || !boardId) {
+					if (size < widgetSize || !boardId) {
 						size = widgetSize
 						boardId = frame.title
 						ci.x = (widget.bounds.left - frame.bounds.left) / (frame.bounds.width - widget.bounds.width)
@@ -158,6 +158,9 @@ export class MiroClient extends Client {
 					}
 				}
 			}
+
+			ci.comments = data.widgets.filter((w) => w.type == WidgetType.STICKER && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+
 			let board = boards.find((b) => b.id == boardId);
 
 			if (!board) {
@@ -165,8 +168,8 @@ export class MiroClient extends Client {
 				board = {
 					id: boardId,
 					cards: [],
-				};
-				boards.push(board);
+				}
+				boards.push(board)
 			}
 			board.cards.push(ci);
 			const shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
@@ -182,15 +185,15 @@ export class MiroClient extends Client {
 			}
 			if (debug) console.log(`card ${id} in ${ci.zones.length} zones: ${JSON.stringify(ci.zones)}`);
 		}
-		// TODO comment is a shape or sticker
-		return {
-			boards
-		};
+		return {boards}
 	}
 }
 
 function cardInBounds(c: WidgetData, w: WidgetData) {
-	return c.x >= w.bounds.left && c.x <= w.bounds.right &&
-		c.y <= w.bounds.bottom && c.y >= w.bounds.top;
+	return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
+		c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
 }
 
+function cardOverlapping(c: WidgetData, w: WidgetData) {
+	return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
+}

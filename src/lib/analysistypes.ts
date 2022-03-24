@@ -18,7 +18,9 @@ export interface CardSnapshot {
 	y?: number
 	info?: CardInfo
 	zones?: CardZone[]
-	scales?: CardScale[]
+	comments?: string[]
+	//scales?: CardScale[]
+
 }
 
 export interface CommentInfo {

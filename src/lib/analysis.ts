@@ -22,7 +22,8 @@ interface DesignInfo {
 interface CardUse {
 	id: string;
 	info?: CardInfo
-	use: CardSnapshot[][];
+	use: CardSnapshot[][]
+	comments: string[]
 }
 
 const useZones = true
@@ -69,6 +70,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 					id: cardInfo.id,
 					info: cardInfo.info,
 					use: [],
+					comments: []
 				}
 
 				cardUses.push(cardUse);
@@ -78,6 +80,10 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				if (zone.zoneId && region.regions.indexOf(zone.zoneId) === -1) {
 					region.regions.push(zone.zoneId)
 				}
+			}
+
+			for(const comment of cardInfo.comments) {
+				cardUse.comments.push(comment)
 			}
 
 			if (cardUse.info && cardUse.info.category) {
@@ -149,6 +155,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 					id: cardUse1.id,
 					label: cardUse1.info && cardUse1.info.name || cardUse1.id,
 					description: cardUse1.info && cardUse1.info.description || '',
+					comments: cardUse1.comments,
 					colour: colour,
 					zones: zones,
 					count: count
@@ -240,6 +247,7 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 					cardUse = {
 						id: cardInfo.id,
 						use: [],
+						comments: []
 					}
 					cardUses.push(cardUse);
 				}
