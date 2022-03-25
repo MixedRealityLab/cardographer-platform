@@ -54,12 +54,35 @@
 			error = res.statusText
 		}
 	}
+
+	function formatDate(isoDate: string): string {
+		const date = new Date(isoDate)
+		const now = new Date()
+		if (date.getFullYear() == now.getFullYear()) {
+			return date.toLocaleTimeString('en-gb', {
+				'hour': "numeric",
+				'minute': '2-digit'
+			}) + ', ' + date.toLocaleDateString('en-gb', {
+				month: 'short',
+				day: 'numeric'
+			})
+		} else {
+			return date.toLocaleTimeString('en-gb', {
+				'hour': "numeric",
+				'minute': '2-digit'
+			}) + ', ' + date.toLocaleDateString('en-gb', {
+				year: 'numeric',
+				month: 'short',
+				day: 'numeric'
+			})
+		}
+	}
 </script>
 
 <AppBar back="{base}/user/decks">
 	<div slot="subheader">Create Deck</div>
 </AppBar>
-<div class="w-full flex flex-col text-sm font-medium p-6">
+<div class="w-full flex flex-col text-sm font-medium p-6 gap-4">
 	{#if error}
 		<div class="message-error">{error}</div>
 	{/if}
@@ -69,20 +92,31 @@
 	</div>
 
 	{#each revisions as revision}
-		<div on:click="{() => createCopy(revision._id)}" class="listItem" class:cursor-pointer={!working}>
+		<label on:click="{() => createCopy(revision._id)}" class="listItem items-center"
+		       class:cursor-pointer={!working}>
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
-			<div class="flex flex-col">
-				<div class="flex flex-row gap-1">
-					<div>Create Copy of {revision.deckName}
-						<span class="text-gray-400">v{revision.revision} <span
-								class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+			<div class="flex flex-1 flex-col">
+				<div class="flex">
+					<div class="flex-1 flex items-center gap-1">
+						<div>Create Copy of {revision.deckName}
+							<span class="text-gray-400">v{revision.revision} <span
+									class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+						</div>
+						{#if revision.isPublic}
+							<div class="chip">Public</div>
+						{/if}
 					</div>
-					{#if revision.isPublic}
-						<div class="chip">Public</div>
-					{/if}
+					<div class="text-xs font-light">by {revision.deckCredits}</div>
 				</div>
-				<div class="text-sm font-light">{revision.revisionDescription}</div>
+
+				<div class="flex">
+					<div class="flex-1">
+						<div class="text-sm font-light">{revision.deckDescription || ''}</div>
+						<div class="text-sm font-light">{revision.revisionDescription || ''}</div>
+					</div>
+					<div class="text-xs font-light">{formatDate(revision.created)}</div>
+				</div>
 			</div>
-		</div>
+		</label>
 	{/each}
 </div>

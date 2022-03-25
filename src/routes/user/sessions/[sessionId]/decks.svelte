@@ -132,6 +132,7 @@
 <SessionTabs session="{session}"/>
 
 {#if decks}
+	<!-- TODO SHow deck owner ( + credits?) -->
 	<div class="w-full flex flex-col text-sm font-medium p-6 gap-4">
 		{#each decks as deck}
 			<label class:border-highlight={deck.selected} class="listItem items-center">
@@ -166,11 +167,16 @@
 							{/if}
 							<span class="text-gray-600 font-normal">{deck.revisions[deck.index].revisionName || ''}</span>
 						</div>
-						<div class="text-sm font-light">{formatDate(deck.revisions[deck.index].created)}</div>
+						<div class="text-xs font-light">by {deck.revisions[deck.index].deckCredits}</div>
 					</div>
 
-					<div class="text-sm font-light">{deck.revisions[deck.index].deckDescription || ''}</div>
-					<div class="text-sm font-light">{deck.revisions[deck.index].revisionDescription || ''}</div>
+					<div class="flex">
+						<div class="flex-1">
+							<div class="text-sm font-light">{deck.revisions[deck.index].deckDescription || ''}</div>
+							<div class="text-sm font-light">{deck.revisions[deck.index].revisionDescription || ''}</div>
+						</div>
+						<div class="text-xs font-light">{formatDate(deck.revisions[deck.index].created)}</div>
+					</div>
 				</div>
 			</label>
 		{/each}

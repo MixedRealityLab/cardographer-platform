@@ -41,7 +41,7 @@
 
 	let email: string
 	let password: string
-	let working: boolean = false
+	let working = false
 
 	let widgets: IWidget[] = []
 	let warning: string = null

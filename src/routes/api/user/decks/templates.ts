@@ -2,6 +2,7 @@ import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevisionSummary} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import {cleanRevisions} from "./revisions";
 
 const debug = true;
 
@@ -22,6 +23,7 @@ export const get: RequestHandler = async function ({locals}) {
 			isLocked: true, isTemplate: true, cardCount: true
 		}
 	}).toArray()
+	await cleanRevisions(revisions, db)
 	if (debug) console.log(`found ${revisions.length} public templates`);
 	return {
 		body: {

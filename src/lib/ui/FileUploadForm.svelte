@@ -5,6 +5,7 @@
 	import type {CardDeckRevision} from '$lib/type';
 	import {authenticateRequest} from "$lib/ui/token";
 	import {createEventDispatcher} from 'svelte';
+	import {toBase64} from "./download";
 
 	export let revision: CardDeckRevision;
 

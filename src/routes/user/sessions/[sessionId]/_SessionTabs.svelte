@@ -31,11 +31,11 @@
 	<Tab url="{base}/user/sessions/{sessionId}/board">
 		Board
 	</Tab>
-	<!--{#if session && session.decks && session.decks.length !== 0}-->
-	<!--	<Tab url="{base}/user/sessions/{sessionId}/tabletop">-->
-	<!--		Tabletop-->
-	<!--	</Tab>-->
-	<!--{/if}-->
+	{#if session && session.decks && session.decks.length !== 0 && (!session.sessionType || session.sessionType === 'tabletop')}
+		<Tab url="{base}/user/sessions/{sessionId}/tabletop">
+			Tabletop
+		</Tab>
+	{/if}
 	<div class="flex" slot="subheader">
 		<div class="flex-1">
 			{#if session.name.toLowerCase().indexOf('session') === -1}
@@ -57,5 +57,6 @@
 				</svg>
 			</button>
 		</ConfirmDialog>
+		<slot/>
 	</div>
 </AppBar>

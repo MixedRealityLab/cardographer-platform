@@ -4,7 +4,7 @@
 	export let owners: string[] = []
 	export let users = []
 
-	let userFilter: string = ""
+	let userFilter = ""
 	let filtered = []
 
 	function filter() {
@@ -58,7 +58,7 @@
 				{/if}
 			</div>
 		{/each}
-		<form class="flex-1" on:submit|preventDefault={() =>{}}>
+		<form class="flex-1" on:submit|preventDefault={() => {}}>
 			<input bind:value={userFilter}
 			       class="bg-transparent w-full focus-within:border-0 focus-within:outline-none focus-within:bg-transparent"
 			       id="userFilter" on:blur={filtered=[]} on:focus={filter} on:input={filter}/>

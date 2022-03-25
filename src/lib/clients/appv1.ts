@@ -37,7 +37,6 @@ function fileTimeToDate(fileTime: number) {
 export class Appv1 extends Client {
 	acceptsImport(data: any): boolean {
 		return !!(data.design_title && data.design_cards);
-
 	}
 
 	sessionType(): string {

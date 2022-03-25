@@ -44,7 +44,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	const optionsFile = `${filePath}/${DEFAULT_OPTIONS_FILE}`;
 	let options: any = {};
 	try {
-		const yamlOptions = await fsPromises.readFile(optionsFile);
+		const yamlOptions: any = await fsPromises.readFile(optionsFile);
 		options = yaml.load(yamlOptions);
 	} catch (err) {
 		if (debug) console.log(`error reading ${optionsFile}: ${err.mesage}`, err);
@@ -94,7 +94,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		await fsPromises.writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
-		const localOpts = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
+		const localOpts: any = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
 		localOpts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
 		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
 		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
@@ -108,6 +108,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		try {
 			messages = JSON.parse(output);
 		} catch (err) {
+			console.log("Error parsing " + output)
 		}
 		allMessages = allMessages.concat([`--- back: ${back.length == 0 ? '(default)' : back} ---\n`], messages);
 
