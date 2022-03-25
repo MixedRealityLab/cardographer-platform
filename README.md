@@ -23,8 +23,3 @@ sudo docker-compose up -d --build
 ```
 Open [http://localhost:3000](http://localhost:3000).
 Registration code is 1234, but can be changed in [docker-compose.yaml](docker-compose.yaml)
-
-Notes:
-- had trouble with Mongodb client using node:alpine base (error
-  about require of mongodb-client-encryption; tried to install but
-  that failed).
