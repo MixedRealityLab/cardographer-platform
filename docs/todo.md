@@ -19,7 +19,7 @@ deck
 - [x] template -> new deck
 - [x] upload deck assets
 - [ ] delete deck assets
-- [ ] mkdir for assets
+- [x] mkdir for assets
 - [x] run card generator
 - [x] deck build error reporting
 - [x] multi-back support - see below
@@ -40,7 +40,7 @@ session
 - [ ] unity session support... (schedule, config, save state, continue)
 - [ ] miro session support... (link, add state, export??)
 - [x] import legacy sessions
-- [ ] import miro session
+- [x] import miro session
 - [ ] list/edit session states
 - [ ] board + region support...
 - [ ] miro basic board specification ?!
