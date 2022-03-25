@@ -1,13 +1,11 @@
 # Cardographer platform components
 
-Cardographer server stuff. Deck editing and session analysis. 
+Cardographer server stuff. Deck editing and session analysis. Currently hosted at [https://cardographer.cs.nott.ac.uk/platform]() 
+
 © The University of Nottingham, 2021.
 
 See
 - [docs/authoring.md](docs/authoring.md)
-- [docs/datamodel.md](docs/datamodel.md)
-- [docs/todo.md](docs/todo.md)
-- [docs/api.md](docs/api.md)
 
 potentially used with
 - [miro](docs/miro.md)
