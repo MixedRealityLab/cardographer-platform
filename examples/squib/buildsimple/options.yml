@@ -1,0 +1,51 @@
+# card generation & output options, used in deck.rb
+# also used e.g. by cardographer to handle output flexibly
+
+# csv file
+csvfile: 'card-data.csv'
+
+# layout file
+layout: 'layout.yml'
+
+# card width
+width: '59mm'
+
+# card height
+height: '88mm'
+
+# card DPI
+dpi: 300
+
+# last card is back (different layout)
+last_is_back: true
+
+# output directory
+output: '_output'
+
+# sheet (atlas) output config
+sheet:
+  # no columns
+  columns: 5
+
+  # no rows
+  rows: 3
+
+  # file prefix 
+  prefix: 'Atlas_'
+
+  # count format
+  count_format: '%d'
+
+# card (image) output config
+png:
+  # file prefix
+  prefix: 'card_'
+
+  # filename count format
+  count_format: '%02d'
+
+# pdf output config
+pdf:
+  # filename
+  file: 'output.pdf'
+

@@ -1,0 +1,7 @@
+title:,number,id,category,back,colour,image,name,description
+use:,attribute,id,category,back,attribute,attribute,name,description
+description:,,,,,,,,
+export:,Y,Y,Y,Y,Y,Y,Y,Y
+default:,,defaults:,,,,,,
+card:,1,Example_Definitions_1,Definitions,Definitions,,someimage,1,A first example
+card:,,back:Definitions,,,#ee8080,,Definitions,

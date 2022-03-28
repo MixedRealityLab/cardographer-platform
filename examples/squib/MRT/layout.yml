@@ -1,0 +1,23 @@
+# ivory graphics poker, 63x88 + 5mm bleed
+
+back_title:
+  x: 10mm
+  y: 45mm
+  width: 53mm
+  height: 15mm
+  align: center
+
+# full front image
+image:
+  x: 5mm
+  y: 5mm
+  width: 63mm
+  height: 88mm
+
+# The "cut line"
+cut:
+  x: 5mm
+  y: 5mm
+  width: 63mm
+  height: 88mm
+

@@ -1,0 +1,48 @@
+# tarot 2.75in x 4.75in w bleed, = 24c x 40c
+# bleed 1c/0.125in
+cut:
+  x: 1c
+  y: 1c
+  width: 22c
+  height: 38c
+# safe ~1c/0.125in
+
+image:
+  x: 0
+  y: 0
+  width: deck
+  height: 8c
+
+title:
+  x: 2c
+  y: 9c
+  width: 20c
+  height: 6c
+  align: left
+  font_size: 16
+
+
+back_title:
+  x: 2c
+  y: 24c
+  width: 20c
+  height: 4c
+  align: left
+  font_size: 16
+  color: "#ffffff"
+
+description:
+  x: 2c
+  y: 14c
+  width: 20c
+  height: 18c
+  align: left
+  font_size: 8
+
+category:
+  x: 2c
+  y: 34c
+  width: 20c
+  height: 4c
+  align: left
+  font_size: 10

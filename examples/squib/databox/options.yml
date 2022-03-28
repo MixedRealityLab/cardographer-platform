@@ -1,0 +1,17 @@
+csvfile: card-data.csv
+layout: layout.yml
+width: 59mm
+height: 88mm
+dpi: 300
+last_is_back: true
+output: _output
+sheet:
+  columns: 5
+  rows: 3
+  prefix: Atlas_
+  count_format: '%d'
+png:
+  prefix: card_
+  count_format: '%02d'
+pdf:
+  file: output.pdf

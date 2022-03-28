@@ -1,0 +1,102 @@
+title:,id,image,name,description,back,category,legacy_id
+use:,id,attribute,name,description,back,category,attribute
+description:,"note, legacy format",without extension,,missing…,i.e. type,,not sure what it is
+export:,Y,Y,Y,Y,Y,Y,Y
+default:,defaults:,,,,,,
+card:,back:Challenge,,Challenge,,,,
+card:,c__blank,c__blank,(Blank challenge),>>> Blank Challenge,Challenge,Blank,493dc474-c9ae-4f51-95ac-8fb5648333fe
+card:,c_accidents,c_accidents,Accidents,>>> Locations Challenge,Challenge,Locations,5c9290fa-7c68-49af-8152-436fe2f964d4
+card:,c_battery_life,c_battery_life,Battery Life,>>> Technology Challenge,Challenge,Technology,9cace6a4-1c26-47e9-b0d2-ef31e89f099e
+card:,c_bland_locations,c_bland_locations,Bland Locations,>>> Locations Challenge,Challenge,Locations,2b2344ca-079e-4ee1-9d57-1a5787ae7ef9
+card:,c_confusing_interface,c_confusing_interface,Confusing Interface,>>> Technology Challenge,Challenge,Technology,8a08f106-bf93-48bf-abf7-c52b5a7b1688
+card:,c_critical_mass,c_critical_mass,Critical Mass,>>> Players Challenge,Challenge,Players,da0d9f35-1e35-4fd3-b9cd-8b49deffb389
+card:,c_disruption,c_disruption,Disruption,>>> Locations Challenge,Challenge,Locations,9db50489-03ea-4e6a-8767-f0766f75ecf2
+card:,c_dynamic_places,c_dynamic_places,Dynamic Places,>>> Locations Challenge,Challenge,Locations,a8ea7481-0a12-4afe-8b8a-5fab22647361
+card:,c_feature_creep,c_feature_creep,Feature Creep,>>> Gameplay Challenge,Challenge,Gameplay,831ae85e-5d2a-4b99-9bd6-ae6e0483c81d
+card:,c_getting_lost,c_getting_lost,Getting Lost,>>> Locations Challenge,Challenge,Locations,e0f8fc64-ca2e-4c0c-b0d9-071adf848c13
+card:,c_gimmicky_tech,c_gimmicky_tech,Gimmicky Tech,>>> Technology Challenge,Challenge,Technology,3c2d1c5f-e5e6-4909-9f23-261d23e4b64d
+card:,c_inaccurate_sensors,c_inaccurate_sensors,Inaccurate Sensors,>>> sensors Challenge,Challenge,sensors,b8b3ced7-21cb-411a-9028-dc6208e29fce
+card:,c_long_distances,c_long_distances,Long Distances,>>> Locations Challenge,Challenge,Locations,134e60b4-ae78-4e76-967a-bc20945812a9
+card:,c_noise,c_noise,Noise,>>> Audio Challenge,Challenge,Audio,f239b3c4-6e07-40a3-b41a-20728c902f7b
+card:,c_overcrowding,c_overcrowding,Overcrowding,>>> Locations Challenge,Challenge,Locations,4283f164-b09b-4b94-b181-db67f414ba25
+card:,c_phone_zombies,c_phone_zombies,Phone Zombies,>>> Technology Challenge,Challenge,Technology,aa49c48d-558c-48b9-adb6-3ff429a4b68b
+card:,c_rain_and_snow,c_rain_and_snow,Rain and Snow,>>> Physical Challenge,Challenge,Physical,c901694e-11f7-4415-b1e2-cc6b2dd337e8
+card:,c_real_world_rules,c_real_world_rules,Real World Rules,>>> Players Challenge,Challenge,Players,d2e134fd-a8b1-4c0b-bb3a-51a14cb36a2c
+card:,c_relocation,c_relocation,Relocation,>>> Locations Challenge,Challenge,Locations,97278cfc-a1b8-4dc1-9ade-245b0fdc7635
+card:,c_sunshine,c_sunshine,Sunshine,>>> Physical Challenge,Challenge,Physical,f4942cad-b2d4-4364-8f85-93b69d94b57f
+card:,c_testing,c_testing,Testing,>>> Management Challenge,Challenge,Management,84ee5e2a-4d95-4d4f-8555-fd142c4ffa81
+card:,c_unclear_instructions,c_unclear_instructions,Unclear Instructions,>>> Players Challenge,Challenge,Players,44af4b90-b1d5-44bb-a306-2899e3f6c90b
+card:,c_unengaging_ar,c_unengaging_ar,Unengaging AR,>>> Technology Challenge,Challenge,Technology,23432277-210b-449c-a43f-5bf393e334bb
+card:,c_unintended_race,c_unintended_race,Unintended Race,>>> Gameplay Challenge,Challenge,Gameplay,5708f9c4-920a-4b86-af56-ade723e5f796
+card:,c_unstable_connectivity,c_unstable_connectivity,Unstable Connectivity,>>> Technology Challenge,Challenge,Technology,efe2fdc9-25d6-45fa-b84e-ac4974ff7c4c
+card:,back:Opportunity,,Opportunity,,,,
+card:,o__blank,o__blank,(Blank opportunity),>>> Blank Opportunity,Opportunity,Blank,8d19d7df-cc04-4206-b523-690661b08ece
+card:,o_actors,o_actors,Actors,>>> Physical Opportunity,Opportunity,Physical,7bc7dead-97d2-40b6-a930-9ea3b7356542
+card:,o_alternate_reality,o_alternate_reality,Alternate Reality,>>> Players Opportunity,Opportunity,Players,17cde341-b26a-47d2-82fe-c534caa50c71
+card:,o_area_control,o_area_control,Area Control,>>> Gameplay Opportunity,Opportunity,Gameplay,6d6e6908-60e8-4d07-b75d-bb797640df53
+card:,o_augmented_reality,o_augmented_reality,Augmented Reality,>>> Technology Opportunity,Opportunity,Technology,08cc546b-58bc-446e-96eb-1fc7462a8aa3
+card:,o_collaboration,o_collaboration,Collaboration,>>> Players Opportunity,Opportunity,Players,cfdf91d9-0021-4afb-abfa-50e2bb176b34
+card:,o_collecting,o_collecting,Collecting,>>> Gameplay Opportunity,Opportunity,Gameplay,1ed18044-b07c-42e9-9923-d1bb70f3d32e
+card:,o_compelling_audio,o_compelling_audio,Compelling Audio,>>> Audio Opportunity,Opportunity,Audio,ea48f289-8172-4812-a2a4-835bd47025d4
+card:,o_costumes,o_costumes,Costumes,>>> Players Opportunity,Opportunity,Players,1df18881-c661-4c58-9814-3cdbd9b22b8e
+card:,o_creativity,o_creativity,Creativity,>>> Gameplay Opportunity,Opportunity,Gameplay,94a3bb04-924a-48e8-bb1d-2e1b6c7e4821
+card:,o_different_roles,o_different_roles,Different Roles,>>> Players Opportunity,Opportunity,Players,2f6316dc-3fb0-463c-99d8-ba7bbe4d1332
+card:,o_episodic_content,o_episodic_content,Episodic Content,>>> Time Opportunity,Opportunity,Time,c14e588e-b381-4678-abf8-d12f6cf5e6f8
+card:,o_exergaming,o_exergaming,Exergaming,>>> Gameplay Opportunity,Opportunity,Gameplay,e14e7cee-246b-462a-96cb-a764bcd8cdb0
+card:,o_exploration,o_exploration,Exploration,>>> Gameplay Opportunity,Opportunity,Gameplay,da892012-3656-4526-8282-01315448fd6f
+card:,o_fitting_locations,o_fitting_locations,Fitting Locations,>>> Locations Opportunity,Opportunity,Locations,2863b371-f4aa-46b5-adc5-6480f072cda8
+card:,o_generated_locations,o_generated_locations,Generated Locations,>>> Technology Opportunity,Opportunity,Technology,189979b9-450b-4ebb-8f88-7587623ae78f
+card:,o_global_gamestate,o_global_gamestate,Global Gamestate,>>> Technology Opportunity,Opportunity,Technology,6c64401a-48ec-49c5-be64-d2c1342e4224
+card:,o_headquarter,o_headquarter,Headquarter,>>> Locations Opportunity,Opportunity,Locations,3c68f862-72cd-45f4-b3ff-a3aeb3807563
+card:,o_low_tech,o_low_tech,Low Tech,>>> Physical Opportunity,Opportunity,Physical,6f513b58-562c-4e16-b78f-d9cbec17e1fb
+card:,o_manual_interaction,o_manual_interaction,Manual Interaction,>>> sensors Opportunity,Opportunity,sensors,181f188f-aa43-41ec-aa3e-b14286329f42
+card:,o_mini_games,o_mini_games,Mini Games,>>> Gameplay Opportunity,Opportunity,Gameplay,e0361012-93af-4832-9c87-65dd463441a0
+card:,o_mobile_soundtrack,o_mobile_soundtrack,Mobile Soundtrack,>>> Audio Opportunity,Opportunity,Audio,e704c4f3-6eb5-49da-9fb0-aeb58482f9f2
+card:,o_motion_tracking,o_motion_tracking,Motion Tracking,>>> sensors Opportunity,Opportunity,sensors,10e7a6e5-d96a-4b2e-bcac-cb32b0886ec4
+card:,o_online_participation,o_online_participation,Online Participation,>>> Players Opportunity,Opportunity,Players,9de67bd5-9a5e-4e87-93d9-4faee732a976
+card:,o_open_authoring,o_open_authoring,Open Authoring,>>> Management Opportunity,Opportunity,Management,09987919-1941-4f08-8e1c-7df223b5a616
+card:,o_passive_tracking,o_passive_tracking,Passive Tracking,>>> sensors Opportunity,Opportunity,sensors,3aff7c2c-8ba4-428d-8102-6c0e123557e7
+card:,o_peer-to-peer,o_peer-to-peer,Peer-to-Peer,>>> Technology Opportunity,Opportunity,Technology,ca7bf27a-7ad1-4714-b40e-09bee2cfc150
+card:,o_performative_play,o_performative_play,Performative Play,>>> Gameplay Opportunity,Opportunity,Gameplay,45e99398-7c51-47a4-ac00-5461eb520af1
+card:,o_public_display,o_public_display,Public Display,>>> Technology Opportunity,Opportunity,Technology,7d4ff528-58ba-4e12-80a7-a52a9bd6ae09
+card:,o_public_infrastructure,o_public_infrastructure,Public Infrastructure,>>> sensors Opportunity,Opportunity,sensors,913b17c2-bfc0-4353-8420-8da1d75c236e
+card:,o_puppet_masters,o_puppet_masters,Puppet Masters,>>> Management Opportunity,Opportunity,Management,36d61112-9527-41df-92f0-a9bfd44279a1
+card:,o_riddles,o_riddles,Riddles,>>> Gameplay Opportunity,Opportunity,Gameplay,a12f42eb-5646-4d86-9f08-2983116511e8
+card:,o_roleplaying,o_roleplaying,Roleplaying,>>> Players Opportunity,Opportunity,Players,a457cfdb-b3f7-461e-8316-ca611aa7394e
+card:,o_scavenger_hunt,o_scavenger_hunt,Scavenger Hunt,>>> Gameplay Opportunity,Opportunity,Gameplay,58309738-6906-435d-b0b6-2a0dd325f9c5
+card:,o_seamful_design,o_seamful_design,Seamful Design,>>> Technology Opportunity,Opportunity,Technology,a0a857fe-5764-4fc1-94bc-88aaae3ff640
+card:,o_set_construction,o_set_construction,Set Construction,>>> Physical Opportunity,Opportunity,Physical,981cdebf-c7c4-4c4a-81dc-3a3e8991fe32
+card:,o_social_contract,o_social_contract,Social Contract,>>> Players Opportunity,Opportunity,Players,d96fe6b7-32ae-4ae6-8ce2-ed517fdf6215
+card:,o_stationary_sensors,o_stationary_sensors,Stationary Sensors,>>> sensors Opportunity,Opportunity,sensors,9af65665-74e8-49f3-8b03-12e36601785a
+card:,o_strong_narrative,o_strong_narrative,Strong Narrative,>>> Gameplay Opportunity,Opportunity,Gameplay,873a3de2-6ac1-440c-890d-ce4ded2c0b71
+card:,o_subverted_locations,o_subverted_locations,Subverted Locations,>>> Locations Opportunity,Opportunity,Locations,ed5b863d-474e-4a38-b138-675cf1f8cf2d
+card:,o_technical_artifacts,o_technical_artifacts,Technical Artifacts,>>> Physical Opportunity,Opportunity,Physical,2eeba50d-4073-4de1-9507-78fbc5a86b97
+card:,o_telephony,o_telephony,Telephony,>>> Technology Opportunity,Opportunity,Technology,6f16a89a-1570-4f44-bbbf-c41bd51248f5
+card:,o_terminals,o_terminals,Terminals,>>> Technology Opportunity,Opportunity,Technology,eb3ee727-5d78-4396-ba3a-2ba1db2602d0
+card:,o_time_pressure,o_time_pressure,Time Pressure,>>> Time Opportunity,Opportunity,Time,f92af0c9-4a0d-4783-a8ec-923fcc16e7a5
+card:,o_timed_events,o_timed_events,Timed Events,>>> Time Opportunity,Opportunity,Time,cb8619f0-3bcc-4829-beb5-0c47b4676ed6
+card:,o_unusual_locations,o_unusual_locations,Unusual Locations,>>> Locations Opportunity,Opportunity,Locations,3e4481e4-c0ae-4d0f-bc6f-45823922ebe0
+card:,o_useful_props,o_useful_props,Useful Props,>>> Physical Opportunity,Opportunity,Physical,ecce7a32-3a9f-4b69-b823-0ca7a6fe3217
+card:,o_vehicles,o_vehicles,Vehicles,>>> Physical Opportunity,Opportunity,Physical,94e511c2-76b8-4b78-8a94-1d85079c2b1e
+card:,o_weather_input,o_weather_input,Weather Input,>>> Physical Opportunity,Opportunity,Physical,da0c1e36-203a-42f3-8d6e-b1bdd3a66775
+card:,o_wizard_of_oz,o_wizard_of_oz,Wizard of Oz,>>> sensors Opportunity,Opportunity,sensors,fd600b37-b16c-4263-a56e-67a1472959c3
+card:,back:Question,,Question,,,,
+card:,q__blank,q__blank,(Blank question),>>> Blank Question,Question,Blank,
+card:,q_beginning_and_end,q_beginning_and_end,Beginning and End?,>>> Gameplay Question,Question,Gameplay,78edddcf-cc34-4544-b1bd-9128e5928f82
+card:,q_challenging,q_challenging,Challenging?,>>> Gameplay Question,Question,Gameplay,5326c1ea-4397-4e17-9d50-782ce1c0ec60
+card:,q_core_concepts,q_core_concepts,Core Concepts?,>>> Gameplay Question,Question,Gameplay,140762af-bd86-4f91-b3fa-bbf1d831afd7
+card:,q_duration,q_duration,Duration?,>>> Time Question,Question,Time,273e050c-a7eb-4003-9862-a1f6214f0852
+card:,q_experience_flow,q_experience_flow,Experience Flow?,>>> Gameplay Question,Question,Gameplay,4974312f-ad54-4154-99c6-02663c75737a
+card:,q_fun_and_joy,q_fun_and_joy,Fun and Joy?,>>> Gameplay Question,Question,Gameplay,15709d81-ef05-4dcd-ac47-40b41d1024a3
+card:,q_game_server,q_game_server,Game Server?,>>> Locations Question,Question,Locations,89008bee-60fb-4ade-8628-8dcdbc5d93b1
+card:,q_indoor_or_outdoor,q_indoor_or_outdoor,Indoor or Outdoor?,>>> Locations Question,Question,Locations,f9273ba0-b2aa-4c65-bb3b-d0581b7c18a4
+card:,q_locations,q_locations,Locations?,>>> Locations Question,Question,Locations,9f3833b6-919f-47a5-a021-2f2c71a5374c
+card:,q_main_mechanics,q_main_mechanics,Main Mechanics?,>>> Gameplay Question,Question,Gameplay,9992dd3c-d2ef-4eaa-bda2-fe0b9b655297
+card:,q_nothing_digital,q_nothing_digital,Nothing digital?,>>> Technology Question,Question,Technology,afde9a5d-787e-435b-9d17-aa1953e3c01f
+card:,q_nothing_physical,q_nothing_physical,Nothing physical?,>>> Physical Question,Question,Physical,25c48ac0-a24f-41fc-8873-2647095fca59
+card:,q_number_of_players,q_number_of_players,Number of Players?,>>> Players Question,Question,Players,c85ba70e-996f-4377-bf02-d7a638f89616
+card:,q_observing_players,q_observing_players,Observing Players?,>>> Management Question,Question,Management,69767862-38ab-44ed-9a41-8f420c8fa3a5
+card:,q_size_of_area,q_size_of_area,Size of Area?,>>> Locations Question,Question,Locations,72e336d0-dc11-4f53-b0e8-f1a6f9dcc04a
+card:,q_suitable_sensors,q_suitable_sensors,Suitable Sensors?,>>> sensors Question,Question,sensors,ca62d4f5-afdd-4b3d-bd04-490fe5e19030
+card:,q_target_group,q_target_group,Target Group?,>>> Players Question,Question,Players,9ed7ab54-a1cf-47c5-86d9-ca76c19574a9
+card:,q_theme_and_story,q_theme_and_story,Theme and Story?,>>> Gameplay Question,Question,Gameplay,bbfa694a-f872-47a1-8431-351e291f31e1

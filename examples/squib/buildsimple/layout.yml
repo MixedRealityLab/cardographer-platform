@@ -1,0 +1,53 @@
+#initially based on https://github.com/andymeneely/squib/blob/master/lib/squib/builtin/layouts/economy.yml
+# adjusted for business card size (e.g. Moo) bleed 59 (697) x 88 (1039); trim 55 (650/+23.5) x 84 (992/+23.5); safe 51 (602/+47) x 80 (945/+47)
+title:
+  x: 90
+  y: 60
+  width: 517
+  height: 50
+  align: center
+
+back_title:
+  x: 90
+  y: 520
+  width: 517
+  height: 50
+  align: center
+
+description:
+  x: 100
+  y: 200
+  width: 497
+  height: 260
+  valign: middle
+  align: center
+  font_size: 8
+desc: # alias
+  extends: description
+
+lower_left:
+  x: 75
+  y: 907
+  width: 150
+  height: 75
+  font_size: 8
+  valign: bottom
+  align: left
+ll: # alias
+  extends: lower_left
+
+# The "cut line", without rounded corners
+cut:
+  x: 23.5
+  y: 23.5
+  width: 650
+  height: 992
+
+# The "safe zone" as defined by TheGameCrafter poker cards
+safe:
+  x: 47
+  y: 47
+  width: 602
+  height: 945
+  radius: 16
+  dash: 3 3

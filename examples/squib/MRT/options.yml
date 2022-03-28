@@ -1,0 +1,20 @@
+csvfile: card-data.csv
+layout: layout.yml
+width: 73mm # 63mm ivory graphics poker + 2x5mm bleed
+height: 98mm # 83mm ivory graphics poker + 2x5mm bleed
+dpi: 300
+last_is_back: true
+output: _output
+sheet:
+  columns: 5
+  rows: 3
+  prefix: Atlas_
+  count_format: '%d'
+  trim: 5mm
+png:
+  prefix: card_
+  count_format: '%02d'
+  trim: 5mm
+pdf:
+  file: output.pdf
+  trim: 5mm
