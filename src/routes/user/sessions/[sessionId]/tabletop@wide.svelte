@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
-	import {authenticateRequest, errorResponse} from "$lib/ui/token";
+	import {authenticateRequest, errorResponse} from "../../../../lib/ui/token";
 	import type {Load} from '@sveltejs/kit';
 
 	export const load: Load = async function ({params, fetch, session}) {
@@ -30,10 +30,10 @@
 
 <script lang="ts">
 	import {page, session} from "$app/stores"
-	import type {Session} from "$lib/types"
+	import type {Session} from "../../../../lib/types"
 	import {onMount} from "svelte";
 	import {tweened} from "svelte/motion";
-	import SessionTabs from '../_SessionTabs.svelte'
+	import SessionTabs from './_SessionTabs.svelte'
 	import {fade} from 'svelte/transition'
 	import {cubicOut} from 'svelte/easing'
 

@@ -42,6 +42,7 @@
 	let email: string
 	let password: string
 	let working = false
+	let message: string = ""
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -127,15 +128,16 @@
 	async function saveSession() {
 		const board = await getBoard()
 		working = true
-		const response = await fetch(`${base}/api/sessions/${selectedSession._id}/snapshot`, {
+		const response = await fetch(`${base}/api/user/sessions/${selectedSession._id}/snapshot`, authenticateRequest($session, {
 			method: 'PUT',
 			headers: {'content-type': 'application/json'},
 			body: JSON.stringify({
 				url: 'https://miro.com/app/board/' + board.id,
 				snapshot: board
 			})
-		})
+		}))
 		working = false
+		message = response.statusText
 	}
 
 	async function handleLogin() {
@@ -205,17 +207,19 @@
 			{/if}
 			{selectedSession.name}
 			<button class="ml-1" on:click={() => selectedSession = null}>
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50" viewBox="0 0 20 20" fill="currentColor">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50" viewBox="0 0 20 20"
+				     fill="currentColor">
 					<path fill-rule="evenodd"
 					      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
 					      clip-rule="evenodd"/>
 				</svg>
 			</button>
 			<span class="flex-1">&nbsp;</span>
-			<a class="block" href="https://cardographer.cs.nott.ac.uk/user/sessions/{selectedSession._id}" target="_blank">
+			<a class="block" href="https://cardographer.cs.nott.ac.uk/user/sessions/{selectedSession._id}"
+			   target="_blank">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
-					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
 				</svg>
 			</a>
 		{/if}
@@ -223,7 +227,7 @@
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
 		{#if !$session.authenticated}
 			{#if !showLogin}
-				<div class="flex justify-center">
+				<div class="flex justify-center gap-4">
 					<button class="button" disabled={!allowUpload} on:click={download}>
 						<svg class="w-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"
 						     xmlns="http://www.w3.org/2000/svg">
