@@ -139,8 +139,10 @@
 				snapshot: board
 			})
 		}))
+		if(!response.ok) {
+			warning = response.statusText
+		}
 		working = false
-		warning = response.statusText
 	}
 
 	async function handleLogin() {
@@ -164,6 +166,7 @@
 			}
 			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest({token: login.token}))
 			if (response2.ok) {
+				warning = null
 				sessions = (await response2.json()).values.sort(compareSessions)
 				session = {
 					email: email,
