@@ -24,7 +24,6 @@
 </script>
 
 <script lang="ts">
-	import {session} from "$app/stores";
 	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
 	import type {CardDeckRevision} from "$lib/types";
@@ -38,11 +37,15 @@
 
 	let title = ''
 	let showLogin = false
+	let session = {
+		email: '',
+		authenticated: false,
+		token: ''
+	}
 
 	let email: string
 	let password: string
 	let working = false
-	let message: string = ""
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -128,7 +131,7 @@
 	async function saveSession() {
 		const board = await getBoard()
 		working = true
-		const response = await fetch(`${base}/api/user/sessions/${selectedSession._id}/snapshot`, authenticateRequest($session, {
+		const response = await fetch(`${base}/api/user/sessions/${selectedSession._id}/snapshot`, authenticateRequest(session, {
 			method: 'PUT',
 			headers: {'content-type': 'application/json'},
 			body: JSON.stringify({
@@ -137,7 +140,7 @@
 			})
 		}))
 		working = false
-		message = response.statusText
+		warning = response.statusText
 	}
 
 	async function handleLogin() {
@@ -159,15 +162,22 @@
 				warning = login.error;
 				return;
 			}
-			session.set({
+			session = {
 				email: email,
 				authenticated: true,
 				token: login.token
-			})
-			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest($session))
+			}
+			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 			if (response2.ok) {
 				sessions = (await response2.json()).values.sort(compareSessions)
 				await updateSelected()
+			} else {
+				session = {
+					email: '',
+					authenticated: false,
+					token: ''
+				}
+				warning = 'Sorry, there was a problem logging in.'
 			}
 			console.log(`logged in as ${email} with ${login.token}`)
 		} else {
@@ -225,7 +235,7 @@
 		{/if}
 	</div>
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
-		{#if !$session.authenticated}
+		{#if !session.authenticated}
 			{#if !showLogin}
 				<div class="flex justify-center gap-4">
 					<button class="button" disabled={!allowUpload} on:click={download}>
@@ -257,7 +267,7 @@
 		{#if warning}
 			<div class="warn">{warning}</div>
 		{/if}
-		{#if $session.authenticated}
+		{#if session.authenticated}
 			{#if selectedSession === null}
 				{#each sessions as session}
 					{#if !session.isArchived}
