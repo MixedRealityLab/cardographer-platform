@@ -92,7 +92,7 @@
 	</div>
 
 	{#each revisions as revision}
-		<label on:click="{() => createCopy(revision._id)}" class="listItem items-center"
+		<div on:click="{() => createCopy(revision._id)}" class="listItem items-center"
 		       class:cursor-pointer={!working}>
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
 			<div class="flex flex-1 flex-col">
@@ -117,6 +117,6 @@
 					<div class="text-xs font-light">{formatDate(revision.created)}</div>
 				</div>
 			</div>
-		</label>
+		</div>
 	{/each}
 </div>

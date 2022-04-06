@@ -207,7 +207,7 @@
 		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
 	</div>
 	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center">
-		{#if !$session.authenticated}
+		{#if !session.authenticated}
 			Login
 		{:else if !selectedSession}
 			Select Session
