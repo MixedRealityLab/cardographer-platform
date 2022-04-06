@@ -59,10 +59,6 @@ export function makeTokenCookie(token: string): string {
 	return `${getCookieName()}=${token}; Path=/; HttpOnly`;
 }
 
-export function getAuthorizationHeader(token: string): string {
-	return `Bearer ${token}`;
-}
-
 export function getAuthorizationToken(header: string): string {
 	const regex = /Bearer ([^ ]+)/;
 	const match = regex.exec(header);

@@ -162,14 +162,14 @@
 				warning = login.error;
 				return;
 			}
-			session = {
-				email: email,
-				authenticated: true,
-				token: login.token
-			}
-			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
+			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest({token: login.token}))
 			if (response2.ok) {
 				sessions = (await response2.json()).values.sort(compareSessions)
+				session = {
+					email: email,
+					authenticated: true,
+					token: login.token
+				}
 				await updateSelected()
 			} else {
 				session = {
@@ -179,7 +179,6 @@
 				}
 				warning = 'Sorry, there was a problem logging in.'
 			}
-			console.log(`logged in as ${email} with ${login.token}`)
 		} else {
 			warning = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
 		}

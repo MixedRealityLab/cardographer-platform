@@ -12,7 +12,7 @@ export const handle: Handle = async function ({event, resolve}) {
 
 	// just a cookie for now (and not a proper one either...)
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
-	const userToken = getAuthorizationToken(event.request.headers['authorization'])
+	const userToken = getAuthorizationToken(event.request.headers.get('authorization'))
 		|| cookies[getCookieName()]
 		|| '';
 	const token = await checkUserToken(userToken);
