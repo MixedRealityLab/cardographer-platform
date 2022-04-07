@@ -52,9 +52,7 @@
 	async function updateSelected() {
 		const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
 		console.log("Looking for", url)
-		const filtered = sessions.filter((session) => {
-			session.sessionType === 'miro' && session.url === url
-		})
+		const filtered = sessions.filter((session) => session.sessionType === 'miro' && session.url === url)
 		if (filtered.length === 1) {
 			await selectSession(filtered[0])
 		}
