@@ -22,7 +22,7 @@
 
 	let email: string
 	let password: string
-	let working = false
+	let working = true
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -51,8 +51,9 @@
 
 	async function updateSelected() {
 		const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
+		console.log("Looking for", url)
 		const filtered = sessions.filter((session) => {
-			session.url === url
+			session.sessionType === 'miro' && session.url === url
 		})
 		if (filtered.length === 1) {
 			await selectSession(filtered[0])
@@ -71,6 +72,7 @@
 				authenticated: false
 			}
 		}
+		working = false
 	}
 
 	async function updateWidgets() {
@@ -209,7 +211,7 @@
 		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
 	</div>
 	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center">
-		{#if !session.authenticated}
+		{#if !session.authenticated && !working}
 			Login
 		{:else if !selectedSession}
 			Select Session
@@ -237,7 +239,7 @@
 		{/if}
 	</div>
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
-		{#if !session.authenticated}
+		{#if !session.authenticated && !working}
 			{#if !showLogin}
 				<div class="flex justify-center gap-4">
 					<button class="button" disabled={!allowUpload} on:click={download}>
