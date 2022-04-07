@@ -20,7 +20,7 @@ const builders: Builders = {
 	'squib': squibBuild,
 };
 
-const FILE_PATH = "uploads";
+const FILE_PATH = "/app/uploads";
 
 export async function buildRevision(revision: CardDeckRevision): Promise<BuildResponse> {
 	if (!revision.build?.builderId) {

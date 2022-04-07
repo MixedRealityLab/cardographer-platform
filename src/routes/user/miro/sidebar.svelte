@@ -139,7 +139,16 @@
 				snapshot: board
 			})
 		}))
-		if(!response.ok) {
+		if(response.ok) {
+			warning = null
+			selectedSession = response.json()
+			const index = sessions.findIndex((sess) => sess._id === selectedSession._id)
+			if(index === -1) {
+				sessions.push(selectedSession)
+			} else {
+				sessions[index] = selectedSession
+			}
+		} else {
 			warning = response.statusText
 		}
 		working = false
@@ -292,6 +301,11 @@
 						</div>
 					{/if}
 				{/each}
+				<div class="listItem flex-col" on:click={() => {selectSession({_id: 'new', name: 'New Session'})}}>
+					<div class="flex flex-row gap-1">
+						<div class="font-semibold">Create New Session</div>
+					</div>
+				</div>
 			{:else }
 				<div class="flex gap-4 justify-center">
 					<button class="button" disabled={!allowUpload} on:click={download}>

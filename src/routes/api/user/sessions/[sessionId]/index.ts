@@ -2,6 +2,7 @@ import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import { promises as fs } from 'fs';
 
 const debug = true;
 
@@ -91,6 +92,9 @@ export const del: RequestHandler = async function ({locals, params}) {
 		return {status: 404};
 	}
 	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({sessionId: sessionId})
+
+	await fs.rm('/app/data/sessions/' + sessionId, {recursive: true, force: true})
+
 	return {
 		body: {}
 	}

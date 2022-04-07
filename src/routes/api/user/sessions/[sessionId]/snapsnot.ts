@@ -15,9 +15,27 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	const {sessionId} = params;
 	const db = await getDb();
 	// permission check
-	const session = await db.collection<Session>('Sessions').findOne({
-		_id: sessionId, owners: locals.email
-	})
+	let session: Session
+	if(sessionId === 'new') {
+		session = {
+			_id: getNewId(),
+			created: new Date().toISOString(),
+			currentStage: 0,
+			decks: [],
+			isArchived: false,
+			isPublic: false,
+			isTemplate: false,
+			lastModified: "",
+			name: input.snapshot.name || input.snapshot.title || "New Session",
+			owners: [locals.email],
+			sessionType: ""
+		}
+		await db.collection<Session>('Sessions').insertOne(session)
+	} else {
+		session = await db.collection<Session>('Sessions').findOne({
+			_id: sessionId, owners: locals.email
+		})
+	}
 	if (!session) {
 		return {status: 404};
 	}
