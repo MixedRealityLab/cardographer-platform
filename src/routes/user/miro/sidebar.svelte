@@ -1,33 +1,11 @@
-<script context="module" lang="ts">
-	import {base} from '$app/paths'
-	import type {Session} from "$lib/types";
-	import {authenticateRequest} from "$lib/ui/token"
-	import type {Load} from '@sveltejs/kit'
-
-	export const load: Load = async function ({fetch, session}) {
-		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
-		if (res.ok) {
-			return {
-				props: {
-					sessions: (await res.json()).values.sort(compareSessions)
-				}
-			};
-		}
-		return {props: {sessions: []}};
-	}
-
-	function compareSessions(a: Session, b: Session) {
-		const aName = `${a.name} ${a.owners[0]} ${a.created}`
-		const bName = `${b.name} ${b.owners[0]} ${b.created}`
-		return String(aName).localeCompare(bName)
-	}
-</script>
-
 <script lang="ts">
+	import {base} from "$app/paths";
 	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
+	import {Session} from "$lib/types";
 	import type {CardDeckRevision} from "$lib/types";
 	import {onMount} from "svelte";
+	import {authenticateRequest} from "../../../lib/ui/token";
 
 	declare const miro: Miro
 
@@ -38,7 +16,6 @@
 	let title = ''
 	let showLogin = false
 	let session = {
-		email: '',
 		authenticated: false,
 		token: ''
 	}
@@ -54,10 +31,23 @@
 	onMount(async () => {
 		miro.onReady(() => {
 			miro.addListener(miro.enums.event.SELECTION_UPDATED, updateWidgets)
-			updateSelected()
+			const token = localStorage.getItem('cardo_sess')
+			if(token) {
+				session = {
+					token: token,
+					authenticated: false
+				}
+			}
+			getSessions()
 			updateWidgets()
 		})
 	})
+
+	function compareSessions(a: Session, b: Session) {
+		const aName = `${a.name} ${a.owners[0]} ${a.created}`
+		const bName = `${b.name} ${b.owners[0]} ${b.created}`
+		return String(aName).localeCompare(bName)
+	}
 
 	async function updateSelected() {
 		const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
@@ -66,6 +56,20 @@
 		})
 		if (filtered.length === 1) {
 			await selectSession(filtered[0])
+		}
+	}
+
+	async function getSessions() {
+		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
+		if (res.ok) {
+			sessions = (await res.json()).values.sort(compareSessions)
+			session.authenticated = true
+			await updateSelected()
+		} else if(res.status === 401) {
+			session = {
+				token: '',
+				authenticated: false
+			}
 		}
 	}
 
@@ -141,7 +145,7 @@
 		}))
 		if(response.ok) {
 			warning = null
-			selectedSession = response.json()
+			selectedSession = await response.json()
 			const index = sessions.findIndex((sess) => sess._id === selectedSession._id)
 			if(index === -1) {
 				sessions.push(selectedSession)
@@ -173,23 +177,10 @@
 				warning = login.error;
 				return;
 			}
-			const response2 = await fetch(`${base}/api/user/sessions`, authenticateRequest({token: login.token}))
-			if (response2.ok) {
-				warning = null
-				sessions = (await response2.json()).values.sort(compareSessions)
-				session = {
-					email: email,
-					authenticated: true,
-					token: login.token
-				}
-				await updateSelected()
-			} else {
-				session = {
-					email: '',
-					authenticated: false,
-					token: ''
-				}
-				warning = 'Sorry, there was a problem logging in.'
+			session.token = login.token
+			await getSessions()
+			if(session.authenticated) {
+				localStorage.setItem('cardo_sess', login.token)
 			}
 		} else {
 			warning = 'Sorry, there was a problem logging in with those details. Please try again or contact the system administrator for help.'
