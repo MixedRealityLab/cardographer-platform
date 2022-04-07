@@ -4,6 +4,24 @@ import {isNotAuthenticated} from "$lib/security"
 import type {Session, SessionSnapshot} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 
+export const get: RequestHandler = async function ({locals, params}) {
+	if (isNotAuthenticated(locals)) {
+		return {status: 401}
+	}
+	const {sessionId} = params;
+	const db = await getDb();
+	const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({sessionId: sessionId});
+	if (!snapshot) {
+		return {status: 404}
+	}
+
+	return {
+		body: {
+			session: snapshot as any
+		}
+	}
+}
+
 export const put: RequestHandler = async function ({locals, params, request}) {
 	const input = await request.json()
 	if (!input.url || !input.snapshot) {
@@ -16,7 +34,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	const db = await getDb();
 	// permission check
 	let session: Session
-	if(sessionId === 'new') {
+	if (sessionId === 'new') {
 		session = {
 			_id: getNewId(),
 			created: new Date().toISOString(),
