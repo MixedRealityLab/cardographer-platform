@@ -2,9 +2,9 @@
 	import {base} from "$app/paths";
 	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
-	import type {Session, CardDeckRevision} from "$lib/types";
-	import {onMount} from "svelte";
+	import type {CardDeckRevision, Session} from "$lib/types";
 	import {authenticateRequest} from "$lib/ui/token";
+	import {onMount} from "svelte";
 
 	declare const miro: Miro
 
@@ -31,7 +31,7 @@
 		miro.onReady(() => {
 			miro.addListener(miro.enums.event.SELECTION_UPDATED, updateWidgets)
 			const token = localStorage.getItem('cardo_sess')
-			if(token) {
+			if (token) {
 				session = {
 					token: token,
 					authenticated: false
@@ -59,7 +59,7 @@
 			}
 			sessions = newSessions
 			session.authenticated = true
-		} else if(res.status === 401) {
+		} else if (res.status === 401) {
 			session = {
 				token: '',
 				authenticated: false
@@ -137,11 +137,11 @@
 				snapshot: board
 			})
 		}))
-		if(response.ok) {
+		if (response.ok) {
 			warning = null
 			selectedSession = await response.json()
 			const index = sessions.findIndex((sess) => sess._id === selectedSession._id)
-			if(index === -1) {
+			if (index === -1) {
 				sessions.push(selectedSession)
 			} else {
 				sessions[index] = selectedSession
@@ -173,7 +173,7 @@
 			}
 			session.token = login.token
 			await getSessions()
-			if(session.authenticated) {
+			if (session.authenticated) {
 				localStorage.setItem('cardo_sess', login.token)
 			}
 		} else {
@@ -326,12 +326,18 @@
 		{/each}
 
 		{#each decks as deck}
-			<div>Deck {deck.name}</div>
-			{#each deck.cards as card}
-				{#if card.frontUrl}
-					<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-24" alt="Card"/>
-				{/if}
-			{/each}
+			<div>Deck {deck.deckName}</div>
+			<div class="flex flex-wrap">
+				{#each deck.cards as card}
+					{#if card.frontUrl}
+						<div class="flex flex-col">
+						<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-12"
+						     alt="Card"/>
+							{card.name}
+						</div>
+					{/if}
+				{/each}
+			</div>
 		{/each}
 	</div>
 </div>
