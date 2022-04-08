@@ -11,10 +11,10 @@ RUN npm run build
 EXPOSE 3000
 
 # HACK To FIX Issue with basepath
-# RUN mkdir build/client/platform
-# RUN mv -f build/client/* build/client/platform/; exit 0
-# RUN mkdir build/static/platform
-# RUN mv -f build/static/* build/static/platform/; exit 0
+RUN mkdir build/client/platform
+RUN mv -f build/client/* build/client/platform/; exit 0
+RUN mkdir build/static/platform
+RUN mv -f build/static/* build/static/platform/; exit 0
 
 VOLUME /app/static/uploads
 
