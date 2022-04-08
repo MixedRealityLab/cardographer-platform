@@ -2,10 +2,9 @@
 	import {base} from "$app/paths";
 	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
-	import {Session} from "$lib/types";
-	import type {CardDeckRevision} from "$lib/types";
+	import type {Session, CardDeckRevision} from "$lib/types";
 	import {onMount} from "svelte";
-	import {authenticateRequest} from "../../../lib/ui/token";
+	import {authenticateRequest} from "$lib/ui/token";
 
 	declare const miro: Miro
 
@@ -49,21 +48,17 @@
 		return String(aName).localeCompare(bName)
 	}
 
-	async function updateSelected() {
-		const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
-		console.log("Looking for", url)
-		const filtered = sessions.filter((session) => session.sessionType === 'miro' && session.url === url)
-		if (filtered.length === 1) {
-			await selectSession(filtered[0])
-		}
-	}
-
 	async function getSessions() {
 		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
-			sessions = (await res.json()).values.sort(compareSessions)
+			const newSessions = (await res.json()).values.sort(compareSessions)
 			session.authenticated = true
-			await updateSelected()
+			const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
+			const filtered = newSessions.filter((session) => session.sessionType === 'miro' && session.url === url)
+			if (filtered.length === 1) {
+				await selectSession(filtered[0])
+			}
+			sessions = newSessions
 		} else if(res.status === 401) {
 			session = {
 				token: '',
@@ -83,7 +78,7 @@
 				allowUpload = false
 			} else {
 				widgets = allWidgets.filter((widget) => widget.type === "IMAGE" && widget.url === '' && widget.title === '')
-				warning = ""
+				warning = null
 				allowUpload = true
 			}
 		} catch (e) {
@@ -94,7 +89,6 @@
 	}
 
 	async function selectSession(newSession: Session) {
-		console.log(newSession)
 		selectedSession = newSession
 		const response = await fetch(`${base}/api/user/sessions/${newSession._id}/decks`, authenticateRequest(session))
 		if (response.ok) {
@@ -325,6 +319,15 @@
 			     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
 				Image {widget.id}
 			</div>
+		{/each}
+
+		{#each decks as deck}
+			<div>Deck {deck.name}</div>
+			{#each deck.cards as card}
+				{#if card.frontUrl}
+					{card.frontUrl}
+				{/if}
+			{/each}
 		{/each}
 	</div>
 </div>

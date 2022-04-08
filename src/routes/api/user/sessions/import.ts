@@ -3,7 +3,7 @@ import {getDb, getNewId} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import type {Filter} from "mongodb/mongodb.ts34";
+import type {Filter} from "mongodb";
 
 const debug = true;
 

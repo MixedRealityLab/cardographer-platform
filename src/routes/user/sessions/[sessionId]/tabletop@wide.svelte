@@ -54,7 +54,7 @@
 		}
 	})
 
-	function UnityProgress(unityInstance, newProgress) {
+	function UnityProgress(unityInstance, newProgress: number) {
 		if (!unityInstance.Module)
 			return;
 		progress.set((newProgress * 90) + 10)
