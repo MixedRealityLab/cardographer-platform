@@ -2,9 +2,10 @@
 	import {base} from "$app/paths";
 	import type {LoginResponse} from "$lib/apitypes";
 	import type {IWidget, Miro} from "$lib/miro"
-	import type {CardDeckRevision, Session} from "$lib/types";
+	import type {CardDeckRevision, CardInfo, Session} from "$lib/types";
 	import {authenticateRequest} from "$lib/ui/token";
 	import {onMount} from "svelte";
+	import ExpandableSection from "../../../lib/ui/ExpandableSection.svelte";
 
 	declare const miro: Miro
 
@@ -182,6 +183,13 @@
 		working = false
 	}
 
+	async function addCard(card: CardInfo) {
+		await miro.board.widgets.create({
+			type: 'IMAGE',
+			url: card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl
+		})
+	}
+
 	async function getBoard() {
 		const widgets = await miro.board.widgets.get()
 		const filtered = widgets.filter((widget) => widget.type !== "IMAGE" || widget.url || widget.title)
@@ -330,11 +338,36 @@
 			<div class="flex flex-wrap">
 				{#each deck.cards as card}
 					{#if card.frontUrl}
-						<div class="flex flex-col">
-						<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-12"
-						     alt="Card"/>
-							{card.name}
-						</div>
+						<ExpandableSection class="py-1">
+							<div slot="title">
+								<div class="flex items-center">
+									<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
+									<span>{card.name}</span>
+									<span class="text-gray-400 ml-1.5">v{card.revision}</span>
+								</div>
+							</div>
+							<div>
+								<div class="ml-9">
+									<div class="flex">
+										{#if card.frontUrl}
+											<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-48" alt="Card"/>
+										{/if}
+										<div>
+											{#if card.description}
+												<div class="text-sm">{card.description}</div>
+											{/if}
+											{#if card.content}
+												<div>{card.content}</div>
+											{/if}
+											<div>
+												Type: {card.category}
+											</div>
+										</div>
+										<button on:click={() => {addCard(card)}}>Add</button>
+									</div>
+								</div>
+							</div>
+						</ExpandableSection>
 					{/if}
 				{/each}
 			</div>
