@@ -329,7 +329,7 @@
 			<div>Deck {deck.name}</div>
 			{#each deck.cards as card}
 				{#if card.frontUrl}
-					{card.frontUrl}
+					<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-24" alt="Card"/>
 				{/if}
 			{/each}
 		{/each}
