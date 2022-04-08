@@ -167,7 +167,7 @@
 							{/if}
 							<span class="text-gray-600 font-normal">{deck.revisions[deck.index].revisionName || ''}</span>
 						</div>
-						<div class="text-xs font-light">by {deck.revisions[deck.index].deckCredits}</div>
+						<div class="text-xs text-gray-600">by {deck.revisions[deck.index].deckCredits}</div>
 					</div>
 
 					<div class="flex">
@@ -175,7 +175,7 @@
 							<div class="text-sm font-light">{deck.revisions[deck.index].deckDescription || ''}</div>
 							<div class="text-sm font-light">{deck.revisions[deck.index].revisionDescription || ''}</div>
 						</div>
-						<div class="text-xs font-light">{formatDate(deck.revisions[deck.index].created)}</div>
+						<div class="text-xs font-light text-gray-600">{formatDate(deck.revisions[deck.index].created)}</div>
 					</div>
 				</div>
 			</label>
