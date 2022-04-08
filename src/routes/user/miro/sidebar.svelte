@@ -51,14 +51,14 @@
 	async function getSessions() {
 		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
-			const newSessions = (await res.json()).values.sort(compareSessions)
-			session.authenticated = true
+			const newSessions = (await res.json()).values.sort(compareSessions) as Session[]
 			const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
 			const filtered = newSessions.filter((session) => session.sessionType === 'miro' && session.url === url)
 			if (filtered.length === 1) {
 				await selectSession(filtered[0])
 			}
 			sessions = newSessions
+			session.authenticated = true
 		} else if(res.status === 401) {
 			session = {
 				token: '',
@@ -205,9 +205,7 @@
 	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center">
 		{#if !session.authenticated && !working}
 			Login
-		{:else if !selectedSession}
-			Select Session
-		{:else}
+		{:else if selectedSession}
 			{#if selectedSession.name.toLowerCase().indexOf('session') === -1}
 				Session
 			{/if}
@@ -228,6 +226,8 @@
 					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
 				</svg>
 			</a>
+		{:else}
+			Select Session
 		{/if}
 	</div>
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
@@ -264,7 +264,7 @@
 			<div class="warn">{warning}</div>
 		{/if}
 		{#if session.authenticated}
-			{#if selectedSession === null}
+			{#if !selectedSession}
 				{#each sessions as session}
 					{#if !session.isArchived}
 						<div class="listItem flex-col" on:click={() => {selectSession(session)}}>
