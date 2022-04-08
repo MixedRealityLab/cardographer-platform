@@ -219,7 +219,7 @@
 				</svg>
 			</button>
 			<span class="flex-1">&nbsp;</span>
-			<a class="block" href="https://cardographer.cs.nott.ac.uk/user/sessions/{selectedSession._id}"
+			<a class="block" href="{base}/user/sessions/{selectedSession._id}"
 			   target="_blank">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
 					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
