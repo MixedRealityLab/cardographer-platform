@@ -210,7 +210,7 @@
 				Session
 			{/if}
 			{selectedSession.name}
-			<button class="ml-1" on:click={() => selectedSession = null}>
+			<button class="ml-1" on:click={() => selectedSession = null} title="Change Session">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50" viewBox="0 0 20 20"
 				     fill="currentColor">
 					<path fill-rule="evenodd"
@@ -219,6 +219,14 @@
 				</svg>
 			</button>
 			<span class="flex-1">&nbsp;</span>
+			<button class="ml-1" on:click={download} title="Download">
+				<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+				     xmlns="http://www.w3.org/2000/svg">
+					<path clip-rule="evenodd"
+					      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+					      fill-rule="evenodd"/>
+				</svg>
+			</button>
 			<a class="block" href="{base}/user/sessions/{selectedSession._id}"
 			   target="_blank">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -241,7 +249,7 @@
 							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
 							      fill-rule="evenodd"/>
 						</svg>
-						Download Board
+						Download
 					</button>
 					<button class="button" on:click={() => {showLogin = true}}>Login</button>
 				</div>
@@ -291,17 +299,13 @@
 						<div class="font-semibold">Create New Session</div>
 					</div>
 				</div>
-			{:else }
 				<div class="flex gap-4 justify-center">
 					<button class="button" disabled={!allowUpload} on:click={download}>
-						<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-						     xmlns="http://www.w3.org/2000/svg">
-							<path clip-rule="evenodd"
-							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-							      fill-rule="evenodd"/>
-						</svg>
-						Download Board
+						Download
 					</button>
+				</div>
+			{:else }
+				<div class="flex gap-4 justify-center">
 					<button class="button" disabled={!allowUpload} on:click={saveSession}>
 						Save Session
 					</button>
