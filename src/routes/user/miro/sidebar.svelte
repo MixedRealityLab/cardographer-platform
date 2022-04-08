@@ -184,6 +184,10 @@
 	}
 
 	async function addCard(card: CardInfo) {
+		console.log({
+			type: 'IMAGE',
+			url: card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl
+		})
 		await miro.board.widgets.create({
 			type: 'IMAGE',
 			url: card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl
