@@ -34,6 +34,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	const db = await getDb();
 	// permission check
 	let session: Session
+	console.log(sessionId)
 	if (sessionId === 'new') {
 		session = {
 			_id: getNewId(),
@@ -54,6 +55,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 			_id: sessionId, owners: locals.email
 		})
 	}
+	console.log(session)
 	if (!session) {
 		return {status: 404};
 	}
