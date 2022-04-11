@@ -96,9 +96,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	}
 
 	return {
-		body: {
-			session: session as any
-		}
+		body: session as any
 	}
 }
 
