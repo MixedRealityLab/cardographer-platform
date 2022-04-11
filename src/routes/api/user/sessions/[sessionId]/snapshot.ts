@@ -39,6 +39,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 		session = {
 			_id: getNewId(),
 			created: new Date().toISOString(),
+			credits: input.snapshot.owner.name,
 			currentStage: 0,
 			decks: [],
 			description: 'Miro Board ' + input.url,
