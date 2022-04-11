@@ -254,7 +254,7 @@
 			{/if}
 		</div>
 	</AppBar>
-	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-scroll">
+	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
 		{#if !session.authenticated && !working}
 			<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2">
 				<label>
