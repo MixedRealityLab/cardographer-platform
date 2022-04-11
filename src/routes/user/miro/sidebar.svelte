@@ -336,8 +336,8 @@
 												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 											</div>
 										</div>
-										<div class="flex flex-col">
-											<div class="flex pt-1">
+										<div class="flex flex-col pt-1 pb-2">
+											<div class="flex">
 												{#if card.frontUrl}
 													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
 													     class="h-24" alt="Card"/>
@@ -352,7 +352,7 @@
 													<div>
 														Type: {card.category}
 													</div>
-													<button on:click={() => {addCard(card)}} class="button-slim self-end">
+													<button on:click={() => {addCard(card)}} class="button button-slim self-end">
 														Add
 													</button>
 												</div>
