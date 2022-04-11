@@ -337,11 +337,11 @@
 											</div>
 										</div>
 										<div>
-											<div class="ml-9">
+											<div>
 												<div class="flex">
 													{#if card.frontUrl}
 														<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-														     class="h-48" alt="Card"/>
+														     class="h-24" alt="Card"/>
 													{/if}
 													<div>
 														{#if card.description}
