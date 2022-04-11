@@ -84,7 +84,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	session.url = input.url
 	session.lastModified = new Date().toISOString()
 	const upd = await db.collection<Session>('Sessions').updateOne({
-		_id: sessionId
+		_id: session._id
 	}, {
 		$set: {
 			// project changes
