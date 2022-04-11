@@ -340,7 +340,7 @@
 											<div class="flex">
 												{#if card.frontUrl}
 													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-													     class="h-24 pr-4" alt="Card"/>
+													     class="h-24 mr-4" alt="Card"/>
 												{/if}
 												<div class="flex flex-col">
 													{#if card.description}
@@ -352,7 +352,7 @@
 													<div>
 														Type: {card.category}
 													</div>
-													<button on:click={() => {addCard(card)}} class="button button-slim self-end">
+													<button on:click={() => {addCard(card)}} class="button button-slim" style="align-self: end">
 														Add
 													</button>
 												</div>

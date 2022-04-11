@@ -87,7 +87,7 @@ input, textarea, select, .input {
 }
 
 .button-slim {
-    @apply px-3 py-1;
+    @apply px-3 py-0.5;
     min-width: auto;
 }
 
