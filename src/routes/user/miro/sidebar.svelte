@@ -15,7 +15,6 @@
 	let decks: CardDeckRevision[] = []
 
 	let title = ''
-	let showLogin = false
 	let session = {
 		authenticated: false,
 		token: ''
@@ -232,15 +231,19 @@
 						      clip-rule="evenodd"/>
 					</svg>
 				</button>
-				<span class="flex-1">&nbsp;</span>
-				<button class="ml-1" on:click={download} title="Download">
-					<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-					     xmlns="http://www.w3.org/2000/svg">
-						<path clip-rule="evenodd"
-						      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-						      fill-rule="evenodd"/>
-					</svg>
-				</button>
+			{:else}
+				Select Session
+			{/if}
+			<span class="flex-1">&nbsp;</span>
+			<button class="ml-1" on:click={download} title="Download">
+				<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+				     xmlns="http://www.w3.org/2000/svg">
+					<path clip-rule="evenodd"
+					      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+					      fill-rule="evenodd"/>
+				</svg>
+			</button>
+			{#if selectedSession}
 				<a class="block" href="{base}/user/sessions/{selectedSession._id}"
 				   target="_blank">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -248,39 +251,22 @@
 						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
 					</svg>
 				</a>
-			{:else}
-				Select Session
 			{/if}
 		</div>
 	</AppBar>
 	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-scroll">
 		{#if !session.authenticated && !working}
-			{#if !showLogin}
-				<div class="flex justify-center gap-4">
-					<button class="button" disabled={!allowUpload} on:click={download}>
-						<svg class="w-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"
-						     xmlns="http://www.w3.org/2000/svg">
-							<path clip-rule="evenodd"
-							      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-							      fill-rule="evenodd"/>
-						</svg>
-						Download
-					</button>
-					<button class="button" on:click={() => {showLogin = true}}>Login</button>
-				</div>
-			{:else}
-				<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2">
-					<label>
-						<span>Email</span>
-						<input bind:value="{email}" class="w-full" id="email" required type="text"/>
-					</label>
-					<label>
-						<span>Password</span>
-						<input bind:value="{password}" class="w-full" id="password" required type="password"/>
-					</label>
-					<input class="button" disabled={working} type='submit' value='Log in'>
-				</form>
-			{/if}
+			<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2">
+				<label>
+					<span>Email</span>
+					<input bind:value="{email}" class="w-full" id="email" required type="text"/>
+				</label>
+				<label>
+					<span>Password</span>
+					<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+				</label>
+				<input class="button" disabled={working} type='submit' value='Log in'>
+			</form>
 		{/if}
 
 		{#if session.authenticated}
@@ -322,7 +308,8 @@
 						{#each widgets as widget (widget.id)}
 							<div class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
 							     on:click={() => selectWidget(widget)}>
-								<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24"
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
+								     viewBox="0 0 24 24"
 								     stroke="#eab308" stroke-width="2">
 									<path stroke-linecap="round" stroke-linejoin="round"
 									      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
