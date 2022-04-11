@@ -223,7 +223,7 @@
     }
 </style>
 
-<div class="w-full flex flex-col">
+<div class="w-full flex flex-col h-screen">
 	<AppBar>
 		<div slot="subheader" class="flex">
 			{#if !session.authenticated && !working}
@@ -263,7 +263,7 @@
 			{/if}
 		</div>
 	</AppBar>
-	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
+	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6">
 		{#if !session.authenticated && !working}
 			{#if !showLogin}
 				<div class="flex justify-center gap-4">
