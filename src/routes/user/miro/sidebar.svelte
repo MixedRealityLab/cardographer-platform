@@ -5,6 +5,7 @@
 	import type {CardDeckRevision, CardInfo, Session} from "$lib/types";
 	import {authenticateRequest} from "$lib/ui/token";
 	import {onMount} from "svelte";
+	import AppBar from "../../../lib/ui/AppBar.svelte";
 	import ExpandableSection from "../../../lib/ui/ExpandableSection.svelte";
 
 	declare const miro: Miro
@@ -23,6 +24,8 @@
 	let email: string
 	let password: string
 	let working = true
+
+	let selectedTab = 'session'
 
 	let widgets: IWidget[] = []
 	let warning: string = null
@@ -186,11 +189,11 @@
 	async function addCard(card: CardInfo) {
 		console.log({
 			type: 'IMAGE',
-			url: card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl
+			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
 		})
 		await miro.board.widgets.create({
 			type: 'IMAGE',
-			url: card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl
+			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
 		})
 	}
 
@@ -208,48 +211,68 @@
     .warn {
         @apply bg-yellow-100 py-2 px-4 my-2 mx-4 font-bold rounded-xl;
     }
+
+    .tab {
+        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 text-gray-200;
+    }
+
+    .tabSelected {
+        @apply bg-gray-300 cursor-default text-gray-900;
+    }
+
+    .tab:hover:not(.tabSelected) {
+        @apply bg-gray-600;
+    }
 </style>
 
 <div class="w-full flex flex-col">
-	<div class="w-full py-2 px-2 bg-gray-700 text-2xl text-white flex items-center">
-		<div class="px-2 py-1 font-bold font-title">Cardographer</div>
-	</div>
-	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center">
-		{#if !session.authenticated && !working}
-			Login
-		{:else if selectedSession}
-			{#if selectedSession.name.toLowerCase().indexOf('session') === -1}
+	<AppBar>
+		{#if selectedSession && decks.length > 0}
+			<div class="tab" class:tabSelected={selectedTab === 'session'} on:click={selectedTab = 'session'}>
 				Session
-			{/if}
-			{selectedSession.name}
-			<button class="ml-1" on:click={() => selectedSession = null} title="Change Session">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50" viewBox="0 0 20 20"
-				     fill="currentColor">
-					<path fill-rule="evenodd"
-					      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-					      clip-rule="evenodd"/>
-				</svg>
-			</button>
-			<span class="flex-1">&nbsp;</span>
-			<button class="ml-1" on:click={download} title="Download">
-				<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-				     xmlns="http://www.w3.org/2000/svg">
-					<path clip-rule="evenodd"
-					      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-					      fill-rule="evenodd"/>
-				</svg>
-			</button>
-			<a class="block" href="{base}/user/sessions/{selectedSession._id}"
-			   target="_blank">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
-					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
-					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
-				</svg>
-			</a>
-		{:else}
-			Select Session
+			</div>
+			<div class="tab" class:tabSelected={selectedTab === 'cards'} on:click={selectedTab = 'cards'}>
+				Cards
+			</div>
 		{/if}
-	</div>
+		<div slot="subheader">
+			{#if !session.authenticated && !working}
+				Login
+			{:else if selectedSession}
+				{#if selectedSession.name.toLowerCase().indexOf('session') === -1}
+					Session
+				{/if}
+				{selectedSession.name}
+				<button class="ml-1" on:click={() => selectedSession = null} title="Change Session">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50"
+					     viewBox="0 0 20 20"
+					     fill="currentColor">
+						<path fill-rule="evenodd"
+						      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+						      clip-rule="evenodd"/>
+					</svg>
+				</button>
+				<span class="flex-1">&nbsp;</span>
+				<button class="ml-1" on:click={download} title="Download">
+					<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
+					     xmlns="http://www.w3.org/2000/svg">
+						<path clip-rule="evenodd"
+						      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+						      fill-rule="evenodd"/>
+					</svg>
+				</button>
+				<a class="block" href="{base}/user/sessions/{selectedSession._id}"
+				   target="_blank">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
+						<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+						<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+					</svg>
+				</a>
+			{:else}
+				Select Session
+			{/if}
+		</div>
+	</AppBar>
 	<div class="flex flex-col mb-4 text-sm font-medium gap-4 p-6">
 		{#if !session.authenticated && !working}
 			{#if !showLogin}
@@ -317,64 +340,70 @@
 					</button>
 				</div>
 			{:else }
-				<div class="flex gap-4 justify-center">
-					<button class="button" disabled={!allowUpload} on:click={saveSession}>
-						Save Session
-					</button>
-				</div>
+				{#if selectedTab === 'session'}
+					<div class="flex gap-4 justify-center">
+						<button class="button" disabled={!allowUpload} on:click={saveSession}>
+							Save Session
+						</button>
+					</div>
+
+					{#if widgets.length !== 0}
+						<div class="warn">
+							{widgets.length} images will not be saved to session. Give them titles to include them in
+							the upload
+						</div>
+					{/if}
+					{#each widgets as widget (widget.id)}
+						<div on:click={() => selectWidget(widget)}
+						     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
+							Image {widget.id}
+						</div>
+					{/each}
+				{/if}
 			{/if}
 		{/if}
 
-		{#if widgets.length !== 0}
-			<div class="warn">
-				{widgets.length} images will not be downloaded. Give them titles to include them in the upload
-			</div>
-		{/if}
-		{#each widgets as widget (widget.id)}
-			<div on:click={() => selectWidget(widget)}
-			     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
-				Image {widget.id}
-			</div>
-		{/each}
-
-		{#each decks as deck}
-			<div>Deck {deck.deckName}</div>
-			<div class="flex flex-wrap">
-				{#each deck.cards as card}
-					{#if card.frontUrl}
-						<ExpandableSection class="py-1">
-							<div slot="title">
-								<div class="flex items-center">
-									<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
-									<span>{card.name}</span>
-									<span class="text-gray-400 ml-1.5">v{card.revision}</span>
-								</div>
-							</div>
-							<div>
-								<div class="ml-9">
-									<div class="flex">
-										{#if card.frontUrl}
-											<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-48" alt="Card"/>
-										{/if}
-										<div>
-											{#if card.description}
-												<div class="text-sm">{card.description}</div>
-											{/if}
-											{#if card.content}
-												<div>{card.content}</div>
-											{/if}
-											<div>
-												Type: {card.category}
-											</div>
-										</div>
-										<button on:click={() => {addCard(card)}}>Add</button>
+		{#if selectedTab === 'decks'}
+			{#each decks as deck}
+				<div>Deck {deck.deckName}</div>
+				<div class="flex flex-wrap">
+					{#each deck.cards as card}
+						{#if card.frontUrl}
+							<ExpandableSection class="py-1">
+								<div slot="title">
+									<div class="flex items-center">
+										<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
+										<span>{card.name}</span>
+										<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 									</div>
 								</div>
-							</div>
-						</ExpandableSection>
-					{/if}
-				{/each}
-			</div>
-		{/each}
+								<div>
+									<div class="ml-9">
+										<div class="flex">
+											{#if card.frontUrl}
+												<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
+												     class="h-48" alt="Card"/>
+											{/if}
+											<div>
+												{#if card.description}
+													<div class="text-sm">{card.description}</div>
+												{/if}
+												{#if card.content}
+													<div>{card.content}</div>
+												{/if}
+												<div>
+													Type: {card.category}
+												</div>
+											</div>
+											<button on:click={() => {addCard(card)}}>Add</button>
+										</div>
+									</div>
+								</div>
+							</ExpandableSection>
+						{/if}
+					{/each}
+				</div>
+			{/each}
+		{/if}
 	</div>
 </div>
