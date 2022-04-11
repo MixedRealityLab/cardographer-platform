@@ -209,18 +209,6 @@
     .warn {
         @apply bg-yellow-100 py-2 px-4 my-2 mx-4 font-bold rounded-xl;
     }
-
-    .tab {
-        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 text-gray-200;
-    }
-
-    .tabSelected {
-        @apply bg-gray-300 cursor-default text-gray-900;
-    }
-
-    .tab:hover:not(.tabSelected) {
-        @apply bg-gray-600;
-    }
 </style>
 
 <div class="w-full flex flex-col h-screen">
@@ -293,9 +281,6 @@
 			{/if}
 		{/if}
 
-		{#if warning}
-			<div class="warn">{warning}</div>
-		{/if}
 		{#if session.authenticated}
 			{#if !selectedSession}
 				{#each sessions as session}
@@ -382,6 +367,9 @@
 			{/if}
 		{/if}
 	</div>
+	{#if warning}
+		<div class="warn">{warning}</div>
+	{/if}
 	{#if selectedSession}
 		{#if widgets.length !== 0}
 			<div class="warn">
