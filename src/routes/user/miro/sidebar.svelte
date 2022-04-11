@@ -340,7 +340,7 @@
 											<div class="flex">
 												{#if card.frontUrl}
 													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-													     class="h-24" alt="Card"/>
+													     class="h-24 pr-4" alt="Card"/>
 												{/if}
 												<div class="flex flex-col">
 													{#if card.description}
