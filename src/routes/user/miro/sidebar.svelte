@@ -184,7 +184,9 @@
 		working = false
 	}
 
-	async function addCard(card: CardInfo) {
+	async function addCard(card: CardInfo, event) {
+		console.log(event)
+		event.target.disabled = true
 		console.log({
 			type: 'IMAGE',
 			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
@@ -193,6 +195,8 @@
 			type: 'IMAGE',
 			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
 		})
+		console.log('done')
+		event.target.disabled = false
 	}
 
 	async function getBoard() {
@@ -352,7 +356,7 @@
 													<div>
 														Type: {card.category}
 													</div>
-													<button on:click={() => {addCard(card)}} class="button button-slim" style="align-self: end">
+													<button on:click={(event) => {addCard(card, event)}} class="button button-slim" style="align-self: end">
 														Add
 													</button>
 												</div>
