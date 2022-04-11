@@ -225,7 +225,7 @@
 
 <div class="w-full flex flex-col h-screen">
 	<AppBar>
-		<div slot="subheader" class="flex">
+		<div slot="subheader" class="flex items-center">
 			{#if !session.authenticated && !working}
 				Login
 			{:else if selectedSession}
@@ -263,7 +263,7 @@
 			{/if}
 		</div>
 	</AppBar>
-	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6">
+	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-scroll">
 		{#if !session.authenticated && !working}
 			{#if !showLogin}
 				<div class="flex justify-center gap-4">
@@ -332,12 +332,6 @@
 			{:else }
 				<div class="flex-1 flex flex-col">
 					<div class="flex-1">
-						{#if widgets.length !== 0}
-							<div class="warn">
-								{widgets.length} images will not be saved to session. Give them titles to include them in
-								the upload
-							</div>
-						{/if}
 						{#each widgets as widget (widget.id)}
 							<div on:click={() => selectWidget(widget)}
 							     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
@@ -347,54 +341,58 @@
 
 						{#each decks as deck}
 							<div>Deck {deck.deckName}</div>
-							<div class="flex flex-wrap">
-								{#each deck.cards as card}
-									{#if card.frontUrl}
-										<ExpandableSection class="py-1">
-											<div slot="title">
-												<div class="flex items-center">
-													<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
-													<span>{card.name}</span>
-													<span class="text-gray-400 ml-1.5">v{card.revision}</span>
-												</div>
+							{#each deck.cards as card}
+								{#if card.frontUrl}
+									<ExpandableSection class="py-1">
+										<div slot="title">
+											<div class="flex items-center">
+												<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
+												<span>{card.name}</span>
+												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 											</div>
-											<div>
-												<div class="ml-9">
-													<div class="flex">
-														{#if card.frontUrl}
-															<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-															     class="h-48" alt="Card"/>
+										</div>
+										<div>
+											<div class="ml-9">
+												<div class="flex">
+													{#if card.frontUrl}
+														<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
+														     class="h-48" alt="Card"/>
+													{/if}
+													<div>
+														{#if card.description}
+															<div class="text-sm">{card.description}</div>
+														{/if}
+														{#if card.content}
+															<div>{card.content}</div>
 														{/if}
 														<div>
-															{#if card.description}
-																<div class="text-sm">{card.description}</div>
-															{/if}
-															{#if card.content}
-																<div>{card.content}</div>
-															{/if}
-															<div>
-																Type: {card.category}
-															</div>
+															Type: {card.category}
 														</div>
-														<button on:click={() => {addCard(card)}}>Add</button>
 													</div>
+													<button on:click={() => {addCard(card)}}>Add</button>
 												</div>
 											</div>
-										</ExpandableSection>
-									{/if}
-								{/each}
-							</div>
+										</div>
+									</ExpandableSection>
+								{/if}
+							{/each}
 						{/each}
 					</div>
-				</div>
-
-
-				<div class="flex gap-4 justify-center">
-					<button class="button" disabled={!allowUpload} on:click={saveSession}>
-						Save Session
-					</button>
 				</div>
 			{/if}
 		{/if}
 	</div>
+	{#if selectedSession}
+		{#if widgets.length !== 0}
+			<div class="warn">
+				{widgets.length} images will not be saved to session. Give them titles to include them
+				in the upload
+			</div>
+		{/if}
+		<div class="flex gap-4 justify-center">
+			<button class="button" disabled={!allowUpload} on:click={saveSession}>
+				Save Session
+			</button>
+		</div>
+	{/if}
 </div>
