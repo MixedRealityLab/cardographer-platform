@@ -41,6 +41,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 			created: new Date().toISOString(),
 			currentStage: 0,
 			decks: [],
+			description: 'Miro Board ' + input.url,
 			isArchived: false,
 			isPublic: false,
 			isTemplate: false,
