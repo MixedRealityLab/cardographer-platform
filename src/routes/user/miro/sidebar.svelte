@@ -228,10 +228,10 @@
 <div class="w-full flex flex-col">
 	<AppBar>
 		{#if selectedSession && decks.length > 0}
-			<div class="tab" class:tabSelected={selectedTab === 'session'} on:click={selectedTab = 'session'}>
+			<div class="tab" class:tabSelected={selectedTab === 'session'} on:click={() => selectedTab = 'session'}>
 				Session
 			</div>
-			<div class="tab" class:tabSelected={selectedTab === 'cards'} on:click={selectedTab = 'cards'}>
+			<div class="tab" class:tabSelected={selectedTab === 'cards'} on:click={() => selectedTab = 'cards'}>
 				Cards
 			</div>
 		{/if}
