@@ -336,26 +336,26 @@
 												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 											</div>
 										</div>
-										<div>
-											<div class="flex flex-col">
-												<div class="flex">
-													{#if card.frontUrl}
-														<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-														     class="h-24" alt="Card"/>
+										<div class="flex flex-col">
+											<div class="flex pt-1">
+												{#if card.frontUrl}
+													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
+													     class="h-24" alt="Card"/>
+												{/if}
+												<div class="flex flex-col">
+													{#if card.description}
+														<div class="text-xs">{card.description}</div>
+													{/if}
+													{#if card.content && card.content !== card.description}
+														<div class="text-xs">{card.content}</div>
 													{/if}
 													<div>
-														{#if card.description}
-															<div class="text-xs">{card.description}</div>
-														{/if}
-														{#if card.content && card.content !== card.description}
-															<div class="text-xs">{card.content}</div>
-														{/if}
-														<div>
-															Type: {card.category}
-														</div>
+														Type: {card.category}
 													</div>
+													<button on:click={() => {addCard(card)}} class="button-slim self-end">
+														Add
+													</button>
 												</div>
-												<button on:click={() => {addCard(card)}} class="self-end button">Add</button>
 											</div>
 										</div>
 									</ExpandableSection>
