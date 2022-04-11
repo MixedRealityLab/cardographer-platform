@@ -337,7 +337,7 @@
 											</div>
 										</div>
 										<div>
-											<div>
+											<div class="flex flex-col">
 												<div class="flex">
 													{#if card.frontUrl}
 														<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
@@ -345,17 +345,17 @@
 													{/if}
 													<div>
 														{#if card.description}
-															<div class="text-sm">{card.description}</div>
+															<div class="text-xs">{card.description}</div>
 														{/if}
-														{#if card.content}
-															<div>{card.content}</div>
+														{#if card.content && card.content !== card.description}
+															<div class="text-xs">{card.content}</div>
 														{/if}
 														<div>
 															Type: {card.category}
 														</div>
 													</div>
-													<button on:click={() => {addCard(card)}}>Add</button>
 												</div>
+												<button on:click={() => {addCard(card)}} class="self-end button">Add</button>
 											</div>
 										</div>
 									</ExpandableSection>
