@@ -6,7 +6,7 @@
 </script>
 
 <div class={$$props.class}>
-	<div class="w-full px-4 flex flex-row cursor-pointer" on:click={() => expanded = !expanded}>
+	<div class="w-full flex flex-row cursor-pointer" on:click={() => expanded = !expanded}>
 		<div class="flex-1">
 			<slot name="title">Title</slot>
 		</div>
@@ -18,7 +18,7 @@
 	</div>
 
 	{#if expanded}
-		<div transition:slide class="px-4">
+		<div transition:slide>
 			<slot></slot>
 		</div>
 	{/if}

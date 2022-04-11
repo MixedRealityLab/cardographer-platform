@@ -378,7 +378,7 @@
 			</div>
 		{/if}
 		<div class="flex gap-4 justify-center">
-			<button class="button" disabled={!allowUpload} on:click={saveSession}>
+			<button class="button m-2" disabled={!allowUpload} on:click={saveSession}>
 				Save Session
 			</button>
 		</div>
