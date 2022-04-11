@@ -92,9 +92,13 @@
 
 	async function selectSession(newSession: Session) {
 		selectedSession = newSession
-		const response = await fetch(`${base}/api/user/sessions/${newSession._id}/decks`, authenticateRequest(session))
-		if (response.ok) {
-			decks = await response.json()
+		if (newSession._id === 'new') {
+			decks = []
+		} else {
+			const response = await fetch(`${base}/api/user/sessions/${newSession._id}/decks`, authenticateRequest(session))
+			if (response.ok) {
+				decks = await response.json()
+			}
 		}
 	}
 
@@ -316,9 +320,14 @@
 				<div class="flex-1 flex flex-col">
 					<div class="flex-1">
 						{#each widgets as widget (widget.id)}
-							<div on:click={() => selectWidget(widget)}
-							     class="py-2 px-8 cursor-pointer transition-opacity duration-300 hover:opacity-50">
-								Image {widget.id}
+							<div class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-50"
+							     on:click={() => selectWidget(widget)}>
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+								     stroke="currentColor" stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round"
+									      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+								</svg>
+								{widget.type} {widget.id}
 							</div>
 						{/each}
 
@@ -350,7 +359,8 @@
 													<div>
 														Type: {card.category}
 													</div>
-													<button on:click={(event) => {addCard(card, event)}} class="button button-slim" style="align-self: end">
+													<button on:click={(event) => {addCard(card, event)}}
+													        class="button button-slim" style="align-self: end">
 														Add
 													</button>
 												</div>
@@ -371,8 +381,8 @@
 	{#if selectedSession}
 		{#if widgets.length !== 0}
 			<div class="warn">
-				{widgets.length} images will not be saved to session. Give them titles to include them
-				in the upload
+				{widgets.length} image{widgets.length > 1 ? 's' : ''} will not be saved. Give them titles to include
+				them
 			</div>
 		{/if}
 		<div class="flex gap-4 justify-center">
