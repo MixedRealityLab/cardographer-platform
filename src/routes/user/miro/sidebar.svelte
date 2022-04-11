@@ -185,17 +185,11 @@
 	}
 
 	async function addCard(card: CardInfo, event) {
-		console.log(event)
 		event.target.disabled = true
-		console.log({
-			type: 'IMAGE',
-			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
-		})
 		await miro.board.widgets.create({
 			type: 'IMAGE',
 			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
 		})
-		console.log('done')
 		event.target.disabled = false
 	}
 
