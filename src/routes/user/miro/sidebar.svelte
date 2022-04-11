@@ -323,7 +323,7 @@
 						{/each}
 
 						{#each decks as deck}
-							<div>Deck {deck.deckName}</div>
+							<div class="text-lg pb-2">{deck.deckName}</div>
 							{#each deck.cards as card}
 								{#if card.frontUrl}
 									<ExpandableSection class="py-1">
