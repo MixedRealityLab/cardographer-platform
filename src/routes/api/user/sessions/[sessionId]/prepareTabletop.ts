@@ -2,7 +2,7 @@ import type {RequestHandler} from "@sveltejs/kit";
 import {getDb} from "$lib/db";
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, Session} from "$lib/types";
-import {mkdir} from 'fs/promises'
+import {mkdir, writeFile} from 'fs/promises'
 
 export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
@@ -26,13 +26,10 @@ export const get: RequestHandler = async function ({locals, params}) {
 	const cards = await db.collection<CardDeckRevision>('CardDeckRevisions').find(
 		{_id: {$in: cardIds}}
 	).toArray()
-
-	// Create atlases?
-
+	const atlases = cards.flatMap((cards) => cards.output.atlases)
 
 	// Create DeckInfo.json
-
-
+	await writeFile(dirName + 'deckInfo.json', JSON.stringify(atlases), 'utf-8')
 
 	return {}
 }
