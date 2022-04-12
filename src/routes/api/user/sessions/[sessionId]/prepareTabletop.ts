@@ -29,7 +29,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	const atlases = cards.flatMap((cards) => cards.output.atlases)
 
 	// Create DeckInfo.json
-	await writeFile(dirName + 'deckInfo.json', JSON.stringify(atlases), 'utf-8')
+	await writeFile(dirName + 'DeckInfo.json', JSON.stringify(atlases), 'utf-8')
 
 	return {}
 }
