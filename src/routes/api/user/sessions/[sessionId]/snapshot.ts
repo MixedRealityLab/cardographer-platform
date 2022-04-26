@@ -72,6 +72,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	const snapshotId = getNewId();
 	snapshot.sessionId = sessionId;
 	snapshot._id = snapshotId;
+	snapshot.owners = session.owners;
 
 	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({sessionId: sessionId})
 
