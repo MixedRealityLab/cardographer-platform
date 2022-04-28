@@ -1,0 +1,30 @@
+﻿title:,id,name,description,category,aspect,back,colour,action,comment
+use:,id,name,description,category,attribute,back,attribute,attribute,attribute
+description:,,,,,,,,,
+export:,Y,Y,Y,Y,Y,Y,Y,Y,Y
+default:,defaults:,,,,,,,,
+card:,HorizonRRI_An_Purpose,Purpose,Why should this research be undertaken? How might it affect the world?,Anticipate,Purpose,Anticipate,#f2b082,"map possible impacts; create a lay summary; solicit a range of lay, expert and peer inputs  ",
+card:,HorizonRRI_An_SociallyDesirable,Socially Desirable Product,Will the products be socially desirable?,Anticipate,Product,Anticipate,#f2b082,engage with the public and other stakeholders,promoted to top-level (anticipate product)
+card:,HorizonRRI_An_Sustainable,Sustainable Product,How sustainable are the outcomes? Could they be made more sustainable?,Anticipate,Product,Anticipate,#f2b082,"Consider the 3 ‘R’s (reduce, re-use, re-cycle); apply circular economy principles; seek specialist input",promoted to top-level (anticipate product)
+card:,HorizonRRI_An_PeopleAffected,People Affected,Who is directly affected? Indirectly affected? Who benefits? Who loses out? Is anyone left out or excluded? ,Anticipate,People,Anticipate,#f2b082,map stakeholders; consider vested interests; consider indirect effects,
+card:,HorizonRRI_An_ResearchConduct ,Research Conduct ,"Is the planned research methodology acceptable? E.g. health & safety, ethical approval & Informed consent, data management, risk",Anticipate,Process,Anticipate,#f2b082,review local policies; access training; use local tools and infrastructure; seek peer and expert input,
+card:,back:Anticipate,Anticipate,,Anticipate,,,#f2b082,,
+card:,HorizonRRI_R_BroaderConcerns ,Broader Concerns ,Is the research controversial? Are there alternatives? Is it disruptive? What legislation and regulation apply?,Reflect,Purpose,Reflect,#ffd966,"consider responses to related projects; solicit a range of lay, expert and peer inputs",
+card:,HorizonRRI_R_UnintendedConsequences,Unintended Consequences,What uses could it have? Could it be used to cause harm? What negative consequences might there be? ,Reflect,Product,Reflect,#ffd966,"consider unanticipated outcomes from related projects; solicit a range of lay, expert and peer inputs",
+card:,HorizonRRI_R_EDI,"Equality, Diversity & Inclusion",How diverse is the team? What is the gender balance? Is accessibility built in? Is anyone excluded?,Reflect,People,Reflect,#ffd966,Run an EDI awareness activity; develop an action plan; use accessibility guidelines and resources; ensure reasonable adjustments are in place; consider positive discrimination measures,
+card:,HorizonRRI_R_MeansOfReflection ,Means of Reflection,Which mechanisms are used to reflect on process? How often? Who is involved?,Reflect,Process,Reflect,#ffd966,Convene an advisory board; schedule periodic sessions dedicated to RI ,
+card:,back:Reflect,Reflect,,Reflect,,,#ffd966,,
+card:,HorizonRRI_E_PublicDialog,Public Dialog,Is the research agenda acceptable? Have diverse voices been heard? ,Engage,Purpose,Engage,#a8cf8c,Organise or join public events to present & discuss the proposal; talk to specialist organisations who represent particular groups (e.g. charities) ,
+card:,HorizonRRI_E_StakeholderInput,Stakeholder Input,How do stakeholders shape the product? Are a wide range of stakeholders views considered?,Engage,Product,Engage,#a8cf8c,"employ human-centred design activities such as interviews, focus groups, workshops; convene a user/stakeholder panel",
+card:,HorizonRRI_E_StakeholderInvolvement,Stakeholder Involvement,Can non-researchers directly influence project decisions? Or shape the research agenda?,Engage,Process,Engage,#a8cf8c,involve stakeholders when defining research agendas and questions; give stakeholder substantive research roles (with support); involve stakeholders in project decision-making,
+card:,HorizonRRI_E_HardToReach,Hard to Reach,"Who is excluded, ignored or discounted? How can they be reached and included? Can anyone else can represent them? ",Engage,People,Engage,#a8cf8c,consider specialist support in recruitment; work with specialist organisations,Arguably a second Engage – Product card (I don't have a clear concept for engage-people)
+card:,back:Engage,Engage,,Engage,,,#a8cf8c,,
+card:,HorizonRRI_Act_ShapingPolicy,Shaping Policy,How can we ensure that the future is desirable? How can we contribution to regulation & legislation?,Act,Purpose,Act,#8ca8d9,respond to requests for evidence; plan an impact campaign,
+card:,HorizonRRI_Act_OpenScience ,Open Science,How do you contribute to open science? Are publications open access? Is anonymous data in public respositories?,Act,Product,Act,#8ca8d9,check local policies and support; plan for open access at the start of paper writing; deposit anonymous in open repositories,
+card:,HorizonRRI_Act_OrganisationalChange ,Organisational Change,How can your research structure become flexible? What infrastructure is required?,Act,Process,Act,#8ca8d9,"raise issues or ideas at an appropriate level, e.g. PI, Department, University Committee; share resources and ideas with peers",
+card:,HorizonRRI_Act_Training,Training,What training is required?,Act,People,Act,#8ca8d9,Draw on existing training opportunities; buy in specialist training,
+card:,HorizonRRI_Act_ScienceEducation,Science Education,How do you support science education?,Act,People,Act,#8ca8d9,contribute to outreach to Schools; contribute to local science-related event; develop and specific education/outreach activity ,Separate internally focussed training from public science education (EU RI pillar) 
+card:,back:Act,Act,,Act,,,#8ca8d9,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
