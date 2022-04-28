@@ -74,16 +74,16 @@
 			{#if register}
 				<label>
 					<span>Name</span>
-					<input bind:value="{name}" class="w-full" required id="name" type="text"/>
+					<input bind:value="{name}" class="w-full" required id="name" type="text" autocomplete="name"/>
 				</label>
 			{/if}
 			<label>
 				<span>Email</span>
-				<input bind:value="{email}" class="w-full" id="email" required type="text"/>
+				<input bind:value="{email}" class="w-full" id="email" required type="text" autocomplete="username"/>
 			</label>
 			<label>
 				<span>Password</span>
-				<input bind:value="{password}" class="w-full" id="password" required type="password"/>
+				<input bind:value="{password}" class="w-full" id="password" required type="password" autocomplete={register ? "new-password" : "current-password"}/>
 				{#if !register}
 					<div class="flex flex-col">
 					<a href="{base}/user/password/forgotten" class="text-sm self-center pt-2 text-gray-700 hover:underline">forgot password</a>

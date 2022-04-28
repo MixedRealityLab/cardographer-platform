@@ -40,7 +40,7 @@
 		<div class="flex flex-col gap-8">
 			<label>
 				<span>New Password</span>
-				<input bind:value="{password}" class="w-full" disabled={working || success} required type="password"/>
+				<input bind:value="{password}" class="w-full" disabled={working || success} required type="password" autocomplete="new-password"/>
 			</label>
 
 			{#if error}
