@@ -1,0 +1,20 @@
+csvfile: card-data.csv
+layout: layout.yml
+width: 24c # 22c (2.75") tarot + 2x1c bleed (c = 1/8th inch)
+height: 40c # 38c (4.75") tarot + 2x1c bleed
+dpi: 300
+last_is_back: true
+output: _output
+sheet:
+  columns: 5
+  rows: 3
+  prefix: Atlas_
+  count_format: '%d'
+  trim: 1c
+png:
+  prefix: card_
+  count_format: '%02d'
+  trim: 1c
+pdf:
+  file: output.pdf
+  trim: 1c
