@@ -1,0 +1,106 @@
+# tarot 22c (2.75") x 38c (4.75") tarot + 1c bleed => 24c x 40c 
+# 1c = 1/8th inch, 
+# The "safe zone" as defined by TheGameCrafter poker cards
+top_box:
+  x: 2c
+  y: 2c
+  width: 20c
+  height: 17.5c
+  radius: 0.5c
+  
+title:
+  x: 3c
+  y: 3c
+  width: 18c
+  height: 5c
+  align: center
+
+description:
+  x: 3c
+  y: 7c
+  width: 18c
+  height: 13c
+  valign: top
+  align: center
+  font_size: 10
+desc: # alias
+  extends: description
+
+bottom_box:
+  x: 2c
+  y: 20.5c
+  width: 20c
+  height: 17.5c
+  radius: 0.5c
+  
+action_title:
+  x: 3c
+  y: 21.5c
+  width: 18c
+  height: 14c
+  valign: top
+  align: left
+  font_size: 10
+
+action:
+  x: 3c
+  y: 23.5c
+  width: 18c
+  height: 12c
+  valign: top
+  align: left
+  font_size: 10
+
+lower_left:
+  x: 3c
+  y: 35c
+  width: 8c
+  height: 2c
+  font_size: 8
+  valign: bottom
+  align: left
+ll: # alias
+  extends: lower_left
+
+lower_right:
+  x: 13c
+  y: 35c
+  width: 8c
+  height: 2c
+  font_size: 8
+  valign: bottom
+  align: right
+ll: # alias
+  extends: lower_left
+
+back_title:
+  x: 3c
+  y: 18c
+  width: 18c
+  height: 5c
+  align: center
+
+  # The "cut line", without rounded corners
+cut:
+  x: 1c
+  y: 1c
+  width: 22c
+  height: 38c
+
+# like the "cut line", with rounded corners
+border:
+  x: 1c
+  y: 1c
+  width: 22c
+  height: 38c
+  radius: 1c
+  join: round
+
+# The "safe zone" as defined by TheGameCrafter poker cards
+safe:
+  x: 2c
+  y: 2c
+  width: 20c
+  height: 36c
+  radius: 0.5c
+  dash: 3 3
