@@ -1,8 +1,9 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
-	import {authenticateRequest, errorResponse} from "../../../../lib/ui/token";
+	import {authenticateRequest, errorResponse} from "$lib/ui/token";
 	import type {Load} from '@sveltejs/kit';
 
+	// TODO Make publicly accessible
 	export const load: Load = async function ({params, fetch, session}) {
 		const {sessionId} = params;
 		const res = await fetch(`${base}/api/user/sessions/${sessionId}`, authenticateRequest(session));
