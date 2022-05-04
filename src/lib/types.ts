@@ -201,6 +201,7 @@ export interface AtlasInfo {
 	atlasURLs: string[]
 	countX: number[]
 	countY: number[]
+	cardSize: number[]
 	cardCount: number
 	cardInfo: string[]
 	builderId?: string
