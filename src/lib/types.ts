@@ -14,6 +14,7 @@ export interface CardDeckSummary {
 
 // summary is returned for list all revisions
 export interface CardDeckRevisionSummary {
+	// TODO Deck size?
 	_id: string
 	deckId: string
 	revision: number // integer 1..
@@ -264,7 +265,6 @@ export interface SessionSnapshot extends SessionSnapshotSummary {
 	isNotForAnalysis: boolean
 
 	legacyId?: string
-	miroId?: string
 	data?: any
 }
 

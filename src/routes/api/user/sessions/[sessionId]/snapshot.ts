@@ -74,7 +74,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	snapshot._id = snapshotId;
 	snapshot.owners = session.owners;
 
-	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({sessionId: sessionId})
+	// TODO Some Versioning?
 
 	const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
 	if (!r2.insertedId) {
