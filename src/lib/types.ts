@@ -199,8 +199,8 @@ export interface DeckOutput {
 export interface AtlasInfo {
 	name: string
 	atlasURLs: string[]
-	countX: number[]
-	countY: number[]
+	cardX: number[]
+	cardY: number[]
 	cardSize: number[]
 	cardCount: number
 	cardInfo: string[]

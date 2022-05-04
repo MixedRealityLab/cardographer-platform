@@ -145,9 +145,10 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		const atlas: AtlasInfo = {
 			name: `${revision.deckName}${back.length > 0 ? ' - ' : ''}${back}`,
 			atlasURLs: [],
-			countX: [], //Number(localopts.sheet.columns),
-			countY: [], //Number(localopts.sheet.rows),
+			cardX: [], //Number(localopts.sheet.columns),
+			cardY: [], //Number(localopts.sheet.rows),
 			cardCount: cards.length, // includes back
+			cardSize: [120,70],
 			cardInfo: cards.map((c) => c.id),
 			builderId: 'squib'
 		};
@@ -157,11 +158,11 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		for (let i = 0; i < sheets; i++) {
 			const fileName = `${localOpts.sheet.prefix}${i}.png`;
 			atlas.atlasURLs.push(`${config.baseUrl}/${revPath}/${localOpts.output}/${fileName}`);
-			atlas.countX.push(countX);
-			atlas.countY.push(countY);
+			atlas.cardX.push(countX);
+			atlas.cardY.push(countY);
 		}
 		if (sheets == 1 && atlas.cardCount <= countX) {
-			atlas.countY[0] = 1;
+			atlas.cardY[0] = 1;
 		}
 		// needed?
 		//atlas.atlasCount = atlas.atlasURLs.length;

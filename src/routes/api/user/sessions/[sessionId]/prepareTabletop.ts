@@ -40,5 +40,9 @@ function absoluteAtlas(url: URL, atlas: AtlasInfo): AtlasInfo {
 	if (!atlas.cardSize) {
 		atlas.cardSize = [120, 70]
 	}
+	if(atlas.countX) {
+		atlas.cardX = atlas.countX
+		atlas.cardY = atlas.countY
+	}
 	return atlas
 }
