@@ -51,7 +51,7 @@
 		await progress.set(10)
 		const res = await fetch(`${base}/api/user/sessions/${sessionId}/prepareTabletop`, authenticateRequest($session))
 		if (res.ok) {
-			unityInstance = UnityLoader.instantiate("unityContainer", `${base}/tabletop/Build/cardographer_webgl.json`, {onProgress: UnityProgress});
+			unityInstance = UnityLoader.instantiate("unityContainer", `${base}/tabletop/Build/BuildWebGL.json`, {onProgress: UnityProgress});
 		}
 	})
 
