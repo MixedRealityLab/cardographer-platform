@@ -52,7 +52,6 @@ export class Appv1 extends Client {
 			description: data.design_description,
 			credits: data.design_author,
 			owners: [],
-			currentStage: 0,
 			created: now,
 			lastModified: now,
 			isPublic: false,

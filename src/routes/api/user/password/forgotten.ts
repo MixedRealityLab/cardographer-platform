@@ -39,8 +39,6 @@ export const post: RequestHandler = async function ({request, url}) {
 		return {status: 200}
 	}
 
-	console.log('https://' + url.host + base + '/user/password/' + code)
-
 	if (emailConfigured) {
 		const sessionUrl = new URL('https://' + url.host + base + '/user/password/' + code).toString()
 		await transport.sendMail({
@@ -50,8 +48,10 @@ export const post: RequestHandler = async function ({request, url}) {
 			text: 'Reset Url: ' + sessionUrl,
 			html: '<div><a href="' + sessionUrl + '">Continue Password Reset</a></div>'
 		});
+	} else {
+		console.log("No Email Setup")
+		console.log('https://' + url.host + base + '/user/password/' + code)
 	}
 
-	// TODO Email!
 	return {status: 200}
 }

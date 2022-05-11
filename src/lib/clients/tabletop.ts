@@ -1,75 +1,18 @@
 import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
 import type {Session, SessionSnapshot} from '$lib/types';
+import type {MiroData, WidgetData} from "./miro";
+import {WidgetType} from "./miro";
 import {Client} from './types';
 
 const debug = true;
 
-export interface MiroData {
-	id: string;
-	widgets: WidgetData[];
-	createdAt: string; //ISO
-	description: string;
-	owner: UserData;
-	title: string;
-	updatedAt: string; //ISO
-	_id: string; // dump
-}
-
-export interface UserData {
-	name: string;
-	//...
-}
-
-export enum WidgetType {
-	FRAME = "FRAME",
-	IMAGE = "IMAGE",
-	SHAPE = "SHAPE",
-	STICKER = "STICKER",
-	//GROUP = "GROUP",
-	LINE = "LINE",
-}
-
-export interface WidgetData {
-	bounds: Bounds;
-	childrenIds?: string[]; // frame
-	clientVisible: true;
-	frameIndex?: number; // frame
-	groupId?: string; // frame, shape?
-	id: string;
-	metadata: any;
-	plainText?: string; // sticker, shape
-	rotation?: number; // image
-	scale?: number; // image
-	style: any;
-	tags?: string[]; // sticker
-	text?: string; // sticker, shape
-	title: string; // frame, image
-	type: WidgetType; // 'FRAME' 'IMAGE','STICKER', 'LINE','SHAPE'
-	url?: string; // image
-	x?: number
-	y?: number
-	width?: number; // not image
-	height?: number; // not image
-}
-
-export interface Bounds {
-	bottom: number;
-	height: number;
-	left: number;
-	right: number;
-	top: number;
-	width: number;
-	x: number;
-	y: number;
-}
-
-export class MiroClient extends Client {
+export class TabletopClient extends Client {
 	acceptsImport(data: any): boolean {
 		return !!(data.id && data.widgets && Array.isArray(data.widgets));
 	}
 
 	sessionType(): string {
-		return 'miro';
+		return 'tabletop';
 	}
 
 	makeSession(d: any): Session {
@@ -78,7 +21,7 @@ export class MiroClient extends Client {
 		return {
 			_id: '',
 			name: data.title,
-			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
+			description: data.description || `Tabletop Session https://miro.com/app/board/${data.id}`,
 			credits: data.owner && data.owner.name ? data.owner.name : '',
 			owners: [],
 			created: now,
@@ -86,7 +29,7 @@ export class MiroClient extends Client {
 			isPublic: false,
 			isTemplate: false,
 			isArchived: false,
-			sessionType: 'miro',
+			sessionType: 'tabletop',
 			decks: []
 		}
 	}

@@ -151,6 +151,8 @@
 			} else {
 				sessions[index] = selectedSession
 			}
+		} else if(response.status== 409){
+
 		} else {
 			warning = response.statusText
 		}

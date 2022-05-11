@@ -27,7 +27,6 @@ export const post: RequestHandler = async function ({locals, request}) {
 		session = {
 			_id: newId,
 			created: now,
-			currentStage: 0,
 			decks: [],
 			isArchived: false,
 			isPublic: false,

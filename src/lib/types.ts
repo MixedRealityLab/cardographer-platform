@@ -227,7 +227,6 @@ export interface Session {
 	description?: string
 	credits?: string
 	owners: string[] // User emails
-	currentStage: number // index
 	created: string // ISO date
 	lastModified: string // ISO date
 	isPublic: boolean

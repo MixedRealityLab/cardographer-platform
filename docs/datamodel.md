@@ -198,8 +198,6 @@ A `Session` has:
 - `description` (string)
 - `credits` (string) mainly for templates
 - `owners` (string[]) owner (User) email(s)
-- `stages` (SessionStage[]) - array of planned/done Stage definitions
-- `currentStage` (number) - index in stages (initially 0)
 - `created` (Date/string) ISO date
 - `lastModifed` (Date/string)
 - `isPublic` (boolean)

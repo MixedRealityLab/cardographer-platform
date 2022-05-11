@@ -1,10 +1,18 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
+	import {CardDeckRevisionSummary} from "$lib/types";
 	import type {Analysis, SessionSnapshotSummary} from "$lib/types"
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
 	import type {Load} from '@sveltejs/kit';
 
 	interface SessionSelection extends SessionSnapshotSummary {
+		selected: boolean
+	}
+
+	interface SessionSelection2 {
+		sessionId: string
+		snapshots: CardDeckRevisionSummary[]
+		index: number
 		selected: boolean
 	}
 

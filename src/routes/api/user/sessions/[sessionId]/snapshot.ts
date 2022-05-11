@@ -40,7 +40,6 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 			_id: getNewId(),
 			created: new Date().toISOString(),
 			credits: input.snapshot.owner.name,
-			currentStage: 0,
 			decks: [],
 			description: 'Miro Board ' + input.url,
 			isArchived: false,
@@ -61,11 +60,19 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	if (!session) {
 		return {status: 404};
 	}
+
+	// Check snapshot doesn't already exist?
+	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({sessionId: session._id, data: input.snapshot})
+	if(exists > 0) {
+		return {status: 409}
+	}
+
 	const sessionType = guessSessionType(input.snapshot);
 	if (!sessionType) {
 		console.log(`no sessionType guess for import ${session._id}`);
 		return {status: 400}
 	}
+
 	console.log(`SessionType: ${sessionType}`);
 	const client = getClient(sessionType);
 	const snapshot = client.makeSessionSnapshot(input.snapshot);
@@ -93,7 +100,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 			// project changes
 			lastModified: session.lastModified,
 			sessionType: session.sessionType,
-			url: session.url
+			url: session.url,
 		}
 	});
 	if (!upd.matchedCount) {
