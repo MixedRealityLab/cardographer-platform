@@ -9,24 +9,26 @@ export const get: RequestHandler = async function ({locals}) {
 	}
 
 	const db = await getDb();
-	const revisions = await db.collection<CardDeckRevision>('CardDeckRevisions').find({}).toArray();
+	const revisions = await db.collection<CardDeckRevision>('CardDeckRevisions').find().toArray();
 	for (const deck of revisions) {
-		deck.output.atlases.forEach((atlas) => {
-			if (atlas.countX) {
-				atlas.cardX = atlas.countX
-				atlas.cardY = atlas.countY
-			}
-			delete atlas.countY;
-			delete atlas.countX;
-			delete atlas.atlasCount;
-			if (atlas.builderId == "squib") {
-				if (atlas.cardY[0] == 1) {
-					atlas.cardY[0] = 3
+		if(deck.output && deck.output.atlases && deck.output.atlases.length > 0) {
+			deck.output.atlases.forEach((atlas) => {
+				if (atlas.countX) {
+					atlas.cardX = atlas.countX
+					atlas.cardY = atlas.countY
 				}
-			}
-		})
+				delete atlas.countY;
+				delete atlas.countX;
+				delete atlas.atlasCount;
+				if (atlas.builderId == "squib") {
+					if (atlas.cardY[0] == 1) {
+						atlas.cardY[0] = 3
+					}
+				}
+			})
 
-		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({"_id": deck._id}, deck)
+			await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({"_id": deck._id}, deck)
+		}
 	}
 
 	return {}
