@@ -161,11 +161,6 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			atlas.cardX.push(countX);
 			atlas.cardY.push(countY);
 		}
-		if (sheets == 1 && atlas.cardCount <= countX) {
-			atlas.cardY[0] = 1;
-		}
-		// needed?
-		//atlas.atlasCount = atlas.atlasURLs.length;
 		atlases.push(atlas);
 	}
 	//if(debug) console.log(`cards`, allCards);
