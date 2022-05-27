@@ -21,8 +21,8 @@
 
 <script lang="ts">
 	import {page, session} from "$app/stores"
-	import cytoscape, {LayoutOptions} from "cytoscape"
-	import type {Css, ElementsDefinition} from "cytoscape"
+	import type {LayoutOptions, Css, ElementsDefinition} from "cytoscape"
+	import cytoscape from "cytoscape";
 	import {onMount} from "svelte"
 	import AnalysisTabs from "../_AnalysisTabs.svelte"
 	import {fly} from 'svelte/transition';

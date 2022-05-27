@@ -1,6 +1,6 @@
 import {checkUserToken, getAuthorizationToken, getCookieName} from '$lib/security';
 import type {GetSession, Handle} from '@sveltejs/kit';
-import cookie from 'cookie';
+import {parse} from "cookie";
 
 //const USER_PATH = "/user";
 //const API_PATH = "/api";
@@ -11,7 +11,7 @@ export const handle: Handle = async function ({event, resolve}) {
 	if (debug) console.log(`handle ${JSON.stringify(event.url)}`)
 
 	// just a cookie for now (and not a proper one either...)
-	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
+	const cookies = parse(event.request.headers.get('cookie') || '');
 	const userToken = getAuthorizationToken(event.request.headers.get('authorization'))
 		|| cookies[getCookieName()]
 		|| '';

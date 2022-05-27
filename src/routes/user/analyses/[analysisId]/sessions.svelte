@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
 	import {base} from '$app/paths'
-	import {CardDeckRevisionSummary} from "$lib/types";
-	import type {Analysis, SessionSnapshotSummary} from "$lib/types"
+	import type {CardDeckRevisionSummary, Analysis, SessionSnapshotSummary} from "$lib/types"
 	import {authenticateRequest, errorResponses} from "$lib/ui/token"
 	import type {Load} from '@sveltejs/kit';
 
