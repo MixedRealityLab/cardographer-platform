@@ -17,6 +17,7 @@ export const post: RequestHandler = async function ({request}) {
 			status: 400
 		}
 	}
+	login.email = login.email.toLowerCase()
 	// check password
 	const db = await getDb();
 	const user = await db.collection<User>('Users').findOne({email: login.email})

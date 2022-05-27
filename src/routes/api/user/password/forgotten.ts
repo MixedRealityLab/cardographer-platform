@@ -3,11 +3,11 @@ import type {User} from "$lib/types";
 import type {RequestHandler} from '@sveltejs/kit';
 import {base} from "$app/paths";
 import {customAlphabet} from 'nanoid'
-import nodemailer from 'nodemailer'
+import {createTransport} from 'nodemailer'
 
 const debug = true;
 const emailConfigured = 'SMTP_host' in process.env
-const transport = nodemailer.createTransport({
+const transport = createTransport({
 	host: process.env["SMTP_host"],
 	port: parseInt(process.env["SMTP_port"]),
 	auth: {
@@ -18,7 +18,7 @@ const transport = nodemailer.createTransport({
 
 
 export const post: RequestHandler = async function ({request, url}) {
-	const {email} = await request.json()
+	const email = (await request.json()).email.toLowerCase()
 	if (!email) {
 		return {
 			status: 400
