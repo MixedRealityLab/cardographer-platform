@@ -1,10 +1,10 @@
 import type {PostFilesRequest} from '$lib/apitypes';
-import {deleteFile, getFileInfo, writeFile} from '$lib/builders/index';
+import {deleteFile, getFileInfo, writeToFile} from '$lib/builders/index';
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import path from 'path'
+import {dirname} from 'path'
 
 const debug = true;
 
@@ -65,7 +65,7 @@ export const post: RequestHandler = async function ({locals, params, request}) {
 
 	for (const file of req.files) {
 		if (debug) console.log(`upload ${file.name}`);
-		await writeFile(deckId, revisionId, path, file.name, file.content);
+		await writeToFile(deckId, revisionId, path, file.name, file.content);
 	}
 	try {
 		const files = await getFileInfo(deckId, revisionId, path);
@@ -107,14 +107,14 @@ export const del = async function ({locals, params}) {
 		return {status: 401};
 	}
 	await deleteFile(deckId, revisionId, file)
-	const parent = path.dirname(file)
+	const parent = dirname(file)
 	try {
 		const files = await getFileInfo(deckId, revisionId, parent);
 		return {
 			body: files as any[]
 		}
 	} catch (err) {
-		console.log(`error getting file ${deckId}/${revisionId}/${path}: ${err.message}`);
+		console.log(`error getting file ${deckId}/${revisionId}/${parent}: ${err.message}`);
 		return {status: 500}
 	}
 }

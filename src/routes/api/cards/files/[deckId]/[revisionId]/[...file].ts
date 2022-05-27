@@ -2,8 +2,8 @@ import {dev} from "$app/env";
 import {getDb} from '$lib/db';
 import type {CardDeckRevision} from '$lib/types';
 import type {RequestHandler, RequestHandlerOutput} from '@sveltejs/kit';
-import fs from 'fs';
-import mime from 'mime'
+import {readFile} from 'fs';
+import {getType} from 'mime';
 
 const debug = true;
 
@@ -40,7 +40,7 @@ async function sendFile(request: Request, path: string): Promise<RequestHandlerO
 		};
 	*/
 	return new Promise<RequestHandlerOutput>((resolve) => {
-		fs.readFile(path, (err, data) => {
+		readFile(path, (err, data) => {
 			if (err) {
 				if (debug) console.log(`error reading ${path}: ${err}`);
 				resolve({status: 404});
@@ -48,7 +48,7 @@ async function sendFile(request: Request, path: string): Promise<RequestHandlerO
 			resolve({
 				headers: {
 					// sveltekit won't let me use an image mime type
-					'content-type': mime.getType(path)
+					'content-type': getType(path)
 				},
 				body: data
 			});

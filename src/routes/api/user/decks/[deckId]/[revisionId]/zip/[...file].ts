@@ -3,7 +3,7 @@ import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckSummary} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import AdmZip from "adm-zip";
+import * as AdmZip from "adm-zip";
 
 const debug = true;
 

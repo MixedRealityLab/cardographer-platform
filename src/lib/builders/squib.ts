@@ -4,11 +4,9 @@ import {exportCardsAsCsv} from '$lib/csvutils';
 import type {BuilderConfig} from '$lib/systemtypes';
 import type {AtlasInfo, CardDeckRevision, CardInfo} from '$lib/types';
 import {CardPropertyUse} from '$lib/types';
-import fs from 'fs';
-import yaml from 'js-yaml';
-import net from 'net';
-
-const fsPromises = fs.promises;
+import {mkdir, readFile, writeFile, rename, readdir, rm} from "fs/promises";
+import {dump, load} from "js-yaml";
+import * as net from "net";
 
 const debug = true;
 
@@ -44,8 +42,8 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	const optionsFile = `${filePath}/${DEFAULT_OPTIONS_FILE}`;
 	let options: any = {};
 	try {
-		const yamlOptions: any = await fsPromises.readFile(optionsFile);
-		options = yaml.load(yamlOptions);
+		const yamlOptions: any = await readFile(optionsFile);
+		options = load(yamlOptions);
 	} catch (err) {
 		if (debug) console.log(`error reading ${optionsFile}: ${err.mesage}`, err);
 		return {
@@ -57,7 +55,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	// TODO use their options instead...
 	// delete old files (go to _output)
 	const outputDir = `${filePath}/_output`
-	await fsPromises.mkdir(outputDir, {
+	await mkdir(outputDir, {
 		recursive: true
 	})
 	await rmAll(outputDir)
@@ -91,7 +89,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		const csv = await exportCardsAsCsv(revision, false, false, cards);
 		const csvFile = `${filePath}/${prefix}card-data.csv`;
 		if (debug) console.log(`write cards to ${csvFile}`);
-		await fsPromises.writeFile(csvFile, csv, {});
+		await writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
 		const localOpts: any = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
@@ -99,9 +97,9 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
 		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
 		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, localopts);
-		const opts = yaml.dump(localOpts);
+		const opts = dump(localOpts);
 		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, opts);
-		await fsPromises.writeFile(`${filePath}/${backOptionsFile}`, opts);
+		await writeFile(`${filePath}/${backOptionsFile}`, opts);
 		const {ok, error, output} = await callWorker(revPath, backOptionsFile);
 		let messages = output ? output.split('\n') : [];
 		//console.log(`messages[${messages.length}]`);
@@ -133,7 +131,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			const oldPath = `${filePath}/${localOpts.output}/${originalFileName}`
 			const newPath = `${filePath}/${localOpts.output}/${fileName}`
 
-			await fsPromises.rename(oldPath, newPath)
+			await rename(oldPath, newPath)
 
 			newCard[frontFilePropName] = fileName;
 			newCard[frontUrlPropName] = `${config.baseUrl}/${revPath}/${localOpts.output}/${fileName}`;
@@ -148,7 +146,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 			cardX: [], //Number(localopts.sheet.columns),
 			cardY: [], //Number(localopts.sheet.rows),
 			cardCount: cards.length, // includes back
-			cardSize: [120,70],
+			cardSize: [120, 70],
 			cardInfo: cards.map((c) => c.id),
 			builderId: 'squib'
 		};
@@ -276,12 +274,12 @@ async function callWorker(revPath: string, optionsFile: string): Promise<CallRes
 }//return new Promise
 
 export async function rmAll(path: string) {
-	const files = await fsPromises.readdir(path, {withFileTypes: true});
+	const files = await readdir(path, {withFileTypes: true});
 	for (const file of files) {
 		if (file.isFile()) {
 			const fpath = `${path}/${file.name}`;
 			try {
-				await fsPromises.rm(fpath);
+				await rm(fpath);
 			} catch (err) {
 				console.log(`could not delete old output ${fpath}: ${err.message}`);
 			}

@@ -2,11 +2,10 @@ import type {BuildResponse, FileInfo} from '$lib/apitypes';
 import type {BuilderConfig} from '$lib/systemtypes';
 import type {CardDeckRevision, DeckBuild} from '$lib/types';
 import {DeckBuildStatus} from '$lib/types';
-import AdmZip from "adm-zip";
-import fs from 'fs'
+import * as AdmZip from "adm-zip";
+import {mkdir, stat, readdir, copyFile, rm, rmdir, writeFile} from "fs/promises";
+import type {PathLike} from 'fs';
 import {build as squibBuild} from './squib';
-
-const fsPromises = fs.promises;
 
 const debug = true;
 
@@ -58,7 +57,7 @@ export async function copyBuild(oldRevision: CardDeckRevision, newRevision: Card
 	//return new Promise<DeckBuild>((resolve,reject) => {
 	// make new path
 	try {
-		await fsPromises.mkdir(newPath, {recursive: true});
+		await mkdir(newPath, {recursive: true});
 		await copyDir(oldPath, newPath, true);
 	} catch (err) {
 		console.log(`copy build error ${err.message}`, err);
@@ -69,19 +68,19 @@ export async function copyBuild(oldRevision: CardDeckRevision, newRevision: Card
 
 async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	if (debug) console.log(`copy ${oldPath} to ${newPath}`);
-	const files = await fsPromises.readdir(oldPath, {withFileTypes: true});
+	const files = await readdir(oldPath, {withFileTypes: true});
 	for (const file of files) {
 		const oldFile = oldPath + '/' + file.name;
 		const newFile = newPath + '/' + file.name;
 		if (file.isFile()) {
 			try {
-				await fsPromises.copyFile(oldFile, newFile);
+				await copyFile(oldFile, newFile);
 			} catch (err) {
 				console.log(`error copying ${oldFile} to ${newFile}: ${err.mesage}`);
 			}
 		} else if (file.isDirectory() && recurse) {
 			try {
-				await fsPromises.mkdir(newFile);
+				await mkdir(newFile);
 				await copyDir(oldFile, newFile, recurse);
 			} catch (err) {
 				console.log(`error making new directory ${newFile}: ${err.mesage}`);
@@ -90,8 +89,8 @@ async function copyDir(oldPath: string, newPath: string, recurse: boolean) {
 	}
 }
 
-async function checkDirectoryExists(file: fs.PathLike) {
-	return await fsPromises.stat(file)
+async function checkDirectoryExists(file: PathLike) {
+	return await stat(file)
 		.then((dir) => dir.isDirectory)
 		.catch(() => false)
 }
@@ -116,7 +115,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	}
 	const normalizedPath = path.replace(/^\//, '')
 	const relPath = `${revPath}/${normalizedPath}`;
-	const stats = await fsPromises.stat(relPath);
+	const stats = await stat(relPath);
 	if (stats.isFile()) {
 		if (debug) console.log(`getDirInfo for file ${relPath}`);
 		return [{name: path, path: relPath, isDirectory: false}];
@@ -125,7 +124,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
 		return [];
 	}
-	const files = await fsPromises.readdir(relPath, {withFileTypes: true});
+	const files = await readdir(relPath, {withFileTypes: true});
 	const fis: FileInfo[] = [];
 	for (const file of files) {
 		if (file.isDirectory() || file.isFile()) {
@@ -139,9 +138,9 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	return fis;
 }
 
-export async function writeFile(deckId: string, revId: string, path: string, name: string, base64: string) {
+export async function writeToFile(deckId: string, revId: string, path: string, name: string, base64: string) {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
-	await fsPromises.mkdir(revPath, {
+	await mkdir(revPath, {
 		recursive: true
 	})
 	const relPath = `${revPath}/${path}/${name}`
@@ -150,18 +149,18 @@ export async function writeFile(deckId: string, revId: string, path: string, nam
 		const zip = new AdmZip(data)
 		zip.extractAllTo(`${revPath}/${path}`, true)
 	} else {
-		await fsPromises.writeFile(relPath, data)
+		await writeFile(relPath, data)
 	}
 }
 
 export async function deleteFile(deckId: string, revId: string, path: string) {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
 	const relPath = `${revPath}/${path}`
-	const stat = await fsPromises.stat(relPath)
-	if (stat.isDirectory()) {
-		await fsPromises.rmdir(relPath, {recursive: true})
+	const statInfo = await stat(relPath)
+	if (statInfo.isDirectory()) {
+		await rmdir(relPath, {recursive: true})
 	} else {
-		await fsPromises.rm(relPath)
+		await rm(relPath)
 	}
 }
 

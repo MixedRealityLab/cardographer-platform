@@ -4,7 +4,7 @@ import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security"
 import type {CardDeckRevision, CardDeckSummary} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import parse from 'csv-parse';
+import {parse} from "csv";
 
 const debug = true;
 
