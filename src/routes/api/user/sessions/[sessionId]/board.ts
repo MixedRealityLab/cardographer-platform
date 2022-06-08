@@ -3,7 +3,9 @@ import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
 import type {Session} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import parse from "csv";
+import csv from "csv"
+
+const {parse} = csv
 
 const debug = true;
 
