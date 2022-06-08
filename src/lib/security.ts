@@ -1,5 +1,8 @@
 import * as jwt from 'jsonwebtoken';
 
+const {sign, verify} = jwt;
+
+
 interface UserToken {
 	valid: boolean,
 	email?: string
@@ -26,7 +29,7 @@ export async function checkUserToken(rawToken: string): Promise<UserToken> {
 		}
 	}
 	return new Promise<UserToken>((resolve) => {
-		jwt.verify(rawToken, jwtSecret, (err, decoded) => {
+		verify(rawToken, jwtSecret, (err, decoded) => {
 			if (err) {
 				if (debug) console.log(`invalid token: ${err}`);
 				resolve({valid: false});
@@ -48,7 +51,7 @@ export async function signUserToken(email: string): Promise<string> {
 	const claims = {
 		email: email
 	}
-	return jwt.sign(claims, jwtSecret);
+	return sign(claims, jwtSecret);
 }
 
 export function getCookieName(): string {
