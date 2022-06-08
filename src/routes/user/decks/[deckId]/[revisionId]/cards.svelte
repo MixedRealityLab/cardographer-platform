@@ -39,24 +39,18 @@
 		message = ''
 		error = ''
 
-		const token = $session.token
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in"
-			return;
-		}
 		working = true
 		const {deckId, revisionId} = $page.params
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards`, {
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards`, authenticateRequest($session, {
 			method: 'PUT',
 			headers: {
-				authorization: `Bearer ${token}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify({
 				addColumns: addUnknown,
 				csvFile: await files[0].text()
 			})
-		})
+		}))
 		working = false
 		if (res.ok) {
 			message = "Updated"
@@ -69,16 +63,9 @@
 	async function exportCsv() {
 		console.log(`export...`);
 		message = error = '';
-		const token = $session.token;
-		if (!token) {
-			error = "Sorry, you don't seem to be logged in";
-			return;
-		}
 		working = true;
 		const {deckId, revisionId} = $page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards.csv?allColumns&withRowTypes`, {
-			headers: {authorization: `Bearer ${token}`},
-		});
+		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards.csv?allColumns&withRowTypes`, authenticateRequest($session));
 		working = false;
 		if (res.ok) {
 			const text = await res.text();
@@ -106,7 +93,8 @@
 				<div class="ml-9">
 					<div class="flex">
 						{#if card.frontUrl}
-							<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-48" alt="Card"/>
+							<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl} class="h-48"
+							     alt="Card"/>
 						{/if}
 						<div>
 							{#if card.description}
