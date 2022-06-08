@@ -2,9 +2,9 @@ import type {BuildResponse, FileInfo} from '$lib/apitypes';
 import type {BuilderConfig} from '$lib/systemtypes';
 import type {CardDeckRevision, DeckBuild} from '$lib/types';
 import {DeckBuildStatus} from '$lib/types';
-import * as AdmZip from "adm-zip";
-import {mkdir, stat, readdir, copyFile, rm, rmdir, writeFile} from "fs/promises";
+import AdmZip from "adm-zip";
 import type {PathLike} from 'fs';
+import {copyFile, mkdir, readdir, rm, rmdir, stat, writeFile} from "fs/promises";
 import {build as squibBuild} from './squib';
 
 const debug = true;
