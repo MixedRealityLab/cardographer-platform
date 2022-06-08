@@ -1,9 +1,7 @@
 // card CSV utils
 import type {BoardInfo, CardDeckRevision, CardInfo, CardPropertyDef} from '$lib/types';
 import {BoardProperty, CardPropertyUse} from '$lib/types';
-import csv from "csv";
-
-const {stringify} = csv;
+import stringify from "csv";
 
 const ROWTYPE_TITLE = 'title:';
 const ROWTYPE_USE = 'use:';
