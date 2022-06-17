@@ -11,6 +11,10 @@ const config = {
 		postcssImport,
 		tailwindcss,
 		autoprefixer(),
+
+		!dev && cssnano({
+			preset: "default",
+		}),
 	],
 };
 
