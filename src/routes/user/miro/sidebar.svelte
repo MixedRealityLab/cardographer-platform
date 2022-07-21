@@ -1,12 +1,13 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import type {LoginResponse} from "$lib/apitypes";
-	import type {IWidget, Miro} from "$lib/miro"
 	import type {CardDeckRevision, CardInfo, Session} from "$lib/types";
 	import {authenticateRequest} from "$lib/ui/token";
 	import {onMount} from "svelte";
-	import AppBar from "../../../lib/ui/AppBar.svelte";
-	import ExpandableSection from "../../../lib/ui/ExpandableSection.svelte";
+	import AppBar from "$lib/ui/AppBar.svelte";
+	import ExpandableSection from "$lib/ui/ExpandableSection.svelte";
+
+	import type {BoardInfo, Item, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
 
 	declare const miro: Miro
 
@@ -24,7 +25,7 @@
 	let password: string
 	let working = true
 
-	let widgets: IWidget[] = []
+	let widgets: Item[] = []
 	let warning: string = null
 	let allowUpload = false
 
@@ -53,7 +54,7 @@
 		const res = await fetch(`${base}/api/user/sessions`, authenticateRequest(session))
 		if (res.ok) {
 			const newSessions = (await res.json()).values.sort(compareSessions) as Session[]
-			const url = 'https://miro.com/app/board/' + (await miro.board.info.get()).id
+			const url = 'https://miro.com/app/board/' + (await miro.board.getInfo()).id
 			const filtered = newSessions.filter((session) => session.sessionType === 'miro' && session.url === url)
 			if (filtered.length === 1) {
 				await selectSession(filtered[0])
@@ -71,7 +72,7 @@
 
 	async function updateWidgets() {
 		try {
-			const allWidgets = await miro.board.widgets.get()
+			const allWidgets = await miro.board.get()
 			const images = allWidgets.filter((widget) => widget.type === "IMAGE").length
 			if (images === 0) {
 				warning = "No cards found on board"
@@ -101,17 +102,17 @@
 		}
 	}
 
-	async function selectWidget(widget: IWidget) {
-		await miro.board.selection.selectWidgets(widget.id)
-		const width = widget.bounds.right - widget.bounds.left
-		const height = widget.bounds.bottom - widget.bounds.top
+	async function selectWidget(widget: SizeMixin & PositionMixin) {
+		//await miro.board.selection.selectWidgets(widget.id)
+		const width = widget.width;
+		const height = widget.height;
 		const rect = {
-			x: widget.bounds.left - (width / 2),
-			y: widget.bounds.top - (height / 2),
+			x: widget.x - (width / 2),
+			y: widget.y - (height / 2),
 			width: width * 2,
 			height: height * 2
 		}
-		await miro.board.viewport.set(rect)
+		await miro.board.viewport.set({viewport:rect})
 	}
 
 	async function download() {
@@ -191,18 +192,17 @@
 
 	async function addCard(card: CardInfo, event) {
 		event.target.disabled = true
-		await miro.board.widgets.create({
-			type: 'IMAGE',
+		await miro.board.createImage({
 			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
 		})
 		event.target.disabled = false
 	}
 
-	async function getBoard() {
-		const widgets = await miro.board.widgets.get()
+	async function getBoard(): Promise<BoardInfo> {
+		const widgets = await miro.board.get()
 		const filtered = widgets.filter((widget) => widget.type !== "IMAGE" || widget.url || widget.title)
 
-		const board = await miro.board.info.get()
+		const board = await miro.board.getInfo()
 		board.widgets = filtered
 		return board
 	}

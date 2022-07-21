@@ -25,12 +25,7 @@ const config = {
 		adapter: adapter({
 			// default options are shown
 			out: 'build'
-		}),
-		vite: {
-			optimizeDeps: {
-				include: ["csv-stringify", "csv-parse"]
-			}
-		}
+		})
 	}
 };
 

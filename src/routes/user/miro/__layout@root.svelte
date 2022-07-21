@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<script src="https://miro.com/app/static/sdk.1.1.js"></script>
+	<script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
 </svelte:head>
 
 <slot/>
