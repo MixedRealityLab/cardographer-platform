@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {base} from '$app/paths'
-	import {Miro} from "$lib/miro";
+	import type {Miro} from "$lib/miro";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
