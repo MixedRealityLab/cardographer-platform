@@ -213,7 +213,7 @@
 </style>
 
 <div class="w-full flex flex-col h-screen">
-	<AppBar>
+	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
 		<div slot="subheader" class="flex items-center">
 			{#if !session.authenticated && !working}
 				Login
@@ -253,7 +253,7 @@
 				</a>
 			{/if}
 		</div>
-	</AppBar>
+	</div>
 	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
 		{#if !session.authenticated && !working}
 			<form on:submit|preventDefault={handleLogin} class="mx-8 flex flex-col gap-2">
