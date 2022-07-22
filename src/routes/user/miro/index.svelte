@@ -4,11 +4,10 @@
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
-	const {board} = miro;
 
 	async function init() {
-		board.ui.on("icon:click", async () => {
-			await board.ui.openPanel({
+		miro.board.ui.on("icon:click", async () => {
+			await miro.board.ui.openPanel({
 				url: `${base}/user/miro/sidebar`,
 				height: 400,
 			});
