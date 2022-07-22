@@ -71,7 +71,7 @@
 	async function updateWidgets() {
 		try {
 			const allWidgets = await miro.board.get()
-			const images = allWidgets.filter((widget) => widget.type === "IMAGE").length
+			const images = allWidgets.filter((widget) => widget.type === 'image').length
 			if (images === 0) {
 				warning = "No cards found on board"
 				widgets = []
