@@ -7,7 +7,7 @@
 	import AppBar from "$lib/ui/AppBar.svelte";
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte";
 
-	import type {BoardInfo, BoardNode, Item, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
+	import type {BoardInfo, BoardNode, Item, Miro, PositionMixin, SizeMixin} from "$lib/miro";
 
 	declare const miro: Miro
 

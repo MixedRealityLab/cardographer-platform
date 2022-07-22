@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {base} from '$app/paths'
-	import {Miro} from "@mirohq/websdk-types";
+	import {Miro} from "$lib/miro";
 
 	declare const miro: Miro
 	const {board} = miro;
