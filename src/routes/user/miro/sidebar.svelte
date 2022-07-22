@@ -7,7 +7,7 @@
 	import AppBar from "$lib/ui/AppBar.svelte";
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte";
 
-	import type {BoardInfo, Item, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
+	import type {BoardInfo, BoardNode, Item, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
 
 	declare const miro: Miro
 
@@ -25,23 +25,21 @@
 	let password: string
 	let working = true
 
-	let widgets: Item[] = []
+	let widgets: BoardNode[] = []
 	let warning: string = null
 	let allowUpload = false
 
 	onMount(async () => {
-		miro.onReady(() => {
-			miro.addListener(miro.enums.event.SELECTION_UPDATED, updateWidgets)
-			const token = localStorage.getItem('cardo_sess')
-			if (token) {
-				session = {
-					token: token,
-					authenticated: false
-				}
+		miro.board.ui.on('selection:update', updateWidgets)
+		const token = localStorage.getItem('cardo_sess')
+		if (token) {
+			session = {
+				token: token,
+				authenticated: false
 			}
-			getSessions()
-			updateWidgets()
-		})
+		}
+		await getSessions()
+		await updateWidgets()
 	})
 
 	function compareSessions(a: Session, b: Session) {
@@ -79,7 +77,7 @@
 				widgets = []
 				allowUpload = false
 			} else {
-				widgets = allWidgets.filter((widget) => widget.type === "IMAGE" && widget.url === '' && widget.title === '')
+				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '' && widget.title === '')
 				warning = null
 				allowUpload = true
 			}
@@ -112,7 +110,7 @@
 			width: width * 2,
 			height: height * 2
 		}
-		await miro.board.viewport.set({viewport:rect})
+		await miro.board.viewport.set({viewport: rect})
 	}
 
 	async function download() {
@@ -125,7 +123,7 @@
 
 		const a = document.createElement('a')
 		a.href = url
-		a.download = 'Miro ' + board.title + ' ' + new Date().toISOString().replaceAll(':', '-').slice(0, -5) + 'Z.json'
+		a.download = 'Miro ' + board.id + ' ' + new Date().toISOString().replaceAll(':', '-').slice(0, -5) + 'Z.json'
 		a.click()
 		setTimeout(() => {
 			URL.revokeObjectURL(url);
@@ -152,7 +150,7 @@
 			} else {
 				sessions[index] = selectedSession
 			}
-		} else if(response.status== 409){
+		} else if (response.status == 409) {
 
 		} else {
 			warning = response.statusText
@@ -200,7 +198,7 @@
 
 	async function getBoard(): Promise<BoardInfo> {
 		const widgets = await miro.board.get()
-		const filtered = widgets.filter((widget) => widget.type !== "IMAGE" || widget.url || widget.title)
+		const filtered = widgets.filter((widget) => widget.type !== "image" || widget.url || widget.title)
 
 		const board = await miro.board.getInfo()
 		board.widgets = filtered
