@@ -6,6 +6,7 @@
     "build": "vite build",
     "start": "node build",
     "check": "svelte-check",
+    "prepare": "svelte-kit sync",
     "lint": "eslint --ignore-path .gitignore .",
     "lint-fix": "eslint --ignore-path .gitignore --fix .",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
