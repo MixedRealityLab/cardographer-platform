@@ -214,7 +214,7 @@
 
 <div class="w-full flex flex-col h-screen">
 	<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
-		<div slot="subheader" class="flex items-center">
+		<div class="flex items-center">
 			{#if !session.authenticated && !working}
 				Login
 			{:else if selectedSession}
