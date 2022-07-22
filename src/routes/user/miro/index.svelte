@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import {Miro} from "$lib/miro";
+	import {onMount} from "svelte";
 
 	declare const miro: Miro
 	const {board} = miro;
@@ -14,5 +15,7 @@
 		});
 	}
 
-	init();
+	onMount(async () => {
+		await init();
+	})
 </script>
