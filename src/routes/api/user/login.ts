@@ -10,7 +10,7 @@ const debug = true;
 // from .env
 export const REGISTER_CODE = process.env['REGISTER_CODE'];
 
-export const post: RequestHandler = async function ({request}) {
+export const POST: RequestHandler = async function ({request}) {
 	const login = await request.json() as LoginRequest;
 	if (!login.email || !login.password) {
 		return {

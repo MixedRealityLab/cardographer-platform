@@ -3,7 +3,7 @@ import type {User} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 import {hashPassword} from "../login";
 
-export const post: RequestHandler = async function ({request}) {
+export const POST: RequestHandler = async function ({request}) {
 	const {code, password} = await request.json();
 	// check password
 	const db = await getDb();

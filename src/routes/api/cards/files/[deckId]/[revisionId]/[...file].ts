@@ -7,7 +7,7 @@ import {getType} from 'mime';
 
 const debug = true;
 
-export const get: RequestHandler = async function ({request, params}) {
+export const GET: RequestHandler = async function ({request, params}) {
 	if (!dev) {
 		return {status: 404}
 	}

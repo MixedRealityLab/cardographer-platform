@@ -5,7 +5,7 @@ import type {RequestHandler} from '@sveltejs/kit';
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
+export const GET: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -34,7 +34,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	}
 }
 
-export const put: RequestHandler = async function ({locals, params, request}) {
+export const PUT: RequestHandler = async function ({locals, params, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

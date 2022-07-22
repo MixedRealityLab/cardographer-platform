@@ -8,7 +8,7 @@ import parse from 'csv-parse';
 
 const debug = true;
 
-export const put: RequestHandler = async function ({locals, request, params}) {
+export const PUT: RequestHandler = async function ({locals, request, params}) {
 	const req = await request.json() as PutCardsRequest;
 	if (!req.csvFile) {
 		if (debug) console.log(`no csvFile in PutCardsRequest`);

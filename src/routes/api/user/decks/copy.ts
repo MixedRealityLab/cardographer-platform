@@ -6,7 +6,7 @@ import {cleanRevision} from "./[deckId]/revisions";
 
 const debug = true
 
-export const post: RequestHandler = async function ({locals, request}) {
+export const POST: RequestHandler = async function ({locals, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

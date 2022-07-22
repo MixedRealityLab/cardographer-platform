@@ -6,7 +6,7 @@ import { promises as fs } from 'fs';
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
+export const GET: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -28,7 +28,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	}
 }
 
-export const put: RequestHandler = async function ({locals, request, params}) {
+export const PUT: RequestHandler = async function ({locals, request, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -77,7 +77,7 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 	}
 }
 
-export const del: RequestHandler = async function ({locals, params}) {
+export const DELETE: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

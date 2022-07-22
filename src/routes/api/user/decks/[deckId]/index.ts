@@ -6,7 +6,7 @@ import {promises as fs} from "fs";
 
 const debug = true
 
-export const del: RequestHandler = async function ({locals, params}) {
+export const DELETE: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

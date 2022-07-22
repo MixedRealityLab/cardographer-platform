@@ -8,7 +8,7 @@ import {dirname} from 'path'
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
+export const GET: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -34,7 +34,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	}
 }
 
-export const post: RequestHandler = async function ({locals, params, request}) {
+export const POST: RequestHandler = async function ({locals, params, request}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

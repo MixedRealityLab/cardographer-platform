@@ -5,7 +5,7 @@ import {isNotAuthenticated} from "$lib/security";
 import type {AtlasInfo, CardDeckRevision, Session} from "$lib/types";
 import {mkdir, writeFile} from 'fs/promises'
 
-export const get: RequestHandler = async function ({locals, params, url}) {
+export const GET: RequestHandler = async function ({locals, params, url}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}

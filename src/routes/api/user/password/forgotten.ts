@@ -17,7 +17,7 @@ const transport = createTransport({
 });
 
 
-export const post: RequestHandler = async function ({request, url}) {
+export const POST: RequestHandler = async function ({request, url}) {
 	const email = (await request.json()).email.toLowerCase()
 	if (!email) {
 		return {

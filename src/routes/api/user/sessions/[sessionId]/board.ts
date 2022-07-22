@@ -9,7 +9,7 @@ const {parse} = csv
 
 const debug = true;
 
-export const put: RequestHandler = async function ({locals, params, request}) {
+export const PUT: RequestHandler = async function ({locals, params, request}) {
 	const csv = await request.text()
 	console.log(csv)
 	if (isNotAuthenticated(locals)) {

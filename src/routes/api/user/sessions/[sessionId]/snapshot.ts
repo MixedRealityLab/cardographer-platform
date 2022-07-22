@@ -4,7 +4,7 @@ import {isNotAuthenticated} from "$lib/security"
 import type {Session, SessionSnapshot} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 
-export const get: RequestHandler = async function ({locals, params}) {
+export const GET: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
@@ -22,7 +22,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	}
 }
 
-export const put: RequestHandler = async function ({locals, params, request}) {
+export const PUT: RequestHandler = async function ({locals, params, request}) {
 	const input = await request.json()
 	if (!input.url || !input.snapshot) {
 		return {status: 400}

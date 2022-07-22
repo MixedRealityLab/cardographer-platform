@@ -7,7 +7,7 @@ import AdmZip from "adm-zip";
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
+export const GET: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
 		return {status: 401}
 	}
