@@ -20,7 +20,11 @@ export const GET: RequestHandler = async function ({locals}) {
 			sessionType: true, snapshotDescription: true
 		}
 	}).toArray()
-	const snapshots = snapshotItems.filter((snapshot) => snapshot.sessionId).map(async (snapshot) => await mapSnapshot(snapshot, db))
+	let snapshots = []
+	for (const snapshot of snapshotItems) {
+		const item = await mapSnapshot(snapshot, db)
+		snapshots.push(item)
+	}
 	if (debug) console.log(`${snapshots} snapshots for ${locals.email}`);
 	return {
 		body: {
