@@ -1,7 +1,7 @@
 import {getClient, guessSessionType} from "$lib/clients"
 import {getDb, getNewId} from "$lib/db"
 import {isNotAuthenticated} from "$lib/security"
-import type {Session, SessionSnapshot} from "$lib/types"
+import type {Session, SessionSnapshot, User} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 
 export const GET: RequestHandler = async function ({locals, params}) {
@@ -34,12 +34,13 @@ export const PUT: RequestHandler = async function ({locals, params, request}) {
 	const db = await getDb();
 	// permission check
 	let session: Session
+	const user = await db.collection<User>('Users').findOne({email: locals.email})
 	console.log(sessionId)
 	if (sessionId === 'new') {
 		session = {
 			_id: getNewId(),
 			created: new Date().toISOString(),
-			credits: input.snapshot.owner.name,
+			credits: user.name,
 			decks: [],
 			description: 'Miro Board ' + input.url,
 			isArchived: false,
