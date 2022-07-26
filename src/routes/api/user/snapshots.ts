@@ -23,7 +23,9 @@ export const GET: RequestHandler = async function ({locals}) {
 	let snapshots = []
 	for (const snapshot of snapshotItems) {
 		const item = await mapSnapshot(snapshot, db)
-		snapshots.push(item)
+		if(item) {
+			snapshots.push(item)
+		}
 	}
 	if (debug) console.log(`${snapshots} snapshots for ${locals.email}`);
 	return {
@@ -35,8 +37,11 @@ export const GET: RequestHandler = async function ({locals}) {
 
 async function mapSnapshot(snapshot, db: Db) {
 	const session = await db.collection<Session>('Sessions').findOne({_id: snapshot.sessionId})
-	snapshot.sessionName = session.name
-	snapshot.sessionCredits = session.credits
-	return snapshot
+	if(session) {
+		snapshot.sessionName = session.name
+		snapshot.sessionCredits = session.credits
+		return snapshot
+	}
+	return null
 }
 
