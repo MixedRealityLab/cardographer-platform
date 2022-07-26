@@ -1,7 +1,8 @@
 import {getDb} from '$lib/db';
 import {isNotAuthenticated} from "$lib/security";
-import type {SessionSnapshot} from '$lib/types';
+import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import type {Db} from "mongodb";
 
 const debug = false;
 
@@ -11,21 +12,27 @@ export const GET: RequestHandler = async function ({locals}) {
 	}
 	if (debug) console.log(`get session snapshots`);
 	const db = await getDb();
-	const snapshots = await db.collection<SessionSnapshot>('SessionSnapshots').find({
+	const snapshotItems = await db.collection<SessionSnapshot>('SessionSnapshots').find({
 		$or: [{owners: locals.email}, {isPublic: true}]
 	}, {
 		projection: {
-			_id: true, sessionId: true, sessionName: true,
-			sessionDescription: true, sessionCredits: true, created: true,
-			sessionType: true, originallyCreated: true,
-			snapshotDescription: true
+			_id: true, sessionId: true, created: true,
+			sessionType: true, snapshotDescription: true
 		}
 	}).toArray()
+	const snapshots = snapshotItems.filter((snapshot) => snapshot.sessionId).map((snapshot) => mapSnapshot(snapshot, db))
 	if (debug) console.log(`${snapshots} snapshots for ${locals.email}`);
 	return {
 		body: {
 			values: snapshots as any[]
 		}
 	}
+}
+
+async function mapSnapshot(snapshot, db: Db) {
+	const session = await db.collection<Session>('Sessions').findOne({_id: snapshot.sessionId})
+	snapshot.sessionName = session.name
+	snapshot.sessionCredits = session.credits
+	return snapshot
 }
 
