@@ -40,6 +40,7 @@ async function mapSnapshot(snapshot, db: Db) {
 	if(session) {
 		snapshot.sessionName = session.name
 		snapshot.sessionCredits = session.credits
+		snapshot.sessionDescription = session.description
 		return snapshot
 	}
 	return null
