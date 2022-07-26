@@ -113,8 +113,8 @@ export class MiroClient extends Client {
 		// card is an image
 		// shape is a zone
 		const data = snapshot.data as MiroData
-		for (const widgetData of data.widgets) {
-			const widget = this.normalizeWidget(widgetData)
+		const widgetList = data.widgets.map((item) => this.normalizeWidget(item))
+		for (const widget of widgetList) {
 			if (widget.type != WidgetType.IMAGE) {
 				continue;
 			}
@@ -124,9 +124,9 @@ export class MiroClient extends Client {
 				continue;
 			}
 			const ci: CardSnapshot = {id, zones: []};
-			let frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && w.childrenIds.includes(widget.id))
+			let frames: WidgetData[] = widgetList.filter((w) => w.type == WidgetType.FRAME && w.title && w.childrenIds.includes(widget.id))
 			if (frames.length == 0) {
-				frames = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
+				frames = widgetList.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
 			}
 			let boardId = '';
 			if (frames.length == 0) {
@@ -147,7 +147,7 @@ export class MiroClient extends Client {
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => w.type == WidgetType.STICKER && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+			ci.comments = widgetList.filter((w) => w.type == WidgetType.STICKER && w.text && cardOverlapping(widget, w)).map((w) => w.text)
 
 			let board = boards.find((b) => b.id == boardId);
 
@@ -160,7 +160,7 @@ export class MiroClient extends Client {
 				boards.push(board)
 			}
 			board.cards.push(ci);
-			const shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
+			const shapes: WidgetData[] = widgetList.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
 			for (const shape of shapes) {
 				if (shape.plainText) {
 					ci.zones.push({zoneId: shape.plainText});
@@ -179,7 +179,7 @@ export class MiroClient extends Client {
 	normalizeWidget(widget: any): WidgetData {
 		// Convert api v2.0 style items to v1.1 style widgets
 		console.log(widget.type)
-		widget.type = WidgetType[widget.type.toUpperCase()]
+		widget.type = WidgetType[widget.type.replace('sticky_note', 'sticker').toUpperCase()]
 		console.log(widget.type)
 		if(!widget.bounds && widget.x && widget.y && widget.width && widget.height) {
 			if(widget.origin != "center") {
