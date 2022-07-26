@@ -383,6 +383,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			boards: boards
 		})
 	}
+	console.log(designs)
 	//console.log(`extract something from ${snapshots.length} snapshots...`);
 	return designs;
 }
