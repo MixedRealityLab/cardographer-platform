@@ -178,7 +178,9 @@ export class MiroClient extends Client {
 
 	normalizeWidget(widget: any): WidgetData {
 		// Convert api v2.0 style items to v1.1 style widgets
+		console.log(widget.type)
 		widget.type = WidgetType[widget.type.toUpperCase()]
+		console.log(widget.type)
 		if(!widget.bounds && widget.x && widget.y && widget.width && widget.height) {
 			if(widget.origin != "center") {
 				console.warn("Unexpected origin: " + widget.origin);
@@ -191,7 +193,6 @@ export class MiroClient extends Client {
 				width: widget.width,
 				height: widget.height
 			}
-			console.log(widget)
 		}
 		return widget
 	}
