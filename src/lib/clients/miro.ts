@@ -26,30 +26,20 @@ export enum WidgetType {
 	SHAPE = "SHAPE",
 	STICKER = "STICKER",
 	//GROUP = "GROUP",
-	LINE = "LINE",
+	//LINE = "LINE",
 }
 
 export interface WidgetData {
 	bounds: Bounds;
 	childrenIds?: string[]; // frame
-	clientVisible: true;
-	frameIndex?: number; // frame
-	groupId?: string; // frame, shape?
 	id: string;
-	metadata: any;
 	plainText?: string; // sticker, shape
-	rotation?: number; // image
-	scale?: number; // image
+	// TODO ? rotation?: number; // image
 	style: any;
-	tags?: string[]; // sticker
 	text?: string; // sticker, shape
-	title: string; // frame, image
+	title?: string; // frame, image
 	type: WidgetType; // 'FRAME' 'IMAGE','STICKER', 'LINE','SHAPE'
 	url?: string; // image
-	x?: number
-	y?: number
-	width?: number; // not image
-	height?: number; // not image
 }
 
 export interface Bounds {
@@ -59,8 +49,6 @@ export interface Bounds {
 	right: number;
 	top: number;
 	width: number;
-	x: number;
-	y: number;
 }
 
 export class MiroClient extends Client {
@@ -125,7 +113,8 @@ export class MiroClient extends Client {
 		// card is an image
 		// shape is a zone
 		const data = snapshot.data as MiroData
-		for (const widget of data.widgets) {
+		for (const widgetData of data.widgets) {
+			const widget = this.normalizeWidget(widgetData)
 			if (widget.type != WidgetType.IMAGE) {
 				continue;
 			}
@@ -185,6 +174,26 @@ export class MiroClient extends Client {
 			if (debug) console.log(`card ${id} in ${ci.zones.length} zones: ${JSON.stringify(ci.zones)}`);
 		}
 		return {boards}
+	}
+
+	normalizeWidget(widget: any): WidgetData {
+		// Convert api v2.0 style items to v1.1 style widgets
+		widget.type = WidgetType[widget.type.toUpperCase()]
+		if(!widget.bounds && widget.x && widget.y && widget.width && widget.height) {
+			if(widget.origin != "center") {
+				console.warn("Unexpected origin: " + widget.origin);
+			}
+			widget.bounds = {
+				left: widget.x - (widget.width / 2),
+				right: widget.x + (widget.width / 2),
+				top: widget.y - (widget.height / 2),
+				bottom: widget.y + (widget.height / 2),
+				width: widget.width,
+				height: widget.height
+			}
+			console.log(widget)
+		}
+		return widget
 	}
 }
 
