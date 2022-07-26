@@ -36,20 +36,27 @@ export const PUT: RequestHandler = async function ({locals, params, request}) {
 	let session: Session
 	const user = await db.collection<User>('Users').findOne({email: locals.email})
 	console.log(sessionId)
+
+	const sessionType = guessSessionType(input.snapshot);
+	if (!sessionType) {
+		console.log(`no sessionType guess for import`);
+		return {status: 400}
+	}
+
 	if (sessionId === 'new') {
 		session = {
 			_id: getNewId(),
 			created: new Date().toISOString(),
 			credits: user.name,
 			decks: [],
-			description: 'Miro Board ' + input.url,
+			description: sessionType + ' Session ' + input.url,
 			isArchived: false,
 			isPublic: false,
 			isTemplate: false,
 			lastModified: "",
-			name: input.snapshot.name || input.snapshot.title || "New Session",
+			name: input.snapshot.name || input.snapshot.title || "New " + sessionType + " Session",
 			owners: [locals.email],
-			sessionType: ""
+			sessionType: sessionType
 		}
 		await db.collection<Session>('Sessions').insertOne(session)
 	} else {
@@ -63,15 +70,12 @@ export const PUT: RequestHandler = async function ({locals, params, request}) {
 	}
 
 	// Check snapshot doesn't already exist?
-	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({sessionId: session._id, data: input.snapshot})
-	if(exists > 0) {
+	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({
+		sessionId: session._id,
+		data: input.snapshot
+	})
+	if (exists > 0) {
 		return {status: 409}
-	}
-
-	const sessionType = guessSessionType(input.snapshot);
-	if (!sessionType) {
-		console.log(`no sessionType guess for import ${session._id}`);
-		return {status: 400}
 	}
 
 	console.log(`SessionType: ${sessionType}`);
@@ -79,6 +83,7 @@ export const PUT: RequestHandler = async function ({locals, params, request}) {
 	const snapshot = client.makeSessionSnapshot(input.snapshot);
 	const snapshotId = getNewId();
 	snapshot.sessionId = sessionId;
+	snapshot.sessionName = session.name;
 	snapshot._id = snapshotId;
 	snapshot.owners = session.owners;
 

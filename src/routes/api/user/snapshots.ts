@@ -16,7 +16,7 @@ export const GET: RequestHandler = async function ({locals}) {
 	}, {
 		projection: {
 			_id: true, sessionId: true, sessionName: true,
-			sessionDescription: true, sessionCredits: true,
+			sessionDescription: true, sessionCredits: true, created: true,
 			sessionType: true, originallyCreated: true,
 			snapshotDescription: true
 		}
