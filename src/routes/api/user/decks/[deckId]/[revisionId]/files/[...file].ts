@@ -78,7 +78,7 @@ export const POST: RequestHandler = async function ({locals, params, request}) {
 	}
 }
 
-export const del = async function ({locals, params}) {
+export const DELETE: RequestHandler = async function ({locals, params}) {
 	if (!locals.authenticated) {
 		if (debug) console.log(`locals`, locals);
 		return {status: 401}
