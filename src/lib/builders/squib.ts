@@ -92,7 +92,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		await writeFile(csvFile, csv, {});
 		// generate options file
 		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
-		const localOpts: any = {...options, output: '_output', csvfile: `${prefix}card-data.csv`};
+		const localOpts: any = {...options, output: '_output', csvfile: `${prefix}card-data.csv`, last_is_back:true, even_is_back:false};
 		localOpts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
 		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
 		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
@@ -161,6 +161,61 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		}
 		atlases.push(atlas);
 	}
+	// special case build single PDF
+	if (options.even_is_back) {
+		if (debug) console.log(`process for single PDF`);
+		var pdf_cards = [];
+		for (const back of backs) {
+			const cards = revision.cards.filter((c) => back == (c.back ? c.back : '') && !c.id.startsWith('back:'));
+			let backCard = revision.cards.find((c) => `back:${back}` == c.id);
+			if (!backCard) {
+				if (debug) console.log(`missing card back back:${back}`);
+				backCard = {
+					id: `back:${back}`,
+					revision: 1,
+					created: now,
+					lastModified: now
+				};
+			}
+			for (const card of cards) {
+				pdf_cards.push(card);
+				pdf_cards.push(backCard);
+			}
+		}
+		// back-specific filename prefix, map ' ' -> '_'
+		const prefix = 'ToPrint_';
+		// export cards to .../...card-data.csv (not all columns, no row types, with back)
+		const csv = await exportCardsAsCsv(revision, false, false, pdf_cards);
+		const csvFile = `${filePath}/${prefix}card-data.csv`;
+		if (debug) console.log(`write cards to ${csvFile}`);
+		await writeFile(csvFile, csv, {});
+		// generate options file
+		const backOptionsFile = prefix + DEFAULT_OPTIONS_FILE;
+		const localOpts: any = {...options, output: '_output', csvfile: `${prefix}card-data.csv`, last_is_back:false, even_is_back:true};
+		localOpts.png = {...options.png, prefix: prefix + 'card_', count_format: '%02d'};
+		localOpts.sheet = {...options.sheet, prefix: prefix + 'Atlas_', count_format: '%d'};
+		localOpts.pdf = {...options.pdf, file: prefix + options.pdf.file};
+		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, localopts);
+		const opts = dump(localOpts);
+		//if (debug) console.log(`back ${back} options ${backOptionsFile}`, opts);
+		await writeFile(`${filePath}/${backOptionsFile}`, opts);
+		const {ok, error, output} = await callWorker(revPath, backOptionsFile);
+		let messages = output ? output.split('\n') : [];
+		//console.log(`messages[${messages.length}]`);
+		try {
+			messages = JSON.parse(output);
+		} catch (err) {
+			console.log("Error parsing " + output)
+		}
+		allMessages = allMessages.concat([`--- ToPrint ---\n`], messages);
+
+		if (!ok) {
+			return {
+				messages: allMessages,
+				error: error ? error : 'Not OK'
+			}
+		}
+	}
 	//if(debug) console.log(`cards`, allCards);
 	return {
 		messages: allMessages,
@@ -183,7 +238,7 @@ const WORKER_CONNECTED = "<CONNECTED 1";
 const WORKER_RUNNING = "<RUNNING";
 const WORKER_DONE = "<DONE";
 const WORKER_ERROR = "<ERROR";
-const WORKER_TIMEOUT = 30000;
+const WORKER_TIMEOUT = 60000;
 
 async function callWorker(revPath: string, optionsFile: string): Promise<CallRes> {
 	let state = WState.AWAIT_CONNECT;

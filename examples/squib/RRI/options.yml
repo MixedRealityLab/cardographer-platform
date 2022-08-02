@@ -1,9 +1,10 @@
 csvfile: card-data.csv
 layout: layout.yml
-width: 24c # 22c (2.75") tarot + 2x1c bleed (c = 1/8th inch)
-height: 40c # 38c (4.75") tarot + 2x1c bleed
+width: 76mm # 70mm tarot (almost 22c (2.75") tarot, c = 1/8th inch) + 2x3mm bleed
+height: 126mm # 120mm tarot (almost 38c (4.75") tarot) + 2x3mm bleed
 dpi: 300
 last_is_back: true
+even_is_back: true # generate alternate front/back face version
 output: _output
 sheet:
   columns: 5
@@ -17,4 +18,5 @@ png:
   trim: 1c
 pdf:
   file: output.pdf
-  trim: 1c
+  trim: 0
+  sprue: tarot-toprint.yml # sprue file

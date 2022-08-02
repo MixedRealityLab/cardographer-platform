@@ -1,19 +1,38 @@
-# tarot 22c (2.75") x 38c (4.75") tarot + 1c bleed => 24c x 40c 
+# Ivory graphics metric tarot 70mm x 120mm + 3mm bleed => 76mm x 126mm 
+# and 5mm safe
+# (cf American tarot 22c (2.75") x 38c (4.75") tarot + 1c bleed => 24c x 40c which is fractionally larger)
 # 1c = 1/8th inch, 
-# The "safe zone" as defined by TheGameCrafter poker cards
 top_box:
-  x: 2c
-  y: 2c
-  width: 20c
-  height: 17.5c
+  x: 8mm
+  y: 8mm
+  width: 60mm
+  height: 53mm
   radius: 0.5c
-  
+
+alt_box:
+  x: 8mm
+  y: 8mm
+  width: 60mm
+  height: 110mm
+  radius: 0.5c
+
 title:
   x: 3c
-  y: 3c
+  y: 3.5c
   width: 18c
   height: 5c
   align: center
+  font: Sans bold
+
+alt_title:
+  x: 13mm
+  y: 8mm
+  width: 50mm
+  height: 80mm
+  align: center
+  valign: middle
+  font: Sans bold
+  font_size: 16
 
 description:
   x: 3c
@@ -27,15 +46,42 @@ desc: # alias
   extends: description
 
 bottom_box:
-  x: 2c
-  y: 20.5c
-  width: 20c
-  height: 17.5c
+  x: 8mm
+  y: 65mm
+  width: 60mm
+  height: 53mm
   radius: 0.5c
-  
+
+version:
+  x: 8mm
+  y: 61mm
+  width: 58mm
+  height: 4mm
+  align: right
+  valign: middle
+  font_size: 7
+
+alt_version:
+  x: 8mm
+  y: 110mm
+  width: 60mm
+  height: 10mm
+  align: center
+  valign: middle
+  font_size: 7
+
+back_version:
+  x: 8mm
+  y: 110mm
+  width: 60mm
+  height: 10mm
+  align: center
+  valign: middle
+  font_size: 9
+
 action_title:
   x: 3c
-  y: 21.5c
+  y: 21c
   width: 18c
   height: 14c
   valign: top
@@ -44,7 +90,7 @@ action_title:
 
 action:
   x: 3c
-  y: 23.5c
+  y: 23c
   width: 18c
   height: 12c
   valign: top
@@ -52,19 +98,20 @@ action:
   font_size: 10
 
 lower_left:
-  x: 3c
-  y: 35c
+  x: 3.5c
+  y: 34.5c
   width: 8c
   height: 2c
   font_size: 8
+  #font: Sans bold
   valign: bottom
   align: left
 ll: # alias
   extends: lower_left
 
 lower_right:
-  x: 13c
-  y: 35c
+  x: 12.5c
+  y: 34.5c
   width: 8c
   height: 2c
   font_size: 8
@@ -73,34 +120,52 @@ lower_right:
 ll: # alias
   extends: lower_left
 
-back_title:
-  x: 3c
-  y: 18c
-  width: 18c
-  height: 5c
+back_deck_title:
+  x: 8mm
+  y: 3.5c
+  width: 60mm
+  height: 50mm
+  font_size: 18
+  valign: top
   align: center
+
+back_cutout:
+  x: 38mm
+  y: 70mm
+  radius: 17mm
+
+back_title:
+  x: 23mm
+  y: 60mm
+  width: 30mm
+  height: 20mm
+  align: center
+  valign: middle
+  font_size: 14
+  font: Sans bold
+  spacing: 3mm
 
   # The "cut line", without rounded corners
 cut:
-  x: 1c
-  y: 1c
-  width: 22c
-  height: 38c
+  x: 3mm
+  y: 3mm
+  width: 70mm
+  height: 120mm
 
 # like the "cut line", with rounded corners
 border:
-  x: 1c
-  y: 1c
-  width: 22c
-  height: 38c
+  x: 3mm
+  y: 3mm
+  width: 70mm
+  height: 120mm
   radius: 1c
   join: round
 
-# The "safe zone" as defined by TheGameCrafter poker cards
+# The "safe zone" as defined by Ivory graphics tarot
 safe:
-  x: 2c
-  y: 2c
-  width: 20c
-  height: 36c
+  x: 8mm
+  y: 8mm
+  width: 60mm
+  height: 110mm
   radius: 0.5c
   dash: 3 3
