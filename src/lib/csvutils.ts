@@ -9,11 +9,12 @@ const ROWTYPE_TITLE = 'title:';
 const ROWTYPE_USE = 'use:';
 const ROWTYPE_DEFAULT = 'default:';
 const ROWTYPE_CARD = 'card:';
+const ROWTYPE_BACK = 'back:';
 const ROWTYPE_EXPORT = 'export:';
 const ROWTYPE_DESCRIPTION = 'description:';
 const ROWTYPE_BOARD = 'board:';
 const ROWTYPE_REGION = 'region:';
-//const PREFIX_BACK = 'back:';
+const PREFIX_BACK = 'back:';
 
 const debug = true;
 
@@ -23,7 +24,6 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 	const propDefs: CardPropertyDef[] = revision.propertyDefs;
 	const oldCards: CardInfo[] = revision.cards.slice();
 	let defaults = revision.defaults;
-//	let back = revision.back;
 
 	if (cells.length < 1) {
 		throw new Error('CSV file is empty');
@@ -114,12 +114,17 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 	let cardCount = 0;
 	for (let i = 1; i < cells.length; i++) {
 		const values = cells[i];
-		if (values.length < 1 || (hasRowtype && values[0] != ROWTYPE_CARD))
+		if (values.length < 1 || (hasRowtype && values[0] != ROWTYPE_CARD && values[0] != ROWTYPE_BACK))
 			continue;
 		cardCount++;
 		let id: string = idColumn >= 0 && values.length > idColumn ? values[idColumn] : '';
 		if (!id) {
 			id = `_${cardCount}`; // default id = card no.
+		}
+		if (hasRowtype && values[0] == ROWTYPE_BACK) {
+			if (id.indexOf(PREFIX_BACK)!=0) {
+				id = PREFIX_BACK+id; // All backs start with 'back:'
+			}
 		}
 		// find card?
 		let oldCard: CardInfo = oldCards.find((c) => c.id == id);
@@ -179,7 +184,7 @@ function isTrue(value: string): boolean {
 	if (!value)
 		return false;
 	value = value.toLowerCase();
-	return !(value.startsWith('t') || value == "0" || value.startsWith('f'));
+	return !(value.startsWith('n') || value == "0" || value.startsWith('f'));
 }
 
 function getValue(column: BoardProperty, columns: BoardProperty[], values: string[], defaultValue: string = null): string {
