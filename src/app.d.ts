@@ -7,9 +7,9 @@ declare namespace App {
 		token?: string;
 	}
 
-	interface Session {
-		email?: string;
-		authenticated: boolean;
-		token?: string;
-	}
+	// interface PageData {
+	// 	email?: string;
+	// 	authenticated: boolean;
+	// 	token?: string;
+	// }
 }

@@ -1,3 +1,5 @@
+import {base} from "$app/paths";
+import {redirect} from "@sveltejs/kit";
 import jwt from 'jsonwebtoken';
 
 const {sign, verify} = jwt;
@@ -12,6 +14,12 @@ const cookieSecret = "something2";
 const jwtSecret = "somethingelse";
 
 const debug = false;
+
+export function verifyAuthentication(locals: App.Locals) {
+	if(!locals.authenticated) {
+		throw redirect(302, base + "/")
+	}
+}
 
 export function isNotAuthenticated(locals: App.Locals): boolean {
 	if(locals.authenticated) {

@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte";
 	import Tab from "$lib/ui/Tab.svelte";

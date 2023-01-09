@@ -1,5 +1,4 @@
 import {base} from "$app/paths";
-import type {LoadOutput} from "@sveltejs/kit";
 
 export function authenticateRequest(session: any, request: RequestInit = {}): RequestInit {
 	const token = session.token;
@@ -13,7 +12,7 @@ export function authenticateRequest(session: any, request: RequestInit = {}): Re
 	return request
 }
 
-export function errorResponses(responses: Response[]): LoadOutput {
+export function errorResponses(responses: Response[]): OutputData {
 	const res = responses.find((res) => !res.ok)
 	return errorResponse(res)
 }
