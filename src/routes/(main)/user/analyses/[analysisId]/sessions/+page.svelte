@@ -1,67 +1,9 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import type {CardDeckRevisionSummary, Analysis, SessionSnapshotSummary} from "$lib/types"
-	// import {authenticateRequest, errorResponses} from "$lib/ui/token"
-	// import type {Load} from '@sveltejs/kit';
-
-	// interface SessionSelection extends SessionSnapshotSummary {
-	// 	selected: boolean
-	// }
-
-	// interface SessionSelection2 {
-	// 	sessionId: string
-	// 	snapshots: CardDeckRevisionSummary[]
-	// 	index: number
-	// 	selected: boolean
-	// }
-
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const headers = authenticateRequest(session)
-	// 	const {analysisId} = params
-	// 	const responses = await Promise.all([
-	// 		fetch(`${base}/api/user/analyses/${analysisId}`, headers),
-	// 		fetch(`${base}/api/user/snapshots`, headers)
-	// 	])
-
-	// 	if (responses.every((res) => res.ok)) {
-	// 		const analysis = await responses[0].json() as Analysis
-	// 		const snapshots = ((await responses[1].json()).values as SessionSelection[]).sort(compareSessions)
-	// 		if (snapshots && analysis && analysis.snapshotIds) {
-	// 			snapshots.forEach((snapshot) => {
-	// 				snapshot.selected = analysis.snapshotIds.some((id) => id == snapshot._id)
-	// 			})
-	// 		}
-
-	// 		return {
-	// 			props: {
-	// 				analysis: analysis,
-	// 				snapshots: snapshots
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return errorResponses(responses)
-	// }
-
-	// function compareSessions(a: SessionSelection, b: SessionSelection) {
-	// 	const aName = `${a.sessionName} ${a.originallyCreated}`
-	// 	const bName = `${b.sessionName} ${b.originallyCreated}`
-	// 	return String(aName).localeCompare(bName)
-	// }
-</script>
-
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import {base} from "$app/paths";
 	import {page} from '$app/stores'
-	import type {Analysis} from "$lib/types";
-	import AnalysisTabs from "../_AnalysisTabs.svelte"
 
-	export let analysis: Analysis;
-	export let snapshots: SessionSelection[] = []
+	export let data
+
 	let working = false
 	let error = ''
 	let message = ''
@@ -95,8 +37,8 @@
 		error = ''
 		working = true
 
-		analysis.snapshotIds = snapshots.filter((s) => s.selected).map<string>((snapshot) => snapshot._id)
-		console.log(`submit`, analysis)
+		data.analysis.snapshotIds = data.snapshots.filter((s) => s.selected).map<string>((snapshot) => snapshot._id)
+		console.log(`submit`, data.analysis)
 
 		const {analysisId} = $page.params;
 		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, {
@@ -104,7 +46,7 @@
 			headers: {
 				'content-type': 'application/json'
 			},
-			body: JSON.stringify(analysis)
+			body: JSON.stringify(data.analysis)
 		});
 		working = false;
 		if (res.ok) {
@@ -121,10 +63,8 @@
     }
 </style>
 
-<AnalysisTabs analysis="{analysis}"/>
-
 <form class="w-full flex flex-col text-sm font-medium p-6 gap-4" on:submit|preventDefault={handleSubmit}>
-	{#each snapshots as snapshot}
+	{#each data.snapshots as snapshot}
 		<label class:border-highlight={snapshot.selected} class="listItem items-center">
 			<input type="checkbox" class="form-checkbox mr-4" bind:checked="{snapshot.selected}">
 			<div class="flex flex-1 flex-col">

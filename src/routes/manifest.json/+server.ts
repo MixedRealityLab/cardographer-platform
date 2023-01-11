@@ -2,7 +2,6 @@ import { json } from '@sveltejs/kit';
 import type {RequestHandler} from "@sveltejs/kit"
 import {base} from "$app/paths";
 
-
 export const GET: RequestHandler = async function () {
 	return json({
 		"theme_color": "#374151",

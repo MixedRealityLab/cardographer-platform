@@ -1,7 +1,7 @@
 <script lang="ts">
-	import {enhance} from "$app/forms";
+	import {enhance} from "$app/forms"
 	import {base} from '$app/paths'
-	import AppBar from "$lib/ui/AppBar.svelte";
+	import AppBar from "$lib/ui/AppBar.svelte"
 	import type {ActionData} from './$types'
 
 	let register = false

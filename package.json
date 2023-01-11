@@ -2,10 +2,11 @@
   "name": "cardographer-platform",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite dev --host=0.0.0.0",
+    "dev": "vite dev --host=0.0.0.0 ",
     "build": "vite build",
     "start": "node build",
     "check": "svelte-check",
+    "prepare": "svelte-kit sync",
     "lint": "eslint --ignore-path .gitignore .",
     "lint-fix": "eslint --ignore-path .gitignore --fix .",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"

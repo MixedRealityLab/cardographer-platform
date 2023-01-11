@@ -1,35 +1,4 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import type {FileInfo} from '$lib/apitypes'
-	// import type {CardDeckRevision} from "$lib/types"
-	// import {authenticateRequest, errorResponses} from "$lib/ui/token"
-	// import type {Load} from '@sveltejs/kit'
-
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const {deckId, revisionId, file} = params
-	// 	const path = file.length > 0 ? '/' + file : ''
-	// 	const authHeader = authenticateRequest(session)
-	// 	const responses = await Promise.all([
-	// 		fetch(`${base}/api/user/decks/${deckId}/${revisionId}/files${path}`, authHeader),
-	// 		fetch(`${base}/api/user/decks/${deckId}/${revisionId}`, authHeader)
-	// 	])
-
-	// 	if (responses.every((res) => res.ok)) {
-	// 		return {
-	// 			props: {
-	// 				files: await responses[0].json() as FileInfo[],
-	// 				revision: await responses[1].json() as CardDeckRevision
-	// 			}
-	// 		}
-	// 	}
-	// 	return errorResponses(responses)
-	// }
-</script>
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import {base} from "$app/paths";
 	import {page} from '$app/stores'
 	import type {FileInfo, PostFilesRequest} from "$lib/apitypes";
@@ -38,12 +7,9 @@
 	import {toBase64} from "$lib/ui/download";
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 
-	//let {deckId, revisionId, file} = $page.params
-	export let files: FileInfo[]
-	export let revision: CardDeckRevision
-	export let error = ""
-
-	let building = revision.build && revision.build.status === DeckBuildStatus.Building
+	export let data
+	export let error: string = null
+	let building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
 
 	async function refresh() {
 		await Promise.all([
@@ -55,8 +21,8 @@
 	async function refreshRevision() {
 		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}`);
 		if (res.ok) {
-			revision = await res.json() as CardDeckRevision
-			building = revision.build && revision.build.status === DeckBuildStatus.Building
+			data.revision = await res.json() as CardDeckRevision
+			building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
 		} else {
 			console.log(`error refreshing ${res.status}`);
 		}
@@ -66,7 +32,7 @@
 		const path = $page.params.file.length > 0 ? '/' + $page.params.file : ''
 		const res = await fetch(`${base}/api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/files${path}`);
 		if (res.ok) {
-			files = await res.json() as FileInfo[]
+			data.files = await res.json() as FileInfo[]
 		} else {
 			console.log(`error refreshing ${res.status}`);
 		}
@@ -82,7 +48,7 @@
 				method: 'delete'
 			})
 		if (res.ok) {
-			files = await res.json() as FileInfo[]
+			data.files = await res.json() as FileInfo[]
 		} else {
 			console.log(`error refreshing ${res.status}`);
 		}
@@ -153,7 +119,7 @@
 		//console.log(`done`, res);
 		//working = false;
 		if (res.ok) {
-			files = await res.json() as FileInfo[]
+			data.files = await res.json() as FileInfo[]
 		} else if (res.status == 413) {
 			error = "Upload too large"
 		} else {
@@ -164,7 +130,7 @@
 
 	function downloadZip() {
 		const path = $page.params.file.length > 0 ? $page.params.file : ''
-		window.location.href = `../../../../../../api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/zip/${path}`
+		window.location.href = `../../../../../../../api/user/decks/${$page.params.deckId}/${$page.params.revisionId}/zip/${path}`
 	}
 
 	function urlFor(path: string): string {
@@ -176,12 +142,12 @@
 	}
 </script>
 
-<div slot="actions">
+<div>
 	{#if building}
 		<div class="loader-small">&nbsp;</div>
 	{/if}
-	<button class="iconButton mr-3" disabled={building || revision.isLocked} on:click={build}
-	        title={revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
+	<button class="iconButton mr-3" disabled={building || data.revision.isLocked} on:click={build}
+	        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 		<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 			<g>
 				<path d="M17.59,3.41L15,6V5c0-1.1-0.9-2-2-2H9C6.24,3,4,5.24,4,8h5v3h6V8l2.59,2.59c0.26,0.26,0.62,0.41,1,0.41h0.01 C19.37,11,20,10.37,20,9.59V4.41C20,3.63,19.37,3,18.59,3h-0.01C18.21,3,17.85,3.15,17.59,3.41z"/>
@@ -191,7 +157,7 @@
 			</g>
 		</svg>
 	</button>
-	{#if files.length > 0}
+	{#if data.files.length > 0}
 		<button class="iconButton" title="Download Files" on:click={downloadZip}>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 				<path fill-rule="evenodd"
@@ -200,8 +166,8 @@
 			</svg>
 		</button>
 	{/if}
-	<UploadButton class="iconButton" disabled={revision.isLocked} multiple="true" on:upload={handleUpload}
-	              title={revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
+	<UploadButton class="iconButton" disabled={data.revision.isLocked} multiple="true" on:upload={handleUpload}
+	              title={data.revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 		<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 			<path clip-rule="evenodd"
 			      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
@@ -232,7 +198,7 @@
 			<div>Back to /{removeLastPathSegment($page.params.file)}</div>
 		</a>
 	{/if}
-	{#each files as childFile}
+	{#each data.files as childFile}
 		<div class="flex items-center">
 			{#if childFile.isDirectory}
 				<a class="fileItem"

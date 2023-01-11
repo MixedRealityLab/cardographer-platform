@@ -2,9 +2,9 @@ import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types";
 import {error} from "@sveltejs/kit";
-import type {PageServerLoad} from "./$types"
+import type {LayoutServerLoad} from "./$types"
 
-export const load: PageServerLoad = async function ({locals, params}) {
+export const load: LayoutServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
 	const {deckId, revisionId} = params;
 	const db = await getDb();

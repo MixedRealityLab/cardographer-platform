@@ -1,60 +1,60 @@
 <script lang="ts">
-
+	import {enhance} from "$app/forms";
 	import {base} from "$app/paths";
 	import type {CardDeckRevision} from "$lib/types"
-	import {downloadFile} from "$lib/ui/download"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
-	import {page} from '$app/stores'
 	import UploadButton from "$lib/ui/UploadButton.svelte";
+	import type {ActionData} from "./$types";
 
 	export let data: CardDeckRevision
+	export let form: ActionData
 	let working = false
 	let error = ''
 	let message = ''
-	let addUnknown = true
-
-	async function uploadCards(event: CustomEvent<FileList>) {
-		const files = event.detail
-		message = ''
-		error = ''
-
-		working = true
-		const {deckId, revisionId} = $page.params
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards`, {
-			method: 'PUT',
-			headers: {
-				'content-type': 'application/json'
-			},
-			body: JSON.stringify({
-				addColumns: addUnknown,
-				csvFile: await files[0].text()
-			})
-		})
-		working = false
-		if (res.ok) {
-			message = "Updated"
-			data = await res.json()
-		} else {
-			error = `Sorry, there was a problem (${res.statusText})`
-		}
-	}
-
-	async function exportCsv() {
-		console.log(`export...`);
-		message = error = '';
-		working = true;
-		const {deckId, revisionId} = $page.params;
-		const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards.csv?allColumns&withRowTypes`);
-		working = false;
-		if (res.ok) {
-			const text = await res.text();
-			let filename = (data.slug ? data.slug : `${data.deckName} v${data.revision}`) + '.csv';
-			downloadFile(filename, text);
-		} else {
-			error = `Sorry, there was a problem (${res.statusText})`;
-		}
-	}
+	//let addUnknown = true
+	//
+	// async function uploadCards(event: CustomEvent<FileList>) {
+	// 	const files = event.detail
+	// 	message = ''
+	// 	error = ''
+	//
+	// 	working = true
+	// 	const {deckId, revisionId} = $page.params
+	// 	const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards`, {
+	// 		method: 'PUT',
+	// 		headers: {
+	// 			'content-type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			addColumns: addUnknown,
+	// 			csvFile: await files[0].text()
+	// 		})
+	// 	})
+	// 	working = false
+	// 	if (res.ok) {
+	// 		message = "Updated"
+	// 		data = await res.json()
+	// 	} else {
+	// 		error = `Sorry, there was a problem (${res.statusText})`
+	// 	}
+	// }
+	//
+	// async function exportCsv() {
+	// 	console.log(`export...`);
+	// 	message = error = '';
+	// 	working = true;
+	// 	const {deckId, revisionId} = $page.params;
+	// 	const res = await fetch(`${base}/api/user/decks/${deckId}/${revisionId}/cards.csv?allColumns&withRowTypes`);
+	// 	working = false;
+	// 	if (res.ok) {
+	// 		const text = await res.text();
+	// 		let filename = (data.slug ? data.slug : `${data.deckName} v${data.revision}`) + '.csv';
+	// 		downloadFile(filename, text);
+	// 	} else {
+	// 		error = `Sorry, there was a problem (${res.statusText})`;
+	// 	}
+	// }
 </script>
 
 <div class="p-6 flex flex-col gap-2">
@@ -100,13 +100,15 @@
 		<div class="message-success">{message}</div>
 	{/if}
 	<div class="flex justify-center">
-		<UploadButton class="button m-3" on:upload={uploadCards} types=".csv,text/csv">
-			<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
-		</UploadButton>
+		<form method="post" use:enhance enctype="multipart/form-data">
+			<UploadButton class="button m-3" types=".csv,text/csv">
+				<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
+			</UploadButton>
+		</form>
 		{#if data.cards.length > 0}
-			<button class="button m-3" on:click={exportCsv}>
+			<a class="button m-3" href="cards.csv">
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
-			</button>
+			</a>
 		{/if}
 	</div>
 </div>

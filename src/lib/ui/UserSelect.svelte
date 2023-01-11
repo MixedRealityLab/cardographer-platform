@@ -3,6 +3,7 @@
 
 	export let owners: string[] = []
 	export let users = []
+	export let name = "owners"
 
 	let userFilter = ""
 	let filtered = []
@@ -64,6 +65,10 @@
 			       id="userFilter" on:blur={filtered=[]} on:focus={filter} on:input={filter}/>
 		</form>
 	</div>
+	{#each owners as owner}
+		<input name="{name}" type="hidden" value="{owner}"/>
+	{/each}
+
 	{#if filtered.length > 0}
 		<div transition:slide class="absolute bg-white drop-shadow border-gray-200 flex flex-col items-stretch">
 			{#each filtered as user}

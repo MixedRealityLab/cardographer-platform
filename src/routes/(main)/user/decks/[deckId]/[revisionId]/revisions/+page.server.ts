@@ -1,15 +1,36 @@
 import {getDb} from "$lib/db"
 import {verifyAuthentication} from "$lib/security"
-import type {CardDeckSummary} from "$lib/types"
+import type {CardDeckRevisionSummary, CardDeckSummary} from "$lib/types"
+import {error} from "@sveltejs/kit";
 import type {PageServerLoad} from "./$types"
-export const load: PageServerLoad = async function ({locals}) {
+
+export const load: PageServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
+	const {deckId} = params;
 	const db = await getDb();
-	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries')
-		.find({owners: locals.email})
-		.sort({"name": 1, "_id": 1})
+	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
+		_id: deckId, owners: locals.email
+	})
+	if (!deck) {
+		return error(404, `Deck ${deckId} not found`)
+	}
+	// project to summary
+	const revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
+		.find({
+			deckId: deckId
+		}, {
+			projection: {
+				_id: true, deckId: true, revision: true, slug: true, deckName: true,
+				deckDescription: true, deckCredits: true, created: true,
+				lastModified: true, revisionName: true,
+				revisionDescription: true, isUsable: true, isPublic: true,
+				isLocked: true, isTemplate: true, cardCount: true
+			}
+		})
 		.toArray()
+	const current = revisions.find((r) => r.revision == deck.currentRevision);
 	return {
-		decks: decks
+		revisions: revisions,
+		selectedRevision: current
 	}
 }

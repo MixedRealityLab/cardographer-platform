@@ -1,28 +1,4 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import {authenticateRequest, errorResponse} from "$lib/ui/token"
-	// import type {Load} from '@sveltejs/kit'
-
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const {sessionId} = params
-	// 	const res = await fetch(`${base}/api/user/sessions/${sessionId}`, authenticateRequest(session))
-	// 	if (res.ok) {
-	// 		return {
-	// 			props: {
-	// 				session: (await res.json())
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return errorResponse(res)
-	// }
-</script>
-
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import {base} from "$app/paths";
 	import type {Session} from "$lib/types"
 	import UploadButton from "$lib/ui/UploadButton.svelte"
@@ -30,7 +6,7 @@
 
 	import {page} from '$app/stores'
 
-	export let session: Session
+	export let data: Session
 
 	let working = false
 	let error = ''
@@ -56,22 +32,20 @@
 		working = false
 		if (res.ok) {
 			message = "Updated"
-			session = (await res.json()).session
+			data = (await res.json()).session
 		} else {
 			error = `Sorry, there was a problem (${res.statusText})`
 		}
 	}
 </script>
 
-<SessionTabs session="{session}"/>
-
 <div class="p-6 flex flex-col">
-	{#if session.board}
-		<div class="font-semibold">{session.board.name}</div>
-		{#if session.board.description}
-			<div>{session.board.description}</div>
+	{#if data.board}
+		<div class="font-semibold">{data.board.name}</div>
+		{#if data.board.description}
+			<div>{data.board.description}</div>
 		{/if}
-		{#each session.board.regions as region}
+		{#each data.board.regions as region}
 			<div class="text-sm">
 				{#if !region.analyse}
 					Ignore

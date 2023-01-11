@@ -11,7 +11,7 @@
 	let {analysisId} = $page.params
 
 	async function deleteAnalysis() {
-		const res = await fetch(`${base}/api/user/analyses/${analysisId}`, {
+		const res = await fetch(`${base}/user/analyses/${analysisId}`, {
 			method: 'DELETE'
 		})
 		if (res.ok) {

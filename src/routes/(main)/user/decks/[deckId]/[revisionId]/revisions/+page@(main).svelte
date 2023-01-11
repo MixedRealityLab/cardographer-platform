@@ -7,8 +7,7 @@
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte";
 
-	export let revisions: CardDeckRevisionSummary[]
-	export let selectedRevision: CardDeckRevisionSummary
+	export let data
 
 	let working = false;
 	let message = '';
@@ -18,7 +17,7 @@
 		message = error = '';
 		working = true;
 		// get latest value
-		const getResponse = await fetch(`${base}/api/user/decks/${selectedRevision.deckId}/${selectedRevision.revision}`)
+		const getResponse = await fetch(`${base}/api/user/decks/${data.selectedRevision.deckId}/${data.selectedRevision.revision}`)
 		if (!getResponse.ok) {
 			error = `Sorry, couldn't get the latest version of this revision (${getResponse.statusText})`;
 			working = false;
@@ -27,7 +26,7 @@
 		const newRevision = await getResponse.json() as CardDeckRevision
 		const {deckId} = $page.params;
 		newRevision.revisionName = 'New revision';
-		newRevision.revisionDescription = `Based on revision ${selectedRevision.revision} of ${selectedRevision.deckName}`;
+		newRevision.revisionDescription = `Based on revision ${data.selectedRevision.revision} of ${data.selectedRevision.deckName}`;
 		newRevision.slug = '';
 		const res = await fetch(`${base}/api/user/decks/${deckId}/revisions`, {
 			method: 'POST',
@@ -38,7 +37,7 @@
 		})
 		working = false;
 		if (res.ok) {
-			selectedRevision.isCurrent = false;
+			data.selectedRevision.isCurrent = false;
 			const output = await res.json() as PostUserRevisionResponse;
 			message = 'OK';
 			// redirect
@@ -71,15 +70,15 @@
     }
 </style>
 
-<AppBar back="{base}/user/decks/{selectedRevision.deckId}/{selectedRevision.revision}">
+<AppBar back="{base}/user/decks/{data.selectedRevision.deckId}/{data.selectedRevision.revision}">
 	<div slot="subheader">
 		Select Revision
 	</div>
 </AppBar>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
-	{#each revisions as revision}
-		<a class:border-highlight={revision.revision === selectedRevision.revision} class="listItem items-center"
+	{#each data.revisions as revision}
+		<a class:border-highlight={revision.revision === data.selectedRevision.revision} class="listItem items-center"
 		   href="{base}/user/decks/{revision.deckId}/{revision.revision}">
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
 			<div class="flex-col">
@@ -113,7 +112,7 @@
 				cancelTitle="Cancel"
 				confirmTitle="Delete"
 				let:confirm="{confirmThis}"
-				title="Delete {selectedRevision.deckName}?">
+				title="Delete {data.selectedRevision.deckName}?">
 			<button class="button-delete button m-2" disabled={working} on:click={() => confirmThis(deleteDeck)}>
 				<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
 			</button>

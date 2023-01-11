@@ -1,38 +1,3 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import {authenticateRequest, errorResponse} from "$lib/ui/token";
-	// import type {Load} from '@sveltejs/kit';
-
-	// // TODO Make publicly accessible
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const {sessionId} = params;
-	// 	const res = await fetch(`${base}/api/user/sessions/${sessionId}`, authenticateRequest(session));
-
-	// 	if (res.ok) {
-	// 		return {
-	// 			props: {
-	// 				currentSession: (await res.json())
-	// 			}
-	// 		};
-	// 	}
-	// 	return errorResponse(res)
-	// }
-</script>
-
-<svelte:head>
-	<script src="{base}/tabletop/Build/UnityLoader.js">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-</script>
-</svelte:head>
-
-<style>
-    #unityContainer {
-        background: white !important;
-    }
-</style>
-
 <script lang="ts">
 	import {base} from "$app/paths";
 	import {page} from "$app/stores"
@@ -66,6 +31,16 @@
 		progress.set((newProgress * 90) + 10)
 	}
 </script>
+
+<svelte:head>
+	<script src="{base}/tabletop/Build/UnityLoader.js"/>
+</svelte:head>
+
+<style>
+    #unityContainer {
+        background: white !important;
+    }
+</style>
 
 <SessionTabs session="{currentSession}">
 	<button class="iconButton ml-3" on:click={unityInstance.SetFullscreen(1)} title="Fit Graph to Screen">

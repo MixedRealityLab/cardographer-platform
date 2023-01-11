@@ -1,36 +1,10 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import type {Analysis} from "$lib/types";
-	// import {errorResponse, authenticateRequest} from "$lib/ui/token";
-	// import type {Load} from '@sveltejs/kit';
-
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const {analysisId} = params;
-	// 	const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest(session));
-	// 	if (res.ok) {
-	// 		return {
-	// 			props: {
-	// 				analysis: await res.json() as Analysis
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return errorResponse(res)
-	// }
-</script>
-
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
-	import {base} from "$app/paths";
+	import {base} from "$app/paths"
 	import {page} from '$app/stores'
 	import {AnalysisExportTypes} from '$lib/analysistypes'
-	import type {Analysis} from "$lib/types";
-	import AnalysisTabs from "../_AnalysisTabs.svelte"
+	import type {Analysis} from "$lib/types"
 
-	export let analysis: Analysis
+	export let data: Analysis
 	let exportOption = [
 		AnalysisExportTypes.CARD_USE,
 		AnalysisExportTypes.CARD_ADJACENCY
@@ -84,7 +58,7 @@
 		working = false;
 		if (res.ok) {
 			const text = await res.text();
-			let filename = `${analysis.name}.csv`
+			let filename = `${data.name}.csv`
 			const disposition = res.headers.get('Content-Disposition')
 			if (disposition) {
 				const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -101,8 +75,6 @@
 	}
 
 </script>
-
-<AnalysisTabs analysis="{analysis}"/>
 
 <div class="p-6">
 	<div class="flex flex-col text-sm">

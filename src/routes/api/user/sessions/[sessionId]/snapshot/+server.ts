@@ -1,33 +1,27 @@
-import { json as json$1 } from '@sveltejs/kit';
 import {getClient, guessSessionType} from "$lib/clients"
 import {getDb, getNewId} from "$lib/db"
-import {isNotAuthenticated} from "$lib/security"
+import {isNotAuthenticated, verifyAuthentication} from "$lib/security"
 import type {Session, SessionSnapshot} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
+import {error, json} from '@sveltejs/kit';
 
-export const get: RequestHandler = async function ({locals, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const GET: RequestHandler = async function ({locals, params}) {
+	verifyAuthentication(locals)
 	const {sessionId} = params;
 	const db = await getDb();
 	const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({sessionId: sessionId});
 	if (!snapshot) {
-		return new Response(undefined, { status: 404 })
+		return new Response(undefined, {status: 404})
 	}
 
-	return json$1({
-		session: snapshot as any
-	})
+	return json(snapshot)
 }
 
-export const put: RequestHandler = async function ({locals, params, request}) {
+export const PUT: RequestHandler = async function ({locals, params, request}) {
+	verifyAuthentication(locals)
 	const input = await request.json()
 	if (!input.url || !input.snapshot) {
-		return new Response(undefined, { status: 400 })
-	}
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
+		throw error(400)
 	}
 	const {sessionId} = params;
 	const db = await getDb();
@@ -35,10 +29,10 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	let session: Session
 	console.log(sessionId)
 
-	const sessionType = guessSessionType(input.snapshot);
+	let sessionType = guessSessionType(input.snapshot);
 	if (!sessionType) {
 		console.log(`no sessionType guess for import`);
-		return new Response(undefined, { status: 400 })
+		return error(400)
 	}
 
 	if (sessionId === 'new') {
@@ -64,7 +58,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	}
 	console.log(session)
 	if (!session) {
-		return new Response(undefined, { status: 404 });
+		return new Response(undefined, {status: 404});
 	}
 
 	// Check snapshot doesn't already exist?
@@ -73,10 +67,10 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 		data: input.snapshot
 	})
 	if (exists > 0) {
-		return new Response(undefined, { status: 409 })
+		return new Response(undefined, {status: 409})
 	}
 
-	const sessionType = guessSessionType(input.snapshot);
+	sessionType = guessSessionType(input.snapshot);
 	if (!sessionType) {
 		console.log(`no sessionType guess for import ${session._id}`);
 		return {status: 400}
@@ -95,7 +89,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 	const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
 	if (!r2.insertedId) {
 		console.log(`Error adding new imported snapshot`);
-		return new Response(undefined, { status: 500 })
+		return new Response(undefined, {status: 500})
 	}
 
 	// session already imported?
@@ -113,14 +107,7 @@ export const put: RequestHandler = async function ({locals, params, request}) {
 		}
 	});
 	if (!upd.matchedCount) {
-		return new Response(undefined, { status: 404 });
+		return new Response(undefined, {status: 404});
 	}
-
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-	// Suggestion (check for correctness before using):
-	// return new Response(session as any);
-	return {
-		body: session as any
-	}
+	return json(session)
 }
-

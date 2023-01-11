@@ -266,6 +266,9 @@ export interface SessionSnapshot extends SessionSnapshotSummary {
 
 	legacyId?: string
 	data?: any
+
+	// Used in UI
+	selected?: boolean
 }
 
 export interface Analysis {

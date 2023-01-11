@@ -4,8 +4,8 @@ import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevisionSummary, CardDeckRevision, CardDeckSummary} from "$lib/types";
 import {error, redirect} from "@sveltejs/kit";
 import type {Actions} from "@sveltejs/kit";
-import {cleanRevision} from "../../../api/user/decks/[deckId]/revisions/+server";
-import {cleanRevisions} from "../../../api/user/decks/revisions/+server";
+import {cleanRevision} from "../../../../api/user/decks/[deckId]/revisions/+server";
+import {cleanRevisions} from "../../../../api/user/decks/revisions/+server";
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {

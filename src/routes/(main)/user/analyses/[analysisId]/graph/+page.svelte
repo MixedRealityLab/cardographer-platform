@@ -1,45 +1,20 @@
-<script context="module" lang="ts">
-	throw new Error("@migration task: Check code was safely removed (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292722)");
-
-	// import {base} from '$app/paths'
-	// import type {Analysis} from "$lib/types";
-	// import {authenticateRequest, errorResponse} from "$lib/ui/token";
-	// import type {Load} from '@sveltejs/kit';
-
-	// export const load: Load = async function ({params, fetch, session}) {
-	// 	const {analysisId} = params;
-	// 	const res = await fetch(`${base}/api/user/analyses/${analysisId}`, authenticateRequest(session));
-	// 	if (res.ok) {
-	// 		return {
-	// 			props: {
-	// 				analysis: await res.json() as Analysis
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return errorResponse(res)
-	// }
-</script>
-
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import {base} from "$app/paths";
 	import {page} from "$app/stores"
 	import type {Analysis} from "$lib/types";
 	import type {LayoutOptions, Css, ElementsDefinition} from "cytoscape"
 	import cytoscape from "cytoscape";
 	import {onMount} from "svelte"
-	import AnalysisTabs from "../_AnalysisTabs.svelte"
+	import AnalysisTabs from "../AnalysisTabs.svelte"
 	import {fly} from 'svelte/transition';
-	import RegionOptions from "./_RegionOptions.svelte";
+	import RegionOptions from "./RegionOptions.svelte";
 
 	const coolGray = {
 		400: '#9ca3af',
 		900: '#111827',
 	}
 
-	export let analysis: Analysis
+	export let data: Analysis
 	let selectedCard = null
 	let graphElement: HTMLElement
 	let graph: cytoscape.Core
@@ -188,7 +163,7 @@
 	})
 </script>
 
-<AnalysisTabs analysis="{analysis}">
+<AnalysisTabs analysis="{data}">
 	{#if graph}
 		<button class="iconButton ml-3" on:click={() => fit(true)} title="Fit Graph to Screen">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
