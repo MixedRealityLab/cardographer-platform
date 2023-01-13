@@ -10,7 +10,6 @@
 	import type {BoardInfo, BoardNode, Item, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
 
 	declare const miro: Miro
-
 	export let sessions: Session[]
 	let selectedSession: Session = null
 	let decks: CardDeckRevision[] = []

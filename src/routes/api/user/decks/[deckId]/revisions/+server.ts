@@ -1,17 +1,15 @@
-import { json as json$1 } from '@sveltejs/kit';
-import {copyBuild} from '$lib/builders'
 import {getDb} from '$lib/db'
+import {cleanRevision} from "$lib/decks";
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from '$lib/types'
-import {DeckBuildStatus} from '$lib/types'
 import type {RequestHandler} from '@sveltejs/kit'
-import type {Db} from "mongodb"
+import {json as json$1} from '@sveltejs/kit';
 
 const debug = true;
 
 export const get: RequestHandler = async function ({locals, params}) {
 	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
+		return new Response(undefined, {status: 401})
 	}
 	const {deckId} = params;
 	if (debug) console.log(`get revisions for ${deckId}`)
@@ -22,7 +20,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	})
 	if (!deck) {
 		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		return new Response(undefined, {status: 404});
 	}
 	// project to summary
 	const revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions').find({
@@ -48,7 +46,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 
 export const post: RequestHandler = async function ({locals, params, request}) {
 	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
+		return new Response(undefined, {status: 401})
 	}
 	const revision = await request.json() as CardDeckRevision;
 	//if (debug) console.log(`add deck`, revision);
@@ -60,7 +58,7 @@ export const post: RequestHandler = async function ({locals, params, request}) {
 	})
 	if (!deck) {
 		if (debug) console.log(`deck ${deckId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		return new Response(undefined, {status: 404});
 	}
 	// new revision...
 	deck.currentRevision++;
@@ -70,7 +68,7 @@ export const post: RequestHandler = async function ({locals, params, request}) {
 	const insertResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision);
 	if (!insertResult.acknowledged) {
 		console.log(`Error adding revision for new deck ${deckId}`);
-		return new Response(undefined, { status: 500 });
+		return new Response(undefined, {status: 500});
 	}
 	// update deck
 	const updateResult = await db.collection<CardDeckSummary>('CardDeckSummaries').updateOne({
@@ -88,32 +86,3 @@ export const post: RequestHandler = async function ({locals, params, request}) {
 	})
 }
 
-export async function cleanRevision(db: Db, revision: CardDeckRevision, deckId: string, revId: number) {
-	const oldRevisionId = revision._id;
-	const now = new Date().toISOString();
-	// existing local revision?
-	const oldRevision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
-		_id: oldRevisionId
-	})
-	// sanitise revision
-	revision.deckId = deckId;
-	revision.revision = revId;
-	revision._id = `${deckId}:${revId}`;
-	revision.slug = '';
-	revision.created = revision.lastModified = now;
-	revision.isUsable = false;
-	revision.isPublic = false;
-	revision.isLocked = false;
-	revision.isTemplate = false;
-	delete revision.isCurrent;
-	if (oldRevision) {
-		if (debug) console.log(`copying build from existing revision ${oldRevisionId}`);
-		revision.build = await copyBuild(oldRevision, revision);
-	} else if (revision.build) {
-		if (debug) console.log(`cannot copy build - old revision ${oldRevisionId} not found`);
-		delete revision.build.lastBuilt;
-		revision.build.status = DeckBuildStatus.Unbuilt;
-		revision.build.messages = [];
-	}
-}
-  

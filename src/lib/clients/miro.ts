@@ -1,5 +1,6 @@
 import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
 import type {Session, SessionSnapshot} from '$lib/types';
+import type {Filter} from "mongodb";
 import {Client} from './types';
 
 const debug = true;
@@ -112,7 +113,7 @@ export class MiroClient extends Client {
 		};
 	}
 
-	getExistingSessionQuery(d: any): any {
+	getExistingSessionQuery(d: any): Filter<Session> {
 		const data = d as MiroData;
 		return {
 			miroId: data.id

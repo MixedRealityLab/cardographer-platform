@@ -1,3 +1,4 @@
+import {cleanRevisions} from "$lib/decks";
 import { json } from '@sveltejs/kit';
 import {getDb} from '$lib/db'
 import {isNotAuthenticated} from "$lib/security";
@@ -32,27 +33,4 @@ export const get: RequestHandler = async function ({locals}) {
 	return json({
 		decks: revisions as any[]
 	})
-}
-
-export async function cleanRevisions(revisions: CardDeckRevisionSummary[], db: Db) {
-	const users = await db.collection<User>('Users').find({}).toArray()
-	for (const revision of revisions) {
-		if (!(revision.deckCredits)) {
-			const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({_id: revision.deckId})
-			if (deck) {
-				if (deck.owners && deck.owners.length > 0) {
-					revision.deckCredits = deck.owners.map(owner => userName(owner, users)).join(', ')
-				}
-			}
-		}
-	}
-}
-
-function userName(email: string, users: User[]): string {
-	const user = users.find(user => user.email === email)
-	if (user.name) {
-		return user.name
-	}
-
-	return email.slice(0, email.indexOf('@'))
 }

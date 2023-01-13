@@ -15,3 +15,5 @@
 		Analyses
 	</Tab>
 </AppBar>
+
+<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5"></div>

@@ -1,15 +1,14 @@
 import {analysisNodeGraph} from '$lib/analysis';
 import {getDb} from '$lib/db';
-import {isNotAuthenticated} from "$lib/security";
-import type {Analysis, AnalysisRegion} from '$lib/types'
+import {verifyAuthentication} from "$lib/security";
+import type {Analysis} from '$lib/types'
+import {RegionType} from "$lib/types";
 import type {RequestHandler} from '@sveltejs/kit'
+import {error, json} from "@sveltejs/kit";
+import type {Actions} from "./$types";
 
-const debug = true;
-
-export const get: RequestHandler = async function ({locals, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const GET: RequestHandler = async function ({locals, params}) {
+	verifyAuthentication(locals)
 	const {analysisId} = params
 	const db = await getDb()
 	// permission check
@@ -17,57 +16,55 @@ export const get: RequestHandler = async function ({locals, params}) {
 		_id: analysisId, owners: locals.email
 	})
 	if (!analysis) {
-		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`)
-		return new Response(undefined, { status: 404 })
+		throw error(404)
 	}
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-	// Suggestion (check for correctness before using):
-	// return new Response(await analysisNodeGraph(analysis));
-	return {
-		body: await analysisNodeGraph(analysis)
-	}
+	return json(await analysisNodeGraph(analysis))
 }
 
-export const put: RequestHandler = async function ({locals, request, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
-	const regions = await request.json() as AnalysisRegion[]
-	for (const region of regions) {
-		// if (region.type === RegionType.SubRegions) {
-		// }
-		delete region['regions']
-	}
-	const {analysisId} = params
-	const db = await getDb()
-	// permission check
-	const analysis = await db.collection<Analysis>('Analyses').findOne({
-		_id: analysisId, owners: locals.email
-	})
-	if (!analysis) {
-		if (debug) console.log(`analysis ${analysisId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
-	}
-	// update analysis
-	const now = new Date().toISOString();
-	analysis.regions = regions
-	analysis.lastModified = now
-	const upd = await db.collection<Analysis>('Analyses').updateOne({
-		_id: analysisId
-	}, {
-		$set: {
-			regions: regions,
-			lastModified: now,
+export const actions: Actions = {
+	default: async ({locals, request, params}) => {
+		verifyAuthentication(locals)
+		const {analysisId} = params
+		const db = await getDb()
+		// permission check
+		const analysis = await db.collection<Analysis>('Analyses').findOne({
+			_id: analysisId, owners: locals.email
+		})
+		if (!analysis) {
+			throw error(404)
 		}
-	});
-	if (!upd.matchedCount) {
-		if (debug) console.log(`analysis ${analysisId} not matched`, upd);
-		return new Response(undefined, { status: 404 });
-	}
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-	// Suggestion (check for correctness before using):
-	// return new Response(await analysisNodeGraph(analysis));
-	return {
-		body: await analysisNodeGraph(analysis)
+		// update analysis
+		const data = await request.formData();
+		const regionTypes = data.getAll('regions') as string[]
+		console.log(regionTypes)
+		const regions = analysis.regions
+
+		if (regions.length != regionTypes.length) {
+			throw error(400)
+		}
+
+		for (const index in regions) {
+			let region = regions[index]
+			const type = RegionType[regionTypes[index]]
+			if (!type) {
+				throw error(400)
+			}
+			region.type = type
+			console.log(region)
+		}
+		console.log(regions)
+
+		const upd = await db.collection<Analysis>('Analyses').updateOne({
+			_id: analysisId
+		}, {
+			$set: {
+				regions: regions,
+				lastModified: new Date().toISOString(),
+			}
+		});
+		if (!upd.matchedCount) {
+			throw error(404)
+		}
+		return {success: true}
 	}
 }

@@ -1,15 +1,13 @@
 import {base} from "$app/paths";
-import type {RequestHandler} from "@sveltejs/kit";
 import {getDb} from "$lib/db";
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {AtlasInfo, CardDeckRevision, Session} from "$lib/types";
+import type {RequestHandler} from "@sveltejs/kit";
+import {error, json} from "@sveltejs/kit";
 import {mkdir, writeFile} from 'fs/promises'
 
-export const get: RequestHandler = async function ({locals, params, url}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
-
+export const GET: RequestHandler = async function ({locals, params, url}) {
+	verifyAuthentication(locals)
 	const {sessionId} = params;
 	const db = await getDb();
 	// permission check
@@ -17,7 +15,7 @@ export const get: RequestHandler = async function ({locals, params, url}) {
 		_id: sessionId, owners: locals.email
 	})
 	if (!session) {
-		return new Response(undefined, { status: 404 });
+		throw error(404)
 	}
 
 	const dirName = '/app/data/sessions/' + sessionId + '/'
@@ -27,12 +25,12 @@ export const get: RequestHandler = async function ({locals, params, url}) {
 	const cards = await db.collection<CardDeckRevision>('CardDeckRevisions').find(
 		{_id: {$in: cardIds}}
 	).toArray()
-	const atlases = cards.flatMap((cards) => cards.output.atlases).map((atlas) => absoluteAtlas(url, atlas))
+	const atlases = cards.filter((cards) => cards.output && cards.output.atlases).flatMap((cards) => cards.output.atlases).map((atlas) => absoluteAtlas(url, atlas))
 
 	// Create DeckInfo.json
 	await writeFile(dirName + 'DeckInfo.json', JSON.stringify(atlases), 'utf-8')
 
-	return new Response(undefined)
+	return json({success: true})
 }
 
 function absoluteAtlas(url: URL, atlas: AtlasInfo): AtlasInfo {

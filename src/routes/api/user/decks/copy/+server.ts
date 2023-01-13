@@ -1,9 +1,9 @@
+import {cleanRevision} from "$lib/decks";
 import { json } from '@sveltejs/kit';
 import {getDb, getNewId} from "$lib/db"
 import {isNotAuthenticated} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
-import {cleanRevision} from "../[deckId]/revisions/+server";
 
 const debug = true
 
