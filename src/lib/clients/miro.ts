@@ -1,68 +1,9 @@
-import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
-import type {Session, SessionSnapshot} from '$lib/types';
-import type {Filter} from "mongodb";
-import {Client} from './types';
+import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes'
+import type {Session, SessionSnapshot} from '$lib/types'
+import type {Filter} from "mongodb"
+import {Client} from './types'
 
-const debug = true;
-
-export interface MiroData {
-	id: string;
-	widgets: WidgetData[];
-	createdAt: string; //ISO
-	description: string;
-	owner: UserData;
-	title: string;
-	updatedAt: string; //ISO
-	_id: string; // dump
-}
-
-export interface UserData {
-	name: string;
-	//...
-}
-
-export enum WidgetType {
-	FRAME = "FRAME",
-	IMAGE = "IMAGE",
-	SHAPE = "SHAPE",
-	STICKER = "STICKER",
-	//GROUP = "GROUP",
-	LINE = "LINE",
-}
-
-export interface WidgetData {
-	bounds: Bounds;
-	childrenIds?: string[]; // frame
-	clientVisible: true;
-	frameIndex?: number; // frame
-	groupId?: string; // frame, shape?
-	id: string;
-	metadata: any;
-	plainText?: string; // sticker, shape
-	rotation?: number; // image
-	scale?: number; // image
-	style: any;
-	tags?: string[]; // sticker
-	text?: string; // sticker, shape
-	title: string; // frame, image
-	type: WidgetType; // 'FRAME' 'IMAGE','STICKER', 'LINE','SHAPE'
-	url?: string; // image
-	x?: number
-	y?: number
-	width?: number; // not image
-	height?: number; // not image
-}
-
-export interface Bounds {
-	bottom: number;
-	height: number;
-	left: number;
-	right: number;
-	top: number;
-	width: number;
-	x: number;
-	y: number;
-}
+const debug = false
 
 export class MiroClient extends Client {
 	acceptsImport(data: any): boolean {
@@ -73,9 +14,8 @@ export class MiroClient extends Client {
 		return 'miro';
 	}
 
-	makeSession(d: any): Session {
+	makeSession(data: any): Session {
 		const now = new Date().toISOString();
-		const data = d as MiroData;
 		return {
 			_id: '',
 			name: data.title,
@@ -92,8 +32,7 @@ export class MiroClient extends Client {
 		}
 	}
 
-	makeSessionSnapshot(d: any): SessionSnapshot {
-		const data = d as MiroData;
+	makeSessionSnapshot(data: any): SessionSnapshot {
 		const now = new Date().toISOString();
 		return {
 			_id: '',
@@ -113,8 +52,7 @@ export class MiroClient extends Client {
 		};
 	}
 
-	getExistingSessionQuery(d: any): Filter<Session> {
-		const data = d as MiroData;
+	getExistingSessionQuery(data: any): Filter<Session> {
 		return {
 			miroId: data.id
 		};
@@ -125,9 +63,9 @@ export class MiroClient extends Client {
 		// frame is a board
 		// card is an image
 		// shape is a zone
-		const data = snapshot.data as MiroData
+		const data = snapshot.data
 		for (const widget of data.widgets) {
-			if (widget.type != WidgetType.IMAGE) {
+			if (widget.type != 'image') {
 				continue;
 			}
 			const id = widget.title || widget.url;
@@ -136,9 +74,9 @@ export class MiroClient extends Client {
 				continue;
 			}
 			const ci: CardSnapshot = {id, zones: []};
-			let frames: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && w.childrenIds.includes(widget.id))
+			let frames = data.widgets.filter((w) => w.type == 'frame' && w.title && w.childrenIds.includes(widget.id))
 			if (frames.length == 0) {
-				frames = data.widgets.filter((w) => w.type == WidgetType.FRAME && w.title && cardInBounds(widget, w));
+				frames = data.widgets.filter((w) => w.type == 'frame' && w.title && cardInBounds(widget, w));
 			}
 			let boardId = '';
 			if (frames.length == 0) {
@@ -159,7 +97,7 @@ export class MiroClient extends Client {
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => w.type == WidgetType.STICKER && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+			ci.comments = data.widgets.filter((w) => w.type == 'sticker' && w.text && cardOverlapping(widget, w)).map((w) => w.text)
 
 			let board = boards.find((b) => b.id == boardId);
 
@@ -172,7 +110,7 @@ export class MiroClient extends Client {
 				boards.push(board)
 			}
 			board.cards.push(ci);
-			const shapes: WidgetData[] = data.widgets.filter((w) => w.type == WidgetType.SHAPE && cardInBounds(widget, w));
+			const shapes = data.widgets.filter((w) => w.type == 'shape' && cardInBounds(widget, w));
 			for (const shape of shapes) {
 				if (shape.plainText) {
 					ci.zones.push({zoneId: shape.plainText});
@@ -189,11 +127,11 @@ export class MiroClient extends Client {
 	}
 }
 
-function cardInBounds(c: WidgetData, w: WidgetData) {
+function cardInBounds(c, w) {
 	return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
 		c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
 }
 
-function cardOverlapping(c: WidgetData, w: WidgetData) {
+function cardOverlapping(c, w) {
 	return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
 }

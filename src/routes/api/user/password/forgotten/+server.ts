@@ -1,5 +1,6 @@
 import {getDb} from '$lib/db';
 import type {User} from "$lib/types";
+import {error} from "@sveltejs/kit";
 import type {RequestHandler} from '@sveltejs/kit';
 import {base} from "$app/paths";
 import {customAlphabet} from 'nanoid'
@@ -20,7 +21,7 @@ const transport = createTransport({
 export const post: RequestHandler = async function ({request, url}) {
 	const email = (await request.json()).email.toLowerCase()
 	if (!email) {
-		return new Response(undefined, { status: 400 })
+		throw error(400)
 	}
 	// check password
 	const db = await getDb();

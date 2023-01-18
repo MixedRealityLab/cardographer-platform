@@ -58,6 +58,6 @@ export const actions: Actions = {
 			path: '/',
 			httpOnly: true
 		})
-		throw redirect(302, base + "/user/decks")
+		throw redirect(302, base + "/decks")
 	}
 }

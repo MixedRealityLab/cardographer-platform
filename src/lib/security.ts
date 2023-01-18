@@ -16,18 +16,9 @@ const jwtSecret = "somethingelse";
 const debug = false;
 
 export function verifyAuthentication(locals: App.Locals) {
-	if(!locals.authenticated) {
+	if (!locals.authenticated) {
 		throw redirect(302, base + "/")
 	}
-}
-
-export function isNotAuthenticated(locals: App.Locals): boolean {
-	if(locals.authenticated) {
-		return false
-	}
-	// TODO Logging
-
-	return true
 }
 
 export async function checkUserToken(rawToken: string): Promise<UserToken> {
@@ -69,15 +60,3 @@ export function getCookieName(): string {
 export function makeTokenCookie(token: string): string {
 	return `${getCookieName()}=${token}; Path=/; HttpOnly`;
 }
-
-export function getAuthorizationToken(header: string): string {
-	const regex = /Bearer ([^ ]+)/;
-	const match = regex.exec(header);
-	if (match !== null) {
-		//console.log(`authorization matches: ${match[1]}`);
-		return match[1];
-	}
-	if (debug) console.log(`authorization not found (${header})`);
-	return ''
-}
-	

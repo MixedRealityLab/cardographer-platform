@@ -1,20 +1,18 @@
-import { json as json$1 } from '@sveltejs/kit';
 import type {CopySessionRequest} from '$lib/apitypes';
 import {getDb, getNewId} from '$lib/db';
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {Session} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import {error, json as json$1} from '@sveltejs/kit';
 
 const debug = true;
 
 export const post: RequestHandler = async function ({locals, request}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+	verifyAuthentication(locals)
 	const copyReq = await request.json() as CopySessionRequest
 	if (!copyReq.sessionId) {
 		if (debug) console.log(`no sessionId in copy`, copyReq)
-		return new Response(undefined, { status: 400 })
+		throw error(400)
 	}
 	//if (debug) console.log(`add session`, copyreq);
 	const db = await getDb();
@@ -44,12 +42,12 @@ export const post: RequestHandler = async function ({locals, request}) {
 		// check permissions
 		if (!session) {
 			if (debug) console.log(`cannot copy unknown session ${oldSessionId}`);
-			return new Response(undefined, { status: 400 });
+			throw error(400);
 		}
 		if (!session.isPublic &&
 			(!session.owners || session.owners.indexOf(locals.email) < 0)) {
 			if (debug) console.log(`cannot copy private session ${session._id} from ${session.owners}`);
-			return new Response(undefined, { status: 401 });
+			throw error(401);
 		}
 		session._id = newId
 		session.name = `Copy of ${session.name}`
@@ -63,7 +61,7 @@ export const post: RequestHandler = async function ({locals, request}) {
 	const result = await db.collection<Session>('Sessions').insertOne(session);
 	if (!result.acknowledged) {
 		console.log(`Error adding new session ${newId}`);
-		return new Response(undefined, { status: 500 });
+		throw error(500);
 	}
 	console.log(`added session ${newId}`);
 

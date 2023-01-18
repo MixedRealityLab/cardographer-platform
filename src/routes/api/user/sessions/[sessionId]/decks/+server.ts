@@ -1,14 +1,13 @@
 import {getDb} from "$lib/db";
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision, Session, SessionDeck} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit";
+import {error, json} from "@sveltejs/kit";
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const GET: RequestHandler = async function ({locals, params}) {
+	verifyAuthentication(locals)
 	const {sessionId} = params;
 	const db = await getDb();
 	// permission check
@@ -17,7 +16,7 @@ export const get: RequestHandler = async function ({locals, params}) {
 	})
 	if (!session) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	// update session
 	const cardIds = session.decks.map((deck) => deck.deckId + ":" + deck.revision)
@@ -27,15 +26,11 @@ export const get: RequestHandler = async function ({locals, params}) {
 	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
 	// Suggestion (check for correctness before using):
 	// return new Response(cards as any);
-	return {
-		body: cards as any
-	}
+	return json(cards)
 }
 
-export const put: RequestHandler = async function ({locals, request, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const PUT: RequestHandler = async function ({locals, request, params}) {
+	verifyAuthentication(locals)
 	const cardIds = await request.json() as string[];
 	const {sessionId} = params;
 	const db = await getDb();
@@ -45,7 +40,7 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 	})
 	if (!session) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	// update session
 	const now = new Date().toISOString();
@@ -67,9 +62,9 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 			lastModified: now,
 		}
 	});
-	if (!upd.matchedCount) {
+	if (!upd.modifiedCount) {
 		if (debug) console.log(`session ${sessionId} not matched`, upd);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	const newSession = await db.collection<Session>('Sessions').findOne({
 		_id: sessionId, owners: locals.email
@@ -77,8 +72,6 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
 	// Suggestion (check for correctness before using):
 	// return new Response(newSession as any);
-	return {
-		body: newSession as any
-	}
+	return json(newSession)
 }
 

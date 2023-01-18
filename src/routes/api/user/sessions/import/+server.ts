@@ -1,17 +1,15 @@
-import { json as json$1 } from '@sveltejs/kit';
 import {getClient, guessSessionType} from '$lib/clients';
 import {getDb, getNewId} from '$lib/db';
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import {json as json$1} from '@sveltejs/kit';
 import type {Filter} from "mongodb";
 
 const debug = true;
 
 export const post: RequestHandler = async function ({locals, request}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+	verifyAuthentication(locals)
 	let ss: any[];
 	const body = await request.json()
 	if (!Array.isArray(body)) {

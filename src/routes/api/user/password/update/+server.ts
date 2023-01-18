@@ -1,5 +1,6 @@
 import {getDb} from "$lib/db"
 import type {User} from "$lib/types"
+import {error} from "@sveltejs/kit";
 import type {RequestHandler} from "@sveltejs/kit"
 import {hashPassword} from "../../login/+server";
 
@@ -18,7 +19,7 @@ export const post: RequestHandler = async function ({request}) {
 	})
 
 	if (!user) {
-		return new Response(undefined, { status: 404 })
+		throw error(404)
 	}
 
 	user.password = await hashPassword(password)

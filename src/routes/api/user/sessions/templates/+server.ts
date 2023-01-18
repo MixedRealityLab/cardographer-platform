@@ -1,15 +1,13 @@
-import { json } from '@sveltejs/kit';
 import {getDb} from '$lib/db';
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {Session} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
+import {json} from '@sveltejs/kit';
 
 const debug = true;
 
 export const get: RequestHandler = async function ({locals}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+	verifyAuthentication(locals)
 	const db = await getDb();
 	// isPublic & isTemplate
 	const sessions = await db.collection<Session>('Sessions').find({

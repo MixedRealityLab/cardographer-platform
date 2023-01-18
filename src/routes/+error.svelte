@@ -1,10 +1,8 @@
 <script lang="ts">
-	import AppBar from "$lib/ui/AppBar.svelte";
-	import {base} from "$app/paths";
-
-	import { page } from '$app/stores';
+	import {page} from '$app/stores'
+	import AppBar from "$lib/ui/AppBar.svelte"
 </script>
 
-<AppBar back="{base}/user/decks"/>
+<AppBar back="javascript:history.back()"/>
 
-<h1>{$page.status}: {$page.error.message}</h1>
+<h1 class="p-2">{$page.status}: {$page.error.message}</h1>

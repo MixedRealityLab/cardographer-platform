@@ -1,6 +1,7 @@
 import {copyBuild} from "$lib/builders";
 import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary, User} from "$lib/types";
 import {DeckBuildStatus} from "$lib/types";
+import {error} from "@sveltejs/kit";
 import type {Db} from "mongodb";
 
 export async function cleanRevisions(revisions: CardDeckRevisionSummary[], db: Db) {
@@ -53,4 +54,26 @@ export async function cleanRevision(db: Db, revision: CardDeckRevision, deckId: 
 		revision.build.status = DeckBuildStatus.Unbuilt;
 		revision.build.messages = [];
 	}
+}
+
+export async function getRevision(db: Db, deckId: string, revisionId: number, email: string): Promise<CardDeckRevision> {
+	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
+		_id: deckId
+	})
+	if (!deck) {
+		throw error(404, `Deck ${deckId} not found`);
+	}
+	const revision = await db.collection<CardDeckRevision>('CardDeckRevisions').findOne({
+		deckId: deckId, revision: revisionId
+	})
+	if (!revision) {
+		throw error(404, `Deck ${deckId} revision ${revisionId} not found`);
+	}
+
+	if (!revision.isPublic && !deck.owners.includes(email)) {
+		throw error(401, `Deck Access Not Permitted`);
+	}
+
+	revision.isCurrent = revision.revision == deck.currentRevision
+	return revision
 }

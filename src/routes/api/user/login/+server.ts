@@ -1,4 +1,4 @@
-import { json as json$1 } from '@sveltejs/kit';
+import {error, json as json$1} from '@sveltejs/kit';
 import type {LoginRequest} from '$lib/apitypes';
 import {getDb} from '$lib/db';
 import {makeTokenCookie, signUserToken} from '$lib/security';
@@ -14,7 +14,7 @@ export const REGISTER_CODE = process.env['REGISTER_CODE'];
 export const post: RequestHandler = async function ({request}) {
 	const login = await request.json() as LoginRequest;
 	if (!login.email || !login.password) {
-		return new Response(undefined, { status: 400 })
+		throw error(400)
 	}
 	login.email = login.email.toLowerCase()
 	// check password
@@ -26,18 +26,18 @@ export const post: RequestHandler = async function ({request}) {
 	}
 	if (!login.register && !user) {
 		if (debug) console.log(`login user not found: ${login.email}`);
-		return new Response(undefined, { status: 404 })
+		throw error(404)
 	}
 	// register code
 	if (login.register) {
 		if (!REGISTER_CODE) {
 			console.log(`Error: registration code is not set (REGISTER_CODE)`);
-			return new Response(undefined, { status: 404 })
+			throw error(404)
 		}
 		if (login.code != REGISTER_CODE) {
 			if (debug) console.log(`register code ${REGISTER_CODE}`);
 			if (debug) console.log(`invalid registration code`);
-			return new Response(undefined, { status: 404 })
+			throw error(404)
 		}
 	}
 	const hash = await hashPassword(login.password)
@@ -52,13 +52,13 @@ export const post: RequestHandler = async function ({request}) {
 		const ar = await db.collection<User>('Users').insertOne(user);
 		if (!ar.insertedId) {
 			if (debug) console.log(`unable to add user ${login.email}`);
-			return new Response(undefined, { status: 500 });
+			throw error(500);
 		}
 		console.log(`added user ${login.email}`);
 	}
 	if (!login.register && user.password != hash) {
 		if (debug) console.log(`login failure for ${login.email}`);
-		return new Response(undefined, { status: 404 })
+		throw error(404)
 	}
 	const token = await signUserToken(login.email);
 	console.log(`login ${login.email}`); // ${token}

@@ -1,5 +1,3 @@
-import {base} from "$app/paths";
-
 export function authenticateRequest(session: any, request: RequestInit = {}): RequestInit {
 	const token = session.token;
 	if (!token) {
@@ -10,24 +8,4 @@ export function authenticateRequest(session: any, request: RequestInit = {}): Re
 		request.headers = {authorization: `Bearer ${token}`}
 	}
 	return request
-}
-
-export function errorResponses(responses: Response[]): OutputData {
-	const res = responses.find((res) => !res.ok)
-	return errorResponse(res)
-}
-
-export function errorResponse(res: Response): LoadOutput {
-	console.log(res)
-	if (res.status === 401) {
-		return {
-			status: 301,
-			redirect: `${base}/`
-		}
-	} else {
-		return {
-			status: res.status,
-			error: new Error(`${res.statusText}: Could not load ${res.url}`)
-		}
-	}
 }

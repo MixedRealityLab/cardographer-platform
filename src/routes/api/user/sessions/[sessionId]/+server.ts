@@ -1,16 +1,14 @@
-import { json as json$1 } from '@sveltejs/kit';
 import {getDb} from '$lib/db';
-import {isNotAuthenticated} from "$lib/security";
+import {verifyAuthentication} from "$lib/security";
 import type {Session, SessionSnapshot} from '$lib/types';
 import type {RequestHandler} from '@sveltejs/kit';
-import { promises as fs } from 'fs';
+import {error, json, json as json$1} from '@sveltejs/kit';
+import {promises as fs} from 'fs';
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const GET: RequestHandler = async function ({locals, params}) {
+	verifyAuthentication(locals)
 	const {sessionId} = params;
 	if (debug) console.log(`get session ${sessionId}`);
 	const db = await getDb();
@@ -21,26 +19,22 @@ export const get: RequestHandler = async function ({locals, params}) {
 	console.log(session)
 	if (!session) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	// project?
 	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
 	// Suggestion (check for correctness before using):
 	// return new Response(session as any);
-	return {
-		body: session as any
-	}
+	return json(session)
 }
 
 export const put: RequestHandler = async function ({locals, request, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+	verifyAuthentication(locals)
 	const sess = await request.json() as Session
 	const {sessionId} = params
 	if (sessionId != sess._id) {
 		if (debug) console.log(`session doesnt match url`, sess);
-		return new Response(undefined, { status: 400 });
+		throw error(400);
 	}
 	const db = await getDb();
 	// permission check
@@ -49,7 +43,7 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 	})
 	if (!oldSession) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	// update session
 	const now = new Date().toISOString();
@@ -74,15 +68,13 @@ export const put: RequestHandler = async function ({locals, request, params}) {
 	});
 	if (!upd.matchedCount) {
 		if (debug) console.log(`session ${sessionId} not matched`, upd);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	return json$1({})
 }
 
 export const del: RequestHandler = async function ({locals, params}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+	verifyAuthentication(locals)
 	const {sessionId} = params
 	const db = await getDb();
 	// permission check
@@ -91,11 +83,11 @@ export const del: RequestHandler = async function ({locals, params}) {
 	})
 	if (session.deletedCount == 0) {
 		if (debug) console.log(`session ${sessionId} not found for ${locals.email}`);
-		return new Response(undefined, { status: 404 });
+		throw error(404);
 	}
 	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({sessionId: sessionId})
 
 	await fs.rm('/app/data/sessions/' + sessionId, {recursive: true, force: true})
 
-	return json$1({})
+	return json({})
 }

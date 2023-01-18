@@ -1,17 +1,14 @@
-import {cleanRevisions} from "$lib/decks";
-import { json } from '@sveltejs/kit';
 import {getDb} from '$lib/db'
-import {isNotAuthenticated} from "$lib/security";
-import type {CardDeckRevisionSummary, CardDeckSummary, User} from '$lib/types'
+import {cleanRevisions} from "$lib/decks";
+import {verifyAuthentication} from "$lib/security";
+import type {CardDeckRevisionSummary, CardDeckSummary} from '$lib/types'
 import type {RequestHandler} from '@sveltejs/kit'
-import type {Db} from "mongodb";
+import {json} from '@sveltejs/kit';
 
 const debug = true;
 
-export const get: RequestHandler = async function ({locals}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const GET: RequestHandler = async function ({locals}) {
+	verifyAuthentication(locals)
 	if (debug) console.log(`get decks`);
 	const db = await getDb();
 	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries').find({

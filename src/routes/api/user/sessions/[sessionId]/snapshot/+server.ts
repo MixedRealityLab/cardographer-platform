@@ -32,7 +32,7 @@ export const PUT: RequestHandler = async function ({locals, params, request}) {
 	let sessionType = guessSessionType(input.snapshot);
 	if (!sessionType) {
 		console.log(`no sessionType guess for import`);
-		return error(400)
+		throw error(400)
 	}
 
 	if (sessionId === 'new') {

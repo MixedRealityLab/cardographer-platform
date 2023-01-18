@@ -1,22 +1,20 @@
-import {cleanRevision} from "$lib/decks";
-import { json } from '@sveltejs/kit';
 import {getDb, getNewId} from "$lib/db"
-import {isNotAuthenticated} from "$lib/security";
+import {cleanRevision} from "$lib/decks";
+import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
+import {error, json} from '@sveltejs/kit';
 
 const debug = true
 
-export const post: RequestHandler = async function ({locals, request}) {
-	if (isNotAuthenticated(locals)) {
-		return new Response(undefined, { status: 401 })
-	}
+export const POST: RequestHandler = async function ({locals, request}) {
+	verifyAuthentication(locals)
 	const revisionId = await request.text()
 	console.log(revisionId)
 
 	if (!revisionId) {
 		if (debug) console.log(`no revisionId in copy`, revisionId)
-		return new Response(undefined, { status: 400 })
+		throw error(400)
 	}
 	//if (debug) console.log(`add deck`, revision)
 	const db = await getDb()
@@ -48,20 +46,20 @@ export const post: RequestHandler = async function ({locals, request}) {
 			_id: revisionId
 		})
 		if (!revision) {
-			return new Response(undefined, { status: 404 })
+			throw error(404)
 		}
 		if (!revision.isTemplate) {
-			return new Response(undefined, { status: 400 })
+			throw error(400)
 		}
 		if (!revision.isPublic) {
 			const deck = await db.collection<CardDeckSummary>('CardDeckSummary').findOne({
 				_id: revision.deckId
 			})
 			if (!deck) {
-				return new Response(undefined, { status: 404 })
+				throw error(404)
 			}
 			if (deck.owners.indexOf(locals.email) === -1) {
-				return new Response(undefined, { status: 401 })
+				throw error(401)
 			}
 		}
 	}
@@ -70,7 +68,7 @@ export const post: RequestHandler = async function ({locals, request}) {
 	const revResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision)
 	if (!revResult.insertedId) {
 		console.log(`Error adding revision for new deck ${deckId}`)
-		return new Response(undefined, { status: 500 })
+		throw error(500)
 	}
 	const deck: CardDeckSummary = {
 		_id: deckId,
@@ -85,7 +83,7 @@ export const post: RequestHandler = async function ({locals, request}) {
 	const summaryResult = await db.collection<CardDeckSummary>('CardDeckSummaries').insertOne(deck)
 	if (!summaryResult.insertedId) {
 		console.log(`Error adding new deck ${deckId}`)
-		return new Response(undefined, { status: 500 })
+		throw error(500)
 	}
 	console.log(`added deck ${deckId}`)
 
