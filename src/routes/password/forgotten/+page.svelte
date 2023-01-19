@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte";
+	import {enhance} from "$app/forms";
 
 	let email: string
 
@@ -33,7 +34,7 @@
 <AppBar back="{base}/"/>
 
 <div class="p-12 max-w-md mx-auto">
-	<form on:submit|preventDefault={handleSubmit}>
+	<form method="post" use:enhance>
 		<div class="flex flex-col gap-8">
 			<label>
 				<span>Email</span>

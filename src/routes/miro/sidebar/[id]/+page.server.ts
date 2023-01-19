@@ -1,9 +1,8 @@
 import {getDb} from "$lib/db"
-import {getCookieName, signUserToken, verifyAuthentication} from "$lib/security"
+import {getCookieName, hashPassword, signUserToken, verifyAuthentication} from "$lib/security"
 import type {CardDeckRevision, Session, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
-import {hashPassword} from "../../../api/user/login/+server";
 import type {PageServerLoad} from "./$types";
 
 export const load: PageServerLoad = async function ({locals, params}) {

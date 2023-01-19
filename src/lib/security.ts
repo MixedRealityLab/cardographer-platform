@@ -1,5 +1,6 @@
 import {base} from "$app/paths";
 import {redirect} from "@sveltejs/kit";
+import {scrypt} from "crypto";
 import jwt from 'jsonwebtoken';
 
 const {sign, verify} = jwt;
@@ -14,6 +15,17 @@ const cookieSecret = "something2";
 const jwtSecret = "somethingelse";
 
 const debug = false;
+
+export const REGISTER_CODE = process.env['REGISTER_CODE'];
+
+export async function hashPassword(password: string): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		scrypt(password, "90oisa", 32, (err, derivedKey) => {
+			if (err) reject(err);
+			else resolve(derivedKey.toString('hex'));
+		});
+	});
+}
 
 export function verifyAuthentication(locals: App.Locals) {
 	if (!locals.authenticated) {

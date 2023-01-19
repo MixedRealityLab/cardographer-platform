@@ -1,10 +1,10 @@
 import {base} from "$app/paths";
 import {getDb} from "$lib/db";
-import {getCookieName, signUserToken} from "$lib/security";
+import {getCookieName, hashPassword, REGISTER_CODE, signUserToken} from "$lib/security";
 import type {User} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
-import {hashPassword, REGISTER_CODE} from "./api/user/login/+server";
+
 
 export const actions: Actions = {
 	default: async ({cookies, request}) => {
