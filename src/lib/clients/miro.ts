@@ -65,7 +65,7 @@ export class MiroClient extends Client {
 		// shape is a zone
 		const data = snapshot.data
 		for (const widget of data.widgets) {
-			if (widget.type != 'image') {
+			if (widget.type.toLowerCase() != 'image') {
 				continue;
 			}
 			const id = widget.title || widget.url;
@@ -74,9 +74,9 @@ export class MiroClient extends Client {
 				continue;
 			}
 			const ci: CardSnapshot = {id, zones: []};
-			let frames = data.widgets.filter((w) => w.type == 'frame' && w.title && w.childrenIds.includes(widget.id))
+			let frames = data.widgets.filter((w) => w.type.toLowerCase() == 'frame' && w.title && w.childrenIds.includes(widget.id))
 			if (frames.length == 0) {
-				frames = data.widgets.filter((w) => w.type == 'frame' && w.title && cardInBounds(widget, w));
+				frames = data.widgets.filter((w) => w.type.toLowerCase() == 'frame' && w.title && cardInBounds(widget, w));
 			}
 			let boardId = '';
 			if (frames.length == 0) {
@@ -87,17 +87,29 @@ export class MiroClient extends Client {
 				}
 				let size = Infinity
 				for (const frame of frames) {
-					const widgetSize = frame.bounds.width * frame.bounds.height
+					let widgetSize = 0
+					if (frame.bounds) {
+						widgetSize = frame.bounds.width * frame.bounds.height
+					} else {
+						widgetSize = frame.width * frame.height
+					}
+
 					if (size < widgetSize || !boardId) {
 						size = widgetSize
 						boardId = frame.title
-						ci.x = (widget.bounds.left - frame.bounds.left) / (frame.bounds.width - widget.bounds.width)
-						ci.y = (widget.bounds.top - frame.bounds.top) / (frame.bounds.height - widget.bounds.height)
+						if (frame.bounds) {
+							ci.x = (widget.bounds.left - frame.bounds.left) / (frame.bounds.width - widget.bounds.width)
+							ci.y = (widget.bounds.top - frame.bounds.top) / (frame.bounds.height - widget.bounds.height)
+						} else {
+							ci.x = (widget.x - frame.x) / (frame.width - widget.width)
+							ci.y = (widget.y - frame.y) / (frame.height - widget.height)
+						}
+
 					}
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => w.type == 'sticker' && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+			ci.comments = data.widgets.filter((w) => w.type.toLowerCase() == 'sticker' && w.text && cardOverlapping(widget, w)).map((w) => w.text)
 
 			let board = boards.find((b) => b.id == boardId);
 
@@ -110,7 +122,7 @@ export class MiroClient extends Client {
 				boards.push(board)
 			}
 			board.cards.push(ci);
-			const shapes = data.widgets.filter((w) => w.type == 'shape' && cardInBounds(widget, w));
+			const shapes = data.widgets.filter((w) => w.type.toLowerCase() == 'shape' && cardInBounds(widget, w));
 			for (const shape of shapes) {
 				if (shape.plainText) {
 					ci.zones.push({zoneId: shape.plainText});
@@ -128,10 +140,20 @@ export class MiroClient extends Client {
 }
 
 function cardInBounds(c, w) {
-	return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
-		c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
+	if (c.bounds) {
+		return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
+			c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
+	} else {
+		return c.x >= w.x && (c.x + c.width) <= (w.x + w.width) &&
+			(c.y + c.height) <= (w.y + w.height) && c.x >= w.x;
+
+	}
 }
 
 function cardOverlapping(c, w) {
-	return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
+	if(c.bounds) {
+		return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
+	} else {
+		return c.x <= (w.x + w.width) && (c.x + c.width) >= w.x && c.y <= (w.y + w.height) && (c.y + c.height) >= w.y;
+	}
 }
