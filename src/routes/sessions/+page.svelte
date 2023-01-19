@@ -5,8 +5,7 @@
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import type {ActionData, PageServerData} from './$types'
 
-	export let data: PageServerData;
-	export let form: ActionData
+	export let data: PageServerData
 	let showArchived = false
 	let message = ''
 </script>

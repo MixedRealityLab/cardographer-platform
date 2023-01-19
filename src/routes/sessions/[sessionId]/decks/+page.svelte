@@ -4,7 +4,6 @@
 	import type {ActionData} from "./$types"
 
 	export let data
-	export let form: ActionData
 
 	let error = ''
 

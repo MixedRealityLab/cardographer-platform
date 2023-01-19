@@ -6,11 +6,8 @@
 
 	import UploadButton from "$lib/ui/UploadButton.svelte";
 	import DeckHeader from "../DeckHeader.svelte";
-	import type {ActionData} from "./$types";
 
 	export let data: CardDeckRevision
-	export let form: ActionData
-	let working = false
 	let error = ''
 	let message = ''
 </script>

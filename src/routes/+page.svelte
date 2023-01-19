@@ -1,12 +1,9 @@
 <script lang="ts">
 	import {enhance} from "$app/forms"
 	import AppBar from "$lib/ui/AppBar.svelte"
-	import LoginPanel from "$lib/ui/LoginPanel.svelte";
-	import type {ActionData} from '../../.svelte-kit/types/src/routes'
+	import LoginPanel from "$lib/ui/LoginPanel.svelte"
 
 	let register = false
-
-	export let form: ActionData
 </script>
 
 <style>

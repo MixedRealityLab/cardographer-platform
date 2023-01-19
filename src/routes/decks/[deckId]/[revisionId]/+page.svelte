@@ -5,7 +5,6 @@
 	import DeckHeader from "./DeckHeader.svelte";
 
 	export let data: CardDeckRevision
-	export let form: ActionData
 
 	let error = ''
 	let message = ''

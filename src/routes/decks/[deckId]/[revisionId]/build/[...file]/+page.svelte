@@ -6,10 +6,8 @@
 	import {DeckBuildStatus} from "$lib/types"
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import DeckHeader from "../../DeckHeader.svelte"
-	import type {ActionData} from "./$types"
 
 	export let data
-	export let form: ActionData
 
 	export let error: string = null
 	$: building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
@@ -96,13 +94,13 @@
         @apply flex flex-1 items-center py-1.5 transition-colors duration-500 hover:text-blue-700;
     }
 
-    .fileItem:hover+button {
-	    @apply opacity-100;
+    .fileItem:hover + button {
+        @apply opacity-100;
     }
 
     @media (hover: none) {
-        .fileItem+button {
-	        @apply opacity-60;
+        .fileItem + button {
+            @apply opacity-60;
         }
     }
 </style>
@@ -131,7 +129,7 @@
 					<div>{childFile.name}</div>
 				</a>
 			{:else}
-				<a class="fileItem" rel="external" target="_blank"
+				<a class="fileItem" rel="external" target="_blank" rel="noreferrer"
 				   href="{base}/uploads/{$page.params.deckId}/{$page.params.revisionId}/{childFile.path}">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-6 mx-4" fill="none" viewBox="0 0 24 24"
 					     stroke="currentColor">
