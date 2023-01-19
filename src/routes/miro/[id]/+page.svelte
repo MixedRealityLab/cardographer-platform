@@ -27,8 +27,7 @@
 				//warning = "No cards found on board"
 				//allowUpload = false
 			} else {
-				widgets = allWidgets.filter((widget) => widget.type === 'image' && (widget.url !== '' || widget.title !== ''))
-				console.log(widgets)
+				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '' && widget.title === '')
 				//warning = null
 				//allowUpload = true
 			}
@@ -41,6 +40,7 @@
 
 	async function selectWidget(widget: SizeMixin & PositionMixin) {
 		//await miro.html.board.selection.selectWidgets(widget.id)
+		console.log(widget)
 		const width = widget.width;
 		const height = widget.height;
 		const rect = {
