@@ -4,7 +4,7 @@ import {getRevision} from "$lib/decks";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
-import parse from "csv-parse";
+import {parse} from "csv";
 
 const debug = true
 
