@@ -40,7 +40,7 @@
 	}
 
 	async function selectWidget(widget: SizeMixin & PositionMixin) {
-		//await miro.board.selection.selectWidgets(widget.id)
+		//await miro.html.board.selection.selectWidgets(widget.id)
 		const width = widget.width;
 		const height = widget.height;
 		const rect = {
@@ -68,7 +68,6 @@
 </style>
 
 <div class="w-full flex flex-col h-screen">
-	<AppBar/>
 	<div class="subheader">
 		<div class="flex-1">
 			{#if !data.authenticated}
