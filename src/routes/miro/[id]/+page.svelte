@@ -29,6 +29,7 @@
 				//allowUpload = false
 			} else {
 				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '' && widget.title === '')
+				console.log(widgets)
 				//warning = null
 				//allowUpload = true
 			}
@@ -93,7 +94,7 @@
 				Associate Board with Session
 			{/if}
 		</div>
-		<a href="" class="iconButton" title="Download">
+		<a href="" class="iconButton" title="Download Board">
 			<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
 			     xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"

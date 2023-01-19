@@ -56,7 +56,9 @@ export const actions: Actions = {
 		const token = await signUserToken(email);
 		cookies.set(getCookieName(), token, {
 			path: '/',
-			httpOnly: true
+			httpOnly: true,
+			sameSite: 'none',
+			secure: true
 		})
 		throw redirect(302, base + "/decks")
 	}
