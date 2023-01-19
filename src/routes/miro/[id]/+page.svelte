@@ -31,6 +31,15 @@
 				//warning = null
 				//allowUpload = true
 			}
+
+			const selection = await miro.board.getSelection()
+			if(selection.length == 1) {
+				console.log(selection)
+				if(data.session) {
+					console.log(data.session.decks)
+				}
+			}
+
 		} catch (e) {
 			//allowUpload = false
 			//warning = e.message
