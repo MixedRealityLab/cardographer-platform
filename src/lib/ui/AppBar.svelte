@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let title = 'Cardographer';
-	export let back: string = null;
+	export let title = 'Cardographer'
+	export let back: string = null
 </script>
 
 <div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
@@ -22,7 +22,3 @@
 <div class="w-full pt-2 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
 	<slot/>
 </div>
-<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5">
-	<slot name="subheader"/>
-</div>
-

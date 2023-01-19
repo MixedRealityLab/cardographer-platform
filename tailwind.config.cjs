@@ -11,9 +11,12 @@ module.exports = {
 			'sans': ['Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 		},
 		extend: {
-				zIndex: {
-					'998': '998',
-				}
+			zIndex: {
+				'998': '998',
+			},
+			transitionProperty: {
+				'width': 'width'
+			}
 		},
 		colors: {
 			transparent: 'transparent',

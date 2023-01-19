@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/static" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/lib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/routes" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/.svelte-kit/types/src" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/.svelte-kit" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>

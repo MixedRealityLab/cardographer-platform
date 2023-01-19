@@ -138,19 +138,28 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	return fis;
 }
 
-export async function writeToFile(deckId: string, revId: string, path: string, name: string, base64: string) {
+export async function writeToFile(deckId: string, revId: string, path: string, file: File) {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
 	await mkdir(revPath, {
 		recursive: true
 	})
-	const relPath = `${revPath}/${path}/${name}`
-	const data = Buffer.from(base64, 'base64')
-	if (name.endsWith('.zip')) {
+	const relPath = `${revPath}/${path}/${file.name}`
+	const data = toBuffer(await file.arrayBuffer())
+	if (file.name.endsWith('.zip')) {
 		const zip = new AdmZip(data)
 		zip.extractAllTo(`${revPath}/${path}`, true)
 	} else {
 		await writeFile(relPath, data)
 	}
+}
+
+function toBuffer(ab: ArrayBuffer): Buffer {
+	const buf = Buffer.alloc(ab.byteLength);
+	const view = new Uint8Array(ab);
+	for (let i = 0; i < buf.length; ++i) {
+		buf[i] = view[i];
+	}
+	return buf;
 }
 
 export async function deleteFile(deckId: string, revId: string, path: string) {

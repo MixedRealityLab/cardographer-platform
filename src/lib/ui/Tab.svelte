@@ -3,8 +3,8 @@
 
 	export let url = ""
 	export let checkPath = false
-	let path = $page.url.pathname
-	let selected = path === url || (checkPath && path.startsWith(url))
+	$: path = $page.url.pathname
+	$: selected = path === url || (checkPath && path.startsWith(url))
 </script>
 
 <style>

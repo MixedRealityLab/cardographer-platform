@@ -61,7 +61,11 @@ input, textarea, select, .input {
 }
 
 .listItem {
-    @apply w-full flex rounded-md py-2 px-4 border border-gray-200 hover:border-blue-400 transition-colors duration-500;
+    @apply w-full flex rounded-md py-2 px-4 border border-gray-200 hover:border-blue-400 transition-colors duration-500 overflow-clip text-left;
+}
+
+.subheader {
+    @apply w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center;
 }
 
 .chip {

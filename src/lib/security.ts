@@ -1,3 +1,6 @@
+import {base} from "$app/paths";
+import {redirect} from "@sveltejs/kit";
+import {scrypt} from "crypto";
 import jwt from 'jsonwebtoken';
 
 const {sign, verify} = jwt;
@@ -13,13 +16,21 @@ const jwtSecret = "somethingelse";
 
 const debug = false;
 
-export function isNotAuthenticated(locals: App.Locals): boolean {
-	if(locals.authenticated) {
-		return false
-	}
-	// TODO Logging
+export const REGISTER_CODE = process.env['REGISTER_CODE'];
 
-	return true
+export async function hashPassword(password: string): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		scrypt(password, "90oisa", 32, (err, derivedKey) => {
+			if (err) reject(err);
+			else resolve(derivedKey.toString('hex'));
+		});
+	});
+}
+
+export function verifyAuthentication(locals: App.Locals) {
+	if (!locals.authenticated) {
+		throw redirect(302, base + "/")
+	}
 }
 
 export async function checkUserToken(rawToken: string): Promise<UserToken> {
@@ -61,15 +72,3 @@ export function getCookieName(): string {
 export function makeTokenCookie(token: string): string {
 	return `${getCookieName()}=${token}; Path=/; HttpOnly`;
 }
-
-export function getAuthorizationToken(header: string): string {
-	const regex = /Bearer ([^ ]+)/;
-	const match = regex.exec(header);
-	if (match !== null) {
-		//console.log(`authorization matches: ${match[1]}`);
-		return match[1];
-	}
-	if (debug) console.log(`authorization not found (${header})`);
-	return ''
-}
-	

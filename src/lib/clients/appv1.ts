@@ -1,6 +1,7 @@
 // appv1 = vuforia app, pre2021
 import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes';
 import type {Session, SessionSnapshot} from '$lib/types';
+import type {Filter} from "mongodb";
 import {Client} from './types';
 
 // dump data
@@ -113,7 +114,7 @@ export class Appv1 extends Client {
 		return info;
 	}
 
-	getExistingSessionQuery(d: any): any {
+	getExistingSessionQuery(d: any): Filter<Session> {
 		// no
 		return null;
 	}

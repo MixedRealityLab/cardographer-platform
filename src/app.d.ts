@@ -2,14 +2,12 @@
 
 declare namespace App {
 	interface Locals {
-		email?: string;
-		authenticated: boolean;
-		token?: string;
+		email?: string
+		authenticated: boolean
+		token?: string
 	}
 
-	interface Session {
-		email?: string;
-		authenticated: boolean;
-		token?: string;
-	}
+	// interface PageData {
+	// 	wide: boolean
+	// }
 }
