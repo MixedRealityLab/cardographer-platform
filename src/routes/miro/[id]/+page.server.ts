@@ -19,7 +19,7 @@ export const load = (async ({locals, params}) => {
 		const sessions = await db.collection<Session>('Sessions')
 			.find({owners: locals.email, url: null, isArchived: false})
 			.sort({"lastModified": -1, "name": 1, "owners[0]": 1, "created": 1, "_id": 1})
-			.project({"name": 1, "description": 1, "credits": 1})
+			.project({"name": 1, "description": 1, "credits": 1, isPublic: 1, isTemplate: 1})
 			.toArray()
 
 		return {
