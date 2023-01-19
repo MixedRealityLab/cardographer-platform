@@ -3,7 +3,7 @@ import {getCookieName, hashPassword, signUserToken, verifyAuthentication} from "
 import type {CardDeckRevision, Session, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
-import type {PageServerLoad} from "./$types";
+import type {PageServerLoad} from "../../../../.svelte-kit/types/src/routes";
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	if (!locals.authenticated) {

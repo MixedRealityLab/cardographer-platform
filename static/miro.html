@@ -11,7 +11,7 @@
 			miro.board.ui.on("icon:click", async () => {
 				const info = await miro.board.getInfo()
 				await miro.board.ui.openPanel({
-					url: `miro/sidebar/${info.id}`,
+					url: `miro/${info.id}`,
 					height: 600,
 				});
 			});

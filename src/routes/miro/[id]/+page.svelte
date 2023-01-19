@@ -8,7 +8,7 @@
 
 	import type {BoardNode, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
-	import type {PageServerData} from "./$types";
+	import type {PageServerData} from "../../../../.svelte-kit/types/src/routes";
 
 	declare const miro: Miro
 	export let data: PageServerData
@@ -113,7 +113,7 @@
 
 	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
 		{#if !data.authenticated}
-			<form method="post" action="?/login">
+			<form method="post" action="?/login" use:enhance>
 				<LoginPanel/>
 			</form>
 		{:else if !data.session}
