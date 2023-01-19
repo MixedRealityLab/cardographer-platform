@@ -129,7 +129,7 @@
 					<div>{childFile.name}</div>
 				</a>
 			{:else}
-				<a class="fileItem" rel="external" target="_blank" rel="noreferrer"
+				<a class="fileItem" rel="external noreferrer" target="_blank"
 				   href="{base}/uploads/{$page.params.deckId}/{$page.params.revisionId}/{childFile.path}">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-6 mx-4" fill="none" viewBox="0 0 24 24"
 					     stroke="currentColor">
