@@ -5,7 +5,7 @@ import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types";
 
-export const load: PageServerLoad = async function ({locals, params}) {
+export const load = (async ({locals, params}) => {
 	if (!locals.authenticated) {
 		return {authenticated: false}
 	}
@@ -17,7 +17,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 
 	if (!session) {
 		const sessions = await db.collection<Session>('Sessions')
-			.find({owners: locals.email, url: null})
+			.find({owners: locals.email, url: null, isArchived: false})
 			.sort({"lastModified": -1, "name": 1, "owners[0]": 1, "created": 1, "_id": 1})
 			.project({"name": 1, "description": 1, "credits": 1})
 			.toArray()
@@ -36,7 +36,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 			session: session
 		}
 	}
-}
+}) satisfies PageServerLoad;
 
 export const actions: Actions = {
 	login: async ({cookies, request}) => {

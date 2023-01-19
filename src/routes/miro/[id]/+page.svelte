@@ -2,13 +2,12 @@
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths"
 	import type {CardInfo} from "$lib/types"
-	import AppBar from "$lib/ui/AppBar.svelte"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
 
 	import type {BoardNode, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
-	import type {PageServerData} from "../../../../.svelte-kit/types/src/routes";
+	import type {PageServerData} from "./$types";
 
 	declare const miro: Miro
 	export let data: PageServerData
@@ -28,7 +27,7 @@
 				//warning = "No cards found on board"
 				//allowUpload = false
 			} else {
-				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '' && widget.title === '')
+				widgets = allWidgets.filter((widget) => widget.type === 'image' && (widget.url !== '' || widget.title !== ''))
 				console.log(widgets)
 				//warning = null
 				//allowUpload = true
@@ -103,7 +102,8 @@
 			</svg>
 		</a>
 		{#if data.session}
-			<a class="iconButton" href="{base}/sessions/{data.session._id}" title="Open Session" target="_blank" rel="noreferrer">
+			<a class="iconButton" href="{base}/sessions/{data.session._id}" title="Open Session" target="_blank"
+			   rel="noreferrer">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
 					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
 					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
@@ -127,31 +127,29 @@
 				</button>
 			</form>
 			{#each data.sessions as session}
-				{#if !session.isArchived}
-					<form method="post" action="?/select" use:enhance>
-						<input type="hidden" name="id" value="{session._id}"/>
-						<button class="listItem flex-col">
-							<div class="flex flex-row gap-1">
-								<div class="font-semibold">Select
-									{#if session.name.toLowerCase().indexOf('session') === -1}
-										Session
-									{/if}{session.name}</div>
-								{#if session.isPublic}
-									<div class="chip">Public</div>
-								{/if}
-								{#if session.isTemplate}
-									<div class="chip">Template</div>
-								{/if}
-								{#if session.isArchived}
-									<div class="chip">Archived</div>
-								{/if}
-							</div>
-							{#if session.description}
-								<div class="text-sm font-light">{session.description}</div>
+				<form method="post" action="?/select" use:enhance>
+					<input type="hidden" name="id" value="{session._id}"/>
+					<button class="listItem flex-col">
+						<div class="flex flex-row gap-1">
+							<div class="font-semibold">Select
+								{#if session.name.toLowerCase().indexOf('session') === -1}
+									Session
+								{/if}{session.name}</div>
+							{#if session.isPublic}
+								<div class="chip">Public</div>
 							{/if}
-						</button>
-					</form>
-				{/if}
+							{#if session.isTemplate}
+								<div class="chip">Template</div>
+							{/if}
+							{#if session.isArchived}
+								<div class="chip">Archived</div>
+							{/if}
+						</div>
+						{#if session.description}
+							<div class="text-sm font-light">{session.description}</div>
+						{/if}
+					</button>
+				</form>
 			{/each}
 			<div class="flex gap-4 justify-center">
 				<button class="button">
