@@ -1,5 +1,5 @@
 import {base} from "$app/paths";
-import {redirect} from "@sveltejs/kit";
+import {error, redirect} from "@sveltejs/kit";
 import {scrypt} from "crypto";
 import jwt from 'jsonwebtoken';
 
@@ -27,9 +27,13 @@ export async function hashPassword(password: string): Promise<string> {
 	});
 }
 
-export function verifyAuthentication(locals: App.Locals) {
+export function verifyAuthentication(locals: App.Locals, shouldRedirect: boolean = true) {
 	if (!locals.authenticated) {
-		throw redirect(302, base + "/")
+		if (shouldRedirect) {
+			throw redirect(302, base + "/")
+		} else {
+			throw error(401, "Authentication Required")
+		}
 	}
 }
 

@@ -11,6 +11,7 @@
 
 	declare const miro: Miro
 	export let data: PageServerData
+	let selectedCard: CardInfo
 	let widgets: BoardNode[] = []
 
 	onMount(async () => {
@@ -34,9 +35,11 @@
 
 			const selection = await miro.board.getSelection()
 			if(selection.length == 1) {
-				console.log(selection)
-				if(data.session) {
-					console.log(data.session.decks)
+				if (selection[0].type == 'image') {
+					console.log(selection)
+					if (data.session) {
+						console.log(data.session.decks)
+					}
 				}
 			}
 
@@ -102,14 +105,14 @@
 				Associate Board with Session
 			{/if}
 		</div>
-		<a href="" class="iconButton" title="Download Board">
+		<button class="iconButton" title="Download Board">
 			<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
 			     xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
 				      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
 				      fill-rule="evenodd"/>
 			</svg>
-		</a>
+		</button>
 		{#if data.session}
 			<a class="iconButton" href="{base}/sessions/{data.session._id}" title="Open Session" target="_blank"
 			   rel="noreferrer">
@@ -169,8 +172,8 @@
 			<div class="flex-1 flex flex-col">
 				<div class="flex-1">
 					{#each widgets as widget (widget.id)}
-						<div class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
-						     on:click={() => selectWidget(widget)}>
+						<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
+						        on:click={() => selectWidget(widget)}>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
 							     viewBox="0 0 24 24"
 							     stroke="#eab308" stroke-width="2">
@@ -178,7 +181,7 @@
 								      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
 							</svg>
 							{widget.type} {widget.id}
-						</div>
+						</button>
 					{/each}
 
 					{#each data.session.decks as deck}

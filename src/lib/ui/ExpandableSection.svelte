@@ -6,7 +6,7 @@
 </script>
 
 <div class={$$props.class}>
-	<div class="w-full flex flex-row cursor-pointer" on:click={() => expanded = !expanded}>
+	<button class="w-full flex flex-row cursor-pointer" on:click={() => expanded = !expanded}>
 		<div class="flex-1">
 			<slot name="title">Title</slot>
 		</div>
@@ -15,7 +15,7 @@
 		{:else}
 			<img class="w-6" src={`${base}/icons/chevron_down.svg`} alt="Expand"/>
 		{/if}
-	</div>
+	</button>
 
 	{#if expanded}
 		<div transition:slide>

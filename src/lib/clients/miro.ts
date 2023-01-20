@@ -68,6 +68,7 @@ export class MiroClient extends Client {
 			if (widget.type.toLowerCase() != 'image') {
 				continue;
 			}
+			boundify(widget)
 			const id = widget.title || widget.url;
 			if (!id) {
 				if (debug) console.log(`ignore unnamed image`, widget);
@@ -88,23 +89,14 @@ export class MiroClient extends Client {
 				let size = Infinity
 				for (const frame of frames) {
 					let widgetSize = 0
-					if (frame.bounds) {
-						widgetSize = frame.bounds.width * frame.bounds.height
-					} else {
-						widgetSize = frame.width * frame.height
-					}
+					boundify(frame)
+					widgetSize = frame.bounds.width * frame.bounds.height
 
 					if (size < widgetSize || !boardId) {
 						size = widgetSize
 						boardId = frame.title
-						if (frame.bounds) {
-							ci.x = (widget.bounds.left - frame.bounds.left) / (frame.bounds.width - widget.bounds.width)
-							ci.y = (widget.bounds.top - frame.bounds.top) / (frame.bounds.height - widget.bounds.height)
-						} else {
-							ci.x = (widget.x - frame.x) / (frame.width - widget.width)
-							ci.y = (widget.y - frame.y) / (frame.height - widget.height)
-						}
-
+						ci.x = (widget.bounds.left - frame.bounds.left) / (frame.bounds.width - widget.bounds.width)
+						ci.y = (widget.bounds.top - frame.bounds.top) / (frame.bounds.height - widget.bounds.height)
 					}
 				}
 			}
@@ -140,20 +132,25 @@ export class MiroClient extends Client {
 }
 
 function cardInBounds(c, w) {
-	if (c.bounds) {
-		return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
-			c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
-	} else {
-		return c.x >= w.x && (c.x + c.width) <= (w.x + w.width) &&
-			(c.y + c.height) <= (w.y + w.height) && c.x >= w.x;
+	boundify(w)
+	return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
+		c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
+}
 
+function boundify(w) {
+	if (!w.bounds) {
+		w.bounds = {
+			left: w.x - (w.width / 2),
+			right: w.x + (w.width / 2),
+			top: w.y - (w.height / 2),
+			bottom: w.y + (w.height / 2),
+			width: w.width,
+			height: w.height
+		}
 	}
 }
 
 function cardOverlapping(c, w) {
-	if(c.bounds) {
-		return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
-	} else {
-		return c.x <= (w.x + w.width) && (c.x + c.width) >= w.x && c.y <= (w.y + w.height) && (c.y + c.height) >= w.y;
-	}
+	boundify(w)
+	return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
 }
