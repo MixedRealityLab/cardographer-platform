@@ -26,6 +26,7 @@
 
 {#if showDialog}
 	<div class="overlay" on:click="{() => showDialog = false }"
+	     on:keypress={(e) => { if(e.key === "Escape") { showDialog = false}}}
 	     in:fade="{{ duration: 200 }}"
 	     out:fade="{{ delay: 200, duration: 200 }}">
 	</div>
@@ -33,19 +34,19 @@
       y: -10,
       delay: 200,
       duration: 200
-    }}"		     out:fly="{{
+    }}" out:fly="{{
       y: -10,
       duration: 200
     }}"
 	>
-			<div class="message-title">
-				<slot name="title">{title}</slot>
-			</div>
-			<div class="message-description">
-				<slot name="description">
-					Are you sure you wish to do this?
-				</slot>
-			</div>
+		<div class="message-title">
+			<slot name="title">{title}</slot>
+		</div>
+		<div class="message-description">
+			<slot name="description">
+				Are you sure you wish to do this?
+			</slot>
+		</div>
 		<div class="actions">
 			<button class="button mx-4" on:click="{() => showDialog = false }">
 				{cancelTitle}
@@ -59,11 +60,11 @@
 
 <style>
     .message-title {
-	    @apply font-bold text-xl pb-5;
+        @apply font-bold text-xl pb-5;
     }
 
     .message-description {
-	    @apply font-normal;
+        @apply font-normal;
     }
 
     .actions {
