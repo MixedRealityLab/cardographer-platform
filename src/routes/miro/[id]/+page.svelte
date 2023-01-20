@@ -71,6 +71,12 @@
 		})
 		event.target.disabled = false
 	}
+
+	async function saveSession() {
+		const info = await miro.board.getInfo()
+		info.widgets = await miro.board.get()
+		const response = await fetch(`${base}/`)
+	}
 </script>
 
 <style>
