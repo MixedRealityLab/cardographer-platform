@@ -34,7 +34,7 @@
 			}
 
 			const selection = await miro.board.getSelection()
-			if(selection.length == 1) {
+			if (selection.length == 1) {
 				if (selection[0].type == 'image') {
 					console.log(selection)
 					if (data.session) {
