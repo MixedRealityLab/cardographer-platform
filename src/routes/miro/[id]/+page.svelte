@@ -176,7 +176,7 @@
 				<div class="flex-1">
 					{#each widgets as widget (widget.id)}
 						<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
-						        on:click={() => selectWidget(widget)}>
+						        on:click={() => selectWidget([widget])}>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
 							     viewBox="0 0 24 24"
 							     stroke="#eab308" stroke-width="2">
