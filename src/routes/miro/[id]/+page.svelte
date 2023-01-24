@@ -199,43 +199,45 @@
 					{/each}
 
 					{#each data.session.decks as deck}
-						<div class="text-lg pb-2">{deck.deckName}</div>
-						{#each deck.cards as card}
-							{#if card.frontUrl}
-								<ExpandableSection class="py-1">
-									<div slot="title">
-										<div class="flex items-center">
-											<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
-											<span>{card.name}</span>
-											<span class="text-gray-400 ml-1.5">v{card.revision}</span>
-										</div>
-									</div>
-									<div class="flex flex-col pt-1 pb-2">
-										<div class="flex">
-											{#if card.frontUrl}
-												<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-												     class="h-24 mr-4" alt="Card"/>
-											{/if}
-											<div class="flex flex-col">
-												{#if card.description}
-													<div class="text-xs">{card.description}</div>
-												{/if}
-												{#if card.content && card.content !== card.description}
-													<div class="text-xs">{card.content}</div>
-												{/if}
-												<div>
-													Type: {card.category}
-												</div>
-												<button on:click={(event) => {addCard(card, event)}}
-												        class="button button-slim" style="align-self: end">
-													Add
-												</button>
+						{#if deck.cards}
+							<div class="text-lg pb-2">{deck.deckName}</div>
+							{#each deck.cards as card}
+								{#if card.frontUrl}
+									<ExpandableSection class="py-1">
+										<div slot="title">
+											<div class="flex items-center">
+												<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
+												<span>{card.name}</span>
+												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
 											</div>
 										</div>
-									</div>
-								</ExpandableSection>
-							{/if}
-						{/each}
+										<div class="flex flex-col pt-1 pb-2">
+											<div class="flex">
+												{#if card.frontUrl}
+													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
+													     class="h-24 mr-4" alt="Card"/>
+												{/if}
+												<div class="flex flex-col">
+													{#if card.description}
+														<div class="text-xs">{card.description}</div>
+													{/if}
+													{#if card.content && card.content !== card.description}
+														<div class="text-xs">{card.content}</div>
+													{/if}
+													<div>
+														Type: {card.category}
+													</div>
+													<button on:click={(event) => {addCard(card, event)}}
+													        class="button button-slim" style="align-self: end">
+														Add
+													</button>
+												</div>
+											</div>
+										</div>
+									</ExpandableSection>
+								{/if}
+							{/each}
+						{/if}
 					{/each}
 				</div>
 			</div>
