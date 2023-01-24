@@ -23,6 +23,7 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		throw error(404, "Session Not Found")
 	}
 
+
 	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({
 		sessionId: session._id,
 		data: snapshotData

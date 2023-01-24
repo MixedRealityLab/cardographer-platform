@@ -52,7 +52,7 @@ export class MiroClient extends Client {
 		};
 	}
 
-	getExistingSessionQuery(data: any): Filter<Session> {
+	getExistingSessionQuery(data: any): Filter<SessionSnapshot> {
 		return {
 			miroId: data.id
 		};
