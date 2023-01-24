@@ -1,6 +1,6 @@
-import { json } from '@sveltejs/kit';
-import type {RequestHandler} from "@sveltejs/kit"
 import {base} from "$app/paths";
+import type {RequestHandler} from "@sveltejs/kit"
+import {json} from '@sveltejs/kit';
 
 export const GET: RequestHandler = async function () {
 	return json({
@@ -12,7 +12,7 @@ export const GET: RequestHandler = async function () {
 		"short_name": "Cardographer",
 		"icons": [
 			{
-				"src":`${base}/cards.svg`,
+				"src": `${base}/cards.svg`,
 				"sizes": "24x24",
 				"type": "image/svg"
 			},
