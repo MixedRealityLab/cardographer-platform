@@ -13,6 +13,8 @@
 	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
 	let selectedCard: CardInfo
 	let widgets: BoardNode[] = []
+	let error: string
+	let success: boolean = false
 
 	onMount(async () => {
 		miro.board.ui.on('selection:update', updateWidgets)
@@ -76,9 +78,11 @@
 			method: 'POST',
 			body: JSON.stringify(info)
 		})
-		console.log(await response.text())
 		if (response.ok) {
-
+			success = true
+			error = null
+		} else {
+			error = (await response.json()).message
 		}
 	}
 </script>
@@ -242,6 +246,15 @@
 			<div class="warn">
 				{widgets.length} image{widgets.length > 1 ? 's' : ''} will not be saved. Give them titles to include
 				them
+			</div>
+		{/if}
+		{#if error}
+			<div class="warn">
+				{error}
+			</div>
+		{:else if success}
+			<div class="message-success">
+				Uploaded
 			</div>
 		{/if}
 		<div class="flex gap-4 justify-center">

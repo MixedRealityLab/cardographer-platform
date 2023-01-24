@@ -30,12 +30,6 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		"data.updatedAt": snapshotData.updatedAt
 	})
 	if (exists > 0) {
-		const existing = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({
-			sessionId: session._id,
-			"data.id": snapshotData.id,
-			"data.updatedAt": snapshotData.updatedAt
-		})
-		console.log(existing)
 		throw error(409, "Snapshot Already Uploaded")
 	}
 
