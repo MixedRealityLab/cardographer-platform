@@ -1,5 +1,5 @@
 import {checkUserToken, getCookieName} from '$lib/security';
-import type {Handle} from '@sveltejs/kit';
+import type {Handle, RequestEvent} from '@sveltejs/kit';
 import {parse} from "cookie";
 
 const debug = true
@@ -9,7 +9,7 @@ export const handle: Handle = async function ({event, resolve}) {
 
 	// just a cookie for now (and not a proper one either...)
 	const cookies = parse(event.request.headers.get('cookie') || '');
-	const userToken = cookies[getCookieName()] || event.request.headers.get('authorization').replace(/^Bearer\s/, '') || '';
+	const userToken = cookies[getCookieName()] || getAuthHeader(event) || '';
 	const token = await checkUserToken(userToken);
 
 	const locals = event.locals
@@ -20,4 +20,13 @@ export const handle: Handle = async function ({event, resolve}) {
 	}
 
 	return resolve(event);
+}
+
+function getAuthHeader(event: RequestEvent): string {
+	const header = event.request.headers.get('authorization')
+	if (header) {
+		return header.replace(/^Bearer\s/, '')
+	} else {
+		return null
+	}
 }
