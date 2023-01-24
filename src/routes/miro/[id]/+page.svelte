@@ -244,7 +244,7 @@
 			</div>
 		{/if}
 		<div class="flex gap-4 justify-center">
-			<button class="button m-2">
+			<button class="button m-2" on:click={saveSession}>
 				Save Session
 			</button>
 		</div>
