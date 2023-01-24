@@ -5,7 +5,7 @@
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
 
-	import type {BoardNode, Miro, PositionMixin, SizeMixin} from "@mirohq/websdk-types";
+	import type {BoardNode, Item, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
 	import type {PageServerData} from "./$types";
 
@@ -34,6 +34,7 @@
 			}
 
 			const selection = await miro.board.getSelection()
+			await selectWidget(selection.filter((widget) => widget.type === 'image'))
 			if (selection.length == 1) {
 				if (selection[0].type == 'image') {
 					console.log(selection)
@@ -50,19 +51,10 @@
 		}
 	}
 
-	async function selectWidget(widget: SizeMixin & PositionMixin) {
-		//await miro.html.board.selection.selectWidgets(widget.id)
-		console.log(widget)
-		const width = widget.width;
-		const height = widget.height;
-		const rect = {
-			x: widget.x - (width / 2),
-			y: widget.y - (height / 2),
-			width: width * 2,
-			height: height * 2
+	async function selectWidget(widgets: Item[]) {
+		if (widgets.length > 0) {
+			await miro.board.viewport.zoomTo(widgets)
 		}
-		console.log(rect)
-		await miro.board.viewport.set({viewport: widget})
 	}
 
 	async function addCard(card: CardInfo, event) {
