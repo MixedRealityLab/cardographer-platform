@@ -1,3 +1,4 @@
+<!--suppress HtmlUnknownTag -->
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths"
@@ -59,14 +60,17 @@
 
 	async function addCard(card: CardInfo, event) {
 		event.target.disabled = true
-		await miro.board.createImage({
-			url: new URL(card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl, document.baseURI).href
-		})
+		const url = card['frontUrl']
+		if (url) {
+			await miro.board.createImage({
+				url: new URL(url.startsWith('/') ? base + url : url, document.baseURI).href
+			})
+		}
 		event.target.disabled = false
 	}
 
 	async function saveSession() {
-		const info = await miro.board.getInfo()
+		const info: any = await miro.board.getInfo()
 		info.widgets = await miro.board.get()
 		console.log(info)
 		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
