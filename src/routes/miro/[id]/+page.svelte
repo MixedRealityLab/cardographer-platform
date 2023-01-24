@@ -28,7 +28,7 @@
 				//warning = "No cards found on board"
 				//allowUpload = false
 			} else {
-				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '') //&& widget.title === '')
+				widgets = allWidgets.filter((widget) => widget.type === 'image' && widget.url === '' && widget.title === '')
 				//warning = null
 				//allowUpload = true
 			}
