@@ -62,7 +62,7 @@
 			height: height * 2
 		}
 		console.log(rect)
-		await miro.board.viewport.set({viewport: rect})
+		await miro.board.viewport.set({viewport: widget})
 	}
 
 	async function addCard(card: CardInfo, event) {
