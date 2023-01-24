@@ -75,7 +75,7 @@
 	async function saveSession() {
 		const info = await miro.board.getInfo()
 		info.widgets = await miro.board.get()
-		const response = await fetch(`${base}/${info.id}/snapshot`, {
+		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
 			method: 'POST',
 			body: JSON.stringify(info)
 		})
