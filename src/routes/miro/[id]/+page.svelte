@@ -61,6 +61,7 @@
 			width: width * 2,
 			height: height * 2
 		}
+		console.log(rect)
 		await miro.board.viewport.set({viewport: rect})
 	}
 

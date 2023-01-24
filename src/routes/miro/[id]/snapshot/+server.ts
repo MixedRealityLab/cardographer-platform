@@ -26,10 +26,11 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 
 	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({
 		sessionId: session._id,
-		data: snapshotData
+		"data.id": snapshotData.id,
+		"data.updatedAt": snapshotData.updatedAt
 	})
 	if (exists > 0) {
-		throw error(409)
+		throw error(409, "Snapshot Already Uploaded")
 	}
 
 	const client = getClient(sessionType);
