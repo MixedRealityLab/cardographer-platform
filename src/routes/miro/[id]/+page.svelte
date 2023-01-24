@@ -69,10 +69,14 @@
 		const info = await miro.board.getInfo()
 		info.widgets = await miro.board.get()
 		console.log(info)
-		//const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
-		//	method: 'POST',
-		//	body: JSON.stringify(info)
-		//})
+		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
+			method: 'POST',
+			body: JSON.stringify(info)
+		})
+		console.log(await response.text())
+		if (response.ok) {
+
+		}
 	}
 </script>
 
