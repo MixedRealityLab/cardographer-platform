@@ -41,28 +41,28 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 
 	// TODO Some Versioning?
 
-	const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
-	if (!r2.insertedId) {
-		throw error(500)
-	}
-
-	// session already imported?
-	session.sessionType = sessionType
-	session.url = url
-	session.lastModified = new Date().toISOString()
-	const upd = await db.collection<Session>('Sessions').updateOne({
-		_id: session._id
-	}, {
-		$set: {
-			// project changes
-			lastModified: session.lastModified,
-			sessionType: session.sessionType,
-			url: session.url,
-		}
-	});
-	if (!upd) {
-		throw error(500)
-	}
-
+	// const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
+	// if (!r2.insertedId) {
+	// 	throw error(500)
+	// }
+	//
+	// // session already imported?
+	// session.sessionType = sessionType
+	// session.url = url
+	// session.lastModified = new Date().toISOString()
+	// const upd = await db.collection<Session>('Sessions').updateOne({
+	// 	_id: session._id
+	// }, {
+	// 	$set: {
+	// 		// project changes
+	// 		lastModified: session.lastModified,
+	// 		sessionType: session.sessionType,
+	// 		url: session.url,
+	// 	}
+	// });
+	// if (!upd) {
+	// 	throw error(500)
+	// }
+	//
 	return json({success: true})
 }
