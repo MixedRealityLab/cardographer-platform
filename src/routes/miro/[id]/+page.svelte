@@ -2,16 +2,15 @@
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths"
-	import type {CardInfo} from "$lib/types"
+	import type {CardInfo, Session} from "$lib/types"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
 
 	import type {BoardNode, Item, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
-	import type {PageServerData} from "./$types";
 
 	declare const miro: Miro
-	export let data: PageServerData
+	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
 	let selectedCard: CardInfo
 	let widgets: BoardNode[] = []
 
