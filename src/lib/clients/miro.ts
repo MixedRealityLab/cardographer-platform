@@ -103,7 +103,7 @@ export class MiroClient extends Client {
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => stickerTypes.includes(w.type.toLowerCase()) && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+			ci.comments = data.widgets.filter((w) => stickerTypes.includes(w.type.toLowerCase()) && (w.text || w.content) && cardOverlapping(widget, w)).map((w) => w.text || w.content)
 
 			let board = boards.find((b) => b.id == boardId);
 
