@@ -37,7 +37,9 @@
 
 			const selection = await miro.board.getSelection()
 			if (selection.length > 0) {
-				const cards: CardInfo[] = data.session['decks'].cards
+				console.log(data.session['decks'])
+				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck.cards)
+				console.log(cards)
 				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'] == card.frontUrl)).map((card) => card.id)
 				console.log(selectedCards)
 			} else {
