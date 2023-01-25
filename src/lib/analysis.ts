@@ -104,6 +104,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 	}
 
 	if (debug) console.log(JSON.stringify(regions))
+	if (debug) console.log(JSON.stringify(cardUses))
 
 	const nodes = []
 	const edges = []
