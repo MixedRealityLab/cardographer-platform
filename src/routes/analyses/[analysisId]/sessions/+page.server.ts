@@ -19,7 +19,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 				snapshotDescription: true
 			}
 		})
-		.sort({sessionName: 1, created: 1})
+		.sort({sessionId: 1, created: 1})
 		.toArray()
 	if (snapshots && analysis && analysis.snapshotIds) {
 		snapshots.forEach((snapshot) => {

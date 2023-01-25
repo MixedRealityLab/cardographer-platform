@@ -36,6 +36,7 @@
 			}
 
 			const selection = (await miro.board.getSelection()).filter((widget) => widget.type === 'image')
+			console.log(await miro.board.getSelection())
 			if (selection.length > 0) {
 				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck.cards)
 				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'].endsWith(card.frontUrl))).map((card) => card.id)
