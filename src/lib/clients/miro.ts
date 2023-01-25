@@ -132,6 +132,7 @@ export class MiroClient extends Client {
 			}
 			if (debug) console.log(`card ${id} in ${ci.zones.length} zones: ${JSON.stringify(ci.zones)}`);
 		}
+		if (debug) console.log(boards)
 		return {boards}
 	}
 }
