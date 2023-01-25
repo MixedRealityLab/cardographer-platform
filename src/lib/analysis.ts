@@ -158,7 +158,8 @@ export async function analysisNodeGraph(analysis: Analysis) {
 					comments: cardUse1.comments,
 					colour: colour,
 					zones: zones,
-					count: count
+					count: count,
+					size: count * 10
 				}
 			})
 			for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {

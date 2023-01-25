@@ -91,8 +91,8 @@
 				{
 					selector: 'node',
 					style: {
-						'width': 'data(count)',
-						'height': 'data(count)',
+						'width': 'data(size)',
+						'height': 'data(size)',
 						'background-color': 'data(colour)',
 						'content': 'data(label)',
 						'transition-property': 'background-opacity',
