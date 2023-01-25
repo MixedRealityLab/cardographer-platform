@@ -208,7 +208,7 @@
 						working = false
 	                  };
 				}}>
-				{#each data.regions as region}
+				{#each data.graph.regions as region}
 					<RegionOptions region={region} disabled={working}/>
 				{/each}
 				<button class="button mt-2" disabled={working}>Save</button>

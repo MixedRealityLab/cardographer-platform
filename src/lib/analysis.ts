@@ -116,9 +116,6 @@ export async function analysisNodeGraph(analysis: Analysis) {
 			if (cu) {
 				const board = boards[bi]
 				const region = regions.find((region) => region.name === board.id)
-				console.log(board)
-				console.log(region)
-				console.log(cu)
 				if (region.type !== RegionType.Ignore) {
 					for (const use of cu) {
 						if (region.type === RegionType.XAxis && use.x) {
