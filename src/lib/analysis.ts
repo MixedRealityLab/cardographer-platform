@@ -103,6 +103,8 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 
+	if (debug) console.log(JSON.stringify(regions))
+
 	const nodes = []
 	const edges = []
 
