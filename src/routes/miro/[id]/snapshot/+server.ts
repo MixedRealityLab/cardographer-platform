@@ -1,5 +1,5 @@
 import {getClient, guessSessionType} from "$lib/clients";
-import {getDb, getNewId} from "$lib/db";
+import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security";
 import type {Session, SessionSnapshot} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit"
@@ -23,7 +23,6 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		throw error(404, "Session Not Found")
 	}
 
-
 	const exists = await db.collection<SessionSnapshot>('SessionSnapshots').countDocuments({
 		sessionId: session._id,
 		"data.id": snapshotData.id,
@@ -34,11 +33,10 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 	}
 
 	const client = getClient(sessionType);
-	const snapshot = client.makeSessionSnapshot(snapshotData);
-	snapshot.sessionId = session._id;
-	snapshot._id = getNewId();
-	snapshot.owners = session.owners;
-
+	if (!client) {
+		throw error(500, "Could Not Detect Client")
+	}
+	const snapshot = client.makeSessionSnapshot(snapshotData, session);
 	const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
 	if (!r2.insertedId) {
 		throw error(500, "Upload Failed")

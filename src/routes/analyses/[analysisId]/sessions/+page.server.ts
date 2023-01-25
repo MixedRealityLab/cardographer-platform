@@ -15,11 +15,11 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 			projection: {
 				_id: true, sessionId: true, sessionName: true,
 				sessionDescription: true, sessionCredits: true,
-				sessionType: true, originallyCreated: true,
+				sessionType: true, created: true,
 				snapshotDescription: true
 			}
 		})
-		.sort({sessionName: 1, originallyCreated: 1})
+		.sort({sessionName: 1, created: 1})
 		.toArray()
 	if (snapshots && analysis && analysis.snapshotIds) {
 		snapshots.forEach((snapshot) => {

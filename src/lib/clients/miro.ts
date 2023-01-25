@@ -1,9 +1,12 @@
 import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes'
 import type {Session, SessionSnapshot} from '$lib/types'
 import type {Filter} from "mongodb"
+import {getNewId} from "../db";
 import {Client} from './types'
 
 const debug = false
+
+const stickerTypes = ['sticker', 'sticky_note', 'square']
 
 export class MiroClient extends Client {
 	acceptsImport(data: any): boolean {
@@ -32,19 +35,18 @@ export class MiroClient extends Client {
 		}
 	}
 
-	makeSessionSnapshot(data: any): SessionSnapshot {
-		const now = new Date().toISOString();
+	makeSessionSnapshot(data: any, session: Session): SessionSnapshot {
 		return {
-			_id: '',
-			sessionId: '',
-			sessionName: data.title,
+			_id: getNewId(),
+			sessionId: session._id,
+			sessionName: session.name,
 			sessionDescription: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
-			sessionCredits: data.owner && data.owner.name ? data.owner.name : '',
+			sessionCredits: session.credits,
 			sessionType: 'miro',
 			originallyCreated: data.createdAt,
 			snapshotDescription: '',
-			owners: [],
-			created: now,
+			owners: session.owners,
+			created: data.updatedAt,
 			isPublic: false,
 			isNotForAnalysis: false,
 			legacyId: data._id,
@@ -101,7 +103,7 @@ export class MiroClient extends Client {
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => w.type.toLowerCase() == 'sticker' && w.text && cardOverlapping(widget, w)).map((w) => w.text)
+			ci.comments = data.widgets.filter((w) => stickerTypes.includes(w.type.toLowerCase()) && w.text && cardOverlapping(widget, w)).map((w) => w.text)
 
 			let board = boards.find((b) => b.id == boardId);
 
