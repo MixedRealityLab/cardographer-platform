@@ -81,6 +81,7 @@
 	}
 
 	onMount(async () => {
+		console.log(data.graph)
 		graph = cytoscape({
 			elements: data.graph,
 			container: graphElement,
