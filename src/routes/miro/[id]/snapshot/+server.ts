@@ -44,7 +44,6 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		throw error(500, "Upload Failed")
 	}
 
-	// session already imported?
 	session.sessionType = sessionType
 	session.url = url
 	session.lastModified = new Date().toISOString()

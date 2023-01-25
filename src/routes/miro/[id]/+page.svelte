@@ -6,12 +6,12 @@
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
 
-	import type {BoardNode, Item, Miro} from "@mirohq/websdk-types";
+	import type {BoardNode, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
 	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
-	let selectedCard: CardInfo
+	let selectedCards: string[]
 	let widgets: BoardNode[] = []
 	let error: string
 	let success: boolean = false
@@ -36,26 +36,18 @@
 			}
 
 			const selection = await miro.board.getSelection()
-			await selectWidget(selection.filter((widget) => widget.type === 'image'))
-			if (selection.length == 1) {
-				if (selection[0].type == 'image') {
-					console.log(selection)
-					if (data.session) {
-						console.log(data.session.decks)
-					}
-				}
+			if (selection.length > 0) {
+				const cards: CardInfo[] = data.session['decks'].cards
+				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'] == card.frontUrl)).map((card) => card.id)
+				console.log(selectedCards)
+			} else {
+				selectedCards = []
 			}
 
 		} catch (e) {
 			//allowUpload = false
 			//warning = e.message
 			console.warn(e)
-		}
-	}
-
-	async function selectWidget(widgets: Item[]) {
-		if (widgets.length > 0) {
-			await miro.board.viewport.zoomTo(widgets)
 		}
 	}
 
@@ -187,7 +179,7 @@
 				<div class="flex-1">
 					{#each widgets as widget (widget.id)}
 						<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
-						        on:click={() => selectWidget([widget])}>
+						        on:click={() => miro.board.viewport.zoomTo([widget])}>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
 							     viewBox="0 0 24 24"
 							     stroke="#eab308" stroke-width="2">
@@ -205,7 +197,8 @@
 								{#if card.frontUrl}
 									<ExpandableSection class="py-1">
 										<div slot="title">
-											<div class="flex items-center">
+											<div class="flex items-center"
+											     class:text-blue-700={selectedCards.includes(card.id)}>
 												<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
 												<span>{card.name}</span>
 												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
