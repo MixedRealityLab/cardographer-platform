@@ -11,7 +11,7 @@
 
 	declare const miro: Miro
 	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
-	let selectedCards: string[]
+	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
 	let error: string
 	let success: boolean = false
