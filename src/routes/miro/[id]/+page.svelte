@@ -40,7 +40,7 @@
 				console.log(selection)
 				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck.cards)
 				console.log(cards)
-				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'] == card.frontUrl)).map((card) => card.id)
+				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'].endsWith(card.frontUrl))).map((card) => card.id)
 				console.log(selectedCards)
 			} else {
 				selectedCards = []
