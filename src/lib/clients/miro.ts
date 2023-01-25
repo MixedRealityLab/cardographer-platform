@@ -5,7 +5,7 @@ import striptags from "striptags";
 import {getNewId} from "../db"
 import {Client} from './types'
 
-const debug = false
+const debug = true
 
 const stickerTypes = ['sticker', 'sticky_note', 'square']
 
