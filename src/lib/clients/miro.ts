@@ -1,7 +1,8 @@
 import type {BoardInfo, CardSnapshot, SnapshotInfo} from '$lib/analysistypes'
 import type {Session, SessionSnapshot} from '$lib/types'
 import type {Filter} from "mongodb"
-import {getNewId} from "../db";
+import striptags from "striptags";
+import {getNewId} from "../db"
 import {Client} from './types'
 
 const debug = false
@@ -103,7 +104,7 @@ export class MiroClient extends Client {
 				}
 			}
 
-			ci.comments = data.widgets.filter((w) => stickerTypes.includes(w.type.toLowerCase()) && (w.text || w.content) && cardOverlapping(widget, w)).map((w) => w.text || w.content)
+			ci.comments = data.widgets.filter((w) => stickerTypes.includes(w.type.toLowerCase()) && (w.text || w.content) && cardOverlapping(widget, w)).map((w) => w.text || striptags(w.content))
 
 			let board = boards.find((b) => b.id == boardId);
 
@@ -120,6 +121,8 @@ export class MiroClient extends Client {
 			for (const shape of shapes) {
 				if (shape.plainText) {
 					ci.zones.push({zoneId: shape.plainText});
+				} else if (shape.content) {
+					ci.zones.push({zoneId: striptags(shape.content)});
 				}
 			}
 			if (ci.zones.length == 0) {
