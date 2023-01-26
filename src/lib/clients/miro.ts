@@ -126,8 +126,12 @@ export class MiroClient extends Client {
 				}
 			}
 			if (ci.zones.length == 0) {
-				for (const frame of frames) {
-					ci.zones.push({zoneId: frame.title});
+				if (frames.length > 0) {
+					for (const frame of frames) {
+						ci.zones.push({zoneId: frame.title});
+					}
+				} else {
+					ci.zones.push({zoneId: ''})
 				}
 			}
 			if (debug) console.log(`card ${id} in ${ci.zones.length} zones: ${JSON.stringify(ci.zones)}`);
