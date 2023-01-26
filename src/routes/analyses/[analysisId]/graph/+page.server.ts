@@ -30,24 +30,21 @@ export const actions: Actions = {
 		// update analysis
 		const data = await request.formData();
 		const regionTypes = data.getAll('region') as string[]
-		const regions = analysis.regions
 		const graph = await analysisNodeGraph(analysis)
 
-		console.log(regions)
-		console.log(regionTypes)
-		console.log(graph.regions)
-		if (regions.length != regionTypes.length) {
+		if (graph.regions.length != regionTypes.length) {
 
 			throw error(400, 'Regions don\'t match')
 		}
 
-		for (const index in regions) {
-			let region = regions[index]
+		let regions = []
+		for (const index in graph.regions) {
+			let region = graph.regions[index]
 			const type = RegionType[regionTypes[index]]
 			if (!type) {
 				throw error(400)
 			}
-			region.type = type
+			regions.push({type: type, name: region.name})
 		}
 
 		const upd = await db.collection<Analysis>('Analyses').updateOne({

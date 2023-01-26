@@ -5,7 +5,7 @@ import striptags from "striptags";
 import {getNewId} from "../db"
 import {Client} from './types'
 
-const debug = true
+const debug = false
 
 const stickerTypes = ['sticker', 'sticky_note', 'square']
 
@@ -55,7 +55,7 @@ export class MiroClient extends Client {
 		};
 	}
 
-	getExistingSessionQuery(data: any): Filter<SessionSnapshot> {
+	getExistingSessionQuery(data: any): Filter<Session> {
 		return {
 			miroId: data.id
 		};
