@@ -31,9 +31,11 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const regionTypes = data.getAll('region') as string[]
 		const regions = analysis.regions
+		const graph = await analysisNodeGraph(analysis)
 
 		console.log(regions)
 		console.log(regionTypes)
+		console.log(graph.regions)
 		if (regions.length != regionTypes.length) {
 
 			throw error(400, 'Regions don\'t match')
