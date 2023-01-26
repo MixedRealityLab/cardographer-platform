@@ -137,7 +137,6 @@
 			</form>
 		{:else if !data.session}
 			<form method="post" action="?/select" use:enhance>
-				<input type="hidden" name="id" value="new"/>
 				<button class="listItem flex-col">
 					<div class="flex flex-row gap-1">
 						<div class="font-semibold">Create New Session</div>

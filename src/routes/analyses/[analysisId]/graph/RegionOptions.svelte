@@ -7,7 +7,7 @@
 	//export let subregions = []
 </script>
 
-<label>
+<label class="mt-2">
 	<span>{region.name || 'Not in a Region' }</span>
 	<select disabled={disabled} name="region" bind:value={region.type} class="w-full">
 		<option value="{RegionType.Category}">Colour by Card Category</option>

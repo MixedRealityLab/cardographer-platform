@@ -1,4 +1,4 @@
-import {getDb} from "$lib/db"
+import {getDb, getNewId} from "$lib/db"
 import {getCookieName, hashPassword, signUserToken, verifyAuthentication} from "$lib/security"
 import type {CardDeckRevision, Session, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
@@ -67,20 +67,38 @@ export const actions: Actions = {
 		verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
-		if (!id) {
-			return fail(400, {error: 'Missing data'})
-		}
 		const url = "https://miro.com/app/board/" + params.id
 		const db = await getDb()
-		const updateResult = await db.collection<Session>('Sessions').updateOne({
-			$or: [{owners: locals.email}, {isPublic: true}], _id: id
-		}, {
-			$set: {
-				url: url
+		if (!id) {
+			const now = new Date().toISOString()
+			const insertResult = await db.collection<Session>('Sessions').insertOne({
+				_id: getNewId(),
+				name: 'Miro Session',
+				description: "Session for Miro board at " + url,
+				owners: [locals.email],
+				url: url,
+				created: now,
+				isPublic: false,
+				lastModified: now,
+				isTemplate: false,
+				isArchived: false,
+				sessionType: 'miro',
+				decks: []
+			})
+			if (!insertResult.acknowledged) {
+				return fail(500)
 			}
-		})
-		if (!updateResult.modifiedCount) {
-			return fail(404)
+		} else {
+			const updateResult = await db.collection<Session>('Sessions').updateOne({
+				$or: [{owners: locals.email}, {isPublic: true}], _id: id
+			}, {
+				$set: {
+					url: url
+				}
+			})
+			if (!updateResult.modifiedCount) {
+				return fail(404)
+			}
 		}
 
 		return {success: true}

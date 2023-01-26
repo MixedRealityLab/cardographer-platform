@@ -1,6 +1,6 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Session, User} from "$lib/types"
+import type {Session, SessionSnapshot, User} from "$lib/types"
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 
@@ -32,27 +32,38 @@ export const actions: Actions = {
 
 		const data = await request.formData();
 		let owners = data.getAll('owners') as string[]
-		if(!owners || owners.length == 0||owners[0] == '') {
+		if (!owners || owners.length == 0 || owners[0] == '') {
 			owners = session.owners
 		}
 
-		const updateResult = await db.collection<Session>('Sessions').updateOne({
-			_id: sessionId
-		}, {
-			$set: {
-				name: data.get('name') as string || session.name,
-				description: data.get('description') as string || session.description,
-				credits: data.get('credits') as string || session.credits,
-				owners: owners,
-				isPublic: data.get('isPublic') == 'on',
-				isTemplate: data.get('isTemplate') == 'on',
-				isArchived: data.get('isArchived') == 'on',
-				lastModified: new Date().toISOString()
-			}
-		})
+		const updateResult = await db.collection<Session>('Sessions').updateOne(
+			{_id: sessionId},
+			{
+				$set: {
+					name: data.get('name') as string || session.name,
+					description: data.get('description') as string || '',
+					credits: data.get('credits') as string || '',
+					owners: owners,
+					isPublic: data.get('isPublic') == 'on',
+					isTemplate: data.get('isTemplate') == 'on',
+					isArchived: data.get('isArchived') == 'on',
+					lastModified: new Date().toISOString()
+				}
+			})
 		if (updateResult.modifiedCount == 0) {
 			throw error(500, "Error Updating: ")
 		}
+
+		const updateSnapshots = await db.collection<SessionSnapshot>('SessionSnapshots').updateMany(
+			{sessionId: sessionId},
+			{
+				$set: {
+					sessionName: data.get('name') as string || session.name,
+					sessionDescription: data.get('description') as string || '',
+					sessionCredits: data.get('credits') as string || '',
+					owners: owners
+				}
+			})
 		return {success: true}
 	}
 }

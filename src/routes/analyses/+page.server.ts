@@ -39,6 +39,6 @@ export const actions: Actions = {
 			throw error(500);
 		}
 
-		throw redirect(302, base + '/user/analyses/' + newId)
+		throw redirect(302, base + '/analyses/' + newId)
 	}
 }

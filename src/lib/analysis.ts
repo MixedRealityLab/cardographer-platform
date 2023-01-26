@@ -158,8 +158,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 					comments: cardUse1.comments,
 					colour: colour,
 					zones: zones,
-					count: count,
-					size: count * 10
+					count: count
 				}
 			})
 			for (let cardIndex2 = 0; cardIndex2 < cardIndex1; cardIndex2++) {
@@ -202,7 +201,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 
 	const max = Math.max(...nodes.map((node) => node.data.count))
 	nodes.forEach((node) => {
-		node.data.size = (((node.data.count - 1) / (max - 1)) + 1) * 20
+		node.data.size = (((node.data.count - 1) / (max - 1)) + 1) * 20 || 20
 	})
 
 	return {

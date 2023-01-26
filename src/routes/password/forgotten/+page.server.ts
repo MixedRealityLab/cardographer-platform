@@ -40,7 +40,7 @@ export const actions: Actions = {
 		}
 
 		if (emailConfigured) {
-			const sessionUrl = new URL('https://' + url.host + base + '/user/password/' + code).toString()
+			const sessionUrl = new URL('https://' + url.host + base + '/password/' + code).toString()
 			await transport.sendMail({
 				from: process.env['SMTP_email'],
 				to: email,
@@ -50,7 +50,7 @@ export const actions: Actions = {
 			});
 		} else {
 			console.log("No Email Setup")
-			console.log('https://' + url.host + base + '/user/password/' + code)
+			console.log('https://' + url.host + base + '/password/' + code)
 		}
 
 		return {success: true}
