@@ -103,7 +103,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 	}
 	console.log(JSON.stringify(regions))
-	console.log(JSON.stringify(cardUses))
+	console.log(JSON.stringify(boards))
 
 	const nodes = []
 	const edges = []
