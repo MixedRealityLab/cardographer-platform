@@ -2,7 +2,7 @@ import {checkUserToken, getCookieName} from '$lib/security';
 import type {Handle, RequestEvent} from '@sveltejs/kit';
 import {parse} from "cookie";
 
-const debug = true
+const debug = false
 
 export const handle: Handle = async function ({event, resolve}) {
 	if (debug) console.log(`Handle Request: ${JSON.stringify(event.url)}`)

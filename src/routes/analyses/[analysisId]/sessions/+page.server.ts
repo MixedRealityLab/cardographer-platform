@@ -47,8 +47,6 @@ export const actions: Actions = {
 
 		const data = await request.formData();
 		let sessions = data.getAll('sessions') as string[]
-		console.log(sessions)
-
 		const updateResult = await db.collection<Analysis>('Analyses').updateOne({
 			_id: analysisId
 		}, {
