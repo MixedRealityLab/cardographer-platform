@@ -11,6 +11,6 @@ export abstract class Client {
 
 	abstract getSnapshotInfo(snapshot: SessionSnapshot): SnapshotInfo
 
-	abstract getExistingSessionQuery(d: any): Filter<SessionSnapshot>
+	abstract getExistingSessionQuery(d: any): Filter<Session>
 }
 

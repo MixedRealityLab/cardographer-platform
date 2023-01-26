@@ -78,7 +78,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 				sortBy: sortBy,
 				description: description,
 			};
-			console.log(newProp)
+			//console.log(newProp)
 
 			if (addColumns) {
 				if (debug) console.log(`add column ${title}`, newProp);
@@ -356,13 +356,13 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 		cards = revision.cards;
 	}
 	for(const card of cards) {
-		console.log(card)
+		//console.log(card)
 		const row = [];
 		if (withRowTypes) {
 			row.push(ROWTYPE_CARD);
 		}
 		for (const column of columns) {
-			console.log(column)
+			//console.log(column)
 			if (column.customFieldName) {
 				if(card.custom) {
 					row.push(card.custom[column.customFieldName]);

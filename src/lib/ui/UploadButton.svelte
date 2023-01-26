@@ -7,7 +7,6 @@
 
 	function handleSubmit() {
 		if(fileInput.files.length != 0) {
-			console.log(fileInput.files)
 			fileInput.form.requestSubmit()
 		}
 	}

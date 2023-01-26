@@ -3,7 +3,7 @@
 	import {base} from "$app/paths";
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
-	import type {ActionData, PageServerData} from './$types'
+	import type {PageServerData} from './$types'
 
 	export let data: PageServerData
 	let showArchived = false
@@ -59,7 +59,6 @@
 
 		<form method="post" enctype="multipart/form-data" use:enhance={() => {
 				    return async ({ result, update }) => {
-						console.log(result)
 						update()
 						message = result.data.message
 	                  };

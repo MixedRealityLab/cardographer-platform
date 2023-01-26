@@ -24,7 +24,6 @@ export const actions: Actions = {
 		const db = await getDb();
 		let message = ""
 		// permission check
-		console.log(files)
 		for (const file of files) {
 			const s = JSON.parse(await file.text())
 			//if(debug) console.log(`import`, s);
@@ -64,7 +63,7 @@ export const actions: Actions = {
 			if (!session) {
 				session = client.makeSession(s);
 			}
-			const snapshot = client.makeSessionSnapshot(s);
+			const snapshot = client.makeSessionSnapshot(s, session);
 			if (!session || !snapshot) {
 				message = message + `${file.name}: Problem importing\n`
 				continue;
@@ -92,8 +91,6 @@ export const actions: Actions = {
 			}
 			message = message + `${file.name}: Imported ${addSession ? 'new' : 'existing'} ${sessionType} session ${s.title || s.name || s._id}\n`;
 		}
-
-		console.log(message)
 
 		return {message: message}
 	}
