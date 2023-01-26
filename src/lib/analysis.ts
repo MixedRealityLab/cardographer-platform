@@ -56,7 +56,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 			}
 			if (analysisRegion) {
 				region.type = analysisRegion.type
-				region.colour = analysisRegion.colour
+				region.colour = analysisRegion.colour || "magma"
 			} else {
 				region.type = RegionType.Category
 				region.color = "magma"
