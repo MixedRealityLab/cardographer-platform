@@ -146,7 +146,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 		zones.sort()
 		if (count > 0) {
-			let colour = coolGray["600"]
+			let colour = hexValue(plasmaColour(0.5))
 			if (cardColors.length > 0) {
 				const colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
 				colour = hexValue(plasmaColour(colourMix))
