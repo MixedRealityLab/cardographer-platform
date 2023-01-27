@@ -7,11 +7,7 @@ import {getDb} from '$lib/db'
 import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types'
 import {RegionType} from '$lib/types'
 
-const coolGray = {
-	600: '#4b5563',
-}
-
-const debug = true;
+const debug = true
 
 interface DesignInfo {
 	id: string;
