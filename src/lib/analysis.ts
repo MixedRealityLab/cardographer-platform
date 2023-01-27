@@ -147,6 +147,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				const colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
 				colour = hexValue(plasmaColour(colourMix))
 			}
+			console.log(colour)
 
 			nodes.push({
 				data: {
