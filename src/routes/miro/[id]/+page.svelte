@@ -36,7 +36,6 @@
 			}
 
 			const selection = (await miro.board.getSelection()).filter((widget) => widget.type === 'image')
-			console.log(await miro.board.getSelection())
 			if (selection.length > 0) {
 				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck.cards)
 				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'].endsWith(card.frontUrl))).map((card) => card.id)
@@ -65,7 +64,6 @@
 	async function saveSession() {
 		const info: any = await miro.board.getInfo()
 		info.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
-		console.log(info)
 		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
 			method: 'POST',
 			body: JSON.stringify(info)
