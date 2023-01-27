@@ -78,7 +78,7 @@ export async function analysisNodeGraph(analysis: Analysis) {
 				}
 			}
 
-			for(const comment of cardInfo.comments) {
+			for (const comment of cardInfo.comments) {
 				cardUse.comments.push(comment)
 			}
 
@@ -122,8 +122,6 @@ export async function analysisNodeGraph(analysis: Analysis) {
 							const index = categories.indexOf(cardUse1.info.category)
 							const mix = index / (categories.length - 1)
 							cardColors.push(mix)
-						} else {
-							cardColors.push(0.5)
 						}
 
 						for (const zone of use.zones) {
