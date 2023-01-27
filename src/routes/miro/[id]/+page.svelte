@@ -50,6 +50,23 @@
 		}
 	}
 
+	async function download() {
+		const board: any = await miro.board.getInfo()
+		board.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
+		board['_id'] = "download:" + board.id + ":" + Date.now()
+		const url = URL.createObjectURL(new Blob(
+			[JSON.stringify(board)],
+			{type: 'application/json'}
+		));
+		const a = document.createElement('a')
+		a.href = url
+		a.download = 'Miro ' + board.id + ' ' + new Date().toISOString().replaceAll(':', '-').slice(0, -5) + 'Z.json'
+		a.click()
+		setTimeout(() => {
+			URL.revokeObjectURL(url);
+		}, 150)
+	}
+
 	async function addCard(card: CardInfo, event) {
 		event.target.disabled = true
 		const url = card['frontUrl']
@@ -109,7 +126,7 @@
 				Associate Board with Session
 			{/if}
 		</div>
-		<button class="iconButton" title="Download Board">
+		<button class="iconButton" on:click={download} title="Download Board">
 			<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
 			     xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
@@ -166,11 +183,6 @@
 					</button>
 				</form>
 			{/each}
-			<div class="flex gap-4 justify-center">
-				<button class="button">
-					Download
-				</button>
-			</div>
 		{:else }
 			<div class="flex-1 flex flex-col">
 				<div class="flex-1">
