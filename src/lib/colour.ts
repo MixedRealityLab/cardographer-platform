@@ -26,6 +26,8 @@ export function blendColour(mix: number, colourSpace: Colour[]): Colour {
 		rightColour = colourSpace[2]
 	}
 	const leftMix = 1 - rightMix
+	console.log(leftMix)
+	console.log(rightMix)
 	return {
 		r: leftColour.r * leftMix + rightColour.r * rightMix,
 		g: leftColour.g * leftMix + rightColour.g * rightMix,

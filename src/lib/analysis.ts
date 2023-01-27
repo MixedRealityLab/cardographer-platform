@@ -142,11 +142,11 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		}
 		zones.sort()
 		if (count > 0) {
-			let colour = hexValue(plasmaColour(0.5))
+			let colourMix = 0.5
 			if (cardColors.length > 0) {
-				const colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
-				colour = hexValue(plasmaColour(colourMix))
+				colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
 			}
+			const colour = hexValue(plasmaColour(colourMix))
 			console.log(colour)
 
 			nodes.push({
