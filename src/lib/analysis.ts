@@ -144,10 +144,12 @@ export async function analysisNodeGraph(analysis: Analysis) {
 		if (count > 0) {
 			let colourMix = 0.5
 			if (cardColors.length > 0) {
-				colourMix = (cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length)
+				colourMix = cardColors.reduce((sum, v) => sum + v || 0) / cardColors.length
+				if (isNaN(colourMix)) {
+					colourMix = 0.5
+				}
 			}
 			const colour = hexValue(plasmaColour(colourMix))
-			console.log(colour)
 
 			nodes.push({
 				data: {
