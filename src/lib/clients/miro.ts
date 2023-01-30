@@ -21,7 +21,7 @@ export class MiroClient extends Client {
 	makeSession(data: any): Session {
 		const now = new Date().toISOString();
 		return {
-			_id: '',
+			_id: getNewId(),
 			name: data.title,
 			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
 			credits: data.owner && data.owner.name ? data.owner.name : '',
