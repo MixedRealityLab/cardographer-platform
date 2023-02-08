@@ -106,7 +106,7 @@
 			{#if !data.authenticated}
 				Login
 			{:else if data.session}
-				{#if data.session.name.toLowerCase().indexOf('session') === -1}
+				{#if data.session.name && data.session.name.toLowerCase().indexOf('session') === -1}
 					Session
 				{/if}
 				{data.session.name}
@@ -164,7 +164,7 @@
 					<button class="listItem flex-col">
 						<div class="flex flex-row gap-1">
 							<div class="font-semibold">Select
-								{#if session.name.toLowerCase().indexOf('session') === -1}
+								{#if data.session.name && session.name.toLowerCase().indexOf('session') === -1}
 									Session
 								{/if}{session.name}</div>
 							{#if session.isPublic}
