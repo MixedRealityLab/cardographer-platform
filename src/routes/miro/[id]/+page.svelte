@@ -164,7 +164,7 @@
 					<button class="listItem flex-col">
 						<div class="flex flex-row gap-1">
 							<div class="font-semibold">Select
-								{#if data.session.name && session.name.toLowerCase().indexOf('session') === -1}
+								{#if session.name && session.name.toLowerCase().indexOf('session') === -1}
 									Session
 								{/if}{session.name}</div>
 							{#if session.isPublic}
