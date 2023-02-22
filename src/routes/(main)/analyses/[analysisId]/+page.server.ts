@@ -1,10 +1,8 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Analysis} from "$lib/types";
-import type {User} from "$lib/types"
+import type {Analysis, User} from "$lib/types";
 import {error} from "@sveltejs/kit"
-import type {Actions} from "./$types"
-import type {PageServerLoad} from './$types'
+import type {Actions, PageServerLoad} from './$types'
 
 export const load: PageServerLoad = async function ({locals, parent}) {
 	verifyAuthentication(locals)

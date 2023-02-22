@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {base} from '$app/paths'
-	import AppBar from "$lib/ui/AppBar.svelte"
 	import {page} from '$app/stores'
+	import AppBar from "$lib/ui/AppBar.svelte"
 
 	let password: string
 

@@ -2,9 +2,9 @@ import {base} from "$app/paths"
 import {getDb, getNewId} from "$lib/db"
 import {cleanRevision, cleanRevisions} from "$lib/decks"
 import {verifyAuthentication} from "$lib/security"
-import type {CardDeckRevisionSummary, CardDeckRevision, CardDeckSummary} from "$lib/types"
-import {error, redirect} from "@sveltejs/kit"
+import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
+import {error, redirect} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {

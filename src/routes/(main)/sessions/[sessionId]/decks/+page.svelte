@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {enhance} from "$app/forms"
 	import SessionHeader from "../SessionHeader.svelte";
-	import type {ActionData} from "./$types"
 
 	export let data
 

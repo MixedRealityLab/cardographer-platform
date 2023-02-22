@@ -15,7 +15,7 @@
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.sessions as session}
 		{#if showArchived === session.isArchived}
-			<a class="listItem flex-col" href="sessions/{session._id}">
+			<a class="listItem flex-col" href="{base}/sessions/{session._id}">
 				<div class="flex flex-row gap-1">
 					<div class="font-semibold">{session.name}</div>
 					{#if session.isPublic}

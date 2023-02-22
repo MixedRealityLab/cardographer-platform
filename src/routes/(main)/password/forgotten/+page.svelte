@@ -1,7 +1,7 @@
 <script lang="ts">
+	import {enhance} from "$app/forms";
 	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte";
-	import {enhance} from "$app/forms";
 
 	let email: string
 

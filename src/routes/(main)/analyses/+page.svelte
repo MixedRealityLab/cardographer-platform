@@ -12,7 +12,7 @@
 
 <div class="flex flex-col p-6 w-full text-sm font-medium gap-4">
 	{#each data.analyses as analysis}
-		<a class="listItem items-center" href="analyses/{analysis._id}">
+		<a class="listItem items-center" href="{base}/analyses/{analysis._id}">
 			<div class="flex flex-col">
 				<div class="font-semibold">{analysis.name}</div>
 				<div class="flex flex-row gap-1">

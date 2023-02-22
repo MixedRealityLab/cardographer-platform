@@ -1,8 +1,8 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision, CardDeckSummary} from "$lib/types";
-import {error, json} from "@sveltejs/kit";
 import type {RequestHandler} from "@sveltejs/kit";
+import {error, json} from "@sveltejs/kit";
 import {rm} from "fs/promises";
 
 export const DELETE: RequestHandler = async function ({locals, params}) {

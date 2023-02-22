@@ -1,7 +1,6 @@
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import type {CardDeckRevision} from "$lib/types"
-	import type {ActionData} from "./$types"
 	import DeckHeader from "./DeckHeader.svelte";
 
 	export let data: CardDeckRevision
