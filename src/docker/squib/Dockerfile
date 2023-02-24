@@ -1,4 +1,4 @@
-FROM ruby:buster
+FROM ruby:3.1-buster
 
 MAINTAINER chris.greenhalgh@nottingham.ac.uk
 
