@@ -88,12 +88,14 @@ export const actions: Actions = {
 			revision.output = {isUserModified: false, atlases: result.atlases}
 			const upd = await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 			if (!upd.matchedCount) {
-				throw error(404, 'c')
+				throw error(404, 'Update Failed')
 			}
 			// Suggestion (check for correctness before using):
 			// return new Response(result as any);
 			return result
 		} catch (e) {
+			console.log(e)
+			console.trace()
 			revision.build.status = DeckBuildStatus.Failed
 			revision.build.messages = ["Build Failed", e.toString()]
 			const now = new Date().toISOString();
@@ -103,7 +105,7 @@ export const actions: Actions = {
 			if (!upd.matchedCount) {
 				throw error(404, 'b')
 			}
-			throw error(500, 'a')
+			throw error(500, e.toString())
 		}
 	}
 }
