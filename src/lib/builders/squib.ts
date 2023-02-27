@@ -238,7 +238,7 @@ const WORKER_CONNECTED = "<CONNECTED 1";
 const WORKER_RUNNING = "<RUNNING";
 const WORKER_DONE = "<DONE";
 const WORKER_ERROR = "<ERROR";
-const WORKER_TIMEOUT = 60000;
+const WORKER_TIMEOUT = 300000;
 
 async function callWorker(revPath: string, optionsFile: string): Promise<CallRes> {
 	let state = WState.AWAIT_CONNECT;

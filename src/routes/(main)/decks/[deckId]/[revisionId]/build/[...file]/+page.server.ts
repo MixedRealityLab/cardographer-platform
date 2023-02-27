@@ -41,6 +41,9 @@ async function build(db: Db, revision: CardDeckRevision) {
 			}
 		}
 		const now = new Date().toISOString();
+		if (result.error) {
+			result.messages.splice(0, 0, result.error)
+		}
 		revision.build.status = (result.error ? DeckBuildStatus.Failed : DeckBuildStatus.Built)
 		revision.build.messages = result.messages
 		revision.build.lastBuilt = now

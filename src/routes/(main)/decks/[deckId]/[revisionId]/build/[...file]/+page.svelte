@@ -90,7 +90,7 @@
 		There was an error building the cards
 		<div class="font-mono text-sm">
 			{#each data.build.messages as message}
-				{message}
+				<p>{message.trimEnd()}</p>
 			{/each}
 		</div>
 	</div>
