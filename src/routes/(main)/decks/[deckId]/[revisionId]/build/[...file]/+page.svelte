@@ -85,7 +85,7 @@
 	</form>
 </DeckHeader>
 
-{#if data.build && data.build.status == 'failed'}
+{#if data.build && data.build.status === DeckBuildStatus.Failed}
 	<div class="message-error mx-6 whitespace-pre-wrap">
 		There was an error building the cards
 		<div class="font-mono text-sm">
