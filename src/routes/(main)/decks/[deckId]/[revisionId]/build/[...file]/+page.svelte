@@ -12,8 +12,15 @@
 	$: building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
 
 	$: if (building) {
+		update()
+	}
+
+	function update() {
 		setTimeout(() => {
-			invalidateAll()
+			if (building) {
+				invalidateAll()
+				update()
+			}
 		}, 1000)
 	}
 
