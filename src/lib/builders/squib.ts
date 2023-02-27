@@ -4,7 +4,7 @@ import {exportCardsAsCsv} from '$lib/csvutils';
 import type {BuilderConfig} from '$lib/systemtypes';
 import type {AtlasInfo, CardDeckRevision, CardInfo} from '$lib/types';
 import {CardPropertyUse} from '$lib/types';
-import {mkdir, readFile, writeFile, rename, readdir, rm} from "fs/promises";
+import {mkdir, readdir, readFile, rename, rm, writeFile} from "fs/promises";
 import {dump, load} from "js-yaml";
 import * as net from "net";
 
@@ -164,7 +164,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 	// special case build single PDF
 	if (options.even_is_back) {
 		if (debug) console.log(`process for single PDF`);
-		var pdf_cards = [];
+		let pdf_cards = [];
 		for (const back of backs) {
 			const cards = revision.cards.filter((c) => back == (c.back ? c.back : '') && !c.id.startsWith('back:'));
 			let backCard = revision.cards.find((c) => `back:${back}` == c.id);
@@ -303,7 +303,7 @@ async function callWorker(revPath: string, optionsFile: string): Promise<CallRes
 						state = WState.ERROR;
 						resolve({
 							ok: false,
-							error: 'There was an error generating the cards; please check the build messags',
+							error: 'There was an error generating the cards',
 							output: output.join('')
 						});
 					}

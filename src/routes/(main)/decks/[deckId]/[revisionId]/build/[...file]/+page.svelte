@@ -9,8 +9,13 @@
 
 	export let data
 
-	export let error: string = null
 	$: building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
+
+	$: if (building) {
+		setTimeout(() => {
+			invalidateAll()
+		}, 1000)
+	}
 
 	function getPathFor(fileName: string): string {
 		return `${$page.params.file.length == 0 ? '' : $page.params.file + '/'}${fileName}`
@@ -38,13 +43,7 @@
 	{#if building}
 		<div class="loader-small">&nbsp;</div>
 	{/if}
-	<form action="?/build" method="post" class="w-6 h-6" use:enhance={() => {
-				    return async ({ result, update }) => {
-						update()
-						error = result.data.error
-						console.log(result)
-	                  };
-				}}>
+	<form action="?/build" class="w-6 h-6" method="post" use:enhance>
 		<button class="iconButton mr-3" disabled={building || data.revision.isLocked}
 		        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 			<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -79,8 +78,15 @@
 	</form>
 </DeckHeader>
 
-{#if error}
-	<div class="message-error mx-6 whitespace-pre-line">{error}</div>
+{#if data.build && data.build.status == 'failed'}
+	<div class="message-error mx-6 whitespace-pre-wrap">
+		There was an error building the cards
+		<div class="font-mono text-sm">
+			{#each data.build.messages as message}
+				{message}
+			{/each}
+		</div>
+	</div>
 {/if}
 
 <div class="flex items-center px-6 py-2">

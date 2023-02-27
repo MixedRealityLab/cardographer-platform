@@ -9,6 +9,7 @@ module.exports = {
 		fontFamily: {
 			'title': ['Lato', 'Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
 			'sans': ['Roboto', 'Open Sans', 'Helvetica', 'Arial', 'sans-serif'],
+			'mono': ['Fira Code', 'Roboto Mono', 'Droid Sans Mono', 'monospace']
 		},
 		extend: {
 			zIndex: {
