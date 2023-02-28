@@ -55,13 +55,13 @@
 			<div class="p-8" style="width: {contentWidth}px; height: {contentHeight}px">
 				{#if card.frontUrl}
 					<div class="rounded-3xl w-full h-full bg-white overflow-clip drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
-					     aria-description="{card.content}" aria-label="{card.name}"
+					     aria-description="{card.content || card.description}" aria-label="{card.name}"
 					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})">
 					</div>
 				{:else}
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow">
 						<h2 class="text-2xl text-center">{card.name}</h2>
-						<p class="text-center py-16">{card.content}</p>
+						<p class="text-center py-16">{card.content || card.description}</p>
 						<p>{card.category}</p>
 					</div>
 				{/if}
