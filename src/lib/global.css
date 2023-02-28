@@ -69,7 +69,7 @@ select {
 }
 
 .subheader {
-    @apply w-full block bg-gray-300 font-semibold px-5 py-1.5 flex items-center;
+    @apply w-full bg-gray-300 font-semibold px-5 py-1.5 flex items-center;
 }
 
 .chip {

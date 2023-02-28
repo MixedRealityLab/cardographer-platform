@@ -16,6 +16,8 @@
 		.filter(value => value)
 		.filter((value, index, array) => array.indexOf(value) === index)
 
+	$: console.log(cards)
+
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(Math.max(value, min), max);
 	}
