@@ -26,6 +26,15 @@ services:
         ports:
             - "8081:8081"
 
+    sync:
+        build: src/docker/sync
+        restart: unless-stopped
+        volumes:
+            - ./src:/dev/src/:consistent
+            - ./static:/dev/static/:ro
+            - src:/app/src
+            - static:/app/static
+
     platform:
         build:
             context: .
@@ -41,8 +50,8 @@ services:
             - "24678:24678"
         volumes:
             - uploads:/app/uploads
-            - ./src:/app/src/:consistent
-            - ./static:/app/static/:ro
+            - src:/app/src
+            - static:/app/static
             - sessions:/app/sessions
 
     squib:
@@ -52,3 +61,12 @@ services:
         volumes:
             - uploads:/root/work/uploads
         restart: unless-stopped
+
+    nginx:
+        build: src/docker/nginx
+        volumes:
+            - uploads:/usr/share/nginx/cardographer2/uploads
+        ports:
+            - "80:80"
+        depends_on:
+            - 'platform'

@@ -1,9 +1,20 @@
 <script lang="ts">
-	import {base} from "$app/paths";
+	import CardList from "./CardList.svelte";
 
 	export let data
 
+	let search = ""
 	let cardList: HTMLElement
+	let currentCategory: string = ''
+
+	$: cards = data.decks.flatMap(deck => deck.cards)
+		.filter(card => !card.id.startsWith('back:'))
+		.filter(card => !currentCategory || currentCategory === card.category)
+		.filter(card => search == null || card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0)
+	$: categories = data.decks.flatMap(deck => deck.cards)
+		.map(card => card.category)
+		.filter(value => value)
+		.filter((value, index, array) => array.indexOf(value) === index)
 
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(Math.max(value, min), max);
@@ -32,24 +43,19 @@
 	}
 </script>
 
-{#if data.decks}
-	<ol class="snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden bg-gray-200"
-	    on:click={handleScrollClick} bind:this={cardList}>
-		{#each data.decks as deck}
-			{#each deck.cards as card}
-				<li class="snap-center">
-					<div class="w-screen h-screen relative" style="height: 100svh">
-						<div class="inset-8 absolute rounded-3xl bg-white p-6 overflow-clip flex flex-col justify-center drop-shadow">
-							<h2 class="text-2xl text-center">{card.name}</h2>
-							<p class="text-center">{card.description}</p>
-						</div>
-						{#if card.frontUrl}
-							<div class="inset-8 absolute rounded-3xl bg-origin-content bg-center bg-contain bg-white bg-no-repeat"
-							     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})"></div>
-						{/if}
-					</div>
-				</li>
-			{/each}
-		{/each}
-	</ol>
-{/if}
+<div class="flex flex-col h-screen w-screen">
+	{#if data.decks}
+		<CardList cards={cards}></CardList>
+		<div class="flex p-2 gap-2">
+			<input class="flex-1" type="text" placeholder="Search" bind:value={search}/>
+			{#if categories.length > 1}
+				<select bind:value={currentCategory}>
+					<option value=''>All</option>
+					{#each categories as category}
+						<option value={category}>{category}</option>
+					{/each}
+				</select>
+			{/if}
+		</div>
+	{/if}
+</div>
