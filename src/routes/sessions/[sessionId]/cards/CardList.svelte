@@ -17,20 +17,18 @@
 	$: contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
 
-	$: {
-		console.log(clientHeight, clientWidth, contentHeight, contentWidth)
-	}
-
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(Math.max(value, min), max);
 	}
 
 	function handleScrollClick(event: MouseEvent) {
 		const fraction = event.clientX / clientWidth
-		const page = Math.round(cardList.scrollLeft / contentWidth)
+		const page = Math.floor((cardList.scrollLeft + (clientWidth / 2)) / contentWidth)
+		console.log(page)
 		if (fraction > 0.7) {
 			const target = page + 1
-			const targetLeft = clamp(target * contentWidth, 0, cardList.scrollWidth - clientWidth)
+			const center = target * contentWidth + (contentWidth / 2)
+			const targetLeft = clamp(center - (clientWidth / 2), 0, cardList.scrollWidth - clientWidth)
 			cardList.scrollTo({
 				top: 0,
 				left: targetLeft,
@@ -38,7 +36,8 @@
 			})
 		} else if (fraction < 0.3) {
 			const target = page - 1
-			const targetLeft = clamp(target * contentWidth, 0, cardList.scrollWidth - clientWidth)
+			const center = target * contentWidth + (contentWidth / 2)
+			const targetLeft = clamp(center - (clientWidth / 2), 0, cardList.scrollWidth - clientWidth)
 			cardList.scrollTo({
 				top: 0,
 				left: targetLeft,
@@ -49,7 +48,8 @@
 </script>
 
 <ol bind:clientHeight
-    bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden" on:click={handleScrollClick}>
+    bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
+    on:click={handleScrollClick}>
 	{#each cards as card}
 		<li class="snap-center flex justify-center items-center">
 			<div class="p-8" style="width: {contentWidth}px; height: {contentHeight}px">
