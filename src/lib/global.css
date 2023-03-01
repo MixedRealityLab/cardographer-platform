@@ -91,11 +91,15 @@ select {
 .button-delete {
     @apply bg-red-200 hover:bg-red-300 hover:disabled:bg-gray-100 hover:disabled:drop-shadow-none hover:drop-shadow hover:text-black
     border border-red-200 hover:border-red-500
-
 }
 
 .button-slim {
     @apply px-3 py-0.5;
+    min-width: auto;
+}
+
+.button-tool {
+    @apply w-10 h-10 p-1 bg-gray-200 border-gray-200;
     min-width: auto;
 }
 

@@ -1,3 +1,4 @@
+<!--suppress JSUnusedAssignment -->
 <script lang="ts">
 	import {base} from "$app/paths";
 	import type {CardInfo} from "$lib/types";
@@ -14,31 +15,23 @@
 	$: contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
 
-	function clamp(value: number, min: number, max: number) {
-		return Math.min(Math.max(value, min), max);
+	export function scrollTo(target: number) {
+		const center = target * contentWidth + (contentWidth / 2)
+		const targetLeft = center - (clientWidth / 2)
+		cardList.scrollTo({
+			top: 0,
+			left: targetLeft,
+			behavior: "smooth"
+		})
 	}
 
 	function handleScrollClick(event: MouseEvent) {
 		const fraction = event.clientX / clientWidth
 		const page = Math.floor((cardList.scrollLeft + (clientWidth / 2)) / contentWidth)
 		if (fraction > 0.7) {
-			const target = page + 1
-			const center = target * contentWidth + (contentWidth / 2)
-			const targetLeft = clamp(center - (clientWidth / 2), 0, cardList.scrollWidth - clientWidth)
-			cardList.scrollTo({
-				top: 0,
-				left: targetLeft,
-				behavior: "smooth"
-			})
+			scrollTo(page + 1)
 		} else if (fraction < 0.3) {
-			const target = page - 1
-			const center = target * contentWidth + (contentWidth / 2)
-			const targetLeft = clamp(center - (clientWidth / 2), 0, cardList.scrollWidth - clientWidth)
-			cardList.scrollTo({
-				top: 0,
-				left: targetLeft,
-				behavior: "smooth"
-			})
+			scrollTo(page - 1)
 		}
 	}
 </script>
