@@ -80,7 +80,7 @@
 		<li class="snap-center flex justify-center items-center">
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
-					<div class="rounded-3xl w-full h-full bg-white overflow-clip drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
+					<div class="rounded-3xl w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
 					     aria-description="{card.content || card.description}" aria-label="{card.name}"
 					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})">
 					</div>
