@@ -14,6 +14,8 @@ export const load: PageServerLoad = async function ({params}) {
 
 	await cleanRevisions(decks, db)
 
+	console.log(JSON.stringify(decks))
+
 	session.decks = decks
 
 	return session
