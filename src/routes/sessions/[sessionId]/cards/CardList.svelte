@@ -2,6 +2,7 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import type {CardInfo} from "$lib/types";
+	import {onMount} from "svelte";
 
 	export let widthRatio = 2;
 	export let heightRatio = 3;
@@ -14,6 +15,19 @@
 
 	$: contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
+
+	$: firstCard = cards.find((card) => card.frontUrl)
+	$: if (firstCard) {
+		onMount(async () => {
+			const img = new Image()
+			img.onload = function () {
+				widthRatio = img.width
+				heightRatio = img.height
+				console.log(widthRatio, heightRatio)
+			}
+			img.src = firstCard.frontUrl
+		});
+	}
 
 	export function scrollTo(target: number) {
 		const center = target * contentWidth + (contentWidth / 2)
