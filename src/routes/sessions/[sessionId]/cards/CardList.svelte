@@ -13,8 +13,8 @@
 	let clientWidth: number;
 	let clientHeight: number;
 
-	$: contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
+	$: contentWidth = Math.min(clientWidth, contentHeight * (widthRatio / heightRatio));
 
 	$: firstCard = cards.find((card) => card.frontUrl)
 	$: if (firstCard) {
