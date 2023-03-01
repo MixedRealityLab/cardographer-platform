@@ -40,6 +40,7 @@
 		<div class="flex flex-col gap-8">
 			<label>
 				<span>New Password</span>
+				<!--suppress HtmlWrongAttributeValue -->
 				<input bind:value="{password}" class="w-full" disabled={working || success} required type="password" autocomplete="new-password"/>
 			</label>
 
@@ -51,6 +52,7 @@
 				</a>
 			{/if}
 
+			<!--suppress HtmlWrongAttributeValue -->
 			<input class="button self-center" disabled={working || success} type='submit' value='Set New Password'>
 		</div>
 	</form>

@@ -4,8 +4,6 @@ import type {CardDeckRevision, Session, SessionDeck} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit";
 import {error, json} from "@sveltejs/kit";
 
-const debug = true;
-
 export const GET: RequestHandler = async function ({locals, params}) {
 	verifyAuthentication(locals, false)
 	const {sessionId} = params;
@@ -25,6 +23,7 @@ export const GET: RequestHandler = async function ({locals, params}) {
 	return json(cards)
 }
 
+// noinspection JSUnusedGlobalSymbols
 export const PUT: RequestHandler = async function ({locals, request, params}) {
 	verifyAuthentication(locals, false)
 	const cardIds = await request.json() as string[];

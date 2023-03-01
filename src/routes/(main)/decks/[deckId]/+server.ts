@@ -5,6 +5,7 @@ import type {RequestHandler} from "@sveltejs/kit";
 import {error, json} from "@sveltejs/kit";
 import {rm} from "fs/promises";
 
+// noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
 	verifyAuthentication(locals)
 	const {deckId} = params;

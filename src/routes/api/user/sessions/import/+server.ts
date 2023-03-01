@@ -7,6 +7,7 @@ import {json} from '@sveltejs/kit'
 
 const debug = false
 
+// noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request}) {
 	verifyAuthentication(locals, false)
 	let ss: any[];

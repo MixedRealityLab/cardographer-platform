@@ -4,6 +4,7 @@ import {parse} from "cookie";
 
 const debug = false
 
+// noinspection JSUnusedGlobalSymbols
 export const handle: Handle = async function ({event, resolve}) {
 	if (debug) console.log(`Handle Request: ${JSON.stringify(event.url)}`)
 

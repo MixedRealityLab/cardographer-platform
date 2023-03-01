@@ -1,11 +1,11 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import AppBar from '$lib/ui/AppBar.svelte'
-	import type {LayoutData} from './$types'
+	import type {PageServerData} from './$types'
 
 	let error: string
 
-	export let data: LayoutData
+	export let data: PageServerData
 
 	function formatDate(isoDate: string): string {
 		const date = new Date(isoDate)

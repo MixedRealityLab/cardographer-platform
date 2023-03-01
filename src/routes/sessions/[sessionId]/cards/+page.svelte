@@ -20,7 +20,7 @@
 <div class="flex flex-col h-screen w-screen" style="height: 100svh">
 	{#if data.decks}
 		<CardList cards={cards}></CardList>
-		<div class="flex p-2 gap-2">
+		<div class="flex p-3 gap-2">
 			<input class="flex-1" type="text" placeholder="Search" bind:value={search}/>
 			{#if categories.length > 1}
 				<!--				<button class="button" on:click={() => menu.setOpen(true)}-->
@@ -38,25 +38,25 @@
 					<MenuItems
 							class="absolute bottom-0 right-0 bg-white rounded drop-shadow p-1 flex flex-col items-stretch">
 						<MenuItem let:active on:click={() => currentCategory=null}>
-							<a class="flex items-center transition-colors duration-300 rounded px-2 py-1"
-							   class:bg-blue-300={!currentCategory}>
+							<div class="flex items-center transition-colors duration-300 rounded px-2 py-1 cursor-pointer hover:bg-blue-200"
+							     class:bg-blue-300={!currentCategory}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-4 h-4 mr-2"
 								     class:opacity-0={currentCategory}>
 									<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
 								</svg>
 								All
-							</a>
+							</div>
 						</MenuItem>
 						{#each categories as category}
 							<MenuItem let:active on:click={() => currentCategory=category}>
-								<a class="flex items-center transition-colors duration-300 rounded px-2 py-1"
-								   class:bg-blue-300={currentCategory === category} class:border-blue-400={active}>
+								<div class="flex items-center transition-colors duration-300 rounded px-2 py-1 cursor-pointer hover:bg-blue-200"
+								     class:bg-blue-300={currentCategory === category} class:border-blue-400={active}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-4 h-4 mr-2"
 									     class:opacity-0={currentCategory !== category}>
 										<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
 									</svg>
 									{category}
-								</a>
+								</div>
 							</MenuItem>
 						{/each}
 					</MenuItems>

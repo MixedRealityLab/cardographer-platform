@@ -37,7 +37,7 @@
 
 			const selection = (await miro.board.getSelection()).filter((widget) => widget.type === 'image')
 			if (selection.length > 0) {
-				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck.cards)
+				const cards: CardInfo[] = data.session['decks'].flatMap((deck) => deck['cards'])
 				selectedCards = cards.filter((card) => selection.some((item) => item['title'] == card.id || item['url'].endsWith(card.frontUrl))).map((card) => card.id)
 			} else {
 				selectedCards = []
@@ -76,6 +76,10 @@
 			})
 		}
 		event.target.disabled = false
+	}
+
+	function zoomTo(item) {
+		miro.board.viewport.zoomTo([item])
 	}
 
 	async function saveSession() {
@@ -188,7 +192,7 @@
 				<div class="flex-1">
 					{#each widgets as widget (widget.id)}
 						<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
-						        on:click={() => miro.board.viewport.zoomTo([widget])}>
+						        on:click={() => zoomTo(widget)}>
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
 							     viewBox="0 0 24 24"
 							     stroke="#eab308" stroke-width="2">

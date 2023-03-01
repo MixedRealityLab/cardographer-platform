@@ -48,12 +48,12 @@ export const actions: Actions = {
 			}
 			const client = getClient(sessionType);
 			// session already imported?
-			const squery = client.getExistingSessionQuery(s)
+			const sessionQuery = client.getExistingSessionQuery(s)
 			let session: Session;
 			let addSession = true;
-			if (squery) {
-				squery.owners = locals.email;
-				session = await db.collection<Session>('Sessions').findOne(squery);
+			if (sessionQuery) {
+				sessionQuery.owners = locals.email;
+				session = await db.collection<Session>('Sessions').findOne(sessionQuery);
 				if (session) {
 					addSession = false;
 					//if (debug) console.log(`session for import already exists`, squery);

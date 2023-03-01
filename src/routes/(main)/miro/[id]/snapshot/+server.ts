@@ -5,6 +5,7 @@ import type {Session, SessionSnapshot} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit"
 
+// noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request, params}) {
 	verifyAuthentication(locals)
 	const snapshotData = await request.json()

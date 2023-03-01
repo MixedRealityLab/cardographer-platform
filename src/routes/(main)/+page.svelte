@@ -28,7 +28,7 @@
 		Register
 	</button>
 </AppBar>
-<div class="w-full block bg-gray-300 font-semibold px-5 py-1.5 flex"></div>
+<div class="w-full bg-gray-300 font-semibold px-5 py-1.5 flex"></div>
 
 <div class="p-12">
 	<form method="post" use:enhance>

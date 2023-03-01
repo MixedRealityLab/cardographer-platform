@@ -32,6 +32,7 @@
 	{/if}
 
 	<form method="post" class="self-center">
+		<!--suppress HtmlWrongAttributeValue -->
 		<button disabled={working} class="button">
 			<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Analysis
 		</button>

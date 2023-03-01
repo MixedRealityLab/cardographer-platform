@@ -4,7 +4,7 @@ import type {CardDeckRevision, DeckBuild} from '$lib/types';
 import {DeckBuildStatus} from '$lib/types';
 import AdmZip from "adm-zip";
 import type {PathLike} from 'fs';
-import {copyFile, mkdir, readdir, rm, rmdir, stat, writeFile} from "fs/promises";
+import {copyFile, mkdir, readdir, rm, stat, writeFile} from "fs/promises";
 import {build as squibBuild} from './squib';
 
 const debug = true;
@@ -165,11 +165,6 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 export async function deleteFile(deckId: string, revId: string, path: string) {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
 	const relPath = `${revPath}/${path}`
-	const statInfo = await stat(relPath)
-	if (statInfo.isDirectory()) {
-		await rmdir(relPath, {recursive: true})
-	} else {
-		await rm(relPath)
-	}
+	await rm(relPath, {recursive: true, force: true})
 }
 

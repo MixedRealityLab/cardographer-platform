@@ -51,6 +51,7 @@
 		<div class="loader-small">&nbsp;</div>
 	{/if}
 	<form action="?/build" class="w-6 h-6" method="post" use:enhance>
+		<!--suppress HtmlWrongAttributeValue -->
 		<button class="iconButton mr-3" disabled={building || data.revision.isLocked}
 		        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 			<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -9,6 +9,7 @@
 
 <label class="mt-2">
 	<span>{region.name || 'Not in a Region' }</span>
+	<!--suppress HtmlWrongAttributeValue -->
 	<select disabled={disabled} name="region" bind:value={region.type} class="w-full">
 		<option value="{RegionType.Category}">Colour by Card Category</option>
 		<!--{#if subregions && subregions.length > 0}-->

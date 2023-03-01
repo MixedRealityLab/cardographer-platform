@@ -21,7 +21,3 @@ export interface FileInfo {
 	isDirectory: boolean;
 	path: string;
 }
-
-export interface CopySessionRequest {
-	sessionId: string;
-}

@@ -4,7 +4,7 @@ import type {Analysis} from "$lib/types"
 import {error} from "@sveltejs/kit";
 import type {LayoutServerLoad} from "./$types"
 
-export const load: LayoutServerLoad = async function ({locals, params, url}) {
+export const load: LayoutServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
 	const {analysisId} = params
 	const db = await getDb();

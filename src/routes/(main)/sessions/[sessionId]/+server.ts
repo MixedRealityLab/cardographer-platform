@@ -4,6 +4,7 @@ import type {Session} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit";
 
+// noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
 	verifyAuthentication(locals)
 	const {sessionId} = params;

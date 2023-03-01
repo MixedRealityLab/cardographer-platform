@@ -12,9 +12,11 @@
 	}
 </script>
 
+<!--suppress HtmlWrongAttributeValue -->
 <input class="hidden" type="file" name="files" accept="{types}" multiple={multiple}
        bind:this={fileInput} on:change={handleSubmit}/>
 
+<!--suppress HtmlWrongAttributeValue -->
 <button class={$$props.class} on:click|preventDefault={() => fileInput.click()} title={$$props.title} disabled={disabled}>
 	<slot></slot>
 </button>

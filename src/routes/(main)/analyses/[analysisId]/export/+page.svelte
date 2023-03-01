@@ -12,8 +12,7 @@
 	let exportType: AnalysisExportTypes = AnalysisExportTypes.CARD_USE;
 	let splitByBoard = false;
 	let includeDetail = false;
-	let boards = '';
-	let working = false;
+	let boards = ''
 	let error = '';
 	let message = '';
 

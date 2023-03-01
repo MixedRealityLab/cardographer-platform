@@ -5,6 +5,7 @@ import type {User} from "$lib/types";
 import type {RequestHandler} from '@sveltejs/kit';
 import {error, json} from '@sveltejs/kit';
 
+// noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({request}) {
 	const login = await request.json() as LoginRequest;
 	if (!login.email || !login.password) {

@@ -8,6 +8,7 @@
 
 	<form method="post">
 		<div class="grid grid-cols-1 gap-2">
+			<!--suppress HtmlWrongAttributeValue -->
 			<input disabled={working} class="mt-1 block w-full bg-gray-300 py-2" type='submit' value='Log out'>
 		</div>
 	</form>

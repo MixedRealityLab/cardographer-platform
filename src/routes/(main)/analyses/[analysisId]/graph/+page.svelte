@@ -211,6 +211,7 @@
 				{#each data.graph.regions as region}
 					<RegionOptions region={region} disabled={working}/>
 				{/each}
+				<!--suppress HtmlWrongAttributeValue -->
 				<button class="button mt-2" disabled={working}>Save</button>
 			</form>
 		</div>

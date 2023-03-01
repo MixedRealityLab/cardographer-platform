@@ -20,6 +20,7 @@ export const GET: RequestHandler = async function ({locals, params}) {
 	})
 }
 
+// noinspection JSUnusedGlobalSymbols
 export const PUT: RequestHandler = async function ({request, locals, params}) {
 	verifyAuthentication(locals, false)
 	const analysis = await request.json() as Analysis;

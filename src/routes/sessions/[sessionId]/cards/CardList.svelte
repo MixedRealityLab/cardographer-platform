@@ -11,9 +11,6 @@
 	let clientWidth: number;
 	let clientHeight: number;
 
-	let contentWidth = 100;
-	let contentHeight = 100;
-
 	$: contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
 
@@ -24,7 +21,6 @@
 	function handleScrollClick(event: MouseEvent) {
 		const fraction = event.clientX / clientWidth
 		const page = Math.floor((cardList.scrollLeft + (clientWidth / 2)) / contentWidth)
-		console.log(page)
 		if (fraction > 0.7) {
 			const target = page + 1
 			const center = target * contentWidth + (contentWidth / 2)
@@ -47,6 +43,17 @@
 	}
 </script>
 
+<style>
+    ol::-webkit-scrollbar {
+        @apply h-2;
+    }
+
+    ol::-webkit-scrollbar-thumb {
+        @apply rounded bg-gray-400 hover:bg-blue-500 transition-colors duration-300;
+    }
+</style>
+
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <ol bind:clientHeight
     bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick}>
