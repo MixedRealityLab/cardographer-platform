@@ -25,7 +25,7 @@
 				heightRatio = img.height
 				console.log(widthRatio, heightRatio)
 			}
-			img.src = firstCard.frontUrl
+			img.src = firstCard.frontUrl.startsWith('/') ? base + firstCard.frontUrl : firstCard.frontUrl
 		});
 	}
 
