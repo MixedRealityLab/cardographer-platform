@@ -23,9 +23,10 @@
 			img.onload = function () {
 				widthRatio = img.width
 				heightRatio = img.height
-				console.log(widthRatio, heightRatio)
+				console.log(widthRatio, heightRatio, img)
 			}
 			img.src = firstCard.frontUrl.startsWith('/') ? base + firstCard.frontUrl : firstCard.frontUrl
+			console.log(img.src)
 		});
 	}
 
