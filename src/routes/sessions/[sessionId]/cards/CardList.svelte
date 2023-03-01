@@ -21,8 +21,8 @@
 		onMount(async () => {
 			const img = new Image()
 			img.onload = function () {
-				widthRatio = img.width
-				heightRatio = img.height
+				widthRatio = img.naturalWidth
+				heightRatio = img.naturalHeight
 				console.log(widthRatio, heightRatio, img)
 			}
 			img.src = firstCard.frontUrl.startsWith('/') ? base + firstCard.frontUrl : firstCard.frontUrl
