@@ -16,6 +16,8 @@
 	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
 	$: contentWidth = Math.min(clientWidth, contentHeight * (widthRatio / heightRatio));
 
+	$: console.log(contentWidth, contentHeight)
+
 	$: firstCard = cards.find((card) => card.frontUrl)
 	$: if (firstCard) {
 		onMount(async () => {
