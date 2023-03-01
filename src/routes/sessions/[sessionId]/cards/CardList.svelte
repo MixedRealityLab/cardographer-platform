@@ -13,10 +13,19 @@
 	let clientWidth: number;
 	let clientHeight: number;
 
-	$: contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
-	$: contentWidth = Math.min(clientWidth, contentHeight * (widthRatio / heightRatio));
+	let contentHeight = clientHeight
+	let contentWidth = clientWidth
 
-	$: console.log(contentWidth, contentHeight)
+	$: {
+		if (clientWidth / clientHeight > widthRatio / heightRatio) {
+			contentHeight = Math.min(clientHeight, clientWidth * (heightRatio / widthRatio));
+			contentWidth = Math.min(clientWidth, contentHeight * (widthRatio / heightRatio));
+		} else {
+			contentWidth = Math.min(clientWidth, clientHeight * (widthRatio / heightRatio));
+			contentHeight = Math.min(clientHeight, contentWidth * (heightRatio / widthRatio));
+		}
+		console.log(contentWidth, contentHeight)
+	}
 
 	$: firstCard = cards.find((card) => card.frontUrl)
 	$: if (firstCard) {
@@ -69,7 +78,7 @@
     on:click={handleScrollClick}>
 	{#each cards as card}
 		<li class="snap-center flex justify-center items-center">
-			<div class="p-8" style="width: {contentWidth}px; height: {contentHeight}px">
+			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
 					<div class="rounded-3xl w-full h-full bg-white overflow-clip drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
 					     aria-description="{card.content || card.description}" aria-label="{card.name}"
