@@ -98,11 +98,12 @@
 </style>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<ol bind:clientHeight
+<ol bind:clientHeight role="list"
     bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick}>
 	{#each cards as card}
-		<li class="snap-center flex justify-center items-center" aria-description="{card.content || card.description}"
+		<li class="snap-center flex justify-center items-center" role="listitem"
+		    aria-description="{card.content || card.description}"
 		    aria-label="{card.name}">
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
