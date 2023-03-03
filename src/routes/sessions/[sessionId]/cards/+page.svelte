@@ -8,11 +8,11 @@
 
 	let cardList: CardList
 	let search = ""
-	let currentCategory: string = null
+	let selectedCategories: string[] = []
 
 	$: cards = data.decks.flatMap(deck => deck['cards'])
 		.filter(card => !card.id.startsWith('back:'))
-		.filter(card => !currentCategory || currentCategory === card.category)
+		.filter(card => selectedCategories.length === 0 || selectedCategories.includes(card.category))
 		.filter(card => search == null || card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0)
 	$: categories = data.decks.flatMap(deck => deck['cards'])
 		.map(card => card.category)
@@ -22,6 +22,19 @@
 	function randomCard() {
 		const card = Math.floor(Math.random() * cards.length)
 		cardList.scrollTo(card)
+	}
+
+	function updateSelectedCategories(categories: string[]) {
+		cardList.updateCurrentCard()
+		selectedCategories = categories
+	}
+
+	function toggleCategory(category: string) {
+		if (selectedCategories.includes(category)) {
+			updateSelectedCategories(selectedCategories.filter((cat) => category !== cat))
+		} else {
+			updateSelectedCategories(selectedCategories.concat([category]))
+		}
 	}
 </script>
 
@@ -47,22 +60,24 @@
 					<MenuItems
 							class="absolute bottom-14 right-3 bg-white rounded drop-shadow p-1 flex flex-col items-stretch"
 							style="max-width: 70svw">
-						<MenuItem let:active on:click={() => currentCategory=null}>
-							<div class="flex items-center transition-colors duration-300 rounded px-2 py-1 cursor-pointer hover:bg-blue-200"
-							     class:bg-blue-300={!currentCategory}>
+						<MenuItem let:active on:click={() => updateSelectedCategories([])}>
+							<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
+							     class:bg-blue-300={selectedCategories.length === 0}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
-								     class:opacity-0={currentCategory}>
+								     class:opacity-0={selectedCategories.length !== 0}>
 									<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
 								</svg>
 								<span class="flex-1">All</span>
 							</div>
 						</MenuItem>
 						{#each categories as category}
-							<MenuItem let:active on:click={() => currentCategory=category}>
-								<div class="flex items-center transition-colors duration-300 rounded px-2 py-1 cursor-pointer hover:bg-blue-200"
-								     class:bg-blue-300={currentCategory === category} class:border-blue-400={active}>
+							<MenuItem let:active on:click={() => toggleCategory(category)
+							}>
+								<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
+								     class:bg-blue-300={selectedCategories.includes(category)}
+								     class:border-blue-400={active}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
-									     class:opacity-0={currentCategory !== category}>
+									     class:opacity-0={!selectedCategories.includes(category)}>
 										<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
 									</svg>
 									<span class="flex-1">{category}</span>
