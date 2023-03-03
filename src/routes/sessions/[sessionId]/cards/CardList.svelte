@@ -102,13 +102,13 @@
     bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick}>
 	{#each cards as card}
-		<li class="snap-center flex justify-center items-center" role="listitem"
-		    aria-description="{card.content || card.description}"
-		    aria-label="{card.name}">
+		<li class="snap-center flex justify-center items-center">
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
 					<div class="rounded-3xl w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
-					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})">
+					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})"
+					     role="img" aria-description="{card.content || card.description}"
+					     aria-label="{card.name}">
 					</div>
 				{:else}
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow">
