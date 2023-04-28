@@ -2,8 +2,11 @@
 	import {enhance} from "$app/forms"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte"
+	import type {ActionData} from "./$types";
 
 	let register = false
+
+	export let form: ActionData
 </script>
 
 <style>
@@ -32,6 +35,6 @@
 
 <div class="p-12">
 	<form method="post" use:enhance>
-		<LoginPanel register={register}/>
+		<LoginPanel register={register} error={form ? form.error : null}/>
 	</form>
 </div>

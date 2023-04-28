@@ -1,6 +1,9 @@
 <script lang="ts">
 	import {base} from "$app/paths";
+
 	export let register = false
+
+	export let error: string = null
 </script>
 
 <div class="flex flex-col gap-8 max-w-md mx-auto">
@@ -9,7 +12,7 @@
 			<span>Name</span>
 			<input class="w-full" required name="name" type="text" autocomplete="name"/>
 		</label>
-		<input type="hidden" name="register" value="true" />
+		<input type="hidden" name="register" value="true"/>
 	{/if}
 	<label>
 		<span>Email</span>
@@ -33,6 +36,10 @@
 		</label>
 	{/if}
 
-
-	<input class="button self-center" type='submit' value='{register ? "Register" : "Log in"}'>
+	<div class="self-center flex flex-col gap-2">
+		{#if error}
+			<div class="message-error">{error}</div>
+		{/if}
+		<input class="button self-center" type='submit' value='{register ? "Register" : "Log in"}'>
+	</div>
 </div>

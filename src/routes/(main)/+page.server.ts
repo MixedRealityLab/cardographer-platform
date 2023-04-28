@@ -5,7 +5,6 @@ import type {User} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 
-
 export const actions: Actions = {
 	default: async ({cookies, request}) => {
 		const data = await request.formData();
@@ -23,16 +22,16 @@ export const actions: Actions = {
 			return fail(400, {error: `That user is already registered`});
 		}
 		if (!register && !user) {
-			return fail(404, {error: 'Login Failed'})
+			return fail(401, {error: 'Login Failed'})
 		}
 		// register code
 		if (register) {
 			if (!REGISTER_CODE) {
-				return fail(404, {error: 'Register Code Missing!'})
+				return fail(401, {error: 'Register Code Missing!'})
 			}
 			const code = data.get('code')
 			if (code != REGISTER_CODE) {
-				return fail(404, {error: 'Incorrect Register Code'})
+				return fail(401, {error: 'Incorrect Register Code'})
 			}
 		}
 		const hash = await hashPassword(password)
@@ -51,7 +50,7 @@ export const actions: Actions = {
 			}
 		}
 		if (!register && user.password != hash) {
-			return fail(404, {error: `login failure for ${email}`})
+			return fail(401, {error: `Login Failed`})
 		}
 		const token = await signUserToken(email);
 		cookies.set(getCookieName(), token, {

@@ -13,7 +13,11 @@
 	$: cards = data.decks.flatMap(deck => deck['cards'])
 		.filter(card => !card.id.startsWith('back:'))
 		.filter(card => selectedCategories.length === 0 || selectedCategories.includes(card.category))
-		.filter(card => search == null || card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0)
+		.filter(card => search == null
+			|| card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+			|| card.content && card.content.toLowerCase().indexOf(search.toLowerCase()) > 0
+			|| card.description && card.description.toLowerCase().indexOf(search.toLowerCase()) > 0
+		)
 	$: categories = data.decks.flatMap(deck => deck['cards'])
 		.map(card => card.category)
 		.filter(value => value)
@@ -38,7 +42,7 @@
 	}
 </script>
 
-<div class="flex flex-col h-screen w-screen" style="height: 100svh">
+<div class="flex flex-col md:flex-col-reverse h-screen w-screen" style="height: 100svh">
 	{#if data.decks}
 		<CardList cards={cards} bind:this={cardList}></CardList>
 		<div class="flex p-3 gap-2 relative">
@@ -71,8 +75,7 @@
 							</div>
 						</MenuItem>
 						{#each categories as category}
-							<MenuItem let:active on:click={() => toggleCategory(category)
-							}>
+							<MenuItem let:active on:click={() => toggleCategory(category)}>
 								<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
 								     class:bg-blue-300={selectedCategories.includes(category)}
 								     class:border-blue-400={active}>
