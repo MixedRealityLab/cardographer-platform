@@ -61,6 +61,8 @@
 	export function scrollTo(target: number, smooth: boolean = true, select: boolean = false) {
 		if(select) {
 			highlight = target
+		} else {
+			highlight = -1
 		}
 		const center = target * contentWidth + (contentWidth / 2)
 		const targetLeft = center - (clientWidth / 2)
