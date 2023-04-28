@@ -25,7 +25,7 @@
 
 	function randomCard() {
 		const card = Math.floor(Math.random() * cards.length)
-		cardList.scrollTo(card, true, false)
+		cardList.scrollTo(card, true, true)
 	}
 
 	function updateSelectedCategories(categories: string[]) {
