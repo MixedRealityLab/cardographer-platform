@@ -4,16 +4,17 @@
 	import type {CardInfo} from "$lib/types";
 	import {afterUpdate} from "svelte";
 
-	export let widthRatio = 2;
-	export let heightRatio = 3;
+	export let widthRatio = 2
+	export let heightRatio = 3
 
 	export let cards: CardInfo[]
 
 	let currentCard: CardInfo
 
 	let cardList: HTMLElement
-	let clientWidth: number;
-	let clientHeight: number;
+	let clientWidth: number
+	let clientHeight: number
+	let highlight: number = -1
 
 	let contentHeight = clientHeight
 	let contentWidth = clientWidth
@@ -58,6 +59,10 @@
 	})
 
 	export function scrollTo(target: number, smooth: boolean = true) {
+		if(smooth) {
+			highlight = target
+			console.log(highlight)
+		}
 		const center = target * contentWidth + (contentWidth / 2)
 		const targetLeft = center - (clientWidth / 2)
 		const behaviour: ScrollBehavior = smooth ? 'smooth' : 'auto'
@@ -88,6 +93,22 @@
 </script>
 
 <style>
+	@keyframes highlight {
+		0% {
+			outline: 2px ridge #24F8;
+		}
+		50% {
+			outline: 2px ridge #24F8;
+		}
+		100% {
+			outline: 2px ridge #24F0;
+		}
+	}
+
+	.highlight {
+		animation: highlight 10s;
+	}
+
     ol::-webkit-scrollbar {
         @apply h-2;
     }
@@ -101,17 +122,19 @@
 <ol bind:clientHeight role="list"
     bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick}>
-	{#each cards as card}
+	{#each cards as card, index}
 		<li class="snap-center flex justify-center items-center">
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
 					<div class="rounded-3xl w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
+					     class:highlight={index === highlight}
 					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl})"
 					     role="img" aria-description="{card.content || card.description}"
 					     aria-label="{card.name}">
 					</div>
 				{:else}
-					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow">
+					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow"
+					     class:highlight={index === highlight}>
 						<h2 class="text-2xl text-center">{card.name}</h2>
 						<p class="text-center py-16">{card.content || card.description}</p>
 						<p>{card.category}</p>
