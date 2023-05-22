@@ -62,11 +62,12 @@
 						</svg>
 					</MenuButton>
 					<MenuItems
-							class="absolute bottom-14 right-3 bg-white rounded drop-shadow p-1 flex flex-col items-stretch"
+							class="absolute bottom-14 md:bottom-auto md:top-14 right-3 bg-white rounded drop-shadow p-1 flex flex-col items-stretch"
 							style="max-width: 70svw">
 						<MenuItem let:active on:click={() => updateSelectedCategories([])}>
 							<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
-							     class:bg-blue-300={selectedCategories.length === 0}>
+							     class:bg-blue-300={selectedCategories.length === 0}
+							     class:bg-blue-200={active}>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
 								     class:opacity-0={selectedCategories.length !== 0}>
 									<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
@@ -78,7 +79,7 @@
 							<MenuItem let:active on:click={() => toggleCategory(category)}>
 								<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
 								     class:bg-blue-300={selectedCategories.includes(category)}
-								     class:border-blue-400={active}>
+								     class:bg-blue-200={active}>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
 									     class:opacity-0={!selectedCategories.includes(category)}>
 										<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>

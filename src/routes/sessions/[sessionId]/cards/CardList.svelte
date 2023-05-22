@@ -120,7 +120,7 @@
 </style>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<ol bind:clientHeight role="list"
+<ol bind:clientHeight role="list" tabindex="1"
     bind:clientWidth bind:this={cardList} class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick}>
 	{#each cards as card, index}
