@@ -237,6 +237,12 @@ export interface Session {
 	sessionType: string
 	board?: BoardInfo
 	decks: SessionDeck[]
+	isConsentForStats: boolean
+	isConsentForText: boolean
+	isConsentForRecording: boolean
+	isConsentToIdentify: boolean
+	isConsentRequiresCredit: boolean
+	consentDetails?: string
 }
 
 // in SessionStage, a deck to use
@@ -257,6 +263,8 @@ export interface SessionSnapshotSummary {
 	sessionType: string
 	originallyCreated: string // ISO date
 	snapshotDescription?: string
+	// API only
+	session?: Session
 }
 
 export interface SessionSnapshot extends SessionSnapshotSummary {

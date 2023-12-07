@@ -21,14 +21,23 @@
 			       value={snapshot._id}>
 			<div class="flex flex-1 flex-col">
 				<div class="flex">
-					<div class="flex-1 font-semibold">{snapshot.sessionName}</div>
+					<div class="flex-1 flex items-center gap-1">
+						<div class="font-semibold">{snapshot.sessionName}</div>
+						{#if snapshot.session.isConsentForStats}
+							<div class="chip">Stats</div>
+						{/if}
+						{#if snapshot.session.isConsentForText}
+							<div class="chip">Text</div>
+						{/if}
+					</div>
 					<div class="text-sm font-light text-gray-700">{formatDate(snapshot.created)}</div>
 				</div>
-
-				<div class="text-sm font-light">{snapshot.sessionDescription}</div>
-				{#if snapshot.snapshotDescription}
-					<div class="text-sm font-light">{snapshot.snapshotDescription}</div>
-				{/if}
+				<div class="flex">
+					<div class="text-sm font-light">{snapshot.sessionDescription}</div>
+					{#if snapshot.snapshotDescription}
+						<div class="text-sm font-light">{snapshot.snapshotDescription}</div>
+					{/if}
+				</div>
 			</div>
 		</label>
 	{/each}

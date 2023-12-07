@@ -1,6 +1,6 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Analysis, SessionSnapshot} from "$lib/types";
+import type {Analysis, SessionSnapshot, Session} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 
@@ -8,7 +8,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 	verifyAuthentication(locals)
 	const analysis = await parent()
 	const db = await getDb()
-	const snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
+	let snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
 		.find({
 			$or: [{owners: locals.email}, {isPublic: true}]
 		}, {
@@ -21,6 +21,11 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 		})
 		.sort({sessionId: 1, created: 1})
 		.toArray()
+	// link to sessions (for consent information)
+	const sessions = await db.collection<Session>('Sessions')
+			.find({_id: {$in: snapshots.map((snapshot) => snapshot.sessionId)}})
+			.toArray();
+	snapshots.forEach((snapshot) => snapshot.session = sessions.find((session) => session._id == snapshot.sessionId))
 	if (snapshots && analysis && analysis.snapshotIds) {
 		snapshots.forEach((snapshot) => {
 			snapshot.selected = analysis.snapshotIds.some((id) => id == snapshot._id)

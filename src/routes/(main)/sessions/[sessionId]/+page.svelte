@@ -22,9 +22,49 @@
 		<textarea name="description" bind:value="{data.session.description}" class="mt-1 block w-full" rows="3"
 		          type="text"></textarea>
 	</label>
+	<div class="flex justify-left gap-4">
+		<label class="flex">
+			<span class="font-light">Created:&nbsp; </span>
+			<div class="block gap-1">{data.session.created}</div>
+		</label>
+	</div>
+	<div class="flex justify-left gap-4">
+		<label class="flex">
+			<span class="font-light">Session&nbsp;Type:&nbsp; </span>
+			<div class="block gap-1">{data.session.sessionType || 'Not defined (yet)'}</div>
+		</label>
+	</div>
 	<label>
 		<span class="font-light">Credits</span>
 		<input name="credits" bind:value="{data.session.credits}" class="mt-1 block w-full" type="text"/>
+	</label>
+	<div class="flex justify-left gap-4">
+		<span class="flex font-light">Consent received for: </span>
+		<label class="flex items-center">
+			<input name="isConsentForStats" bind:checked="{data.session.isConsentForStats}" class="form-checkbox" type="checkbox">
+			<span class="ml-2">Stats</span>
+		</label>
+		<label class="flex items-center">
+			<input name="isConsentForText" bind:checked="{data.session.isConsentForText}" class="form-checkbox" type="checkbox">
+			<span class="ml-2">Text</span>
+		</label>
+		<label class="flex items-center">
+			<input name="isConsentForRecording" bind:checked="{data.session.isConsentForRecording}" class="form-checkbox" type="checkbox">
+			<span class="ml-2">Recording</span>
+		</label>
+		<label class="flex items-center">
+			<input name="isConsentToIdentify" bind:checked="{data.session.isConsentToIdentify}" class="form-checkbox" type="checkbox">
+			<span class="ml-2">Identity</span>
+		</label>
+		<label class="flex items-center">
+			<input name="isConsentRequiresCredit" bind:checked="{data.session.isConsentRequiresCredit}" class="form-checkbox" type="checkbox">
+			<span class="ml-2">NB: Requires Attribution</span>
+		</label>
+	</div>
+	<label>
+		<span class="font-light">Consent details</span>
+		<textarea name="consentDetails" bind:value="{data.session.consentDetails}" class="mt-1 block w-full" rows="3"
+		          type="text"></textarea>
 	</label>
 	<UserSelect bind:owners={data.session.owners} name="owners" users={data.users}/>
 

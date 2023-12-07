@@ -47,6 +47,12 @@ export const actions: Actions = {
 					isPublic: data.get('isPublic') == 'on',
 					isTemplate: data.get('isTemplate') == 'on',
 					isArchived: data.get('isArchived') == 'on',
+					isConsentForStats: data.get('isConsentForStats') == 'on',
+					isConsentForText: data.get('isConsentForText') == 'on',
+					isConsentForRecording: data.get('isConsentForRecording') == 'on',
+					isConsentToIdentify: data.get('isConsentToIdentify') == 'on',
+					isConsentRequiresCredit: data.get('isConsentRequiresCredit') == 'on',
+					consentDetails: data.get('consentDetails') as string || '',
 					lastModified: new Date().toISOString()
 				}
 			})

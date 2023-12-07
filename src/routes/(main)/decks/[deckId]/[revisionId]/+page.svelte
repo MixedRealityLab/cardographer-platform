@@ -22,6 +22,10 @@
 		          rows="3" type="text" disabled={!data.isOwnedByUser}></textarea>
 	</label>
 	<label>
+		<span class="font-light">Created: </span>
+		<div >{data.created}</div>
+	</label>
+	<label>
 		<span>Credits</span>
 		<input name="deckCredits" bind:value={data.deckCredits} class="block w-full" type="text" disabled={!data.isOwnedByUser}/>
 	</label>
