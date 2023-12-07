@@ -57,11 +57,13 @@
 		<div class="message-success">{message}</div>
 	{/if}
 	<div class="flex justify-center">
-		<form method="post" use:enhance enctype="multipart/form-data">
-			<UploadButton class="button m-3" types=".csv,text/csv">
-				<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
-			</UploadButton>
-		</form>
+		{#if data.isOwnedByUser}
+			<form method="post" use:enhance enctype="multipart/form-data">
+				<UploadButton class="button m-3" types=".csv,text/csv">
+					<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
+				</UploadButton>
+			</form>
+		{/if}
 		{#if data.cards.length > 0}
 			<a class="button m-3" href="cards.csv">
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV

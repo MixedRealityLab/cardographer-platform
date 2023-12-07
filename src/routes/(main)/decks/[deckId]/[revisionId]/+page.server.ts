@@ -11,6 +11,9 @@ export const actions: Actions = {
 		const {deckId, revisionId} = params
 		const db = await getDb()
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)
+		if (!revision.isOwnedByUser) {
+			throw error(401, `Deck Write Access Not Permitted`);
+		}
 		const data = await request.formData();
 		const updateResult = await db.collection<CardDeckRevision>('CardDeckRevisions').updateOne({
 			deckId: deckId, revision: Number(revisionId)

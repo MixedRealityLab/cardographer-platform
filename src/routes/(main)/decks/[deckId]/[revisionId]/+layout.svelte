@@ -16,7 +16,7 @@
 	<Tab url="{base}/decks/{deckId}/{revisionId}/cards">
 		Cards
 	</Tab>
-	{#if data.cardCount > 0}
+	{#if data.isOwnedByUser && data.cardCount > 0}
 		<Tab url="{base}/decks/{deckId}/{revisionId}/build" checkPath={true}>
 			Build
 		</Tab>

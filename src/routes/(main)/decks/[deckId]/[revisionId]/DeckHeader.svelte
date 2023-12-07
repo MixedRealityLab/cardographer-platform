@@ -9,7 +9,7 @@
 
 <div class="subheader">
 	<div class="flex-1">
-		{#if deck}
+		{#if deck && deck.isOwnedByUser}
 			<a class="block hover:text-blue-700 transition-colors duration-500 inline-flex items-center gap-2"
 			   href="{base}/decks/{deck.deckId}/{deck.revision}/revisions"
 			   title="Select Revision">{deck.deckName ?? 'null'}
@@ -27,6 +27,17 @@
 					      clip-rule="evenodd"/>
 				</svg>
 			</a>
+		{:else}
+			<div class="block inline-flex items-center gap-2">
+				{deck.deckName ?? 'null'}
+				{#if (deck.deckName ?? 'null').toLowerCase().indexOf('deck') === -1}
+					Deck
+				{/if}
+		 		<span class="opacity-50">v{deck.revision}</span>
+				{#if deck.revisionName}
+					<span class="opacity-50 font-normal">{deck.revisionName}</span>
+				{/if}
+			</div>
 		{/if}
 	</div>
 	<slot/>

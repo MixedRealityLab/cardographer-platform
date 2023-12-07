@@ -33,6 +33,8 @@ export interface CardDeckRevisionSummary {
 	cardCount: number // summary only
 	// API only
 	isCurrent?: boolean
+	// API/local only
+	isOwnedByUser?: boolean
 }
 
 // full revision data
