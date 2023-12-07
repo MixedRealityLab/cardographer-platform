@@ -8,7 +8,7 @@
 	let error = ''
 </script>
 
-<AppBar back="{base}/sessions">
+<AppBar back="{base}/sessions" subtitle="Session">
 	<div slot="subheader">Create Session</div>
 </AppBar>
 

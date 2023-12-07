@@ -31,7 +31,7 @@
 	}
 </script>
 
-<AppBar back="{base}/decks">
+<AppBar back="{base}/decks" subtitle="Deck">
 	<div slot="subheader">Create Deck</div>
 </AppBar>
 <div class="w-full flex flex-col text-sm font-medium p-6 gap-4">

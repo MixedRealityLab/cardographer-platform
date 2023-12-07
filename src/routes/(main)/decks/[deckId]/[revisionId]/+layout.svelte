@@ -9,7 +9,7 @@
 	let {deckId, revisionId} = $page.params
 </script>
 
-<AppBar back="{base}/decks">
+<AppBar back="{base}/decks" subtitle="Deck">
 	<Tab url="{base}/decks/{deckId}/{revisionId}">
 		Details
 	</Tab>

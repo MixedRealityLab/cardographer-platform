@@ -12,8 +12,8 @@
 		{#if deck}
 			<a class="block hover:text-blue-700 transition-colors duration-500 inline-flex items-center gap-2"
 			   href="{base}/decks/{deck.deckId}/{deck.revision}/revisions"
-			   title="Select Revision">{deck.deckName}
-				{#if deck.deckName.toLowerCase().indexOf('deck') === -1}
+			   title="Select Revision">{deck.deckName ?? 'null'}
+				{#if (deck.deckName ?? 'null').toLowerCase().indexOf('deck') === -1}
 					Deck
 				{/if}
 				<span class="opacity-50">v{deck.revision}</span>
