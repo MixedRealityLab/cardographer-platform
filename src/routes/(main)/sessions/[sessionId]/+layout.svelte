@@ -20,6 +20,9 @@
 		Board
 	</Tab> -->
 	{#if data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
+		<Tab url="{base}/sessions/{sessionId}/cards">
+			WebApp
+		</Tab>
 		<Tab url="{base}/sessions/{sessionId}/tabletop">
 			Tabletop
 		</Tab>
