@@ -22,7 +22,7 @@ export class MiroClient extends Client {
 		const now = new Date().toISOString();
 		return {
 			_id: getNewId(),
-			name: data.title,
+			name: data.title || `Miro board ${data.id}`,
 			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
 			credits: data.owner && data.owner.name ? data.owner.name : '',
 			owners: [],

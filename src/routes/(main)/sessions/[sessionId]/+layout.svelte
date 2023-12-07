@@ -19,10 +19,12 @@
 	<!-- <Tab url="{base}/sessions/{sessionId}/board">
 		Board
 	</Tab> -->
-	{#if data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
+	{#if data && data.decks && data.decks.length !== 0}
 		<Tab url="{base}/sessions/{sessionId}/cards">
 			WebApp
 		</Tab>
+	{/if}
+	{#if data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
 		<Tab url="{base}/sessions/{sessionId}/tabletop">
 			Tabletop
 		</Tab>

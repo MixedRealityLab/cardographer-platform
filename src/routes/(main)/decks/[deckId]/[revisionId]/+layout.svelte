@@ -21,6 +21,11 @@
 			Build
 		</Tab>
 	{/if}
+	{#if data.cardCount > 0}
+		<Tab url="{base}/sessions/deck-{deckId}-{revisionId}/cards">
+			WebApp
+		</Tab>
+	{/if}
 </AppBar>
 
 <slot/>
