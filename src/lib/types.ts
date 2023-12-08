@@ -286,6 +286,7 @@ export interface SessionSnapshot extends SessionSnapshotSummary {
 
 export interface Analysis {
 	_id: string
+	defaultForSessionId?: string
 	name: string
 	description?: string
 	credits?: string

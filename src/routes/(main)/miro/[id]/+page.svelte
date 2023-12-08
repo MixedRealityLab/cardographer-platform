@@ -15,6 +15,7 @@
 	let widgets: BoardNode[] = []
 	let error: string
 	let success: boolean = false
+	let description: string = ''
 
 	onMount(async () => {
 		miro.board.ui.on('selection:update', updateWidgets)
@@ -84,6 +85,7 @@
 
 	async function saveSession() {
 		const info: any = await miro.board.getInfo()
+		info.description = description
 		info.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
 		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
 			method: 'POST',
@@ -265,8 +267,9 @@
 				Uploaded
 			</div>
 		{/if}
-		<div class="flex gap-4 justify-center">
-			<button class="button m-2" on:click={saveSession} disabled={!!data.readonly}>
+		<div class="flex gap-1 m-1 justify-center">
+			<input class="flex-1 p-1" type="text" name="description" placeholder="Snapshot desription" bind:value={description} disabled={!!data.readonly}/>
+			<button class="button m-1" on:click={saveSession} disabled={!!data.readonly}>
 				Save Session
 			</button>
 		</div>

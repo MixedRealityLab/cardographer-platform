@@ -33,7 +33,7 @@
 					<div class="text-sm font-light text-gray-700">{formatDate(snapshot.created)}</div>
 				</div>
 				<div class="flex">
-					<div class="text-sm font-light">{snapshot.sessionDescription}</div>
+					<div class="flex-1 text-sm font-light">{snapshot.sessionDescription}</div>
 					{#if snapshot.snapshotDescription}
 						<div class="text-sm font-light">{snapshot.snapshotDescription}</div>
 					{/if}
