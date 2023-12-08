@@ -14,11 +14,14 @@
         e.preventDefault()
         // TODO
         console.log('open default analysis...')
-		//const res = await fetch(`${base}/sessions/${session._id}`, {
-		//	method: 'DELETE'
-		//})
-		//if (res.ok) {
-		await goto(`${base}/analyses`)
+		const response = await fetch(`${base}/sessions/${session._id}/defaultanalysis`, {
+			method: 'POST',
+            body: JSON.stringify({snapshotId:snapshot._id})
+		})
+		if (response.ok) {
+            const analysisId = (await response.json()).analysisId
+		    await goto(`${base}/analyses/${analysisId}/sessions`)
+        }
 	}
 
 </script>
