@@ -34,6 +34,9 @@
 			Miro
 		</Tab>
 	{/if}
+	<Tab url="{base}/sessions/{sessionId}/data">
+		Data
+	</Tab>
 </AppBar>
 
 <slot/>

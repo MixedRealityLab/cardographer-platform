@@ -10,7 +10,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 	const db = await getDb()
 	let snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
 		.find({
-			$or: [{owners: locals.email}, {isPublic: true}]
+			$or: [{owners: locals.email}, {isPublic: true}], isNotForAnalysis: false,
 		}, {
 			projection: {
 				_id: true, sessionId: true, sessionName: true,

@@ -266,6 +266,8 @@ export interface SessionSnapshotSummary {
 	snapshotDescription?: string
 	// API only
 	session?: Session
+	// UI only
+	deleting?: boolean
 }
 
 export interface SessionSnapshot extends SessionSnapshotSummary {

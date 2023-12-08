@@ -44,5 +44,7 @@ The export _id is checked against SessionSnapshot's `legacyId`
 (for that user's snapshots), and won't be re-imported if found.
 Otherwise a new session & snapshot is created.
 
+### Multiple snapshot handling
 
+Snapshot `created` should reflect time of last change, not time of import.
 

@@ -75,6 +75,7 @@ export const actions: Actions = {
 			session.owners = [locals.email]
 			// used by miro
 			session.url = null
+			session.miroId = null
 			// not completely sure about this :-) but better than clobbering uploads, etc.
 			session.sessionType = ""
 			session.isPublic = false
