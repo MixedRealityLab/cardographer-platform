@@ -75,10 +75,12 @@ export class MiroClient extends Client {
 		// shape is a zone
 		const data = snapshot.data
 		for (const widget of data.widgets) {
+			boundify(widget, data.widgets)
+		}
+		for (const widget of data.widgets) {
 			if (widget.type.toLowerCase() != 'image') {
 				continue;
 			}
-			boundify(widget)
 			const id = widget.title || widget.url;
 			if (!id) {
 				if (debug) console.log(`ignore unnamed image`, widget);
@@ -99,7 +101,6 @@ export class MiroClient extends Client {
 				let size = Infinity
 				for (const frame of frames) {
 					let widgetSize = 0
-					boundify(frame)
 					widgetSize = frame.bounds.width * frame.bounds.height
 
 					if (size < widgetSize || !boardId) {
@@ -149,18 +150,38 @@ export class MiroClient extends Client {
 }
 
 function cardInBounds(c, w) {
-	boundify(w)
 	return c.bounds.left >= w.bounds.left && c.bounds.right <= w.bounds.right &&
 		c.bounds.bottom <= w.bounds.bottom && c.bounds.top >= w.bounds.top;
 }
 
-function boundify(w) {
+function boundify(w, widgets) {
 	if (!w.bounds) {
+		let x = w.x
+		let y = w.y
+		let node = w
+		for (let node = w; node.parentId !== null; ) {
+			let parent = widgets.find((w) => w.id == node.parentId)
+			if (!parent) {
+				console.log(`ERROR: miro parent not found: ${node.parentId}`)
+				break
+			}
+			if (node.relativeTo == "parent_top_left") {
+				x = x + parent.x - (parent.width / 2)
+				y = y + parent.y - (parent.height / 2)
+			} else {
+				console.log(`ERROR: unhandled miro relativeTo: ${node.relativeTo}`)
+				break
+			}
+			node = parent
+		}
+		if (w.origin != 'center') {
+			console.log(`ERROR: unhandled miro origin: ${w.origin}`)
+		}
 		w.bounds = {
-			left: w.x - (w.width / 2),
-			right: w.x + (w.width / 2),
-			top: w.y - (w.height / 2),
-			bottom: w.y + (w.height / 2),
+			left: x - (w.width / 2),
+			right: x + (w.width / 2),
+			top: y - (w.height / 2),
+			bottom:  y + (w.height / 2),
 			width: w.width,
 			height: w.height
 		}
@@ -168,6 +189,5 @@ function boundify(w) {
 }
 
 function cardOverlapping(c, w) {
-	boundify(w)
 	return c.bounds.left <= w.bounds.right && c.bounds.right >= w.bounds.left && c.bounds.top <= w.bounds.bottom && c.bounds.bottom >= w.bounds.top;
 }

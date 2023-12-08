@@ -11,6 +11,7 @@ const debug = true
 
 interface DesignInfo {
 	id: string;
+	title: string;
 	snapshot: SessionSnapshot;
 	boards: BoardInfo[];
 }
@@ -227,6 +228,7 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 				const id = board.id ? `${design.id}:${board.id}` : design.id;
 				designs.push({
 					id: id,
+					title: board.id ? `${design.title}: ${board.id}` : design.title,
 					snapshot: design.snapshot,
 					boards: [board],
 				});
@@ -279,7 +281,7 @@ async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], include
 	const columns: string[] = [];
 	columns.push('Id');
 	for (const di in designs) {
-		columns.push(designs[di].id);
+		columns.push(designs[di].title);
 	}
 	rows.push(columns);
 	for (const cardUse of cardUses) {
@@ -315,6 +317,10 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
 			continue;
 		}
+		if (snapshot.isNotForAnalysis) {
+			if (debug) console.log(`Skip snapshot ${snapshotId} - isNotForAnalysis`);
+			continue;
+		}
 		const client = getClient(snapshot.sessionType);
 		if (!client) {
 			console.log(`cannot find client for sessionType ${snapshot.sessionType}`);
@@ -325,7 +331,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			_id: snapshot.sessionId
 		})
 		if (!session) {
-			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
+			if (debug) console.log(`cannot find snapshot session ${snapshot.sessionId}`);
 			continue;
 		}
 
@@ -378,6 +384,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 
 		designs.push({
 			id: snapshot._id,
+			title: `${snapshot.sessionName}: ${snapshot.snapshotDescription}`,
 			snapshot,
 			boards: boards
 		})

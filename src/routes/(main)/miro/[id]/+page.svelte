@@ -87,6 +87,7 @@
 		const info: any = await miro.board.getInfo()
 		info.description = description
 		info.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
+		info.widgets.forEach((w) => {if (w.modifiedAt && (w.modifiedAt as string).localeCompare(info.updatedAt)>0) { info.updatedAt = w.modifiedAt }})
 		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
 			method: 'POST',
 			body: JSON.stringify(info)
