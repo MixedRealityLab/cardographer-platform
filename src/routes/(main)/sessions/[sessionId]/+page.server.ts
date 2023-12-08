@@ -67,7 +67,8 @@ export const actions: Actions = {
 					sessionName: data.get('name') as string || session.name,
 					sessionDescription: data.get('description') as string || '',
 					sessionCredits: data.get('credits') as string || '',
-					owners: owners
+					owners: owners,
+					isPublic: data.get('isPublic') == 'on',
 				}
 			})
 		return {success: true}

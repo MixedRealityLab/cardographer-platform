@@ -29,6 +29,11 @@
 			Tabletop
 		</Tab>
 	{/if}
+	{#if data && data.sessionType == 'miro' && data.url}
+		<Tab url="{data.url}">
+			Miro
+		</Tab>
+	{/if}
 </AppBar>
 
 <slot/>

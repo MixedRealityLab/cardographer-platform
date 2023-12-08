@@ -225,7 +225,8 @@ export interface User {
 export interface Session {
 	_id: string // mongo-style
 	name: string
-	url?: string
+	url?: string // Used to identify session ACTIVELY Linked to miro board
+	miroId?: string
 	description?: string
 	credits?: string
 	owners: string[] // User emails

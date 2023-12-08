@@ -22,7 +22,8 @@ export class MiroClient extends Client {
 		const now = new Date().toISOString();
 		return {
 			_id: getNewId(),
-			name: data.title || `Miro board ${data.id}`,
+			name: data.title || `Upload of Miro board ${data.id}`,
+			miroId: data.id,
 			description: data.description || `Imported Miro board https://miro.com/app/board/${data.id}`,
 			credits: data.owner && data.owner.name ? data.owner.name : '',
 			owners: [],
@@ -32,7 +33,12 @@ export class MiroClient extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'miro',
-			decks: []
+			decks: [],
+			isConsentForStats: false,
+			isConsentForText: false,
+			isConsentForRecording: false,
+			isConsentToIdentify: false,
+			isConsentRequiresCredit: false,
 		}
 	}
 
@@ -56,9 +62,10 @@ export class MiroClient extends Client {
 	}
 
 	getExistingSessionQuery(data: any): Filter<Session> {
-		return {
-			miroId: data.id
-		};
+		// The plugin uses .url to match to miro boards, 
+		// but keeping the plugin separate is probably good
+		// so don't use that - so leaving for now...
+		return null;
 	}
 
 	getSnapshotInfo(snapshot: SessionSnapshot): SnapshotInfo {

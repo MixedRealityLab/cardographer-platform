@@ -54,7 +54,12 @@ export const actions: Actions = {
 				lastModified: now,
 				name: "Blank Session",
 				owners: [locals.email],
-				sessionType: ""
+				sessionType: "",
+				isConsentForStats: false,
+				isConsentForText: false,
+				isConsentForRecording: false,
+				isConsentToIdentify: false,
+				isConsentRequiresCredit: false,
 			}
 		} else {
 			session = await db.collection<Session>('Sessions').findOne({
@@ -68,8 +73,17 @@ export const actions: Actions = {
 			session.name = `Copy of ${session.name}`
 			session.created = session.lastModified = now
 			session.owners = [locals.email]
+			// used by miro
+			session.url = null
+			// not completely sure about this :-) but better than clobbering uploads, etc.
+			session.sessionType = ""
 			session.isPublic = false
 			session.isTemplate = false
+			session.isConsentForStats = false
+			session.isConsentForText = false
+			session.isConsentForRecording = false
+			session.isConsentToIdentify = false
+			session.isConsentRequiresCredit = false
 		}
 
 		// add

@@ -10,7 +10,7 @@
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
-	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
+	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean }
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
 	let error: string
@@ -116,7 +116,7 @@
 				{data.session.name}
 				<form method="post" action="?/unselect" use:enhance class="inline">
 					<input type="hidden" name="id" value={data.session._id}/>
-					<button class="ml-1" title="Change Session">
+					<button class="ml-1" title="Change Session" disabled={!!data.readonly}>
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50"
 						     viewBox="0 0 20 20"
 						     fill="currentColor">
@@ -266,7 +266,7 @@
 			</div>
 		{/if}
 		<div class="flex gap-4 justify-center">
-			<button class="button m-2" on:click={saveSession}>
+			<button class="button m-2" on:click={saveSession} disabled={!!data.readonly}>
 				Save Session
 			</button>
 		</div>
