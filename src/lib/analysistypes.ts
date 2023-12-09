@@ -10,32 +10,39 @@ export interface BoardInfo {
 	id: string;
 	cards: CardSnapshot[];
 	comments?: CommentInfo[];
+	zones?: ZoneInfo[];
 }
 
-export interface CardSnapshot {
-	id: string
+export interface CommonInfo {
 	x?: number
 	y?: number
-	info?: CardInfo
-	zones?: CardZone[]
-	comments?: string[]
-	//scales?: CardScale[]
-
+	zones?: CardZone[];
 }
 
-export interface CommentInfo {
+export interface CardSnapshot extends CommonInfo {
+	id: string
+	info?: CardInfo
+	comments?: string[]
+	//scales?: CardScale[]
+}
+
+export interface CommentInfo extends CommonInfo {
 	text: string;
-	zones?: CardZone[];
 	scales?: CardScale[];
 }
 
 export interface CardZone {
 	zoneId: string;
+	overlap: number; // 0-1
 }
 
 export interface CardScale {
 	scaleId: string;
 	value: number;
+}
+
+export interface ZoneInfo {
+	id: string
 }
 
 export enum AnalysisExportTypes {

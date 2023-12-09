@@ -7,7 +7,7 @@ import {getDb} from '$lib/db'
 import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types'
 import {RegionType} from '$lib/types'
 
-const debug = true
+const debug = false
 
 interface DesignInfo {
 	id: string;
