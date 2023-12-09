@@ -15,6 +15,9 @@
 	<Tab url="{base}/analyses/{analysisId}/sessions">
 		Sessions
 	</Tab>
+	<Tab url="{base}/analyses/{analysisId}/summary">
+		Summary
+	</Tab>
 	<Tab url="{base}/analyses/{analysisId}/export">
 		Export
 	</Tab>

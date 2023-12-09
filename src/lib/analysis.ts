@@ -9,7 +9,7 @@ import {RegionType} from '$lib/types'
 
 const debug = false
 
-interface DesignInfo {
+export interface DesignInfo {
 	id: string;
 	title: string;
 	snapshot: SessionSnapshot;
@@ -305,7 +305,7 @@ async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], include
 	return await arrayToCsv(rows);
 }
 
-async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
+export async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 	const db = await getDb();
 	// get real snapshots
 	const designs: DesignInfo[] = [];
