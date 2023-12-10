@@ -20,7 +20,7 @@
 		})
 		if (response.ok) {
             const analysisId = (await response.json()).analysisId
-		    await goto(`${base}/analyses/${analysisId}/sessions`)
+		    await goto(`${base}/analyses/${analysisId}/sessions`) // summary ?!
         }
 	}
 

@@ -1,7 +1,7 @@
 import type {BoardInfo, CardSnapshot, CommonInfo, CommentInfo, SnapshotInfo} from '$lib/analysistypes'
 import type {Session, SessionSnapshot} from '$lib/types'
 import type {Filter} from "mongodb"
-import striptags from "striptags";
+import {striptags} from "$lib/textutils";
 import {getNewId} from "../db"
 import {Client} from './types'
 

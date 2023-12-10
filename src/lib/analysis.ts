@@ -14,6 +14,7 @@ export interface DesignInfo {
 	title: string;
 	snapshot: SessionSnapshot;
 	boards: BoardInfo[];
+	session: Session;
 }
 
 interface CardUse {
@@ -231,6 +232,7 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 					title: board.id ? `${design.title}: ${board.id}` : design.title,
 					snapshot: design.snapshot,
 					boards: [board],
+					session: design.session,
 				});
 			}
 		}
@@ -386,7 +388,8 @@ export async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			id: snapshot._id,
 			title: `${snapshot.sessionName}: ${snapshot.snapshotDescription}`,
 			snapshot,
-			boards: boards
+			boards: boards,
+			session,
 		})
 	}
 	//console.log(`extract something from ${snapshots.length} snapshots...`);
