@@ -132,8 +132,12 @@
                     <td>{hideZero(board.board.cards.filter((ci) => data.boardIds.includes(ci.zones[0].zoneId)).length)}</td>
                     <td>{hideZero(board.board.comments.filter((ci) => data.boardIds.includes(ci.zones[0].zoneId)).length)}</td>
                     {#each data.zoneIds as zoneId}
-                        <td>{hideZero(board.board.cards.map((ci) => ci.zones.map((z)=> z.zoneId==zoneId ? z.overlap: 0).reduce(sum,0)).reduce(sum,0))}</td>  
-                        <td>{hideZero(board.board.comments.map((ci) => ci.zones.map((z)=> z.zoneId==zoneId ? z.overlap: 0).reduce(sum,0)).reduce(sum,0))}</td>  
+                        <td class="{board.board.zones.find((z)=>z.id==zoneId) ? '' : 'not-possible'}">
+                            {hideZero(board.board.cards.map((ci) => ci.zones.map((z)=> z.zoneId==zoneId ? z.overlap: 0).reduce(sum,0)).reduce(sum,0))}
+                        </td>  
+                        <td class="{board.board.zones.find((z)=>z.id==zoneId) ? '' : 'not-possible'}">
+                            {hideZero(board.board.comments.map((ci) => ci.zones.map((z)=> z.zoneId==zoneId ? z.overlap: 0).reduce(sum,0)).reduce(sum,0))}
+                        </td>  
                     {/each}    
                 </tr>
             {/each}
@@ -234,5 +238,8 @@
     }
     th {
         text-align: left;
+    }
+    td.not-possible {
+        background-color: #ddd;
     }
 </style>

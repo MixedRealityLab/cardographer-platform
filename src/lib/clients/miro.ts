@@ -117,7 +117,7 @@ export class MiroClient extends Client {
 			let board = boards.find((b) => b.id == boardId);
 			const zoneInfo = board.zones.find((z) => z.id == zoneId)
 			if (!zoneInfo) {
-				if (debug || true) console.log(`add zone ${zoneId}`);
+				if (debug) console.log(`add zone ${zoneId}`);
 				board.zones.push({
 					id: zoneId,
 				})
