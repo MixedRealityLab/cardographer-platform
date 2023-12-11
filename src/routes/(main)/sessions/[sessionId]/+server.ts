@@ -1,6 +1,6 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Session} from "$lib/types"
+import type {Session,SessionSnapshot} from "$lib/types"
 import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit";
 
@@ -15,6 +15,9 @@ export const DELETE: RequestHandler = async function ({locals, params}) {
 	if (analysis.deletedCount == 0) {
 		throw error(404);
 	}
-
+	// delete all linked Snapshots
+	await db.collection<SessionSnapshot>('SessionSnapshots').deleteMany({
+		sessionId: sessionId
+	})
 	return json({})
 }

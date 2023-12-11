@@ -23,11 +23,15 @@
 				<div class="flex">
 					<div class="flex-1 flex items-center gap-1">
 						<div class="font-semibold">{snapshot.sessionName}</div>
-						{#if snapshot.session.isConsentForStats}
-							<div class="chip">Stats</div>
-						{/if}
-						{#if snapshot.session.isConsentForText}
-							<div class="chip">Text</div>
+						{#if snapshot.session}
+							{#if snapshot.session.isConsentForStats}
+								<div class="chip">Stats</div>
+							{/if}
+							{#if snapshot.session.isConsentForText}
+								<div class="chip">Text</div>
+							{/if}
+						{:else}
+							<div class="chip">??</div>
 						{/if}
 					</div>
 					<div class="text-sm font-light text-gray-700">{formatDate(snapshot.created)}</div>

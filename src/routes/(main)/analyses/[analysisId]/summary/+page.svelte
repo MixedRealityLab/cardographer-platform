@@ -198,12 +198,12 @@
         </thead>
         <tbody>
             {#each data.boards as board}
-                {#each board.board.zones as zone}
+                {#each [{id:board.boardId}].concat(board.board.zones) as zone, zi}
                     <tr>
                         <td>S{data.sessionIds.indexOf(board.session._id)+1}</td>
                         <td>{board.snapshotDescription}</td>
                         <td>{board.boardId}</td>
-                        <td>{zone.id}</td>
+                        <td>{zi==0 ? '(no zone)' : zone.id}</td>
                         <td>
                             {#each board.board.cards.filter((ci) => ci.zones.map((z)=> z.zoneId).includes(zone.id)) as card}
                                 {card.id}

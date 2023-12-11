@@ -26,6 +26,8 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 			.find({_id: {$in: snapshots.map((snapshot) => snapshot.sessionId)}})
 			.toArray();
 	snapshots.forEach((snapshot) => snapshot.session = sessions.find((session) => session._id == snapshot.sessionId))
+	// skip if no session (should have been deleted but wasn't?!)
+	snapshots = snapshots.filter((s) => !!s.session)
 	if (snapshots && analysis && analysis.snapshotIds) {
 		snapshots.forEach((snapshot) => {
 			snapshot.selected = analysis.snapshotIds.some((id) => id == snapshot._id)
