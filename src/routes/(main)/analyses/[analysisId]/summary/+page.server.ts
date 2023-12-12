@@ -19,6 +19,7 @@ function compareBoards(a, b) {
     return `${a.sessionName}/${a.boardId}/${a.created}`.localeCompare(`${b.sessionName}/${b.boardId}/${b.created}`)
 }
 
+/** @type {import('./$types').PageServerLoad} */
 export const load: PageServerLoad = async function ({locals, parent}) {
 	verifyAuthentication(locals)
 	const analysis = await parent()
@@ -61,5 +62,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
         sessionIds,
         sessions,
         decks,
+        deckCardIds: decks.flatMap((d) => d.cards.map((c)=>c.id)).sort().filter(onlyUnique),
+        usedCardIds: designs.flatMap((d) => d.boards.flatMap((b) => b.cards.map((c)=>c.id))).sort().filter(onlyUnique),
 	}
 }

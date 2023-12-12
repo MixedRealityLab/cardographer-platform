@@ -13,8 +13,10 @@
         board: BoardInfo
         created: string
     }
-	export let data: {analysis:Analysis, designs: DesignInfo[], boardIds: string[], zoneIds: string[], 
-        boards:Board[], sessionIds:string[], sessions:Session[], decks:CardDeckRevision[]}
+    /** @type {import('./$types').PageData} */
+	export let data;
+    //: {analysis:Analysis, designs: DesignInfo[], boardIds: string[], zoneIds: string[], 
+    //   boards:Board[], sessionIds:string[], sessions:Session[], decks:CardDeckRevision[]}
 
     function quote(text) {
         return `"${text}"`
@@ -153,6 +155,7 @@
             <!--<th>Distinct cards used</th>
             <th>Total cards used</th>-->
         </thead>
+        <tbody>
         {#each data.decks as deck}
             <tr>
                 <td>{deck.deckName}</td>
@@ -160,6 +163,14 @@
                 <td>{deck.cards.filter((c) => c.id.indexOf('back:')!=0).length}</td>
             </tr>
         {/each}
+        {#if data.usedCardIds.filter((id) => !data.deckCardIds.includes(id)).length > 0}
+            <tr>
+                <td>(unknown)</td>
+                <td>(unknown)</td>
+                <td>{data.usedCardIds.filter((id) => !data.deckCardIds.includes(id)).length}</td>
+            </tr>
+        {/if}
+        </tbody>
     </table>
     <div class="flex">Cards used:</div>
     <table class="analysis-table">
@@ -188,6 +199,18 @@
                     </tr>
                 {/if}
             {/each}
+        {/each}
+        {#each data.usedCardIds.filter((id) => !data.deckCardIds.includes(id)) as cardId}
+            <tr>
+                <td>{cardId}</td>
+                <td>?</td>
+                <td>?</td>
+                <td>{hideZero(data.boards.flatMap((b) => b.board.cards.filter((c) => c.id == cardId)).length)}</td>
+                <td>{hideZero(data.boards.flatMap((b) => b.board.cards.filter((ci) => ci.id == cardId && data.boardIds.includes(ci.zones[0].zoneId))).length)}</td>
+                {#each data.zoneIds as zoneId, i}
+                    <td>{hideZero(data.boards.map((b) => b.board.cards.map((ci) => ci.id != cardId ? 0 : ci.zones.map((z)=> z.zoneId==zoneId ? z.overlap: 0).reduce(sum,0)).reduce(sum,0)).reduce(sum,0))}</td>
+                {/each}
+            </tr>
         {/each}
     </table>
     <div class="subheader">Details</div>
