@@ -117,6 +117,7 @@
 					Session
 				{/if}
 				{data.session.name}
+				{#if !data.readonly}
 				<form method="post" action="?/unselect" use:enhance class="inline">
 					<input type="hidden" name="id" value={data.session._id}/>
 					<button class="ml-1" title="Change Session" disabled={!!data.readonly}>
@@ -129,6 +130,7 @@
 						</svg>
 					</button>
 				</form>
+				{/if}
 			{:else}
 				Associate Board with Session
 			{/if}
@@ -141,7 +143,7 @@
 				      fill-rule="evenodd"/>
 			</svg>
 		</button>
-		{#if data.session}
+		{#if data.session && !data.readonly}
 			<a class="iconButton" href="{base}/sessions/{data.session._id}" title="Open Session" target="_blank"
 			   rel="noreferrer">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">

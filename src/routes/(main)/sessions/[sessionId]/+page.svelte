@@ -34,6 +34,25 @@
 			<div class="block gap-1">{data.session.sessionType || 'Not defined (yet)'}</div>
 		</label>
 	</div>
+	{#if data.session.sessionType == 'miro' && data.session.url && data.session.isTemplate}
+		<label>
+			<span class="font-light">Template Miro board link (to duplicate)</span>
+			<input name="miroDuplicateUrl" bind:value="{data.session.miroDuplicateUrl}" class="mt-1 block w-full" type="text"/>
+			<div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 font-light" role="alert">
+				<span class="font-semibold">Note:</span> Ensure that this Miro board "Share" link allows "Anyone with the link": "Can View", and "Sharing Settings", "Permissions", "Who can copy board content" is "Anyone with the board access" 
+			</div>
+		</label>
+	{/if}
+	{#if data.session.sessionType=="" && data.session.miroDuplicateUrl}
+		<div class="flex justify-left gap-4">
+			<a class="button" href="{data.session.miroDuplicateUrl}">
+				Open Miro Board to Duplicate
+			</a>
+		</div>
+		<div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 font-light" role="alert">
+			<span class="font-semibold">Start here:</span> Click the link to open the template board in Miro, log in, duplicate the board into your own team and use the Cardographer Plugin to link it back to this session.
+		</div>
+	{/if}
 	<label>
 		<span class="font-light">Credits</span>
 		<input name="credits" bind:value="{data.session.credits}" class="mt-1 block w-full" type="text"/>

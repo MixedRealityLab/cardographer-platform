@@ -236,6 +236,7 @@ export interface Session {
 	isTemplate: boolean
 	isArchived: boolean
 	sessionType: string
+	miroDuplicateUrl?: string
 	board?: BoardInfo
 	decks: SessionDeck[]
 	isConsentForStats: boolean

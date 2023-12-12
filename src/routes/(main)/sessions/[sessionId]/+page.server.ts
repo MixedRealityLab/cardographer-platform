@@ -43,6 +43,7 @@ export const actions: Actions = {
 					name: data.get('name') as string || session.name,
 					description: data.get('description') as string || '',
 					credits: data.get('credits') as string || '',
+					miroDuplicateUrl: data.get('miroDuplicateUrl') as string || '',
 					owners: owners,
 					isPublic: data.get('isPublic') == 'on',
 					isTemplate: data.get('isTemplate') == 'on',

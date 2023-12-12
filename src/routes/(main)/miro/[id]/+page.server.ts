@@ -80,6 +80,7 @@ export const actions: Actions = {
 				description: "Session for Miro board at " + url,
 				owners: [locals.email],
 				url: url,
+				miroDuplicateUrl: null,
 				miroId: params.id,
 				created: now,
 				isPublic: false,
@@ -103,6 +104,7 @@ export const actions: Actions = {
 			}, {
 				$set: {
 					url: url,
+					miroDuplicateUrl: null,
 					sessionType: 'miro',
 					miroId: params.id,
 				}

@@ -16,7 +16,7 @@ interface Board {
     created: string
 }
 function compareBoards(a, b) {
-    return `${a.sessionName}/${a.boardId}/${a.created}`.localeCompare(`${b.sessionName}/${b.boardId}/${b.created}`)
+    return `${a.sessionName}/${a.created}/${a.boardId}`.localeCompare(`${b.sessionName}/${b.created}/${b.boardId}`)
 }
 
 /** @type {import('./$types').PageServerLoad} */
