@@ -42,6 +42,9 @@
 						<div class="text-sm font-light">{snapshot.snapshotDescription}</div>
 					{/if}
 				</div>
+				{#if !snapshot.isOwnedByUser}
+					<div class="flex text-gray-700">Credits: {snapshot.sessionCredits}</div>
+				{/if}
 			</div>
 		</label>
 	{/each}

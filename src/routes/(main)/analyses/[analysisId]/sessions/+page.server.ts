@@ -1,5 +1,6 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
+import { checkSessionSnapshotCredits } from "$lib/sessions";
 import type {Analysis, SessionSnapshot, Session} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
@@ -13,7 +14,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 			$or: [{owners: locals.email}, {isPublic: true}], isNotForAnalysis: false,
 		}, {
 			projection: {
-				_id: true, sessionId: true, sessionName: true,
+				_id: true, sessionId: true, sessionName: true, owners: true,
 				sessionDescription: true, sessionCredits: true,
 				sessionType: true, created: true,
 				snapshotDescription: true
@@ -33,7 +34,8 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 			snapshot.selected = analysis.snapshotIds.some((id) => id == snapshot._id)
 		})
 	}
-
+	snapshots.forEach((snapshot) => snapshot.isOwnedByUser = snapshot.owners.includes(locals.email))
+	await checkSessionSnapshotCredits(snapshots, db)
 	return {
 		analysis: analysis,
 		snapshots: snapshots

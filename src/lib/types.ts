@@ -269,6 +269,7 @@ export interface SessionSnapshotSummary {
 	session?: Session
 	// UI only
 	deleting?: boolean
+	isOwnedByUser?: boolean
 }
 
 export interface SessionSnapshot extends SessionSnapshotSummary {

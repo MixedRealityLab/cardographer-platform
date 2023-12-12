@@ -1,6 +1,7 @@
 import {base} from "$app/paths";
 import {getDb, getNewId} from "$lib/db"
 import {verifyAuthentication} from "$lib/security"
+import { checkSessionCredits } from "$lib/sessions";
 import type {Session} from "$lib/types";
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit";
@@ -23,6 +24,7 @@ export const load: PageServerLoad = async function ({locals}) {
 		})
 		.sort({"name": 1, "owners[0]": 1, "created": 1})
 		.toArray()
+	await checkSessionCredits(sessions, db)
 	return {
 		sessions: sessions
 	}

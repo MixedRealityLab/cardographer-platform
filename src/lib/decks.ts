@@ -7,7 +7,7 @@ import type {Db} from "mongodb";
 export async function cleanRevisions(revisions: CardDeckRevisionSummary[], db: Db) {
 	const users = await db.collection<User>('Users').find({}).toArray()
 	for (const revision of revisions) {
-		if (!(revision.deckCredits)) {
+		if (!(revision.deckCredits) || !revision.deckCredits.trim()) {
 			const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({_id: revision.deckId})
 			if (deck) {
 				if (deck.owners && deck.owners.length > 0) {
@@ -18,7 +18,7 @@ export async function cleanRevisions(revisions: CardDeckRevisionSummary[], db: D
 	}
 }
 
-function userName(email: string, users: User[]): string {
+export function userName(email: string, users: User[]): string {
 	const user = users.find(user => user.email === email)
 	if (user.name) {
 		return user.name
