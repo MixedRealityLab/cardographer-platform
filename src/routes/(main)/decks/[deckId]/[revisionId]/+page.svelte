@@ -21,9 +21,9 @@
 		<textarea name="deckDescription" bind:value={data.deckDescription} class="block w-full"
 		          rows="3" type="text" disabled={!data.isOwnedByUser}></textarea>
 	</label>
-	<label>
-		<span class="font-light">Created: </span>
-		<div >{data.created}</div>
+	<label class="flex gap-4 items-center">
+		<span>Created</span>
+		<div>{new Date(data.created).toLocaleString('en-gb', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
 	</label>
 	<label>
 		<span>Credits</span>

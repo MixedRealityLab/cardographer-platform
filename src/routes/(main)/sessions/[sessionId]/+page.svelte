@@ -23,15 +23,15 @@
 		          type="text"></textarea>
 	</label>
 	<div class="flex justify-left gap-4">
-		<label class="flex">
-			<span class="font-light">Created:&nbsp; </span>
-			<div class="block gap-1">{data.session.created}</div>
+		<label class="flex gap-4 items-center">
+			<span class="font-light">Created</span>
+			<div>{new Date(data.session.created).toLocaleString('en-gb', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
 		</label>
 	</div>
 	<div class="flex justify-left gap-4">
-		<label class="flex">
-			<span class="font-light">Session&nbsp;Type:&nbsp; </span>
-			<div class="block gap-1">{data.session.sessionType || 'Not defined (yet)'}</div>
+		<label class="flex gap-4 items-center">
+			<span class="font-light">Session Type</span>
+			<div>{data.session.sessionType || 'Not defined (yet)'}</div>
 		</label>
 	</div>
 	{#if data.session.sessionType == 'miro' && data.session.url && data.session.isTemplate}
