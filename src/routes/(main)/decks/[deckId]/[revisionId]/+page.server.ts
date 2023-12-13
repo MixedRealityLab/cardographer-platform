@@ -11,7 +11,18 @@ export const actions: Actions = {
 		const {deckId, revisionId} = params
 		const db = await getDb()
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)
+		if (!revision.isOwnedByUser) {
+			throw error(401, `Deck Write Access Not Permitted`);
+		}
 		const data = await request.formData();
+		let imageDpi : Number = revision.imageDpi // default
+		if(data.get('imageDpi')) {
+			try {
+				imageDpi = Number(data.get('imageDpi') as string)
+			} catch (e) {
+				// ignore :-/
+			}
+		}
 		const updateResult = await db.collection<CardDeckRevision>('CardDeckRevisions').updateOne({
 			deckId: deckId, revision: Number(revisionId)
 		}, {
@@ -21,6 +32,7 @@ export const actions: Actions = {
 				deckCredits: data.get('deckCredits') as string || revision.deckCredits,
 				revisionName: data.get('revisionName') as string || revision.revisionName,
 				revisionDescription: data.get('revisionDescription') as string || revision.revisionDescription,
+				imageDpi: imageDpi,
 				slug: data.get('slug') as string || revision.slug,
 				isUsable: data.get('isUsable') == 'on',
 				isPublic: data.get('isPublic') == 'on',

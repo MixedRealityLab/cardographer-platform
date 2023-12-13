@@ -26,6 +26,7 @@ export interface CardDeckRevisionSummary {
 	lastModified: string
 	revisionName?: string
 	revisionDescription?: string
+	imageDpi?: number
 	isUsable: boolean
 	isPublic: boolean
 	isLocked: boolean
@@ -33,6 +34,8 @@ export interface CardDeckRevisionSummary {
 	cardCount: number // summary only
 	// API only
 	isCurrent?: boolean
+	// API/local only
+	isOwnedByUser?: boolean
 }
 
 // full revision data
@@ -142,6 +145,7 @@ export interface CardInfo {
 	width?: number // physical, mm
 	height?: number // physical, mm
 	sizeName?: string // e.g. "poker"
+	imageDpi?: number // e.g. from deck
 
 	// deck-specific properties
 	sortBy?: number
@@ -223,7 +227,8 @@ export interface User {
 export interface Session {
 	_id: string // mongo-style
 	name: string
-	url?: string
+	url?: string // Used to identify session ACTIVELY Linked to miro board
+	miroId?: string
 	description?: string
 	credits?: string
 	owners: string[] // User emails
@@ -233,8 +238,15 @@ export interface Session {
 	isTemplate: boolean
 	isArchived: boolean
 	sessionType: string
+	miroDuplicateUrl?: string
 	board?: BoardInfo
 	decks: SessionDeck[]
+	isConsentForStats: boolean
+	isConsentForText: boolean
+	isConsentForRecording: boolean
+	isConsentToIdentify: boolean
+	isConsentRequiresCredit: boolean
+	consentDetails?: string
 }
 
 // in SessionStage, a deck to use
@@ -255,6 +267,11 @@ export interface SessionSnapshotSummary {
 	sessionType: string
 	originallyCreated: string // ISO date
 	snapshotDescription?: string
+	// API only
+	session?: Session
+	// UI only
+	deleting?: boolean
+	isOwnedByUser?: boolean
 }
 
 export interface SessionSnapshot extends SessionSnapshotSummary {
@@ -273,6 +290,7 @@ export interface SessionSnapshot extends SessionSnapshotSummary {
 
 export interface Analysis {
 	_id: string
+	defaultForSessionId?: string
 	name: string
 	description?: string
 	credits?: string

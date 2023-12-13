@@ -8,7 +8,7 @@
 	let error = ''
 </script>
 
-<AppBar back="{base}/sessions">
+<AppBar back="{base}/sessions" subtitle="Session">
 	<div slot="subheader">Create Session</div>
 </AppBar>
 
@@ -31,9 +31,9 @@
 			<button class="listItem flex-col mt-2">
 				<div class="flex flex-row gap-2">
 					{#if session.name.includes('Session')}
-						<div>Create Copy of {session.name}</div>
+						<div class="font-semibold">Create Copy of {session.name}</div>
 					{:else}
-						<div>Create Copy of Session {session.name}</div>
+						<div class="font-semibold">Create Copy of Session {session.name}</div>
 					{/if}
 					{#if session.sessionType}
 						<div class="chip">{session.sessionType}</div>
@@ -42,10 +42,10 @@
 						<div class="chip">Public</div>
 					{/if}
 				</div>
-				<div class="text-gray-700">{session.owners[0]}</div>
 				{#if session.description}
 					<div class="text-sm font-light">{session.description}</div>
 				{/if}
+				<div class="text-gray-700">Credits: {session.credits}</div>
 			</button>
 		</form>
 	{/each}

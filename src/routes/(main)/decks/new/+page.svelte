@@ -2,36 +2,14 @@
 	import {base} from "$app/paths";
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import type {PageServerData} from './$types'
+	import {formatDate} from "$lib/ui/formatutils";
 
 	let error: string
 
 	export let data: PageServerData
-
-	function formatDate(isoDate: string): string {
-		const date = new Date(isoDate)
-		const now = new Date()
-		if (date.getFullYear() == now.getFullYear()) {
-			return date.toLocaleTimeString('en-gb', {
-				'hour': "numeric",
-				'minute': '2-digit'
-			}) + ', ' + date.toLocaleDateString('en-gb', {
-				month: 'short',
-				day: 'numeric'
-			})
-		} else {
-			return date.toLocaleTimeString('en-gb', {
-				'hour': "numeric",
-				'minute': '2-digit'
-			}) + ', ' + date.toLocaleDateString('en-gb', {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric'
-			})
-		}
-	}
 </script>
 
-<AppBar back="{base}/decks">
+<AppBar back="{base}/decks" subtitle="Deck">
 	<div slot="subheader">Create Deck</div>
 </AppBar>
 <div class="w-full flex flex-col text-sm font-medium p-6 gap-4">

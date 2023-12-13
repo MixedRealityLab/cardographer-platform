@@ -7,12 +7,14 @@ import {getDb} from '$lib/db'
 import type {Analysis, CardDeckRevision, CardInfo, Session, SessionSnapshot} from '$lib/types'
 import {RegionType} from '$lib/types'
 
-const debug = true
+const debug = false
 
-interface DesignInfo {
+export interface DesignInfo {
 	id: string;
+	title: string;
 	snapshot: SessionSnapshot;
 	boards: BoardInfo[];
+	session: Session;
 }
 
 interface CardUse {
@@ -227,8 +229,10 @@ export async function exportAnalysisAsCsv(analysis: Analysis, exportType: Analys
 				const id = board.id ? `${design.id}:${board.id}` : design.id;
 				designs.push({
 					id: id,
+					title: board.id ? `${design.title}: ${board.id}` : design.title,
 					snapshot: design.snapshot,
 					boards: [board],
+					session: design.session,
 				});
 			}
 		}
@@ -279,7 +283,7 @@ async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], include
 	const columns: string[] = [];
 	columns.push('Id');
 	for (const di in designs) {
-		columns.push(designs[di].id);
+		columns.push(designs[di].title);
 	}
 	rows.push(columns);
 	for (const cardUse of cardUses) {
@@ -303,7 +307,7 @@ async function exportCardUse(designs: DesignInfo[], cardUses: CardUse[], include
 	return await arrayToCsv(rows);
 }
 
-async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
+export async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 	const db = await getDb();
 	// get real snapshots
 	const designs: DesignInfo[] = [];
@@ -313,6 +317,10 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 		});
 		if (!snapshot) {
 			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
+			continue;
+		}
+		if (snapshot.isNotForAnalysis) {
+			if (debug) console.log(`Skip snapshot ${snapshotId} - isNotForAnalysis`);
 			continue;
 		}
 		const client = getClient(snapshot.sessionType);
@@ -325,7 +333,7 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 			_id: snapshot.sessionId
 		})
 		if (!session) {
-			if (debug) console.log(`cannot find real snapshot ${snapshotId}`);
+			if (debug) console.log(`cannot find snapshot session ${snapshot.sessionId}`);
 			continue;
 		}
 
@@ -378,8 +386,10 @@ async function readDesigns(analysis: Analysis): Promise<DesignInfo[]> {
 
 		designs.push({
 			id: snapshot._id,
+			title: `${snapshot.sessionName}: ${snapshot.snapshotDescription}`,
 			snapshot,
-			boards: boards
+			boards: boards,
+			session,
 		})
 	}
 	//console.log(`extract something from ${snapshots.length} snapshots...`);

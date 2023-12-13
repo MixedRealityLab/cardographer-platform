@@ -4,6 +4,7 @@ import {getRevision} from "$lib/decks";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
+import {error} from "@sveltejs/kit";
 import {parse} from "csv";
 
 const debug = true
@@ -17,6 +18,9 @@ export const actions: Actions = {
 		const db = await getDb();
 		// permission check
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)
+		if (!revision.isOwnedByUser) {
+			throw error(401, `Deck Write Access Not Permitted`);
+		}
 		// parse CSV file
 		const csvText = await csv.text()
 		console.log(csvText)

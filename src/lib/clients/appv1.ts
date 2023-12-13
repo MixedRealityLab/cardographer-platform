@@ -59,7 +59,12 @@ export class Appv1 extends Client {
 			isTemplate: false,
 			isArchived: false,
 			sessionType: 'appv1',
-			decks: []
+			decks: [],
+			isConsentForStats: false,
+			isConsentForText: false,
+			isConsentForRecording: false,
+			isConsentToIdentify: false,
+			isConsentRequiresCredit: false,
 		}
 	}
 

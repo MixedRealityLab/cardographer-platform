@@ -1,3 +1,4 @@
+import { MiroClient } from "$lib/clients/miro"
 import {getDb, getNewId} from "$lib/db"
 import {getCookieName, hashPassword, signUserToken, verifyAuthentication} from "$lib/security"
 import type {CardDeckRevision, Session, User} from "$lib/types"
@@ -12,12 +13,13 @@ export const load = (async ({locals, params}) => {
 	const db = await getDb();
 	const url = "https://miro.com/app/board/" + params.id
 	const session = await db.collection<Session>('Sessions').findOne({
-		$or: [{owners: locals.email}, {isPublic: true}], url: url
+		url: url, sessionType: 'miro', // worry about permissions later
 	})
 
 	if (!session) {
+		// Not actively linked to a board, and unused, or related to this board
 		const sessions = await db.collection<Session>('Sessions')
-			.find({owners: locals.email, url: null, isArchived: false})
+			.find({owners: locals.email, url: null, $or:[{sessionType: ''},{sessionType:'miro',miroId:params.id}], isArchived: false})
 			.sort({"lastModified": -1, "name": 1, "owners[0]": 1, "created": 1, "_id": 1})
 			.project({"name": 1, "description": 1, "credits": 1, isPublic: 1, isTemplate: 1})
 			.toArray()
@@ -31,9 +33,11 @@ export const load = (async ({locals, params}) => {
 		session.decks = await db.collection<CardDeckRevision>('CardDeckRevisions')
 			.find({"_id": {$in: deckIds}})
 			.toArray()
+		session.decks.forEach((deck) => deck.cards.forEach((card) => { card.imageDpi = card.imageDpi || deck.imageDpi }))
 		return {
 			authenticated: true,
-			session: session
+			session: session,
+			readonly: !session.owners.includes(locals.email)
 		}
 	}
 }) satisfies PageServerLoad;
@@ -73,27 +77,37 @@ export const actions: Actions = {
 			const now = new Date().toISOString()
 			const insertResult = await db.collection<Session>('Sessions').insertOne({
 				_id: getNewId(),
-				name: 'Miro Session',
+				name: 'Miro board '+params.id,
 				description: "Session for Miro board at " + url,
 				owners: [locals.email],
 				url: url,
+				miroDuplicateUrl: null,
+				miroId: params.id,
 				created: now,
 				isPublic: false,
 				lastModified: now,
 				isTemplate: false,
 				isArchived: false,
 				sessionType: 'miro',
-				decks: []
+				decks: [],
+				isConsentForStats: false,
+				isConsentForText: false,
+				isConsentForRecording: false,
+				isConsentToIdentify: false,
+				isConsentRequiresCredit: false,
 			})
 			if (!insertResult.acknowledged) {
 				return fail(500)
 			}
 		} else {
 			const updateResult = await db.collection<Session>('Sessions').updateOne({
-				$or: [{owners: locals.email}, {isPublic: true}], _id: id
+				owners: locals.email, _id: id
 			}, {
 				$set: {
-					url: url
+					url: url,
+					miroDuplicateUrl: null,
+					sessionType: 'miro',
+					miroId: params.id,
 				}
 			})
 			if (!updateResult.modifiedCount) {
@@ -103,7 +117,7 @@ export const actions: Actions = {
 
 		return {success: true}
 	},
-	unselect: async ({locals, request}) => {
+	unselect: async ({locals, params, request}) => {
 		verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
@@ -112,10 +126,13 @@ export const actions: Actions = {
 		}
 		const db = await getDb()
 		const updateResult = await db.collection<Session>('Sessions').updateOne({
-			$or: [{owners: locals.email}, {isPublic: true}], _id: id
+			owners: locals.email, _id: id
 		}, {
 			$set: {
-				url: null
+				url: null,
+				// backward compatibility - may not have been set on old linked sessions
+				sessionType: 'miro',
+				miroId: params.id,
 			}
 		})
 		if (!updateResult.modifiedCount) {

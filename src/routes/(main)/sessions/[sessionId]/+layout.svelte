@@ -9,21 +9,34 @@
 	const {sessionId} = $page.params
 </script>
 
-<AppBar back="{base}/sessions">
+<AppBar back="{base}/sessions" subtitle="Session">
 	<Tab url="{base}/sessions/{sessionId}">
 		Details
 	</Tab>
 	<Tab url="{base}/sessions/{sessionId}/decks">
 		Decks
 	</Tab>
-	<Tab url="{base}/sessions/{sessionId}/board">
+	<!-- <Tab url="{base}/sessions/{sessionId}/board">
 		Board
-	</Tab>
+	</Tab> -->
+	{#if data && data.decks && data.decks.length !== 0}
+		<Tab url="{base}/sessions/{sessionId}/cards">
+			WebApp
+		</Tab>
+	{/if}
 	{#if data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
 		<Tab url="{base}/sessions/{sessionId}/tabletop">
 			Tabletop
 		</Tab>
 	{/if}
+	{#if data && data.sessionType == 'miro' && data.url}
+		<Tab url="{data.url}">
+			Miro
+		</Tab>
+	{/if}
+	<Tab url="{base}/sessions/{sessionId}/data">
+		Data
+	</Tab>
 </AppBar>
 
 <slot/>

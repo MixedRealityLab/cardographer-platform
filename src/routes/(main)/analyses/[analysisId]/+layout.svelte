@@ -8,12 +8,15 @@
 </script>
 
 <div class="flex flex-col min-h-screen">
-<AppBar back="{base}/analyses">
+<AppBar back="{base}/analyses" subtitle="Analysis">
 	<Tab url="{base}/analyses/{analysisId}">
 		Details
 	</Tab>
 	<Tab url="{base}/analyses/{analysisId}/sessions">
 		Sessions
+	</Tab>
+	<Tab url="{base}/analyses/{analysisId}/summary">
+		Summary
 	</Tab>
 	<Tab url="{base}/analyses/{analysisId}/export">
 		Export

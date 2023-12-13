@@ -9,16 +9,21 @@
 	let {deckId, revisionId} = $page.params
 </script>
 
-<AppBar back="{base}/decks">
+<AppBar back="{base}/decks" subtitle="Deck">
 	<Tab url="{base}/decks/{deckId}/{revisionId}">
 		Details
 	</Tab>
 	<Tab url="{base}/decks/{deckId}/{revisionId}/cards">
 		Cards
 	</Tab>
-	{#if data.cardCount > 0}
+	{#if data.isOwnedByUser && data.cardCount > 0}
 		<Tab url="{base}/decks/{deckId}/{revisionId}/build" checkPath={true}>
 			Build
+		</Tab>
+	{/if}
+	{#if data.cardCount > 0}
+		<Tab url="{base}/sessions/deck-{deckId}-{revisionId}/cards">
+			WebApp
 		</Tab>
 	{/if}
 </AppBar>

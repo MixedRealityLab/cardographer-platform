@@ -11,7 +11,8 @@
 		args: null
 	}
 
-	function callFunction() {
+	function callFunction(e) {
+		e.preventDefault()
 		showDialog = false
 		functionToCall['func'](...functionToCall['args'])
 	}
@@ -25,7 +26,7 @@
 <slot confirm={confirm}></slot>
 
 {#if showDialog}
-	<div class="overlay" on:click="{() => showDialog = false }"
+	<div class="overlay" on:click="{(e) => { showDialog = false; e.preventDefault() } }"
 	     on:keypress={(e) => { if(e.key === "Escape") { showDialog = false}}}
 	     in:fade="{{ duration: 200 }}"
 	     out:fade="{{ delay: 200, duration: 200 }}">
@@ -48,7 +49,7 @@
 			</slot>
 		</div>
 		<div class="actions">
-			<button class="button mx-4" on:click="{() => showDialog = false }">
+			<button class="button mx-4" on:click="{(e) => { showDialog = false; e.preventDefault() } }">
 				{cancelTitle}
 			</button>
 			<button class="button button-delete" on:click="{callFunction}">
