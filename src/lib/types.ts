@@ -26,6 +26,7 @@ export interface CardDeckRevisionSummary {
 	lastModified: string
 	revisionName?: string
 	revisionDescription?: string
+	imageDpi?: number
 	isUsable: boolean
 	isPublic: boolean
 	isLocked: boolean
@@ -144,6 +145,7 @@ export interface CardInfo {
 	width?: number // physical, mm
 	height?: number // physical, mm
 	sizeName?: string // e.g. "poker"
+	imageDpi?: number // e.g. from deck
 
 	// deck-specific properties
 	sortBy?: number

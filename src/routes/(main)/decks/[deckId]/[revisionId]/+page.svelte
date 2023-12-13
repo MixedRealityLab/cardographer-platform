@@ -42,6 +42,10 @@
 		<span>Slug (for filenames and URLs)</span>
 		<input name="slug" bind:value={data.slug} class="block w-full" type="text" disabled={!data.isOwnedByUser}/>
 	</label>
+	<label>
+		<span>Image DPI (Dots Per Inch)</span>
+		<input name="imageDpi" bind:value={data.imageDpi} class="block w-full" type="number" disabled={!data.isOwnedByUser}/>
+	</label>
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
 			<input name="isUsable" bind:checked={data.isUsable} class="form-checkbox" type="checkbox" disabled={!data.isOwnedByUser}>

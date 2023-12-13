@@ -33,6 +33,7 @@ export const load = (async ({locals, params}) => {
 		session.decks = await db.collection<CardDeckRevision>('CardDeckRevisions')
 			.find({"_id": {$in: deckIds}})
 			.toArray()
+		session.decks.forEach((deck) => deck.cards.forEach((card) => { card.imageDpi = card.imageDpi || deck.imageDpi }))
 		return {
 			authenticated: true,
 			session: session,
