@@ -1,6 +1,7 @@
 import {base} from "$app/paths";
 import {getDb, getNewId} from "$lib/db"
 import {verifyAuthentication} from "$lib/security"
+import { checkSessionCredits } from "$lib/sessions";
 import type {Session} from "$lib/types";
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit";
@@ -23,6 +24,7 @@ export const load: PageServerLoad = async function ({locals}) {
 		})
 		.sort({"name": 1, "owners[0]": 1, "created": 1})
 		.toArray()
+	await checkSessionCredits(sessions, db)
 	return {
 		sessions: sessions
 	}
@@ -54,7 +56,12 @@ export const actions: Actions = {
 				lastModified: now,
 				name: "Blank Session",
 				owners: [locals.email],
-				sessionType: ""
+				sessionType: "",
+				isConsentForStats: false,
+				isConsentForText: false,
+				isConsentForRecording: false,
+				isConsentToIdentify: false,
+				isConsentRequiresCredit: false,
 			}
 		} else {
 			session = await db.collection<Session>('Sessions').findOne({
@@ -68,8 +75,18 @@ export const actions: Actions = {
 			session.name = `Copy of ${session.name}`
 			session.created = session.lastModified = now
 			session.owners = [locals.email]
+			// used by miro
+			session.url = null
+			session.miroId = null
+			// not completely sure about this :-) but better than clobbering uploads, etc.
+			session.sessionType = ""
 			session.isPublic = false
 			session.isTemplate = false
+			session.isConsentForStats = false
+			session.isConsentForText = false
+			session.isConsentForRecording = false
+			session.isConsentToIdentify = false
+			session.isConsentRequiresCredit = false
 		}
 
 		// add

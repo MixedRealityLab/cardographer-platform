@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths";
+	import {formatDate} from "$lib/ui/formatutils";
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import type {PageServerData} from './$types'
@@ -16,20 +17,31 @@
 	{#each data.sessions as session}
 		{#if showArchived === session.isArchived}
 			<a class="listItem flex-col" href="{base}/sessions/{session._id}">
-				<div class="flex flex-row gap-1">
-					<div class="font-semibold">{session.name}</div>
-					{#if session.isPublic}
-						<div class="chip">Public</div>
-					{/if}
-					{#if session.isTemplate}
-						<div class="chip">Template</div>
-					{/if}
-					{#if session.isArchived}
-						<div class="chip">Archived</div>
-					{/if}
+				<div class="flex">
+					<div class="flex-1 flex items-center gap-1">
+						<div class="font-semibold">{session.name}</div>
+						{#if session.isConsentForStats}
+							<div class="chip">Stats</div>
+						{/if}
+						{#if session.isConsentForText}
+							<div class="chip">Text</div>
+						{/if}
+						{#if session.isPublic}
+							<div class="chip">Public</div>
+						{/if}
+						{#if session.isTemplate}
+							<div class="chip">Template</div>
+						{/if}
+						{#if session.isArchived}
+							<div class="chip">Archived</div>
+						{/if}
+					</div>
+					<div class="text-xs text-gray-600">{formatDate(session.created)}</div>
 				</div>
 				{#if session.description}
-					<div class="text-sm font-light">{session.description}</div>
+					<div class="flex">
+						<div class="text-sm font-light">{session.description}</div>
+					</div>
 				{/if}
 			</a>
 		{/if}

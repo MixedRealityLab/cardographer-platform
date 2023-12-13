@@ -18,7 +18,7 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 	const db = await getDb();
 	const url = "https://miro.com/app/board/" + params.id
 	const session = await db.collection<Session>('Sessions').findOne({
-		$or: [{owners: locals.email}, {isPublic: true}], url: url
+		owners: locals.email, url: url
 	})
 	if (!session) {
 		throw error(404, "Session Not Found")
@@ -52,8 +52,9 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		$set: {
 			// project changes
 			lastModified: session.lastModified,
-			sessionType: session.sessionType,
-			url: session.url,
+			// backward compatibility - may not have been set on old linked sessions
+			sessionType: 'miro',
+			miroId: params.id,
 		}
 	});
 	if (!upd) {

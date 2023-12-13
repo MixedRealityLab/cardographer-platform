@@ -43,10 +43,17 @@ export const actions: Actions = {
 					name: data.get('name') as string || session.name,
 					description: data.get('description') as string || '',
 					credits: data.get('credits') as string || '',
+					miroDuplicateUrl: data.get('miroDuplicateUrl') as string || '',
 					owners: owners,
 					isPublic: data.get('isPublic') == 'on',
 					isTemplate: data.get('isTemplate') == 'on',
 					isArchived: data.get('isArchived') == 'on',
+					isConsentForStats: data.get('isConsentForStats') == 'on',
+					isConsentForText: data.get('isConsentForText') == 'on',
+					isConsentForRecording: data.get('isConsentForRecording') == 'on',
+					isConsentToIdentify: data.get('isConsentToIdentify') == 'on',
+					isConsentRequiresCredit: data.get('isConsentRequiresCredit') == 'on',
+					consentDetails: data.get('consentDetails') as string || '',
 					lastModified: new Date().toISOString()
 				}
 			})
@@ -61,7 +68,8 @@ export const actions: Actions = {
 					sessionName: data.get('name') as string || session.name,
 					sessionDescription: data.get('description') as string || '',
 					sessionCredits: data.get('credits') as string || '',
-					owners: owners
+					owners: owners,
+					isPublic: data.get('isPublic') == 'on',
 				}
 			})
 		return {success: true}

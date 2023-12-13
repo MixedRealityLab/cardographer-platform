@@ -2,7 +2,7 @@
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths"
-	import type {CardInfo, Session} from "$lib/types"
+	import type {CardDeckRevision, CardInfo, Session} from "$lib/types"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
 
@@ -10,11 +10,12 @@
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
-	export let data: { authenticated: boolean; session: Session; sessions: Session[] }
+	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean }
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
 	let error: string
 	let success: boolean = false
+	let description: string = ''
 
 	onMount(async () => {
 		miro.board.ui.on('selection:update', updateWidgets)
@@ -52,6 +53,7 @@
 
 	async function download() {
 		const board: any = await miro.board.getInfo()
+		board.description = description
 		board.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
 		board['_id'] = "download:" + board.id + ":" + Date.now()
 		const url = URL.createObjectURL(new Blob(
@@ -67,16 +69,50 @@
 		}, 150)
 	}
 
-	async function addCard(card: CardInfo, event) {
+	async function addCard(card: CardInfo, event, offset?:number) {
 		event.target.disabled = true
+		await addCardInternal(card, offset)
+		event.target.disabled = false
+	}
+	async function addCardInternal(card: CardInfo, offset?:number) {
 		const url = card['frontUrl']
 		if (url) {
-			await miro.board.createImage({
-				url: new URL(url.startsWith('/') ? base + url : url, document.baseURI).href
-			})
+			let viewport = await miro.board.viewport.get()
+			try {
+				let image = await miro.board.createImage({
+					url: new URL(url.startsWith('/') ? base + url : url, document.baseURI).href,
+					// allow default = pixel width and fix next...
+					x: viewport.x + viewport.width/2 + (offset||0)*16,
+					y: viewport.y + viewport.height/2 + (offset||0)*16,
+				})
+				if (image.width) {
+					const dpi = card.imageDpi || 300
+					image.width = image.width * 96 / dpi
+					await image.sync()
+				}
+			} catch (e) {
+				// Compose the message.
+				const errorNotification = {
+					message: `Sorry, that card couldn't be added (${url})`,
+					type: 'error',
+				};
+
+				// Display the notification on the board UI.
+				await miro.board.notifications.show(errorNotification);
+			}
+		}
+	}
+
+	async function addCardCategory(deck: CardDeckRevision, category: string, event) {
+		event.target.disabled = true
+		const cards = deck.cards.filter((card) => (card.category||'')==category)
+		for (let ix=0; ix<cards.length; ix++) {
+			console.log(`add ${ix}, ${cards[ix].id}`)
+			await addCardInternal(cards[ix], ix)
 		}
 		event.target.disabled = false
 	}
+
 
 	function zoomTo(item) {
 		miro.board.viewport.zoomTo([item])
@@ -84,7 +120,9 @@
 
 	async function saveSession() {
 		const info: any = await miro.board.getInfo()
+		info.description = description
 		info.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
+		info.widgets.forEach((w) => {if (w.modifiedAt && (w.modifiedAt as string).localeCompare(info.updatedAt)>0) { info.updatedAt = w.modifiedAt }})
 		const response = await fetch(`${base}/miro/${info.id}/snapshot`, {
 			method: 'POST',
 			body: JSON.stringify(info)
@@ -114,9 +152,10 @@
 					Session
 				{/if}
 				{data.session.name}
+				{#if !data.readonly}
 				<form method="post" action="?/unselect" use:enhance class="inline">
 					<input type="hidden" name="id" value={data.session._id}/>
-					<button class="ml-1" title="Change Session">
+					<button class="ml-1" title="Change Session" disabled={!!data.readonly}>
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50"
 						     viewBox="0 0 20 20"
 						     fill="currentColor">
@@ -126,6 +165,7 @@
 						</svg>
 					</button>
 				</form>
+				{/if}
 			{:else}
 				Associate Board with Session
 			{/if}
@@ -138,7 +178,7 @@
 				      fill-rule="evenodd"/>
 			</svg>
 		</button>
-		{#if data.session}
+		{#if data.session && !data.readonly}
 			<a class="iconButton" href="{base}/sessions/{data.session._id}" title="Open Session" target="_blank"
 			   rel="noreferrer">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -205,8 +245,16 @@
 
 					{#each data.session.decks as deck}
 						{#if deck.cards}
-							<div class="text-lg pb-2">{deck.deckName}</div>
-							{#each deck.cards as card}
+							{#each deck.cards as card, cix}
+								{#if deck.cards.map((c)=> c.category || '').indexOf(card.category||'') == cix}
+									<div class="flex pb-2">
+										<div class="flex-1 text-lg">{deck.deckName}: {card.category||''}</div>
+										<button on:click={(event) => {addCardCategory(deck, card.category||'', event)}}
+												class="button button-slim" style="align-self: end">
+											Add All
+										</button>
+									</div>
+								{/if}
 								{#if card.frontUrl}
 									<ExpandableSection class="py-1">
 										<div slot="title">
@@ -265,8 +313,9 @@
 				Uploaded
 			</div>
 		{/if}
-		<div class="flex gap-4 justify-center">
-			<button class="button m-2" on:click={saveSession}>
+		<div class="flex gap-1 m-1 justify-center">
+			<input class="flex-1 p-1" type="text" name="description" placeholder="Snapshot desription" bind:value={description} disabled={!!data.readonly}/>
+			<button class="button m-1" on:click={saveSession} disabled={!!data.readonly}>
 				Save Session
 			</button>
 		</div>

@@ -1,6 +1,7 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Analysis, SessionSnapshot} from "$lib/types";
+import { checkSessionSnapshotCredits } from "$lib/sessions";
+import type {Analysis, SessionSnapshot, Session} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 
@@ -8,12 +9,12 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 	verifyAuthentication(locals)
 	const analysis = await parent()
 	const db = await getDb()
-	const snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
+	let snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
 		.find({
-			$or: [{owners: locals.email}, {isPublic: true}]
+			$or: [{owners: locals.email}, {isPublic: true}], isNotForAnalysis: false,
 		}, {
 			projection: {
-				_id: true, sessionId: true, sessionName: true,
+				_id: true, sessionId: true, sessionName: true, owners: true,
 				sessionDescription: true, sessionCredits: true,
 				sessionType: true, created: true,
 				snapshotDescription: true
@@ -21,12 +22,20 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 		})
 		.sort({sessionId: 1, created: 1})
 		.toArray()
+	// link to sessions (for consent information)
+	const sessions = await db.collection<Session>('Sessions')
+			.find({_id: {$in: snapshots.map((snapshot) => snapshot.sessionId)}})
+			.toArray();
+	snapshots.forEach((snapshot) => snapshot.session = sessions.find((session) => session._id == snapshot.sessionId))
+	// skip if no session (should have been deleted but wasn't?!)
+	snapshots = snapshots.filter((s) => !!s.session)
 	if (snapshots && analysis && analysis.snapshotIds) {
 		snapshots.forEach((snapshot) => {
 			snapshot.selected = analysis.snapshotIds.some((id) => id == snapshot._id)
 		})
 	}
-
+	snapshots.forEach((snapshot) => snapshot.isOwnedByUser = snapshot.owners.includes(locals.email))
+	await checkSessionSnapshotCredits(snapshots, db)
 	return {
 		analysis: analysis,
 		snapshots: snapshots

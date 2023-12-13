@@ -18,10 +18,10 @@
 
 <div class="subheader">
 	<div class="flex-1">
-		{#if session.name.toLowerCase().indexOf('session') === -1}
+		{#if (session.name ?? 'null').toLowerCase().indexOf('session') === -1}
 			Session
 		{/if}
-		{session.name}
+		{session.name ?? 'null'}
 	</div>
 	<ConfirmDialog
 			title="Delete {session.name}?"
