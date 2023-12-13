@@ -14,7 +14,7 @@
 		.filter(card => !card.id.startsWith('back:'))
 		.filter(card => selectedCategories.length === 0 || selectedCategories.includes(card.category))
 		.filter(card => search == null
-			|| card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+			|| card.name && card.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
 			|| card.content && card.content.toLowerCase().indexOf(search.toLowerCase()) > 0
 			|| card.description && card.description.toLowerCase().indexOf(search.toLowerCase()) > 0
 		)

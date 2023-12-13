@@ -61,7 +61,7 @@
 		{/each}
 		<form class="flex-1" on:submit|preventDefault={() => {}}>
 			<input bind:value={userFilter}
-			       class="bg-transparent w-full focus-within:border-0 focus-within:outline-none focus-within:bg-transparent"
+			       class="bg-transparent w-full border-0 focus:outline-none focus:shadow-none focus:ring-0 outline-none focus-within:bg-transparent"
 			       id="userFilter" on:blur={filtered=[]} on:focus={filter} on:input={filter}/>
 		</form>
 	</div>
