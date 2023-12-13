@@ -53,6 +53,7 @@
 
 	async function download() {
 		const board: any = await miro.board.getInfo()
+		board.description = description
 		board.widgets = (await miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
 		board['_id'] = "download:" + board.id + ":" + Date.now()
 		const url = URL.createObjectURL(new Blob(
