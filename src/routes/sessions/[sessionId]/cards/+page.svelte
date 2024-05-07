@@ -1,14 +1,16 @@
 <!--suppress JSUnusedAssignment -->
 <script lang="ts">
 	import type {Session} from "$lib/types";
-	import {Menu, MenuButton, MenuItem, MenuItems,} from "@rgossiaux/svelte-headlessui";
+	import {createMenu} from "svelte-headlessui";
 	import CardList from "./CardList.svelte";
+	import Transition from 'svelte-transition'
 
 	export let data: Session
 
 	let cardList: CardList
 	let search = ""
 	let selectedCategories: string[] = []
+	const menu = createMenu({label: 'Categories'})
 
 	$: cards = data.decks.flatMap(deck => deck['cards'])
 		.filter(card => !card.id.startsWith('back:'))
@@ -28,12 +30,22 @@
 		cardList.scrollTo(card, true, true)
 	}
 
+	function onSelect(e: Event) {
+		const category = (e as CustomEvent).detail.selected
+		if (category == 'All') {
+			updateSelectedCategories([])
+		} else {
+			toggleCategory(category)
+		}
+	}
+
 	function updateSelectedCategories(categories: string[]) {
 		cardList.updateCurrentCard()
 		selectedCategories = categories
 	}
 
 	function toggleCategory(category: string) {
+		console.log(category)
 		if (selectedCategories.includes(category)) {
 			updateSelectedCategories(selectedCategories.filter((cat) => category !== cat))
 		} else {
@@ -41,6 +53,10 @@
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>Cardographer: {data.name}</title>
+</svelte:head>
 
 <div class="flex flex-col md:flex-col-reverse h-screen w-screen" style="height: 100svh">
 	{#if data.decks}
@@ -55,41 +71,47 @@
 				</svg>
 			</button>
 			{#if categories.length > 1}
-				<Menu>
-					<MenuButton class="button button-tool" title="Open Category Filter Menu">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="h-5 w-5">
-							<path d="M400 816v-60h160v60H400ZM240 606v-60h480v60H240ZM120 396v-60h720v60H120Z"/>
-						</svg>
-					</MenuButton>
-					<MenuItems
-							class="absolute bottom-14 md:bottom-auto md:top-14 right-3 bg-white rounded drop-shadow p-1 flex flex-col items-stretch"
-							style="max-width: 70svw">
-						<MenuItem let:active on:click={() => updateSelectedCategories([])}>
-							<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
-							     class:bg-blue-300={selectedCategories.length === 0}
-							     class:bg-blue-200={active}>
+				<button use:menu.button on:select={onSelect} class="button button-tool"
+				        title="Open Category Filter Menu">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="h-5 w-5">
+						<path d="M400 816v-60h160v60H400ZM240 606v-60h480v60H240ZM120 396v-60h720v60H120Z"/>
+					</svg>
+				</button>
+				<Transition
+						show={$menu.expanded}
+						enter="transition ease-out duration-100"
+						enterFrom="transform opacity-0 scale-95"
+						enterTo="transform opacity-100 scale-100"
+						leave="transition ease-in duration-75"
+						leaveFrom="transform opacity-100 scale-100"
+						leaveTo="transform opacity-0 scale-95"
+				>
+					<div use:menu.items
+					     class="flex flex-col space-y-0.5 absolute p-1 right-3.5 origin-top-right rounded-md bg-white shadow-lg focus:outline-none">
+						<button use:menu.item
+						        class="flex button !self-stretch {
+							            $menu.active === 'All' ? '!bg-blue-200 !border-blue-500' : selectedCategories.length === 0 ? '!bg-blue-100 !border-blue-100' : '!bg-white !border-white'
+							        }">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
+							     class:opacity-0={selectedCategories.length !== 0}>
+								<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
+							</svg>
+							<span class="flex-1">All</span>
+						</button>
+						{#each categories as category}
+							<button use:menu.item
+							        class="flex button !self-stretch {
+							            $menu.active === category ? '!bg-blue-200 !border-blue-500' : selectedCategories.includes(category) ? '!bg-blue-100 !border-blue-100' : '!bg-white !border-white'
+							        }">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
-								     class:opacity-0={selectedCategories.length !== 0}>
+								     class:opacity-0={!selectedCategories.includes(category)}>
 									<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
 								</svg>
-								<span class="flex-1">All</span>
-							</div>
-						</MenuItem>
-						{#each categories as category}
-							<MenuItem let:active on:click={() => toggleCategory(category)}>
-								<div class="flex items-center transition-colors duration-300 rounded-2xl my-0.5 py-0.5 px-3 cursor-pointer hover:bg-blue-200"
-								     class:bg-blue-300={selectedCategories.includes(category)}
-								     class:bg-blue-200={active}>
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="w-5 h-5 mr-2"
-									     class:opacity-0={!selectedCategories.includes(category)}>
-										<path d="M378 810 154 586l43-43 181 181 384-384 43 43-427 427Z"/>
-									</svg>
-									<span class="flex-1">{category}</span>
-								</div>
-							</MenuItem>
+								<span class="flex-1">{category}</span>
+							</button>
 						{/each}
-					</MenuItems>
-				</Menu>
+					</div>
+				</Transition>
 			{/if}
 		</div>
 	{/if}
