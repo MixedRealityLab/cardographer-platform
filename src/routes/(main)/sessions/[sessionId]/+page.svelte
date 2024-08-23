@@ -10,80 +10,96 @@
 	let error = ''
 </script>
 
-<SessionHeader session={data.session} />
+<SessionHeader session={data.session}/>
 
 <form class="p-6 flex flex-col text-sm gap-4" method="post" use:enhance>
 	<label>
-		<span class="font-light">Session name</span>
+		<span>Session name</span>
 		<input name="name" bind:value="{data.session.name}" class="mt-1 block w-full" required type="text"/>
 	</label>
 	<label>
-		<span class="font-light">Description</span>
-		<textarea name="description" bind:value="{data.session.description}" class="mt-1 block w-full" rows="3"
-		          type="text"></textarea>
+		<span>Description</span>
+		<textarea name="description" bind:value="{data.session.description}" class="mt-1 block w-full"
+		          rows="3"></textarea>
 	</label>
-	<div class="flex justify-left gap-4">
-		<label class="flex gap-4 items-center">
-			<span class="font-light">Created</span>
-			<div>{new Date(data.session.created).toLocaleString('en-gb', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>
-		</label>
+	<label>
+		<span>Credits</span>
+		<input name="credits" bind:value="{data.session.credits}" class="mt-1 block w-full" type="text"/>
+	</label>
+	<div>
+		<span class="text-sm text-gray-800">Created</span>
+		<div class="px-3">{new Date(data.session.created).toLocaleString('en-gb', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: '2-digit'
+		})}</div>
 	</div>
-	<div class="flex justify-left gap-4">
-		<label class="flex gap-4 items-center">
-			<span class="font-light">Session Type</span>
-			<div>{data.session.sessionType || 'Not defined (yet)'}</div>
-		</label>
+	<div>
+		<span class="text-sm text-gray-800">Session Type</span>
+		<div class="px-3">{data.session.sessionType || 'Not Defined'}</div>
 	</div>
-	{#if data.session.sessionType == 'miro' && data.session.url && data.session.isTemplate}
+	{#if data.session.sessionType === 'miro' && data.session.url && data.session.isTemplate}
 		<label>
-			<span class="font-light">Template Miro board link (to duplicate)</span>
-			<input name="miroDuplicateUrl" bind:value="{data.session.miroDuplicateUrl}" class="mt-1 block w-full" type="text"/>
-			<div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 font-light" role="alert">
-				<span class="font-semibold">Note:</span> Ensure that this Miro board "Share" link allows "Anyone with the link": "Can View", and "Sharing Settings", "Permissions", "Who can copy board content" is "Anyone with the board access" 
+			<span>Template Miro board link (to duplicate)</span>
+			<input name="miroDuplicateUrl" bind:value="{data.session.miroDuplicateUrl}" class="mt-1 block w-full"
+			       type="text"/>
+			<div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+			     role="alert">
+				<span class="font-semibold">Note:</span> Ensure that this Miro board "Share" link allows "Anyone with
+				the link": "Can View", and "Sharing Settings", "Permissions", "Who can copy board content" is "Anyone
+				with the board access"
 			</div>
 		</label>
 	{/if}
-	{#if data.session.sessionType=="" && data.session.miroDuplicateUrl}
+	{#if data.session.sessionType === "" && data.session.miroDuplicateUrl}
 		<div class="flex justify-left gap-4">
 			<a class="button" href="{data.session.miroDuplicateUrl}">
 				Open Miro Board to Duplicate
 			</a>
 		</div>
-		<div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 font-light" role="alert">
-			<span class="font-semibold">Start here:</span> Click the link to open the template board in Miro, log in, duplicate the board into your own team and use the Cardographer Plugin to link it back to this session.
+		<div class="p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+		     role="alert">
+			<span class="font-semibold">Start here:</span> Click the link to open the template board in Miro, log in,
+			duplicate the board into your own team and use the Cardographer Plugin to link it back to this session.
 		</div>
 	{/if}
-	<label>
-		<span class="font-light">Credits</span>
-		<input name="credits" bind:value="{data.session.credits}" class="mt-1 block w-full" type="text"/>
-	</label>
-	<div class="flex justify-left gap-4">
-		<span class="flex font-light">Consent received for: </span>
-		<label class="flex items-center">
-			<input name="isConsentForStats" bind:checked="{data.session.isConsentForStats}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Stats</span>
-		</label>
-		<label class="flex items-center">
-			<input name="isConsentForText" bind:checked="{data.session.isConsentForText}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Text</span>
-		</label>
-		<label class="flex items-center">
-			<input name="isConsentForRecording" bind:checked="{data.session.isConsentForRecording}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Recording</span>
-		</label>
-		<label class="flex items-center">
-			<input name="isConsentToIdentify" bind:checked="{data.session.isConsentToIdentify}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">Identity</span>
-		</label>
-		<label class="flex items-center">
-			<input name="isConsentRequiresCredit" bind:checked="{data.session.isConsentRequiresCredit}" class="form-checkbox" type="checkbox">
-			<span class="ml-2">NB: Requires Attribution</span>
-		</label>
+	<div>
+		<span class="flex">Consent Received for</span>
+		<div class="flex justify-left gap-4 px-3">
+			<label class="flex items-center">
+				<input name="isConsentForStats" bind:checked="{data.session.isConsentForStats}" class="form-checkbox"
+				       type="checkbox">
+				<span class="ml-2">Stats</span>
+			</label>
+			<label class="flex items-center">
+				<input name="isConsentForText" bind:checked="{data.session.isConsentForText}" class="form-checkbox"
+				       type="checkbox">
+				<span class="ml-2">Text</span>
+			</label>
+			<label class="flex items-center">
+				<input name="isConsentForRecording" bind:checked="{data.session.isConsentForRecording}"
+				       class="form-checkbox" type="checkbox">
+				<span class="ml-2">Recording</span>
+			</label>
+			<label class="flex items-center">
+				<input name="isConsentToIdentify" bind:checked="{data.session.isConsentToIdentify}"
+				       class="form-checkbox"
+				       type="checkbox">
+				<span class="ml-2">Identity</span>
+			</label>
+			<label class="flex items-center">
+				<input name="isConsentRequiresCredit" bind:checked="{data.session.isConsentRequiresCredit}"
+				       class="form-checkbox" type="checkbox">
+				<span class="ml-2">NB: Requires Attribution</span>
+			</label>
+		</div>
 	</div>
 	<label>
-		<span class="font-light">Consent details</span>
-		<textarea name="consentDetails" bind:value="{data.session.consentDetails}" class="mt-1 block w-full" rows="3"
-		          type="text"></textarea>
+		<span>Consent details</span>
+		<textarea name="consentDetails" bind:value="{data.session.consentDetails}" class="mt-1 block w-full"
+		          rows="3"></textarea>
 	</label>
 	<UserSelect bind:owners={data.session.owners} name="owners" users={data.users}/>
 

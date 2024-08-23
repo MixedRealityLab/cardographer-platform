@@ -33,7 +33,7 @@
 }
 
 label > span {
-    @apply block text-sm text-gray-900 transition-colors duration-500;
+    @apply block text-sm text-gray-800 transition-colors duration-500;
 }
 
 label:focus-within > span {
