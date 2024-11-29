@@ -3,8 +3,6 @@
 	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte";
 
-	let email: string
-
 	let error = ''
 	let working = false
 	let reset = false
@@ -13,12 +11,19 @@
 <AppBar back="{base}/"/>
 
 <div class="p-12 max-w-md mx-auto">
-	<form method="post" use:enhance>
+	<form method="post"  use:enhance={() => {
+		working = true
+		return async ({ result, update }) => {
+			working = false
+			reset = true
+			update()
+	    };
+	}}>
 		<div class="flex flex-col gap-8">
 			<label>
 				<span>Email</span>
 				<!--suppress HtmlWrongAttributeValue -->
-				<input bind:value="{email}" disabled={working || reset} class="w-full" required type="email"/>
+				<input name="email" disabled={working || reset} class="w-full" required type="email"/>
 			</label>
 
 			{#if error}
