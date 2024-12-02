@@ -25,6 +25,7 @@ Open [http://localhost:3000](http://localhost:3000).
 Registration code is 1234, but can be changed in [docker-compose.yaml](docker-compose.yaml)
 
 Note, the server needs to be able to send (forward) email for password recovery.
+See SMTP_... config in `server.env`
 
 ### Testing with Miro locally
 

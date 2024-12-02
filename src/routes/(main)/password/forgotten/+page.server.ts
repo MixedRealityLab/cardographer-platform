@@ -11,16 +11,21 @@ const emailConfigured = 'SMTP_host' in process.env
 const transport = createTransport({
 	host: process.env["SMTP_host"],
 	port: parseInt(process.env["SMTP_port"]),
+	secure: !!process.env["SMTP_secure"],
 	auth: {
 		user: process.env["SMTP_user"],
 		pass: process.env["SMTP_pass"]
 	}
 });
+if (emailConfigured) {
+	console.log(`Email config: ${process.env["SMTP_host"]}:${process.env["SMTP_port"]} ${!!process.env["SMTP_secure"] ? '(secure)' : ''} user ${process.env["SMTP_user"]}`)
+}
 
 export const actions: Actions = {
 	default: async ({request, url}) => {
 		const data = await request.formData();
 		let email = data.get('email') as string;
+		console.log(`reset password for ${email}`)
 		if (!email) {
 			return fail(400)
 		}
