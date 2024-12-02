@@ -29,7 +29,7 @@ export const actions: Actions = {
 				email: email
 			}, {
 				$set: {
-					name: data.get('name') as string || user.name,
+					name: data.get('userName') as string || user.name,
 				}
 			})
 		} else {
@@ -39,7 +39,7 @@ export const actions: Actions = {
 			}, {
 				// note, cannot disable or un-admin yourself, just in case :-)
 				$set: {
-					name: data.get('name') as string || user.name,
+					name: data.get('userName') as string || user.name,
 					disabled: email!=locals.email && data.get('isDisabled') == 'on',
 					isDeckBuilder: data.get('isDeckBuilder') == 'on',
 					isPublisher: data.get('isPublisher') == 'on',

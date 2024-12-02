@@ -226,13 +226,15 @@ export interface User {
 	resetTime?: Date
 
 	isNew?: boolean
-	isVerfied?: boolean
+	isVerified?: boolean
 	isAdmin?: boolean
 	isGuest?: boolean
 	isDeckBuilder?: boolean
 	isPublisher?: boolean
 	quota?: Quota
 	usage?: Usage
+	// API only
+	localIsAdmin?: boolean
 }
 export interface Quota {
 	decks?: number

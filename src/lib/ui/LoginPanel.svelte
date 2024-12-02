@@ -4,6 +4,7 @@
 	export let register = false
 
 	export let error: string = null
+	export let success: string = null
 </script>
 
 <div class="flex flex-col gap-8 max-w-md mx-auto">
@@ -40,6 +41,9 @@
 	<div class="self-center flex flex-col gap-2">
 		{#if error}
 			<div class="message-error">{error}</div>
+		{/if}
+		{#if success}
+			<div class="message-success">{success}</div>
 		{/if}
 		<input class="button self-center" type='submit' value='{register ? "Register" : "Log in"}'>
 	</div>

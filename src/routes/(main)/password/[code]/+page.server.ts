@@ -29,13 +29,20 @@ export const actions: Actions = {
 			return fail(404)
 		}
 
-		user.password = await hashPassword(password)
-		delete user.resetCode
-		delete user.resetTime
-		user.isVerfied = true
+		const hash = await hashPassword(password)
 
-		await db.collection<User>('Users').replaceOne({_id: user._id}, user)
-
+		await db.collection<User>('Users').updateOne(
+			{_id: user._id}, {
+			$set: {
+				isVerified: true,
+				password: hash
+			},
+			$unset: {
+				"resetCode" :"", 
+				"resetTime": ""
+			},
+		})
+		console.log(`Reset password for ${user.email}`)
 		return {success: true}
 	}
 }

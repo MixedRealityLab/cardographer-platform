@@ -55,15 +55,16 @@ export async function getUser(db:Db, email:string, authEmail:string): Promise<Us
     if (!user) {
         throw error(404, `User ${email} not found`);
     }
-    if (email != authEmail) { 
-        const authUser = await db.collection<User>('Users')
-		    .findOne({email: authEmail})
-    	const isAdmin = await getUserIsAdmin(authUser)
-        if (!isAdmin) {
-            throw error(404, `User ${email} not found`);
-        }
+    //if (email != authEmail) { 
+    const authUser = email!=authEmail 
+        ? await db.collection<User>('Users').findOne({email: authEmail}) 
+        : user
+   	const isAdmin = await getUserIsAdmin(authUser)
+    if (email!=authEmail && !isAdmin) {
+        throw error(404, `User ${email} not found`);
     }
     delete user._id
+    user.localIsAdmin = isAdmin
     return user
 }
 
@@ -96,6 +97,7 @@ export async function sendPasswordResetEmail(email: string, url: string) : Promi
             text: 'Reset Url: ' + sessionUrl,
             html: '<div><a href="' + sessionUrl + '">Continue Password Reset</a></div>'
         });
+        console.log(`Sent password reset email to ${email}`)
     } else {
         console.log("No Email Setup")
         console.log('https://' + url.host + base + '/password/' + code)

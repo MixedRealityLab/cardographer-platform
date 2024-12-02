@@ -20,7 +20,7 @@
 	<label>
 		<span>Name</span>
 		<input name="userName" bind:value={data.name} class="block w-full" required type="text"
-		       disabled={!data.isAdmin}/>
+		       />
 	</label>
 	<label>
 		<span>Email</span>
@@ -40,22 +40,27 @@
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
 			<input name="isDisabled" bind:checked={data.disabled} class="form-checkbox" type="checkbox"
-			       disabled={!data.isAdmin}>
+			       disabled={!data.localIsAdmin}>
 			<span>Disabled</span>
 		</label>
 		<label class="flex items-center gap-2">
+			<input name="isVefified" bind:checked={data.isVerified} class="form-checkbox" type="checkbox"
+			       disabled=true>
+			<span>Verified</span>
+		</label>
+		<label class="flex items-center gap-2">
 			<input name="isDeckBuilder" bind:checked={data.isDeckBuilder} class="form-checkbox" type="checkbox"
-			       disabled={!data.isAdmin}>
+			       disabled={!data.localIsAdmin}>
 			<span>DeckBuilder</span>
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isPublisher" bind:checked={data.isPublisher} class="form-checkbox" type="checkbox"
-			       disabled={!data.isAdmin}>
+			       disabled={!data.localIsAdmin}>
 			<span>Publisher</span>
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isAdmin" bind:checked={data.isAdmin} class="form-checkbox" type="checkbox"
-			       disabled={!data.isAdmin}>
+			       disabled={!data.localIsAdmin}>
 			<span>Admin</span>
 		</label>
 
@@ -68,5 +73,5 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.isAdmin}>
+	<input class="button self-center mt-2" type='submit' value='Save'>
 </form>

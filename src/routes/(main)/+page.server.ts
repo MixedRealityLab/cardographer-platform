@@ -19,52 +19,58 @@ export const actions: Actions = {
 		email = email.toLowerCase()
 		// check password
 		const db = await getDb();
-		const user = await db.collection<User>('Users').findOne({email: email})
-		if (register && user) {
-			return fail(400, {error: `That user is already registered`});
-		}
-		if (!register && !user) {
-			return fail(401, {error: 'Login Failed'})
-		}
+		let user = await db.collection<User>('Users').findOne({email: email})
 		// register code
 		if (register) {
+			const code = data.get('code')
+			if (code != REGISTER_CODE) {
+				console.log(`Error: attempt to register with wrong code for ${email}`)
+				return fail(401, {error: 'Incorrect Register Code'})
+			}
+			if (!!user) {
+				return fail(400, {error: `That user is already registered`});
+			}
 			if (!REGISTER_CODE) {
 				return fail(401, {error: 'Register Code Missing!'})
 			}
-			const code = data.get('code')
-			if (code != REGISTER_CODE) {
-				return fail(401, {error: 'Incorrect Register Code'})
-			}
-		}
-		const nanoid = customAlphabet('useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict', 32)
-		const code = nanoid()
-		const hash = await hashPassword(code)
-		if (register) {
+
+			const nanoid = customAlphabet('useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict', 32)
+			const hash = nanoid()
 			const name = data.get('name') as string
-			const user: User = {
+			user = {
 				name: name,
 				email: email,
 				password: hash,
 				disabled: false,
 				created: new Date().toISOString(),
+				isNew: true,
 			}
 			const ar = await db.collection<User>('Users').insertOne(user);
 			if (!ar.insertedId) {
 				return fail(500)
 			}
+			console.log(`Registered new user ${email} - pending email confirmation`)
 			const res = await sendPasswordResetEmail(email, url)
 			return res
+		} else {
+			if (!user) {
+				console.log(`Login failed unknown user ${email}`)
+				return fail(401, {error: 'Login Failed'})
+			}
+			const hash = await hashPassword(password)
+			if (user.password != hash) {
+				console.log(`Login failed for user ${email}`)
+				return fail(401, {error: `Login Failed`})
+			}
+			const token = await signUserToken(email);
+			cookies.set(getCookieName(), token, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'none',
+				secure: true
+			})
+			console.log(`Login success for ${email}`)
+			throw redirect(302, base + "/decks")
 		}
-		if (!register && user.password != hash) {
-			return fail(401, {error: `Login Failed`})
-		}
-		const token = await signUserToken(email);
-		cookies.set(getCookieName(), token, {
-			path: '/',
-			httpOnly: true,
-			sameSite: 'none',
-			secure: true
-		})
-		throw redirect(302, base + "/decks")
 	}
 }
