@@ -9,6 +9,7 @@ export interface CardDeckSummary {
 	credits?: string
 	isPublic: boolean
 	owners: string[]
+	quotaUser?: string
 	currentRevision: number // integer
 }
 
@@ -18,6 +19,7 @@ export interface CardDeckRevisionSummary {
 	_id: string
 	deckId: string
 	revision: number // integer 1..
+	quotaUser?: string
 	slug?: string
 	deckName: string
 	deckDescription?: string
@@ -36,6 +38,7 @@ export interface CardDeckRevisionSummary {
 	isCurrent?: boolean
 	// API/local only
 	isOwnedByUser?: boolean
+	diskSizeK?: number
 }
 
 // full revision data
@@ -221,8 +224,32 @@ export interface User {
 
 	resetCode?: string
 	resetTime?: Date
-}
 
+	isNew?: boolean
+	isVerfied?: boolean
+	isAdmin?: boolean
+	isGuest?: boolean
+	isDeckBuilder?: boolean
+	isPublisher?: boolean
+	quota?: Quota
+	usage?: Usage
+}
+export interface Quota {
+	decks?: number
+	revisions?: number
+	sessions?: number
+	snapshots?: number
+	analyses?: number
+	diskSizeK?: number
+}
+export interface Usage {
+	decks: number
+	revisions: number
+	sessions: number
+	snapshots: number
+	analyses: number
+	diskSizeK: number
+}
 // session
 export interface Session {
 	_id: string // mongo-style
@@ -232,6 +259,7 @@ export interface Session {
 	description?: string
 	credits?: string
 	owners: string[] // User emails
+	quotaUser?: string
 	created: string // ISO date
 	lastModified: string // ISO date
 	isPublic: boolean
@@ -260,6 +288,7 @@ export interface SessionDeck {
 // snapshot
 export interface SessionSnapshotSummary {
 	_id: string // mongo-style
+	quotaUser?: string
 	sessionId: string // FK
 	sessionName: string
 	sessionDescription?: string
@@ -297,6 +326,7 @@ export interface Analysis {
 	created: string // ISO date
 	lastModified: string // ISO date
 	owners: string[]
+	quotaUser?: string
 	isPublic: boolean
 	snapshotIds: string[]
 	regions: AnalysisRegion[]

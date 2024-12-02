@@ -16,6 +16,14 @@ Can be used with
 Note, requires [docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 (e.g. `vagrant up` - see [Vagrantfile](Vagrantfile))
 
+## Configuration
+
+Copy `server.env` to `server.env.local` (or whatever location you will use for environment vars).
+
+Set SMTP (email) sending settings (unless you are going to use mongo-express to set up users).
+
+Set ADMIN_USERS to email address(es) of initial/default admin users.
+
 ### Running Server Locally
 
 ```
