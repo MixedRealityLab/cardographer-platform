@@ -7,7 +7,7 @@
 	let search = ""
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	<input name="search" placeholder="Email" class="block w-full" type="text" bind:value="{search}">

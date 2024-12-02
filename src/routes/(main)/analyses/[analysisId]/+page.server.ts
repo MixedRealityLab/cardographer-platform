@@ -3,6 +3,7 @@ import {verifyAuthentication} from "$lib/security"
 import type {Analysis, User} from "$lib/types";
 import {error} from "@sveltejs/kit"
 import type {Actions, PageServerLoad} from './$types'
+import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const load: PageServerLoad = async function ({locals, parent}) {
 	verifyAuthentication(locals)
@@ -35,6 +36,10 @@ export const actions: Actions = {
 		if(!owners || owners.length == 0||owners[0] == '') {
 			owners = analysis.owners
 		}
+		const isPublic = data.get('isPublic') == 'on'
+		if (isPublic) {
+			await verifyLocalUserIsPublisher(locals)
+		}
 
 		const updateResult = await db.collection<Analysis>('Analyses').updateOne({
 			_id: analysisId
@@ -44,7 +49,7 @@ export const actions: Actions = {
 				description: data.get('description') as string || analysis.description,
 				credits: data.get('credits') as string || analysis.credits,
 				owners: owners,
-				isPublic: data.get('isPublic') == 'on',
+				isPublic: isPublic,
 				lastModified: new Date().toISOString()
 			}
 		})

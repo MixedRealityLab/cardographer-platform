@@ -7,7 +7,12 @@
 	let showAllDecks = true
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
+
+{#if !data.localUser?.isDeckBuilder}
+	<div class="message-error">Sorry, you do not have Deck Builder rights - 
+	please ask an administrator if you need to change this.</div>
+{:else}
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.decks.filter((deck) => showAllDecks || deck.isOwnedByUser) as deck}
@@ -56,3 +61,5 @@
 		</a>
 	</div>
 </div>
+
+{/if}

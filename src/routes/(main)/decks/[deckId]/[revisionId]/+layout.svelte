@@ -28,4 +28,11 @@
 	{/if}
 </AppBar>
 
+{#if !data.localUser?.isDeckBuilder}
+	<div class="message-error">Sorry, you do not have Deck Builder rights - 
+	please ask an administrator if you need to change this.</div>
+{:else}
+
 <slot/>
+
+{/if}

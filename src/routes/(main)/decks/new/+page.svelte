@@ -12,6 +12,12 @@
 <AppBar back="{base}/decks" subtitle="Deck">
 	<div slot="subheader">Create Deck</div>
 </AppBar>
+
+{#if !data.localUser?.isDeckBuilder}
+	<div class="message-error">Sorry, you do not have Deck Builder rights - 
+	please ask an administrator if you need to change this.</div>
+{:else}
+
 <div class="w-full flex flex-col text-sm font-medium p-6 gap-4">
 	{#if error}
 		<div class="message-error">{error}</div>
@@ -55,3 +61,5 @@
 		</form>
 	{/each}
 </div>
+
+{/if}

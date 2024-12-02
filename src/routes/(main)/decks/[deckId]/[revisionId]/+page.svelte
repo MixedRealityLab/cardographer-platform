@@ -64,7 +64,7 @@
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isPublic" bind:checked={data.isPublic} class="form-checkbox" type="checkbox"
-			       disabled={!data.isOwnedByUser}>
+			       disabled={!data.isOwnedByUser || !data.localUser?.isPublisher}>
 			<span>Public</span>
 		</label>
 		<label class="flex items-center gap-2">

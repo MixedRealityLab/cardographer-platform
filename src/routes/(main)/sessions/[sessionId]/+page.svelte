@@ -105,7 +105,7 @@
 
 	<div class="flex justify-center gap-4">
 		<label class="flex items-center">
-			<input name="isPublic" bind:checked="{data.session.isPublic}" class="form-checkbox" type="checkbox">
+			<input name="isPublic" bind:checked="{data.session.isPublic}" class="form-checkbox" type="checkbox" disabled={!data.localUser?.isPublisher}>
 			<span class="ml-2">Public</span>
 		</label>
 		<label class="flex items-center">

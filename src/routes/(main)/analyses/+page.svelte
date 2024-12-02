@@ -8,7 +8,7 @@
 	let working = false;
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="flex flex-col p-6 w-full text-sm font-medium gap-4">
 	{#each data.analyses as analysis}

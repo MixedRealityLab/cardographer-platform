@@ -2,7 +2,7 @@
 	import {enhance} from "$app/forms";
 	import type {User} from "$lib/types"
 
-	export let data: User
+	export let data
 
 	let error = ''
 	let message = ''
@@ -10,8 +10,8 @@
 
 <div class="subheader">
 	<div class="flex-1">
-		<div class="block inline-flex items-center gap-2">{data.name}
-				<span class="opacity-50">&lt;{data.email}&gt;</span>
+		<div class="block inline-flex items-center gap-2">{data.user.name}
+				<span class="opacity-50">&lt;{data.user.email}&gt;</span>
 		</div>
 	</div>
 </div>
@@ -19,17 +19,17 @@
 <form class="p-6 flex flex-col gap-4" method="post" use:enhance>
 	<label>
 		<span>Name</span>
-		<input name="userName" bind:value={data.name} class="block w-full" required type="text"
+		<input name="userName" bind:value={data.user.name} class="block w-full" required type="text"
 		       />
 	</label>
 	<label>
 		<span>Email</span>
-		<input name="userEmail" bind:value={data.email} class="block w-full" required type="text"
+		<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
 		       disabled=true/>
 	</label>
 	<div>
 		<span class="text-sm text-gray-800">Created</span>
-		<div class="px-3">{new Date(data.created).toLocaleString('en-gb', {
+		<div class="px-3">{new Date(data.user.created).toLocaleString('en-gb', {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric',
@@ -39,28 +39,28 @@
 	</div>
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
-			<input name="isDisabled" bind:checked={data.disabled} class="form-checkbox" type="checkbox"
+			<input name="isDisabled" bind:checked={data.user.disabled} class="form-checkbox" type="checkbox"
 			       disabled={!data.localIsAdmin}>
 			<span>Disabled</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isVefified" bind:checked={data.isVerified} class="form-checkbox" type="checkbox"
+			<input name="isVefified" bind:checked={data.user.isVerified} class="form-checkbox" type="checkbox"
 			       disabled=true>
 			<span>Verified</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isDeckBuilder" bind:checked={data.isDeckBuilder} class="form-checkbox" type="checkbox"
-			       disabled={!data.localIsAdmin}>
+			<input name="isDeckBuilder" bind:checked={data.user.isDeckBuilder} class="form-checkbox" type="checkbox"
+			       disabled={!data.localUser.isAdmin}>
 			<span>DeckBuilder</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isPublisher" bind:checked={data.isPublisher} class="form-checkbox" type="checkbox"
-			       disabled={!data.localIsAdmin}>
+			<input name="isPublisher" bind:checked={data.user.isPublisher} class="form-checkbox" type="checkbox"
+			       disabled={!data.localUser.isAdmin}>
 			<span>Publisher</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isAdmin" bind:checked={data.isAdmin} class="form-checkbox" type="checkbox"
-			       disabled={!data.localIsAdmin}>
+			<input name="isAdmin" bind:checked={data.user.isAdmin} class="form-checkbox" type="checkbox"
+			       disabled={!data.localUser.isAdmin}>
 			<span>Admin</span>
 		</label>
 

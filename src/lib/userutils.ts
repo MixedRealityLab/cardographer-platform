@@ -106,3 +106,36 @@ export async function sendPasswordResetEmail(email: string, url: string) : Promi
     return {success: true}
 }
 
+export async function verifyLocalUserIsDeckBuilder(locals: App.Locals) : Promise<void> {
+    if (!locals.authenticated) {
+		throw error(401, "Authentication Required")
+	}
+    const user = await getLocalUser(locals)
+    if (!user.isDeckBuilder) {
+        throw error(403, "Forbidden")
+    }
+}
+export async function verifyLocalUserIsPublisher(locals: App.Locals) : Promise<void> {
+    if (!locals.authenticated) {
+		throw error(401, "Authentication Required")
+	}
+    const user = await getLocalUser(locals)
+    if (!user.isPublisher) {
+        throw error(403, "Forbidden")
+    }
+}
+export async function getLocalUser(locals: App.Locals) : Promise<User> {
+    const db = await getDb()
+	const user = await db.collection<User>('Users')
+		.findOne({email:locals.email}, {
+			projection: {
+				disabled: true,
+				isAdmin: true, isPublisher: true, isDeckBuilder: true,
+				isVerified: true,
+			}
+		})
+    if (!user) {
+        throw error(500, `Local user ${locals.email} not found`);
+    }
+    return user
+}

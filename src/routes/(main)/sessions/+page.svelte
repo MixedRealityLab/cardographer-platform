@@ -11,7 +11,7 @@
 	let message = ''
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.sessions as session}

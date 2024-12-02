@@ -4,6 +4,7 @@ import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {error} from "@sveltejs/kit"
+import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
@@ -23,6 +24,10 @@ export const actions: Actions = {
 				// ignore :-/
 			}
 		}
+		const isPublic = data.get('isPublic') == 'on'
+		if (isPublic) {
+			await verifyLocalUserIsPublisher(locals)
+		}
 		const updateResult = await db.collection<CardDeckRevision>('CardDeckRevisions').updateOne({
 			deckId: deckId, revision: Number(revisionId)
 		}, {
@@ -35,7 +40,7 @@ export const actions: Actions = {
 				imageDpi: imageDpi,
 				slug: data.get('slug') as string || revision.slug,
 				isUsable: data.get('isUsable') == 'on',
-				isPublic: data.get('isPublic') == 'on',
+				isPublic: isPublic,
 				isLocked: data.get('isLocked') == 'on',
 				isTemplate: data.get('isTemplate') == 'on',
 				lastModified: new Date().toISOString()

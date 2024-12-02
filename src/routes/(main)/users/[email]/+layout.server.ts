@@ -7,5 +7,8 @@ export const load: LayoutServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
 	const {email} = params;
 	const db = await getDb();
-	return await getUser(db, email, locals.email)
+	const user = await getUser(db, email, locals.email)
+	return {
+		user: user
+	}
 }
