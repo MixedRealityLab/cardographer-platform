@@ -32,6 +32,7 @@ export const actions: Actions = {
 		user.password = await hashPassword(password)
 		delete user.resetCode
 		delete user.resetTime
+		user.isVerfied = true
 
 		await db.collection<User>('Users').replaceOne({_id: user._id}, user)
 

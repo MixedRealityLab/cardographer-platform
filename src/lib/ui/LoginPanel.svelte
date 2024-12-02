@@ -18,6 +18,7 @@
 		<span>Email</span>
 		<input class="w-full" name="email" required type="text" autocomplete="username"/>
 	</label>
+	{#if !register}
 	<label>
 		<span>Password</span>
 		<input class="w-full" name="password" required type="password"
@@ -28,7 +29,7 @@
 			</div>
 		{/if}
 	</label>
-
+	{/if}
 	{#if register}
 		<label>
 			<span>Registration code</span>

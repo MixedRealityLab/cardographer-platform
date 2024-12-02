@@ -4,20 +4,22 @@ import {getCookieName, hashPassword, REGISTER_CODE, signUserToken} from "$lib/se
 import type {User} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
+import {customAlphabet} from "nanoid"
+import { sendPasswordResetEmail } from "$lib/userutils";
 
 export const actions: Actions = {
-	default: async ({cookies, request}) => {
+	default: async ({cookies, request, url}) => {
 		const data = await request.formData();
 		let email = data.get('email') as string;
 		const password = data.get('password') as string;
-		if (!email || !password) {
+		const register = data.get('register')
+		if (!email || (!register && !password)) {
 			return fail(400, {error: 'Missing data'})
 		}
 		email = email.toLowerCase()
 		// check password
 		const db = await getDb();
 		const user = await db.collection<User>('Users').findOne({email: email})
-		const register = data.get('register')
 		if (register && user) {
 			return fail(400, {error: `That user is already registered`});
 		}
@@ -34,7 +36,9 @@ export const actions: Actions = {
 				return fail(401, {error: 'Incorrect Register Code'})
 			}
 		}
-		const hash = await hashPassword(password)
+		const nanoid = customAlphabet('useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict', 32)
+		const code = nanoid()
+		const hash = await hashPassword(code)
 		if (register) {
 			const name = data.get('name') as string
 			const user: User = {
@@ -48,6 +52,8 @@ export const actions: Actions = {
 			if (!ar.insertedId) {
 				return fail(500)
 			}
+			const res = await sendPasswordResetEmail(email, url)
+			return res
 		}
 		if (!register && user.password != hash) {
 			return fail(401, {error: `Login Failed`})
