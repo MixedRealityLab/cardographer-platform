@@ -45,7 +45,7 @@ export async function cleanRevision(db: Db, revision: CardDeckRevision, deckId: 
 	revision.isLocked = false;
 	revision.isTemplate = false;
 	delete revision.isCurrent;
-	if (oldRevision) {
+	if (oldRevision && oldRevision.build) {
 		//if (debug) console.log(`copying build from existing revision ${oldRevisionId}`);
 		revision.build = await copyBuild(oldRevision, revision);
 	} else if (revision.build) {

@@ -2,9 +2,11 @@ import {base} from "$app/paths";
 import {getDb} from "$lib/db"
 import {cleanRevision} from "$lib/decks";
 import {verifyAuthentication} from "$lib/security"
-import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$lib/types"
+import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary, User} from "$lib/types"
 import {error, redirect} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from "./$types";
+import type {LayoutServerLoad} from "./$types"
+import { getUser } from "$lib/userutils"
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
@@ -17,7 +19,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 		throw error(404, `Deck ${deckId} not found`)
 	}
 	// project to summary
-	const revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
+	let revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
 		.find({
 			deckId: deckId
 		}, {
@@ -30,10 +32,19 @@ export const load: PageServerLoad = async function ({locals, params}) {
 			}
 		})
 		.toArray()
+	revisions.sort((a,b) => a.revision - b.revision)
 	const current = revisions.find((r) => r.revision == deck.currentRevision);
+	// note +page@ skips most layout data, so add this explicitly here...
+	let localUser : User|null = null
+	if (locals.authenticated && locals.email) {
+		const db = await getDb()
+		localUser = await getUser(db, locals.email, locals.email)
+		//console.log(`local user is ${locals.email}, ${localUser.isDeckBuilder ? 'deck builder' : ''}, ${localUser.isPublisher ? 'publisher' : ''}, ${localUser.isAdmin ? 'admin' : ''}`)
+	}
 	return {
 		revisions: revisions,
-		selectedRevision: current
+		selectedRevision: current,
+		localUser,
 	}
 }
 

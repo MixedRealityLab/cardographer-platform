@@ -7,11 +7,9 @@
 </script>
 
 <AppBar>
-    {#if user?.isDeckBuilder }
 	<Tab url="{base}/decks">
 		Decks
 	</Tab>
-	{/if}
 	<Tab url="{base}/sessions">
 		Sessions
 	</Tab>

@@ -9,11 +9,6 @@
 
 <UserTabs user={data.localUser}/>
 
-{#if !data.localUser?.isDeckBuilder}
-	<div class="message-error">Sorry, you do not have Deck Builder rights - 
-	please ask an administrator if you need to change this.</div>
-{:else}
-
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.decks.filter((deck) => showAllDecks || deck.isOwnedByUser) as deck}
 		<a class="listItem" href="{base}/decks/{deck.deckId}/{deck.revision}">
@@ -55,11 +50,10 @@
 				{/if}
 			</label>
 		{/if}
-
+		{#if data.localUser?.isDeckBuilder}
 		<a class="button mx-2 self-center" href="{base}/decks/new">
 			<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck
 		</a>
+		{/if}
 	</div>
 </div>
-
-{/if}

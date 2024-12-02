@@ -6,6 +6,7 @@ import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types"
+import { verifyLocalUserIsDeckBuilder } from "$lib/userutils"
 
 export const load: PageServerLoad = async function ({locals}) {
 	verifyAuthentication(locals)
@@ -31,6 +32,7 @@ export const load: PageServerLoad = async function ({locals}) {
 export const actions: Actions = {
 	default: async ({ locals, request}) => {
 		verifyAuthentication(locals)
+		verifyLocalUserIsDeckBuilder(locals)
 		const data = await request.formData()
 		const revisionId = data.get('id') as string
 
