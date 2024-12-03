@@ -38,6 +38,7 @@ export const POST: RequestHandler = async function ({locals,request,params}) {
 			snapshotIds: [snapshotId],
 			regions: [],
             defaultForSessionId: sessionId,
+			quotaUser: locals.email,
 		});
 		if (!result.insertedId) {
 			throw error(500, 'Error adding default analysis');

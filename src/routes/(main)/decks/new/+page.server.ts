@@ -7,6 +7,9 @@ import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types"
 import { verifyLocalUserIsDeckBuilder } from "$lib/userutils"
+import { getQuotaDetails, getUsageDecks, getUsageRevisions } from "$lib/quotas"
+
+const debug = false
 
 export const load: PageServerLoad = async function ({locals}) {
 	verifyAuthentication(locals)
@@ -26,13 +29,30 @@ export const load: PageServerLoad = async function ({locals}) {
 		.sort({"deckName": 1, "revision": 1, "revisionName": 1})
 		.toArray()
 	await cleanRevisions(revisions, db)
-	return {revisions: revisions}
+	const usageDecks = await getUsageDecks(locals.email)
+	const usageRevisions = await getUsageRevisions(locals.email)
+	const quota = await getQuotaDetails(locals.email)
+	if (debug) console.log(`User ${locals.email} deck usage ${usageDecks}/${quota.quota.decks} decks & ${usageRevisions}/${quota.quota.revisions} revisions`)
+	return {
+		revisions: revisions,
+		usageDecks,
+		usageRevisions,
+		quotaDecks: quota.quota.decks,
+		quotaRevisions: quota.quota.revisions,
+	}
 }
 
 export const actions: Actions = {
 	default: async ({ locals, request}) => {
 		verifyAuthentication(locals)
 		verifyLocalUserIsDeckBuilder(locals)
+		const usageDecks = await getUsageDecks(locals.email)
+		const usageRevisions = await getUsageRevisions(locals.email)
+		const quota = await getQuotaDetails(locals.email)
+		if (usageDecks >= quota.quota.decks || usageRevisions >= quota.quota.revisions) {
+			console.log(`Exceeded deck or revision quota ${usageDecks}/${quota.quota.decks} decks & ${usageRevisions}/${quota.quota.revisions} for ${locals.email}`)
+			throw error(422,"Deck quota exceeded")
+		}
 		const data = await request.formData()
 		const revisionId = data.get('id') as string
 
@@ -89,7 +109,7 @@ export const actions: Actions = {
 			}
 		}
 		await cleanRevision(db, revision, deckId, revId)
-
+		revision.quotaUser = locals.email
 		const revResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision)
 		if (!revResult.insertedId) {
 			console.log(`Error adding revision for new deck ${deckId}`)
@@ -103,6 +123,7 @@ export const actions: Actions = {
 			owners: [locals.email],
 			currentRevision: revId,
 			credits: revision.deckCredits,
+			quotaUser: locals.email,
 		}
 		// add deck
 		const summaryResult = await db.collection<CardDeckSummary>('CardDeckSummaries').insertOne(deck)

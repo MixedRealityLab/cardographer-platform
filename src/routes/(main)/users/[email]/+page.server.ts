@@ -6,6 +6,24 @@ import type {Actions} from "@sveltejs/kit"
 import {error} from "@sveltejs/kit"
 import { getUserIsAdmin } from "../../../../lib/userutils";
 
+import {getDb} from "$lib/db";
+import {getUser} from "$lib/userutils";
+import {verifyAuthentication} from "$lib/security";
+import type {PageServerLoad} from "./$types"
+import { getQuotaDetails } from "$lib/quotas";
+
+export const load: PageServerLoad = async function ({locals, params}) {
+	verifyAuthentication(locals)
+	const {email} = params;
+	const db = await getDb();
+	const user = await getUser(db, email, locals.email)
+	const quotaDetails = await getQuotaDetails(email)
+	return {
+		user: user,
+		quotaDetails
+	}
+}
+
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
 		verifyAuthentication(locals)
@@ -44,6 +62,12 @@ export const actions: Actions = {
 					isDeckBuilder: data.get('isDeckBuilder') == 'on',
 					isPublisher: data.get('isPublisher') == 'on',
 					isAdmin: (email==locals.email && user.isAdmin) || data.get('isAdmin') == 'on',
+					"extraQuota.decks": Number(data.get("extraDecks") as string || "0"),
+					"extraQuota.revisions": Number(data.get("extraRevisions") as string || "0"),
+					"extraQuota.sessions": Number(data.get("extraSessions") as string || "0"),
+					"extraQuota.snapshots": Number(data.get("extraSnapshots") as string || "0"),
+					"extraQuota.analyses": Number(data.get("extraAnalyses") as string || "0"),
+					"extraQuota.diskSizeK": Number(data.get("extraDiskSizeK") as string || "0"),
 				}
 			})
 		}

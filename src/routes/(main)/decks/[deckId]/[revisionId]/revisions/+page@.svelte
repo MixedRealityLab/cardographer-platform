@@ -87,6 +87,11 @@
 		</a>
 	{/each}
 
+	{#if data.usageRevisions >= data.quotaRevisions}
+		<div class="message-error">Sorry, you have reached your deck revision quota ({data.usageRevisions}/{data.quotaRevisions}) - 
+		please ask an administrator if you need to change this.</div>
+	{/if}
+
 	<div class="flex justify-center">
 		<ConfirmDialog
 				cancelTitle="Cancel"
@@ -97,7 +102,7 @@
 				<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
 			</button>
 		</ConfirmDialog>
-		{#if data.localUser?.isDeckBuilder}
+		{#if data.localUser?.isDeckBuilder && data.usageRevisions < data.quotaRevisions}
 		<form method="post">
 			<button class="button m-2">
 				<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision

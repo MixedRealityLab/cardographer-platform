@@ -12,7 +12,7 @@
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
-	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean }
+	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean, quotaSessions: number, usageSessions: number, quotaSnapshots: number, usageSnapshots: number }
 	export let form: ActionData
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
@@ -134,6 +134,7 @@
 		if (response.ok) {
 			success = true
 			error = null
+			invalidateAll()
 		} else {
 			error = (await response.json()).message
 		}
@@ -145,6 +146,8 @@
         @apply bg-yellow-100 py-2 px-4 my-2 mx-4 font-bold rounded-xl;
     }
 </style>
+
+<!-- <div>quota {data.usageSessions}/{data.quotaSessions}, {data.usageSnapshots}/{data.quotaSnapshots}</div> -->
 
 <div class="w-full flex flex-col h-screen">
 	<div class="subheader">
@@ -207,13 +210,22 @@
 				<LoginPanel  canEmail="{false}" error={form ? form.error : null}/>
 			</form>
 		{:else if !data.session}
-			<form method="post" action="?/select" use:enhance>
+		    {#if data.usageSessions >= data.quotaSessions}
+			    <div class="message-error">You have reached you session quota.</div>
+			{:else}
+			<form method="post" action="?/select" use:enhance={() => {
+				    return async ({ result, update }) => {
+					    invalidateAll()
+						update()
+                    }
+				}}>
 				<button class="listItem flex-col">
 					<div class="flex flex-row gap-1">
 						<div class="font-semibold">Create New Session</div>
 					</div>
 				</button>
 			</form>
+			{/if}
 			{#each data.sessions as session}
 				<form method="post" action="?/select" use:enhance>
 					<input type="hidden" name="id" value="{session._id}"/>
@@ -325,11 +337,15 @@
 				Uploaded
 			</div>
 		{/if}
+		{#if data.usageSnapshots >= data.quotaSnapshots}
+		    <div class="gap-1 m-1 message-error">You have reached you Snapshot quota.</div>
+		{:else}
 		<div class="flex gap-1 m-1 justify-center">
 			<input class="flex-1 p-1" type="text" name="description" placeholder="Snapshot desription" bind:value={description} disabled={!!data.readonly}/>
 			<button class="button m-1" on:click={saveSession} disabled={!!data.readonly}>
 				Save Session
 			</button>
 		</div>
+		{/if}
 	{/if}
 </div>

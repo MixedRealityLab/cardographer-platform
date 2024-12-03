@@ -231,10 +231,11 @@ export interface User {
 	isGuest?: boolean
 	isDeckBuilder?: boolean
 	isPublisher?: boolean
-	quota?: Quota
+	extraQuota?: Quota
 	usage?: Usage
 	// API only
 	localIsAdmin?: boolean
+	quota?: Quota
 }
 export interface Quota {
 	decks?: number
@@ -243,6 +244,10 @@ export interface Quota {
 	snapshots?: number
 	analyses?: number
 	diskSizeK?: number
+}
+export interface QuotaDetails extends Quota {
+	baseQuota: Quota
+	extraQuota: Quota
 }
 export interface Usage {
 	decks: number

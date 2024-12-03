@@ -7,6 +7,7 @@ import {error, redirect} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from "./$types";
 import type {LayoutServerLoad} from "./$types"
 import { getUser } from "$lib/userutils"
+import { getUsageRevisions, getQuotaDetails } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	verifyAuthentication(locals)
@@ -41,16 +42,27 @@ export const load: PageServerLoad = async function ({locals, params}) {
 		localUser = await getUser(db, locals.email, locals.email)
 		//console.log(`local user is ${locals.email}, ${localUser.isDeckBuilder ? 'deck builder' : ''}, ${localUser.isPublisher ? 'publisher' : ''}, ${localUser.isAdmin ? 'admin' : ''}`)
 	}
+	const usageRevisions = await getUsageRevisions(locals.email)
+	const quota = await getQuotaDetails(locals.email)
+	
 	return {
 		revisions: revisions,
 		selectedRevision: current,
 		localUser,
+		usageRevisions,
+		quotaRevisions : quota.quota.revisions,
 	}
 }
 
 export const actions: Actions = {
 	default: async ({locals, params}) => {
 		verifyAuthentication(locals)
+		const usageRevisions = await getUsageRevisions(locals.email)
+		const quota = await getQuotaDetails(locals.email)
+		if (usageRevisions >= quota.quota.revisions) {
+			console.log(`Exceeded revision quota ${usageRevisions}/${quota.quota.revisions} for ${locals.email}`)
+			throw error(422,"Revisions quota exceeded")
+		}
 		const db = await getDb();
 		const {deckId} = params;
 		const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
@@ -68,6 +80,7 @@ export const actions: Actions = {
 			throw error(404, `Deck ${deckId} revision ${deck.currentRevision} not found`)
 		}
 		await cleanRevision(db, revision, deckId, revId)
+		revision.quotaUser = locals.email
 		// add
 		const insertResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision);
 		if (!insertResult.acknowledged) {

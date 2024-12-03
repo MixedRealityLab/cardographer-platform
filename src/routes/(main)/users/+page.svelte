@@ -11,9 +11,9 @@
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	<input name="search" placeholder="Email" class="block w-full" type="text" bind:value="{search}">
-
+{#if data.users}
 	{#each data.users.filter((user) => search.length==0 || user.email.indexOf(search)>=0) as user}
-		<a class="listItem" href="{base}/users/{user.email}">
+		<a class="listItem" class:bg-gray-100={user.email === data.localUser.email} href="{base}/users/{user.email}">
 			<img src="{base}/icons/person.svg" class="w-6 mr-4" alt=""/>
 			<div class="flex flex-1 flex-col">
 				<div class="flex">
@@ -46,7 +46,7 @@
 	{:else}
 		<div class="self-center">No Users Found</div>
 	{/each}
-
+{/if}
 	<div class="self-center">
 		<form method="post" action="{base}/logout">
 			<div class="grid grid-cols-1 gap-2">
