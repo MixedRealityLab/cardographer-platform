@@ -3,6 +3,7 @@ import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary, User} f
 import {DeckBuildStatus} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Db} from "mongodb";
+import { getDiskSizeK } from "./builders";
 
 export async function cleanRevisions(revisions: CardDeckRevisionSummary[], db: Db) {
 	const users = await db.collection<User>('Users').find({}).toArray()
@@ -54,6 +55,8 @@ export async function cleanRevision(db: Db, revision: CardDeckRevision, deckId: 
 		revision.build.status = DeckBuildStatus.Unbuilt;
 		revision.build.messages = [];
 	}
+	revision.diskSizeK = await getDiskSizeK(deckId, String(revId))
+	console.log(`new revision disk size ${revision.diskSizeK}`)	
 }
 
 export async function getRevision(db: Db, deckId: string, revisionId: number, email: string): Promise<CardDeckRevision> {

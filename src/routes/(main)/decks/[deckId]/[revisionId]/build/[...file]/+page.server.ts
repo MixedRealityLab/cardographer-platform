@@ -7,6 +7,7 @@ import {DeckBuildStatus} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Db} from "mongodb";
 import type {Actions, PageServerLoad} from './$types'
+import { getDiskSizeK } from "../../../../../../../lib/builders";
 
 export const load: PageServerLoad = async function ({locals, params, parent}) {
 	verifyAuthentication(locals)
@@ -49,6 +50,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 		revision.build.lastBuilt = now
 		revision.lastModified = now
 		revision.output = {isUserModified: false, atlases: result.atlases}
+		revision.diskSizeK = getDiskSizeK(revision.deckId, revision.revId)
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 		console.log(result)
 	} catch (e) {
@@ -59,6 +61,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 		const now = new Date().toISOString();
 		revision.build.lastBuilt = now
 		revision.lastModified = now
+		revision.diskSizeK = getDiskSizeK(revision.deckId, revision.revId)
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 	}
 }
@@ -80,6 +83,14 @@ export const actions: Actions = {
 		for (const file of files) {
 			await writeToFile(deckId, revisionId, path, file);
 		}
+		const diskSizeK = getDiskSizeK(deckId, revisionId)
+		await db.collection<CardDeckRevision>("CardDeckRevisions").updateOne({
+			_id: revision._id
+		}, {
+			$set: {
+				diskSizeK: diskSizeK,
+			}
+		})
 		try {
 			return {success: true}
 		} catch (err) {
