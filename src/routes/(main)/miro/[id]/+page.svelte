@@ -5,12 +5,15 @@
 	import type {CardDeckRevision, CardInfo, Session} from "$lib/types"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
+	import type {ActionData} from "./$types";
+    import { invalidateAll } from '$app/navigation';
 
 	import type {BoardNode, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
 	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean }
+	export let form: ActionData
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
 	let error: string
@@ -91,9 +94,10 @@
 					await image.sync()
 				}
 			} catch (e) {
+				console.log(`error doing createImage: ${e.message}`, e)
 				// Compose the message.
 				const errorNotification = {
-					message: `Sorry, that card couldn't be added (${url})`,
+					message: `Sorry, that card couldn't be added.`,
 					type: 'error',
 				};
 
@@ -191,8 +195,16 @@
 
 	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
 		{#if !data.authenticated}
-			<form method="post" action="?/login" use:enhance>
-				<LoginPanel/>
+			<form method="post" action="?/login" use:enhance={() => {
+				return async ({ result, update }) => {
+					if (result.type="success") {
+						console.log(`log in ok`)
+						invalidateAll()
+					}
+					update()
+				};
+			}}>
+				<LoginPanel  canEmail="{false}" error={form ? form.error : null}/>
 			</form>
 		{:else if !data.session}
 			<form method="post" action="?/select" use:enhance>

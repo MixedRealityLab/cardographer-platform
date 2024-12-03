@@ -2,6 +2,7 @@
 	import {base} from "$app/paths";
 
 	export let register = false
+	export let canEmail = true
 
 	export let error: string = null
 	export let success: string = null
@@ -24,7 +25,7 @@
 		<span>Password</span>
 		<input class="w-full" name="password" required type="password"
 		       autocomplete={register ? "new-password" : "current-password"}/>
-		{#if !register}
+		{#if !register && canEmail}
 			<div class="flex text-sm justify-center text-gray-700">
 				<a href="{base}/password/forgotten" class="hover:underline">forgot password</a>
 			</div>

@@ -16,6 +16,8 @@ Can be used with
 Note, requires [docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 (e.g. `vagrant up` - see [Vagrantfile](Vagrantfile))
 
+See `Dockerfile` or `src/docker/dev/Dockerfile`.
+
 ## Configuration
 
 Copy `server.env` to `server.env.local` (or whatever location you will use for environment vars).
@@ -24,8 +26,11 @@ Set SMTP (email) sending settings (unless you are going to use mongo-express to 
 
 Set ADMIN_USERS to email address(es) of initial/default admin users.
 
+## Run
+
 ### Running Server Locally
 
+Dev build/run (with default docker-compose.yml):
 ```
 sudo docker-compose up -d --build
 ```
@@ -45,3 +50,5 @@ and set the "App URL" to [http://localhost:3000/miro.html](http://localhost:3000
 Then "Install app and get OAuth token", or copy and paste the 
 Share app "Installation URL", and agree.
 
+Note, this probably won't work from an Incognito browser because of cookies 
+being blocked (often).

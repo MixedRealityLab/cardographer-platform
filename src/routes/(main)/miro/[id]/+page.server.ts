@@ -6,8 +6,11 @@ import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types";
 
+const debug = false
+
 export const load = (async ({locals, params}) => {
 	if (!locals.authenticated) {
+		if (debug) console.log(`miro not authenticated`)
 		return {authenticated: false}
 	}
 	const db = await getDb();
@@ -65,6 +68,7 @@ export const actions: Actions = {
 			sameSite: 'none',
 			secure: true
 		})
+		if (debug) console.log(`miro logged in and set cookie for ${email}`)
 		return {success: true}
 	},
 	select: async ({locals, params, request}) => {

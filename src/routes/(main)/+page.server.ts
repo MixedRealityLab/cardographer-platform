@@ -70,7 +70,7 @@ export const actions: Actions = {
 				secure: true
 			})
 			console.log(`Login success for ${email}`)
-			throw redirect(302, base + "/sessions")
+			throw redirect(302, base + "/decks")
 		}
 	}
 }
