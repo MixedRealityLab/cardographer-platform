@@ -2,11 +2,16 @@ import {getDb} from "$lib/db"
 import {cleanRevisions} from "$lib/decks"
 import {verifyAuthentication} from "$lib/security"
 import type {User} from "$lib/types"
-import { getUserIsAdmin } from "$lib/userutils"
+import { getUserIsAdmin, GUEST_EMAIL } from "$lib/userutils"
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	verifyAuthentication(locals, true, true)
+	if (locals.email == GUEST_EMAIL) {
+		return {
+			users: []
+		}
+	}
 	const db = await getDb();
 	const user = await db.collection<User>('Users')
 		.findOne({email: locals.email})

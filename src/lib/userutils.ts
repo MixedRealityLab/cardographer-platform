@@ -8,7 +8,9 @@ import {customAlphabet} from "nanoid"
 
 const adminUsers = (process.env["ADMIN_USERS"] ?? "").split(", ;")
 
-const debug = true;
+export const GUEST_EMAIL = "guest"
+
+const debug = false;
 const emailConfigured = 'SMTP_host' in process.env
 const transport = createTransport({
 	host: process.env["SMTP_host"],
@@ -42,8 +44,20 @@ export async function getUserIsAdmin(user:User) : Promise<boolean> {
     }
     return false
 }
-
+function getGuestUser(): User {
+    return {
+        name: "Guest",
+        email: GUEST_EMAIL,
+        isGuest: true,
+        password: "foo",
+        disabled: false,
+        created: "2024-12-03T11:34:00Z",
+    }
+}
 export async function getUser(db:Db, email:string, authEmail:string): Promise<User> {
+    if (email == GUEST_EMAIL) {
+        return getGuestUser()
+    }
 	let user = await db.collection<User>('Users')
 		.findOne({email:email}, {
 			projection: {
@@ -125,6 +139,9 @@ export async function verifyLocalUserIsPublisher(locals: App.Locals) : Promise<v
     }
 }
 export async function getLocalUser(locals: App.Locals) : Promise<User> {
+    if (locals.email == GUEST_EMAIL) {
+        return getGuestUser()
+    }
     const db = await getDb()
 	const user = await db.collection<User>('Users')
 		.findOne({email:locals.email}, {

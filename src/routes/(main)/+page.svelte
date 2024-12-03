@@ -33,11 +33,14 @@
 	<button class="tab" class:tabSelected="{register}" on:click={() => register = true}>
 		Register
 	</button>
+	<form method="post" action="?/continueAsGuest" use:enhance>
+		<input type="submit" class="tab" value="Guest (view)">
+	</form>
 </AppBar>
 <div class="w-full bg-gray-300 font-semibold px-5 py-1.5 flex"></div>
 
 <div class="p-12">
-	<form method="post" use:enhance={() => {
+	<form method="post" action="?/login" use:enhance={() => {
 		working = true
 		return async ({ result, update }) => {
 			working = false

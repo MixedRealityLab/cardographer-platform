@@ -5,7 +5,7 @@ import { getUser } from "$lib/userutils";
 import type { User } from "$lib/types";
 
 export const load: LayoutServerLoad = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	verifyAuthentication(locals, true, true)
 	const {deckId, revisionId} = params;
 	const db = await getDb();
 	const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

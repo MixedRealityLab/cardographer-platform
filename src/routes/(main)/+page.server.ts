@@ -5,10 +5,10 @@ import type {User} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {customAlphabet} from "nanoid"
-import { sendPasswordResetEmail } from "$lib/userutils";
+import { sendPasswordResetEmail, GUEST_EMAIL } from "$lib/userutils";
 
 export const actions: Actions = {
-	default: async ({cookies, request, url}) => {
+	login: async ({cookies, request, url}) => {
 		const data = await request.formData();
 		let email = data.get('email') as string;
 		const password = data.get('password') as string;
@@ -72,5 +72,16 @@ export const actions: Actions = {
 			console.log(`Login success for ${email}`)
 			throw redirect(302, base + "/decks")
 		}
+	},
+	continueAsGuest: async ({cookies}) => {
+		const token = await signUserToken(GUEST_EMAIL);
+		cookies.set(getCookieName(), token, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'none',
+			secure: true
+		})
+		console.log(`Login as guest`)
+		throw redirect(302, base + "/decks")
 	}
 }

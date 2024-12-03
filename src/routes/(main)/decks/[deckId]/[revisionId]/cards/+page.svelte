@@ -64,7 +64,7 @@
 				</UploadButton>
 			</form>
 		{/if}
-		{#if data.revision.cards.length > 0}
+		{#if data.revision.cards.length > 0 && !data.localUser.isGuest}
 			<a class="button m-3" href="cards.csv">
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
 			</a>

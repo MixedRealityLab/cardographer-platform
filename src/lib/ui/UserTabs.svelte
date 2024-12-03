@@ -10,12 +10,14 @@
 	<Tab url="{base}/decks">
 		Decks
 	</Tab>
+	{#if !user.isGuest}
 	<Tab url="{base}/sessions">
 		Sessions
 	</Tab>
 	<Tab url="{base}/analyses">
 		Analyses
 	</Tab>
+	{/if}
 	<Tab url="{base}/users">
 		Users
 	</Tab>
