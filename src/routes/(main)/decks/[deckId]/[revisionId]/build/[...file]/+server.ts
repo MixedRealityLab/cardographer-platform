@@ -19,7 +19,7 @@ export const DELETE: RequestHandler = async function ({locals, params}) {
 		throw error(401, "Deck " + revision.deckName + " is locked")
 	}
 	await deleteFile(deckId, revisionId, file)
-	const diskSizeK = getDiskSizeK(revision.deckId, revision.revId)
+	const diskSizeK = await getDiskSizeK(revision.deckId, revision.revId)
 	await db.collection<CardDeckRevision>("CardDeckRevisions").updateOne({
 	    _id: revision._id
 	}, {

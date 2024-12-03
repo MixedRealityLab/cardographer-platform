@@ -29,7 +29,8 @@ export const load: PageServerLoad = async function ({locals, params}) {
 				deckDescription: true, deckCredits: true, created: true,
 				lastModified: true, revisionName: true,
 				revisionDescription: true, isUsable: true, isPublic: true,
-				isLocked: true, isTemplate: true, cardCount: true
+				isLocked: true, isTemplate: true, cardCount: true,
+				diskSizeK: true,
 			}
 		})
 		.toArray()

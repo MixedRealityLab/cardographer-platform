@@ -52,10 +52,13 @@
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
 			<div class="flex-col flex flex-1">
 				<div>{revision.deckName}
-					<span class="text-gray-600">v{revision.revision} <span
-							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+					<span class="text-gray-600">v{revision.revision}</span> <span
+							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span>
 				</div>
 				<div class="flex flex-row gap-1">
+				    {#if revision.diskSizeK}
+					<span class="text-gray-600">{revision.diskSizeK}K</span>
+					{/if}
 					{#if !revision.isUsable}
 						<div class="chip">Don't Use</div>
 					{/if}

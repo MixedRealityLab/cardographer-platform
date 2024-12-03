@@ -45,7 +45,7 @@ export const DELETE: RequestHandler = async function ({locals, params}) {
 		}, { 
 			projection: {
 				_id: true, deckId: true, revision: true, isUsable: true, isPublic: true,
-				isLocked: true, isTemplate: true, cardCount: true
+				isLocked: true, isTemplate: true, cardCount: true, diskSizeK: true,
 			}
 		}).toArray()
 		revisions.sort((a,b) => b.revision - a.revision)
