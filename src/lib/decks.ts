@@ -75,6 +75,8 @@ export async function getRevision(db: Db, deckId: string, revisionId: number, em
 	}
 	if (email && deck.owners.includes(email)) {
 		revision.isOwnedByUser = true;
+	} else {
+		revision.isOwnedByUser = false;
 	}
 
 	revision.isCurrent = revision.revision == deck.currentRevision

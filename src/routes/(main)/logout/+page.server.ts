@@ -1,5 +1,7 @@
 import type {Actions} from "@sveltejs/kit";
 import { getCookieName } from "$lib/security";
+import {base} from "$app/paths";
+import {redirect} from "@sveltejs/kit";
 
 export const actions: Actions = {
 	default: async ({cookies}) => {
@@ -9,6 +11,6 @@ export const actions: Actions = {
 			sameSite: 'none',
 			secure: true
 		})
-		return ""
+		throw redirect(302, base + "/")
 	}
 }

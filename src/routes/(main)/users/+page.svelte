@@ -47,4 +47,13 @@
 		<div class="self-center">No Users Found</div>
 	{/each}
 
+	<div class="self-center">
+		<form method="post" action="{base}/logout">
+			<div class="grid grid-cols-1 gap-2">
+				<!--suppress HtmlWrongAttributeValue -->
+				<input class="button" type='submit' value='Log out'>
+			</div>
+		</form>
+	</div>
+
 </div>
