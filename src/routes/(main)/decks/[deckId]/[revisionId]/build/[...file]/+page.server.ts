@@ -11,11 +11,11 @@ import type {Actions, PageServerLoad} from './$types'
 export const load: PageServerLoad = async function ({locals, params, parent}) {
 	verifyAuthentication(locals)
 	const {deckId, revisionId, file} = params
-	const revision = await parent()
+	const layout = await parent()
 	try {
 		const files = await getFileInfo(deckId, revisionId, file);
 		return {
-			revision: revision,
+			revision: layout.revision,
 			files: files
 		}
 	} catch (err) {

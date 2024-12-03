@@ -7,15 +7,15 @@
 	import UploadButton from "$lib/ui/UploadButton.svelte";
 	import DeckHeader from "../DeckHeader.svelte";
 
-	export let data: CardDeckRevision
+	export let data
 	let error = ''
 	let message = ''
 </script>
 
-<DeckHeader deck={data}/>
+<DeckHeader deck={data.revision}/>
 
 <div class="p-6 flex flex-col gap-2">
-	{#each data.cards as card}
+	{#each data.revision.cards as card}
 		<ExpandableSection class="py-1">
 			<div slot="title">
 				<div class="flex items-center">
@@ -57,14 +57,14 @@
 		<div class="message-success">{message}</div>
 	{/if}
 	<div class="flex justify-center">
-		{#if data.isOwnedByUser}
+		{#if data.revision.isOwnedByUser}
 			<form method="post" use:enhance enctype="multipart/form-data">
 				<UploadButton class="button m-3" types=".csv,text/csv">
 					<img alt="" class="w-3.5 mr-1" src="{base}/icons/upload.svg"/>Upload CSV
 				</UploadButton>
 			</form>
 		{/if}
-		{#if data.cards.length > 0}
+		{#if data.revision.cards.length > 0}
 			<a class="button m-3" href="cards.csv">
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Download CSV
 			</a>
