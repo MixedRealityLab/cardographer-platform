@@ -15,12 +15,12 @@
 	<label>
 		<span>Title</span>
 		<input name="deckName" bind:value={data.revision.deckName} class="block w-full" required type="text"
-		       disabled={!data.revision.isOwnedByUser}/>
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Description</span>
 		<textarea name="deckDescription" bind:value={data.revision.deckDescription} class="block w-full"
-		          rows="3" disabled={!data.revision.isOwnedByUser}></textarea>
+		          rows="3" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}></textarea>
 	</label>
 	<div>
 		<span class="text-sm text-gray-800">Created</span>
@@ -35,21 +35,21 @@
 	<label>
 		<span>Credits</span>
 		<input name="deckCredits" bind:value={data.revision.deckCredits} class="block w-full" type="text"
-		       disabled={!data.revision.isOwnedByUser}/>
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Revision Subtitle</span>
 		<input name="revisionName" bind:value={data.revision.revisionName} class="block w-full" type="text"
-		       disabled={!data.revision.isOwnedByUser}/>
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Revision Description</span>
 		<textarea name="revisionDescription" bind:value={data.revision.revisionDescription} class="block w-full"
-		          rows="3" disabled={!data.revision.isOwnedByUser}></textarea>
+		          rows="3" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}></textarea>
 	</label>
 	<label>
 		<span>Slug (for filenames and URLs)</span>
-		<input name="slug" bind:value={data.revision.slug} class="block w-full" type="text" disabled={!data.revision.isOwnedByUser}/>
+		<input name="slug" bind:value={data.revision.slug} class="block w-full" type="text" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Image DPI (Dots Per Inch)</span>
@@ -64,7 +64,7 @@
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isPublic" bind:checked={data.revision.isPublic} class="form-checkbox" type="checkbox"
-			       disabled={!data.revision.isOwnedByUser || !data.localUser?.isPublisher}>
+			       disabled={(!data.revision.isOwnedByUser || !data.localUser?.isPublisher) && !data.localUser.isAdmin}>
 			<span>Public</span>
 		</label>
 		<label class="flex items-center gap-2">
@@ -94,5 +94,5 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.revision.isOwnedByUser}>
+	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}>
 </form>
