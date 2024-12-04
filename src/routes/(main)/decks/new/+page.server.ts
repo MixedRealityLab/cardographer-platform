@@ -12,7 +12,7 @@ import { getQuotaDetails, getUsageDecks, getUsageRevisions } from "$lib/quotas"
 const debug = false
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb();
 	const revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
 		.find({
@@ -45,8 +45,8 @@ export const load: PageServerLoad = async function ({locals}) {
 
 export const actions: Actions = {
 	default: async ({ locals, request}) => {
-		verifyAuthentication(locals)
-		verifyLocalUserIsDeckBuilder(locals)
+		await verifyAuthentication(locals)
+		await verifyLocalUserIsDeckBuilder(locals)
 		const usageDecks = await getUsageDecks(locals.email)
 		const usageRevisions = await getUsageRevisions(locals.email)
 		const quota = await getQuotaDetails(locals.email)

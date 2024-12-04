@@ -53,7 +53,7 @@
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
 			<input name="isDisabled" bind:checked={data.user.disabled} class="form-checkbox" type="checkbox"
-			       disabled={!data.localIsAdmin}>
+			       disabled={!data.localUser.isAdmin}>
 			<span>Disabled</span>
 		</label>
 		<label class="flex items-center gap-2">

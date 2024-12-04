@@ -7,7 +7,7 @@ import type {Actions, PageServerLoad} from "./$types"
 import {error} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb();
 	const sessions = await db.collection<Session>('Sessions')
 		.find({owners: locals.email})
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async function ({locals}) {
 export const actions: Actions = {
 	default: async ({locals, request}) => {
 		// this is a session snapshot upload...
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const usageSessions = await getUsageSessions(locals.email)
 		const quota = await getQuotaDetails(locals.email)
 		if (usageSessions >= quota.quota.sessions) {

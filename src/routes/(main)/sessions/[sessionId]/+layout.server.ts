@@ -5,7 +5,7 @@ import {error} from "@sveltejs/kit";
 import type {LayoutServerLoad} from "./$types"
 
 export const load: LayoutServerLoad = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {sessionId} = params
 	const db = await getDb();
 	// permission check

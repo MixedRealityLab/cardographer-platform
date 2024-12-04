@@ -5,7 +5,7 @@ import type {RequestHandler} from '@sveltejs/kit';
 import {error, json} from '@sveltejs/kit';
 
 export const GET: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const {analysisId} = params;
 	const db = await getDb();
 	// permission check
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async function ({locals, params}) {
 
 // noinspection JSUnusedGlobalSymbols
 export const PUT: RequestHandler = async function ({request, locals, params}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const analysis = await request.json() as Analysis;
 	const {analysisId} = params;
 	if (analysisId != analysis._id) {

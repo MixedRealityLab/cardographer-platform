@@ -8,7 +8,7 @@ import type {PageServerLoad} from "./$types"
 import {getQuotaDetails, getUsageAnalyses} from "$lib/quotas"
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb()
 	const analyses = await db.collection<Analysis>('Analyses')
 		.find({owners: locals.email})
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async function ({locals}) {
 
 export const actions: Actions = {
 	default: async ({locals}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const usageAnalyses = await getUsageAnalyses(locals.email)
 		const quota = await getQuotaDetails(locals.email)
 		if (usageAnalyses >= quota.quota.analyses) {

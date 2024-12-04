@@ -60,3 +60,31 @@ being blocked (often).
 It is also not possible to add cards to the board from the locally hosted plugin
 (because the public miro server cannot access the local URLs to access the card images).
 As a workaround you can copy the image onto the board and manually change the miro image name to the card ID.
+
+## Users
+
+### Admins
+
+Note, the pre-configured emails will always automatically be assigned admin status.
+An admin can set/clear the admin status of other users. 
+
+But note that being admin does to automatically give you "deck builder" and/or "publisher" status (see below).
+But as an admin you can change these settings for yourself:
+- log in & go to the "Users" tab; 
+- select a user (or your highlighted) entry; 
+- enable deck builder/publisher/admin options as appropriate and Save.
+
+Note, you can also disable users, i.e. prevent them from logging in.
+
+### Deck Builders
+
+By default users cannot create decks, only sessions & analyses.
+An admin needs to enable "deck builder" for a user before they can create (new) decks.
+
+### Publishers
+
+By default users cannot make decks, sessions or analyses public (i.e. visible to other users).
+An admin needs to enable "publisher" for the user before they can make things public. 
+
+Also note that all users - including Admins - have quotas for numbers of decks, sessions, etc.
+Admin users can increase quotas for any user in the corresponding user's settings page (from the "Users" tab).

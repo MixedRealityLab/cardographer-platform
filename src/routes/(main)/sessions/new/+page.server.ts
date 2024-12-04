@@ -9,7 +9,7 @@ import type {PageServerLoad} from "./$types"
 import { getQuotaDetails, getUsageSessions } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb();
 	const sessions = await db.collection<Session>('Sessions')
 		.find({
@@ -37,7 +37,7 @@ export const load: PageServerLoad = async function ({locals}) {
 
 export const actions: Actions = {
 	default: async ({locals, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const usageSessions = await getUsageSessions(locals.email)
 		const quota = await getQuotaDetails(locals.email)
 		if (usageSessions >= quota.quota.sessions) {

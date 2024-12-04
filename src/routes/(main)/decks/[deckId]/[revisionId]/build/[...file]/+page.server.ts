@@ -10,7 +10,7 @@ import type {Actions, PageServerLoad} from './$types'
 import { getDiskSizeK } from "../../../../../../../lib/builders";
 
 export const load: PageServerLoad = async function ({locals, params, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {deckId, revisionId, file} = params
 	const layout = await parent()
 	try {
@@ -68,7 +68,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 
 export const actions: Actions = {
 	upload: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {deckId, revisionId} = params
 		const db = await getDb();
 		// permission check
@@ -98,7 +98,7 @@ export const actions: Actions = {
 		}
 	},
 	build: async ({locals, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {deckId, revisionId} = params
 		const db = await getDb()
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

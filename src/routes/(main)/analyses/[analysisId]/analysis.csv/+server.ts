@@ -7,7 +7,7 @@ import type {RequestHandler} from '@sveltejs/kit'
 import {error} from '@sveltejs/kit'
 
 export const GET: RequestHandler = async function ({locals, params, url}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {analysisId} = params;
 	const db = await getDb();
 	const analysis = await db.collection<Analysis>('Analyses').findOne({

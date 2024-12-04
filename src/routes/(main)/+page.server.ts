@@ -63,6 +63,10 @@ export const actions: Actions = {
 				console.log(`Login failed unknown user ${email}`)
 				return fail(401, {error: 'Login Failed'})
 			}
+			if (user.disabled) {
+				console.log(`Login rejected for disabled user ${email}`)
+				return fail(401, {error: 'This accound is disabled'})
+			}
 			const hash = await hashPassword(password)
 			if (user.password != hash) {
 				console.log(`Login failed for user ${email}`)

@@ -85,7 +85,7 @@ export const actions: Actions = {
 		return {success: true}
 	},
 	select: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
 		const url = "https://miro.com/app/board/" + params.id
@@ -141,7 +141,7 @@ export const actions: Actions = {
 		return {success: true}
 	},
 	unselect: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
 		if (!id) {

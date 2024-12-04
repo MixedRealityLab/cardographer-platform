@@ -6,6 +6,7 @@
 	let error = ''
 	let working = false
 	let reset = false
+
 </script>
 
 <AppBar back="{base}/"/>
@@ -14,7 +15,6 @@
 	<form method="post"  use:enhance={() => {
 		working = true
 		return async ({ result, update }) => {
-			working = false
 			reset = true
 			update()
 	    };
@@ -30,7 +30,7 @@
 				<div class="message-error">{error}</div>
 			{/if}
 			{#if reset}
-				<div class="message-success">An email has been sent to the above account</div>
+				<div class="message-success">An email has been sent if the account exists and is enabled. Please wait 5 minutes before trying again.</div>
 			{/if}
 			<!--suppress HtmlWrongAttributeValue -->
 			<input class="button self-center" disabled={working || reset} type='submit' value='Reset Password'>

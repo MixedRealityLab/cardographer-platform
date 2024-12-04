@@ -8,7 +8,7 @@ import {parse} from "csv";
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {sessionId} = params;
 		const db = await getDb();
 		// permission check

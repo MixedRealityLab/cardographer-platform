@@ -7,7 +7,7 @@ import {error, json} from '@sveltejs/kit';
 const debug = true;
 
 export const GET: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const {deckId, revisionId} = params;
 	if (debug) console.log(`get revision ${revisionId} for ${deckId}`);
 	const db = await getDb();

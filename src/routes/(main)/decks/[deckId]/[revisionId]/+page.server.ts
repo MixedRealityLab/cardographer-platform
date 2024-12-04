@@ -8,7 +8,7 @@ import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {deckId, revisionId} = params
 		const db = await getDb()
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

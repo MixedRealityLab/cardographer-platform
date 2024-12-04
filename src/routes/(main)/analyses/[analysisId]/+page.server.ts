@@ -6,7 +6,7 @@ import type {Actions, PageServerLoad} from './$types'
 import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const analysis = await parent()
 	const db = await getDb()
 	const users = await db.collection<User>('Users')
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {analysisId} = params
 		const db = await getDb()
 		const analysis = await db.collection<Analysis>('Analyses').findOne({

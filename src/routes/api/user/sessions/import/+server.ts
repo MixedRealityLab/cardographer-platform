@@ -10,7 +10,7 @@ const debug = false
 
 // noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	// this is a snapshot API POST
 	let ss: any[];
 	const body = await request.json()

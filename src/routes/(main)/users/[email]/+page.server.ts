@@ -6,14 +6,11 @@ import type {Actions} from "@sveltejs/kit"
 import {error} from "@sveltejs/kit"
 import { getUserIsAdmin } from "../../../../lib/userutils";
 
-import {getDb} from "$lib/db";
-import {getUser} from "$lib/userutils";
-import {verifyAuthentication} from "$lib/security";
 import type {PageServerLoad} from "./$types"
 import { getQuotaDetails } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {email} = params;
 	const db = await getDb();
 	const user = await getUser(db, email, locals.email)
@@ -26,7 +23,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {email} = params
 		const db = await getDb()
 		let localUser = await db.collection<User>('Users')

@@ -8,7 +8,7 @@ import { getUsageSnapshots, getQuotaDetails } from "$lib/quotas";
 
 // noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const usageSnapshots = await getUsageSnapshots(locals.email)
 	const quota = await getQuotaDetails(locals.email)
 	if (usageSnapshots >= quota.quota.snapshots) {

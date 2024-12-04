@@ -6,7 +6,7 @@ import {error, json} from "@sveltejs/kit";
 
 // noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals,request,params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {sessionId} = params;
 	const {snapshotId} = await request.json()
     if (!snapshotId) {

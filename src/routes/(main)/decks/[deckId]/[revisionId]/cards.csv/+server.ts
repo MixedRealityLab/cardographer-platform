@@ -6,8 +6,8 @@ import type {RequestHandler} from '@sveltejs/kit';
 import { verifyLocalUserIsDeckBuilder } from '$lib/userutils';
 
 export const GET: RequestHandler = async function ({locals, params, url}) {
-	verifyAuthentication(locals)
-	verifyLocalUserIsDeckBuilder(locals)
+	await verifyAuthentication(locals)
+	await verifyLocalUserIsDeckBuilder(locals)
 	const {deckId, revisionId} = params
 	const db = await getDb()
 	const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

@@ -15,8 +15,7 @@ export const actions: Actions = {
 		}
 		// check password
 		const db = await getDb();
-		const timeoutDate = new Date()
-		timeoutDate.setHours(timeoutDate.getHours() - 2);
+		const timeoutDate = new Date(Date.now() - 2*60*60*1000)
 		const user = await db.collection<User>('Users').findOne({
 			resetCode: code,
 			disabled: false,

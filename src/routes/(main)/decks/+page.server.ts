@@ -5,7 +5,7 @@ import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals, true, true)
+	await verifyAuthentication(locals, true, true)
 	const db = await getDb();
 	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries')
 		.find({owners: locals.email})

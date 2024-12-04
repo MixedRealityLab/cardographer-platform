@@ -7,7 +7,7 @@ import {rm} from "fs/promises";
 
 // noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {deckId} = params;
 	const db = await getDb();
 	// permission check

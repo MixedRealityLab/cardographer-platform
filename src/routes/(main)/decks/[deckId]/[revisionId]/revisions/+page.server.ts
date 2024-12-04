@@ -10,7 +10,7 @@ import { getUser } from "$lib/userutils"
 import { getUsageRevisions, getQuotaDetails } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {deckId} = params;
 	const db = await getDb();
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
@@ -57,7 +57,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 
 export const actions: Actions = {
 	default: async ({locals, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const usageRevisions = await getUsageRevisions(locals.email)
 		const quota = await getQuotaDetails(locals.email)
 		if (usageRevisions >= quota.quota.revisions) {

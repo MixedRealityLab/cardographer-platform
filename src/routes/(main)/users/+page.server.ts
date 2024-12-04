@@ -6,7 +6,7 @@ import { getUserIsAdmin, GUEST_EMAIL } from "$lib/userutils"
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals, true, true)
+	await verifyAuthentication(locals, true, true)
 	if (locals.email == GUEST_EMAIL) {
 		return {
 			users: []

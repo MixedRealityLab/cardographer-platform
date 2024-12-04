@@ -5,7 +5,7 @@ import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb()
 	const session:Session = await parent()
     let snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 /** @type {import('./$types').Actions} */
 export const actions = {
 	default: async ({request, locals, params}) => {
-        verifyAuthentication(locals)
+        await verifyAuthentication(locals)
 		const {sessionId} = params
 		const db = await getDb()
 		const session = await db.collection<Session>('Sessions').findOne({

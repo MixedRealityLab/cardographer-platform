@@ -81,14 +81,27 @@ export async function getUser(db:Db, email:string, authEmail:string): Promise<Us
     user.localIsAdmin = isAdmin
     return user
 }
+const RESET_WAIT_MINUTES = 1
 
 export async function sendPasswordResetEmail(email: string, url: string) : Promise<any> {
-    console.log(`reset password for ${email}`)
     if (!email) {
         return fail(400)
     }
-    // check password
     const db = await getDb();
+    const timeoutDate = new Date(Date.now() - RESET_WAIT_MINUTES*60*1000)
+    const inProgress = await db.collection<User>('Users').count({
+        email: email,
+        disabled: false,
+        resetTime: {
+            $gt: timeoutDate
+        }
+    })
+    if (inProgress!=0) {
+        console.log(`password reset done recently: ${email}`);
+        return fail(422, {error: "Sent recently"})
+    }
+
+    // check password
     const nanoid = customAlphabet('useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict', 16)
     const code = nanoid()
     const user = await db.collection<User>('Users').updateOne({email: email, disabled: false}, {
@@ -98,13 +111,13 @@ export async function sendPasswordResetEmail(email: string, url: string) : Promi
         }
     })
     if (user.modifiedCount == 0) {
-        if (debug) console.log(`password reset user not found: ${email}`);
+        console.log(`password reset user not found or disabled: ${email}`);
         return fail(404, {error: "Email not Found"})
     }
 
+    const protocol = url.host.indexOf("localhost")==0 ? "http" : "https"
+    const sessionUrl = new URL(protocol + '://' + url.host + base + '/password/' + code).toString()
     if (emailConfigured) {
-        const protocol = url.host.indexOf("localhost")==0 ? "http" : "https"
-        const sessionUrl = new URL(protocol + '://' + url.host + base + '/password/' + code).toString()
         await transport.sendMail({
             from: process.env['SMTP_email'],
             to: email,
@@ -114,13 +127,20 @@ export async function sendPasswordResetEmail(email: string, url: string) : Promi
         });
         console.log(`Sent password reset email to ${email}`)
     } else {
-        console.log("No Email Setup")
-        console.log('https://' + url.host + base + '/password/' + code)
+        console.log("Unable to send password reset email: no Email Setup")
+        console.log(sessionUrl)
     }
 
     return {success: true}
 }
 
+export async function isLocalUserDisabled(locals: App.Locals) : Promise<boolean> {
+    if (!locals.authenticated) {
+		throw error(401, "Authentication Required")
+	}
+    const user = await getLocalUser(locals)
+    return user.disabled
+}
 export async function verifyLocalUserIsDeckBuilder(locals: App.Locals) : Promise<void> {
     if (!locals.authenticated) {
 		throw error(401, "Authentication Required")

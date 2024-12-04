@@ -12,8 +12,8 @@ const debug = true
 
 export const actions: Actions = {
 	default: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
-		verifyLocalUserIsDeckBuilder(locals)
+		await verifyAuthentication(locals)
+		await verifyLocalUserIsDeckBuilder(locals)
 		const data = await request.formData();
 		const csv = data.get('files') as File
 		const {deckId, revisionId} = params;

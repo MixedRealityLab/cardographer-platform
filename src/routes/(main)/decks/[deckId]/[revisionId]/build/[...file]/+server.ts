@@ -10,8 +10,8 @@ import { CardDeckRevisionSummary } from "$lib/types";
 
 // noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals)
-	verifyLocalUserIsDeckBuilder(locals)
+	await verifyAuthentication(locals)
+	await verifyLocalUserIsDeckBuilder(locals)
 	const {deckId, revisionId, file} = params;
 	const db = await getDb();
 	const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

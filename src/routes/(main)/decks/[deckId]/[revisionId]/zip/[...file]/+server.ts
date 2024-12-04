@@ -6,8 +6,8 @@ import AdmZip from "adm-zip";
 import { verifyLocalUserIsDeckBuilder } from "$lib/userutils";
 
 export const GET = async function ({locals, params}) {
-	verifyAuthentication(locals)
-	verifyLocalUserIsDeckBuilder(locals)
+	await verifyAuthentication(locals)
+	await verifyLocalUserIsDeckBuilder(locals)
 	const {deckId, revisionId, file} = params;
 	const db = await getDb();
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
