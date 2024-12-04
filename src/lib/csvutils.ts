@@ -50,7 +50,7 @@ export function readCards(revision: CardDeckRevision, cells: string[][], addColu
 		const title = headers[i];
 		const prop = revision.propertyDefs.find((pd) => pd.title ? pd.title == title : pd.use == title);
 		const use = hasUse && cells[useRow].length > i ? guessUse(cells[useRow][i]) : guessUse(title);
-		const defaultExport = hasExport && cells[exportRow].length > i ? isTrue(cells[exportRow][i]) : false;
+		const defaultExport = hasExport && cells[exportRow].length > i ? isTrue(cells[exportRow][i]) : true;
 		const sortBy = i + (hasRowtype ? 0 : 1);
 		const description = hasDescription && cells[descriptionRow].length > i ? cells[descriptionRow][i] : '';
 		if (prop) {
