@@ -11,10 +11,11 @@ export const load: PageServerLoad = async function ({locals}) {
 		.find({owners: locals.email})
 		.toArray()
 	// current revision of each deck I own
-	const myrevisions = await Promise.all(decks.map((deck) =>
+	let myrevisions = await Promise.all(decks.map((deck) =>
 		db.collection<CardDeckRevision>('CardDeckRevisions')
 			.findOne({deckId: deck._id, revision: deck.currentRevision})
 	));
+	myrevisions = myrevisions.filter((deck) => !!deck)
 	myrevisions.forEach((deck) => deck.isOwnedByUser = true);
 	// public revisions (not including mine)
 	const publicrevisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')

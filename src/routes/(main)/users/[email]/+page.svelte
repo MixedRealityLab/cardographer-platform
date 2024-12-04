@@ -6,13 +6,23 @@
 	import type {CardDeckRevision} from "$lib/types"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import Tab from "$lib/ui/Tab.svelte"
-
+	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
+	import {goto} from "$app/navigation"
+	
 	let {email} = $page.params
 
 	export let data
 
 	let error = ''
 	let message = ''
+
+	async function deleteUser() {
+		const {email} = $page.params;
+		const res = await fetch(`${base}/users/${email}`, {
+			method: 'DELETE'
+		})
+		await goto(`${base}/users`);
+	}
 </script>
 
 <AppBar back="{base}/users" subtitle="User">
@@ -118,5 +128,15 @@
 		<input name="extraDiskSizeK" bind:value={data.quotaDetails.extraQuota.diskSizeK} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
+
+	<ConfirmDialog
+			cancelTitle="Cancel"
+			confirmTitle="Delete"
+			let:confirm="{confirmThis}"
+			title="Delete User Account and ALL Data? (Cannot be undone!)">
+		<button class="button-delete button m-2" on:click={() => confirmThis(deleteUser)}>
+			<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete User and ALL Data User
+		</button>
+	</ConfirmDialog>
 
 </form>

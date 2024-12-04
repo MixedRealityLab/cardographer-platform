@@ -138,7 +138,22 @@ export async function isLocalUserDisabled(locals: App.Locals) : Promise<boolean>
     if (!locals.authenticated) {
 		throw error(401, "Authentication Required")
 	}
-    const user = await getLocalUser(locals)
+    if (locals.email == GUEST_EMAIL) {
+        return false
+    }
+    const db = await getDb()
+    const user = await db.collection<User>('Users')
+    .findOne({email:locals.email}, {
+        projection: {
+            disabled: true,
+            isAdmin: true, isPublisher: true, isDeckBuilder: true,
+            isVerified: true,
+        }
+    })
+    if (!user) {
+        console.log(`user ${locals.email} no longer exists?!`)
+        return true
+    }
     return user.disabled
 }
 export async function verifyLocalUserIsDeckBuilder(locals: App.Locals) : Promise<void> {

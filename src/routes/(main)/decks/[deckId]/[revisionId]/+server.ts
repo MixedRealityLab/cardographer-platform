@@ -35,7 +35,7 @@ export const DELETE: RequestHandler = async function ({locals, params}) {
 		await rm('/app/uploads/' + deckId + '/' + revision, {recursive: true, force: true})
 	}
 	catch (err){ 
-		console.log(`Possible error deleting deck ${deckId} files: ${err.message}`)
+		console.log(`Possible error deleting revision ${deckId}/${revision} files: ${err.message}`)
 	}
 	if (deck.currentRevision == revision) {
 		console.log(`Note, delete current revision of deck ${deckId}`)
