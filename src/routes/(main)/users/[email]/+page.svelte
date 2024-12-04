@@ -8,7 +8,7 @@
 	import Tab from "$lib/ui/Tab.svelte"
 	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
 	import {goto} from "$app/navigation"
-	
+
 	let {email} = $page.params
 
 	export let data
@@ -135,7 +135,7 @@
 			let:confirm="{confirmThis}"
 			title="Delete User Account and ALL Data? (Cannot be undone!)">
 		<button class="button-delete button m-2" on:click={() => confirmThis(deleteUser)}>
-			<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete User and ALL Data User
+			<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete User and ALL User Data
 		</button>
 	</ConfirmDialog>
 
