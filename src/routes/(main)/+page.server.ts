@@ -2,10 +2,18 @@ import {base} from "$app/paths";
 import {getDb} from "$lib/db";
 import {getCookieName, hashPassword, REGISTER_CODE, signUserToken} from "$lib/security";
 import type {User} from "$lib/types";
+import type {PageServerLoad} from './$types'
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {customAlphabet} from "nanoid"
 import { sendPasswordResetEmail, GUEST_EMAIL } from "$lib/userutils";
+
+export const load: PageServerLoad = (async ({}) => {
+	const needCodeToRegister = !!REGISTER_CODE
+	return {
+		needCodeToRegister,
+	}
+})
 
 export const actions: Actions = {
 	login: async ({cookies, request, url}) => {
@@ -22,18 +30,16 @@ export const actions: Actions = {
 		let user = await db.collection<User>('Users').findOne({email: email})
 		// register code
 		if (register) {
-			const code = data.get('code')
-			if (code != REGISTER_CODE) {
-				console.log(`Error: attempt to register with wrong code for ${email}`)
-				return fail(401, {error: 'Incorrect Register Code'})
+			if (!!REGISTER_CODE) {
+				const code = data.get('code')
+				if (code != REGISTER_CODE) {
+					console.log(`Error: attempt to register with wrong code for ${email}`)
+					return fail(401, {error: 'Incorrect Register Code'})
+				}
 			}
 			if (!!user) {
 				return fail(400, {error: `That user is already registered`});
 			}
-			if (!REGISTER_CODE) {
-				return fail(401, {error: 'Register Code Missing!'})
-			}
-
 			const nanoid = customAlphabet('useandom26T198340PX75pxJACKVERYMINDBUSHWOLFGQZbfghjklqvwyzrict', 32)
 			const hash = nanoid()
 			const name = data.get('name') as string

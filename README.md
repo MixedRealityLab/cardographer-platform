@@ -1,15 +1,19 @@
 # Cardographer platform components
 
-Cardographer server stuff. Deck editing and session analysis. Currently hosted at [https://cardographer.cs.nott.ac.uk/platform]() for University of Nottingham staff.
+A web platform for creating, using and analysing pre-defined concept cards, e.g. ideation cards. 
+Developed at the University of Nottingham and supported by UKRI-funded Horizon projects [Grant Numbers EP/T022493/1 and EP/V00784X/1].
 
-© The University of Nottingham, 2021-2022.
+Copyright © The University of Nottingham, 2021-2024. [MIT License](LICENSE)
 
 See [the wiki](https://github.com/MixedRealityLab/cardographer-platform/wiki)
 for user documentation, and [examples](). 
 
 Can be used with
 - [miro](docs/miro.md) - working
-- [unity](docs/unity.md) - soon, in particular [cardographer virtual tabletop](https://github.com/MixedRealityLab/cardographer-tabletop)
+
+(A prototype [unity](docs/unity.md) client exists but is not integrated or supported: [cardographer virtual tabletop](https://github.com/MixedRealityLab/cardographer-tabletop))
+
+There is a public instance currently (December 2024) hosted at [https://cardographer.cs.nott.ac.uk/platform]() for interested researchers, but we would encourage you to set up your own instance for long-term use.
 
 ## Build
 
@@ -22,9 +26,9 @@ See `Dockerfile` or `src/docker/dev/Dockerfile`.
 
 Copy `server.env` to `server.env.local` (or whatever location you will use for environment vars).
 
-Set SMTP (email) sending settings (unless you are going to use mongo-express to set up users).
-
-Set ADMIN_USERS to email address(es) of initial/default admin users.
+- Set SMTP_ (email) sending settings (unless you are going to use mongo-express to set up users).
+- Set ADMIN_USERS to email address(es) of initial/default admin users.
+- Set REGISTER_CODE if you want new users to have to provide this code in order to register (rather than just validate their email).
 
 ## Run
 
@@ -52,3 +56,7 @@ Share app "Installation URL", and agree.
 
 Note, this probably won't work from an Incognito browser because of cookies 
 being blocked (often).
+
+It is also not possible to add cards to the board from the locally hosted plugin
+(because the public miro server cannot access the local URLs to access the card images).
+As a workaround you can copy the image onto the board and manually change the miro image name to the card ID.

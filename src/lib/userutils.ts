@@ -103,7 +103,8 @@ export async function sendPasswordResetEmail(email: string, url: string) : Promi
     }
 
     if (emailConfigured) {
-        const sessionUrl = new URL('https://' + url.host + base + '/password/' + code).toString()
+        const protocol = url.host.indexOf("localhost")==0 ? "http" : "https"
+        const sessionUrl = new URL(protocol + '://' + url.host + base + '/password/' + code).toString()
         await transport.sendMail({
             from: process.env['SMTP_email'],
             to: email,

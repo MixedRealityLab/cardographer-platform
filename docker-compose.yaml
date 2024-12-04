@@ -36,7 +36,6 @@ services:
             dockerfile: src/docker/dev/Dockerfile
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
-            - REGISTER_CODE=1234
         env_file: "server.env.local"
         restart: unless-stopped
         depends_on:

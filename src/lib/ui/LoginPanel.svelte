@@ -3,6 +3,7 @@
 
 	export let register = false
 	export let canEmail = true
+	export let needCode = false
 
 	export let error: string = null
 	export let success: string = null
@@ -32,7 +33,7 @@
 		{/if}
 	</label>
 	{/if}
-	{#if register}
+	{#if register && needCode}
 		<label>
 			<span>Registration code</span>
 			<input class="w-full" name="code" required type="password"/>

@@ -50,6 +50,7 @@
 	}}>
 		<LoginPanel register={register} error={form ? form.error : null}
 			success={registered ? "Please check your email to set your password." : null}
+			needCode={data.needCodeToRegister}
 			/>
 	</form>
 </div>
