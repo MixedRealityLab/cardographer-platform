@@ -147,7 +147,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	const stats = await stat(relPath);
 	if (stats.isFile()) {
 		if (debug) console.log(`getDirInfo for file ${relPath}`);
-		return [{name: path, path: relPath, isDirectory: false}];
+		return [{name: path, path: relPath, isDirectory: false, size: Math.ceil(stats.size/1024)}];
 	}
 	if (!stats.isDirectory()) {
 		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
@@ -157,10 +157,12 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	const fis: FileInfo[] = [];
 	for (const file of files) {
 		if (file.isDirectory() || file.isFile()) {
+			let size = file.isDirectory() ? (await getDirDiskSizeK(`${relPath}/${file.name}`)) : (file.isFile() ? (await stat(`${relPath}/${file.name}`))?.size : 0)
 			fis.push({
 				name: file.name,
 				path: `${normalizedPath}/${file.name}`.replace(/^\//, ''),
-				isDirectory: file.isDirectory()
+				isDirectory: file.isDirectory(),
+				size: Math.ceil(size/1024),
 			});
 		}
 	}

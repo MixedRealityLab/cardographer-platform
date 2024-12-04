@@ -4,6 +4,7 @@
 	import type {Session} from "$lib/types"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import Tab from "$lib/ui/Tab.svelte"
+	import {SHOW_TABLETOP} from '$lib/constants'
 
 	export let data: Session
 	const {sessionId} = $page.params
@@ -24,7 +25,7 @@
 			WebApp
 		</Tab>
 	{/if}
-	{#if data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
+	{#if SHOW_TABLETOP && data && data.decks && data.decks.length !== 0 && (!data.sessionType || data.sessionType === 'tabletop')}
 		<Tab url="{base}/sessions/{sessionId}/tabletop">
 			Tabletop
 		</Tab>

@@ -4,10 +4,10 @@ import {verifyAuthentication} from "$lib/security";
 import type {User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {error} from "@sveltejs/kit"
-import { getUserIsAdmin } from "../../../../lib/userutils";
+import { getUserIsAdmin } from "$lib/userutils";
 
-import type {PageServerLoad} from "./$types"
-import { getQuotaDetails } from "$lib/quotas";
+import type {PageServerLoad, Usage} from "./$types"
+import { getQuotaDetails, getUsageDiskSizeK, getUsageDecks, getUsageRevisions, getUsageSessions, getUsageSnapshots, getUsageAnalyses } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	await verifyAuthentication(locals)
@@ -15,9 +15,18 @@ export const load: PageServerLoad = async function ({locals, params}) {
 	const db = await getDb();
 	const user = await getUser(db, email, locals.email)
 	const quotaDetails = await getQuotaDetails(email)
+	const usage:Usage  = {
+		decks: await getUsageDecks(email),
+		sessions: await getUsageSessions(email),
+		snapshots: await getUsageSnapshots(email),
+		analyses: await getUsageAnalyses(email),
+		revisions: await getUsageRevisions(email),
+		diskSizeK: await getUsageDiskSizeK(email),
+	}
 	return {
 		user: user,
-		quotaDetails
+		quotaDetails,
+		usage,
 	}
 }
 

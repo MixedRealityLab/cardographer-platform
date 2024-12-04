@@ -57,7 +57,7 @@
 				</div>
 				<div class="flex flex-row gap-1">
 				    {#if revision.diskSizeK}
-					<span class="text-gray-600">{revision.diskSizeK}K</span>
+					<span class="text-gray-600">({revision.diskSizeK} KB)</span>
 					{/if}
 					{#if !revision.isUsable}
 						<div class="chip">Don't Use</div>
@@ -93,6 +93,12 @@
 	{#if data.usageRevisions >= data.quotaRevisions}
 		<div class="message-error">Sorry, you have reached your deck revision quota ({data.usageRevisions}/{data.quotaRevisions}) - 
 		please ask an administrator if you need to change this.</div>
+	{:else if data.usageDiskSizeK >= data.quotaDiskSizeK}
+		<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK}) - 
+		please ask an administrator if you need to change this.</div>
+	{:else if data.revisions.length > 0 && data.revisions[data.revisions.length-1].diskSizeK && data.usageDiskSizeK + data.revisions[data.revisions.length-1].diskSizeK > data.quotaDiskSizeK }
+		<div class="message-error">Warning, this would tak you over your disk quota ({data.usageDiskSizeK}+{data.revisions[data.revisions.length-1].diskSizeK}/{data.quotaDiskSizeK}) - 
+		please ask an administrator if you need to change this.</div>
 	{/if}
 
 	<div class="flex justify-center">
@@ -105,7 +111,7 @@
 				<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
 			</button>
 		</ConfirmDialog>
-		{#if data.localUser?.isDeckBuilder && data.usageRevisions < data.quotaRevisions}
+		{#if data.localUser?.isDeckBuilder && data.usageRevisions < data.quotaRevisions && data.usageDiskSizeK < data.quotaDiskSizeK }
 		<form method="post">
 			<button class="button m-2">
 				<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision

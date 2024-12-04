@@ -3,7 +3,7 @@
 </script>
 
 <!-- fixed and moving :-/ -->
-<div class="w-full pt-1 pb-1 bg-gray-200 flex flex-wrap text-black text-sm justify-center text-center">
+<div class="w-full pt-1 pb-1 bg-gray-100 flex flex-wrap text-black text-sm justify-center text-center">
 	<a href="{PROJECT_URL}" target="_blank">Cardographer, by the University of Nottingham</a>
 </div>
 

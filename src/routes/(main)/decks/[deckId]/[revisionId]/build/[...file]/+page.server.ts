@@ -7,17 +7,23 @@ import {DeckBuildStatus} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Db} from "mongodb";
 import type {Actions, PageServerLoad} from './$types'
-import { getDiskSizeK } from "../../../../../../../lib/builders";
+import { getDiskSizeK } from "$lib/builders";
+import { getQuotaDetails, getUsageDiskSizeK } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params, parent}) {
 	await verifyAuthentication(locals)
 	const {deckId, revisionId, file} = params
 	const layout = await parent()
+	const quota = await getQuotaDetails(locals.email)
+	const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
 	try {
 		const files = await getFileInfo(deckId, revisionId, file);
 		return {
 			revision: layout.revision,
-			files: files
+			files: files,
+			overQuota: usageDiskSizeK > quota.quota.diskSizeK,
+			usageDiskSizeK,
+			quotaDiskSizeK: quota.quota.diskSizeK,
 		}
 	} catch (err) {
 		throw error(500, `error getting file ${deckId}/${revisionId}/${file}: ${err.message}`)
@@ -50,7 +56,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 		revision.build.lastBuilt = now
 		revision.lastModified = now
 		revision.output = {isUserModified: false, atlases: result.atlases}
-		revision.diskSizeK = await getDiskSizeK(revision.deckId, revision.revId)
+		revision.diskSizeK = await getDiskSizeK(revision.deckId, String(revision.revision))
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 		console.log(result)
 	} catch (e) {
@@ -61,7 +67,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 		const now = new Date().toISOString();
 		revision.build.lastBuilt = now
 		revision.lastModified = now
-		revision.diskSizeK = await getDiskSizeK(revision.deckId, revision.revId)
+		revision.diskSizeK = await getDiskSizeK(revision.deckId, String(revision.revision))
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 	}
 }

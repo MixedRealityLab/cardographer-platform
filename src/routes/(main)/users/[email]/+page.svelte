@@ -89,32 +89,32 @@
 	<input class="button self-center mt-2" type='submit' value='Save'>
 	
 	<label>
-		<span>Quota of extra Decks (base quota is {data.quotaDetails.baseQuota.decks})</span>
+		<span>Quota of extra Decks (using {data.usage.decks}; base quota is {data.quotaDetails.baseQuota.decks})</span>
 		<input name="extraDecks" bind:value={data.quotaDetails.extraQuota.decks} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Deck Revisions (base quota is {data.quotaDetails.baseQuota.revisions})</span>
+		<span>Quota of extra Deck Revisions (using {data.usage.revisions}; base quota is {data.quotaDetails.baseQuota.revisions})</span>
 		<input name="extraRevisions" bind:value={data.quotaDetails.extraQuota.revisions} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Sessions (base quota is {data.quotaDetails.baseQuota.sessions})</span>
+		<span>Quota of extra Sessions (using {data.usage.sessions}; base quota is {data.quotaDetails.baseQuota.sessions})</span>
 		<input name="extraSessions" bind:value={data.quotaDetails.extraQuota.sessions} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Snapshots (base quota is {data.quotaDetails.baseQuota.snapshots})</span>
+		<span>Quota of extra Snapshots (using {data.usage.snapshots}; base quota is {data.quotaDetails.baseQuota.snapshots})</span>
 		<input name="extraSnapshots" bind:value={data.quotaDetails.extraQuota.snapshots} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Analyses (base quota is {data.quotaDetails.baseQuota.analyses})</span>
+		<span>Quota of extra Analyses (using {data.usage.analyses}; base quota is {data.quotaDetails.baseQuota.analyses})</span>
 		<input name="extraAnalyses" bind:value={data.quotaDetails.extraQuota.analyses} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra File Space (base quota is {data.quotaDetails.baseQuota.diskSizeK})</span>
+		<span>Quota of extra File Space (using {data.usage.diskSizeK} KB; base quota is {data.quotaDetails.baseQuota.diskSizeK})</span>
 		<input name="extraDiskSizeK" bind:value={data.quotaDetails.extraQuota.diskSizeK} class="block w-full" required type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>

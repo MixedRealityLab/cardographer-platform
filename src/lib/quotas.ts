@@ -1,9 +1,10 @@
 import type {Quota,QuotaDetails, Usage} from "$lib/types"
 import { getDb } from "./db";
-import { User } from "./types";
+import { CardDeckRevision, User } from "./types";
 import {error} from "@sveltejs/kit";
 import {GUEST_EMAIL} from "$lib/userutils"
 import type {CardDeckSummary, CardDeckRevisionSummary, Analysis, Session, SessionSnapshot } from "$lib/types"
+import { getDiskSizeK } from "./builders";
 
 const zero_quota: Quota = {
     decks: 0,
@@ -35,8 +36,10 @@ const deck_builder_quota: Quota = {
 	sessions: 10,
 	snapshots: 20,
 	analyses: 20,
-	diskSizeK: 2000000,  
+	diskSizeK: 10000,  
 }
+
+export const CHECK_REVISION_DISK_SIZE = false
 
 function addQuotas(a:Quota, b:Quota): Quota {
     return {
@@ -111,4 +114,32 @@ export async function getUsageAnalyses(email: string) : Promise<number> {
         {quotaUser:email},
     )
     return number
+}
+export async function getUsageDiskSizeK(email: string) : Promise<number> {
+    const db = await getDb()
+    const sizeRec = await db.collection<CardDeckRevision>("CardDeckRevisions").aggregate([
+        { $match: { quotaUser: email } },
+        { $group: { _id:'', diskSizeK: { $sum: '$diskSizeK' }}},
+    ]).next()
+    const size = sizeRec === null ? 0 : sizeRec.diskSizeK
+    //console.log(`disk usage for ${email}: ${size}`, sizeRec)
+    return size
+}
+
+export async function checkRevisionDiskSizes(revisions: CardDeckRevision[]): Promise<void> {
+    const db = await getDb()
+    for (let revision of revisions) {
+        if (revision.diskSizeK === undefined || revision.diskSizeK === null) {
+            const size = await getDiskSizeK(revision.deckId, String(revision.revision))
+            await db.collection<CardDeckRevision>("CardDeckRevisions").updateOne({
+                _id: revision._id
+            }, {
+                $set: {
+                    diskSizeK: size,
+                }
+            })
+            console.log(`Fix disk size of revision ${revision.deckId}/${revision.revision} = ${size}`)
+            revision.diskSizeK = size
+        }
+    }
 }

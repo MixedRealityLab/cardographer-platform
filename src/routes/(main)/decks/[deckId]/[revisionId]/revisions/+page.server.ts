@@ -7,7 +7,7 @@ import {error, redirect} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from "./$types";
 import type {LayoutServerLoad} from "./$types"
 import { getUser } from "$lib/userutils"
-import { getUsageRevisions, getQuotaDetails } from "$lib/quotas";
+import { getUsageDiskSizeK, getUsageRevisions, getQuotaDetails, checkRevisionDiskSizes, CHECK_REVISION_DISK_SIZE } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	await verifyAuthentication(locals)
@@ -34,6 +34,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 			}
 		})
 		.toArray()
+	await checkRevisionDiskSizes(revisions)
 	revisions.sort((a,b) => a.revision - b.revision)
 	const current = revisions.find((r) => r.revision == deck.currentRevision);
 	// note +page@ skips most layout data, so add this explicitly here...
@@ -44,6 +45,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 		//console.log(`local user is ${locals.email}, ${localUser.isDeckBuilder ? 'deck builder' : ''}, ${localUser.isPublisher ? 'publisher' : ''}, ${localUser.isAdmin ? 'admin' : ''}`)
 	}
 	const usageRevisions = await getUsageRevisions(locals.email)
+	const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
 	const quota = await getQuotaDetails(locals.email)
 	
 	return {
@@ -52,6 +54,8 @@ export const load: PageServerLoad = async function ({locals, params}) {
 		localUser,
 		usageRevisions,
 		quotaRevisions : quota.quota.revisions,
+		usageDiskSizeK,
+		quotaDiskSizeK: quota.quota.diskSizeK,
 	}
 }
 
@@ -60,9 +64,10 @@ export const actions: Actions = {
 		await verifyAuthentication(locals)
 		const usageRevisions = await getUsageRevisions(locals.email)
 		const quota = await getQuotaDetails(locals.email)
-		if (usageRevisions >= quota.quota.revisions) {
-			console.log(`Exceeded revision quota ${usageRevisions}/${quota.quota.revisions} for ${locals.email}`)
-			throw error(422,"Revisions quota exceeded")
+		const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
+		if (usageRevisions >= quota.quota.revisions || usageDiskSizeK >= quota.quota.diskSizeK) {
+			console.log(`Exceeded quota ${usageRevisions}/${quota.quota.revisions} revisions ${usageDiskSizeK}/${quota.quota.diskSizeK} disk for ${locals.email}`)
+			throw error(422,"Revisions/disk quota exceeded")
 		}
 		const db = await getDb();
 		const {deckId} = params;
@@ -81,6 +86,12 @@ export const actions: Actions = {
 			throw error(404, `Deck ${deckId} revision ${deck.currentRevision} not found`)
 		}
 		await cleanRevision(db, revision, deckId, revId)
+		if (CHECK_REVISION_DISK_SIZE && typeof(revision.diskSizeK) == 'number') {
+			if (usageDiskSizeK + revision.diskSizeK > quota.quota.diskSizeK) {
+				console.log(`Will exceed quota ${usageDiskSizeK}+${revision.diskSizeK}/${quota.quota.diskSizeK} disk for for ${locals.email}`)
+				throw error(422,"Disk quota would be exceeded")
+			}
+		}
 		revision.quotaUser = locals.email
 		// add
 		const insertResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision);
