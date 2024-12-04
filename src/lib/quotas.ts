@@ -36,7 +36,7 @@ const deck_builder_quota: Quota = {
 	sessions: 10,
 	snapshots: 20,
 	analyses: 20,
-	diskSizeK: 10000,  
+	diskSizeK: 100000,  
 }
 
 export const CHECK_REVISION_DISK_SIZE = false
