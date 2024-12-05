@@ -39,16 +39,21 @@
 	</div>
 </div>
 
-<form class="p-6 flex flex-col gap-4" method="post" use:enhance>
+<form class="p-6 flex flex-col gap-4" method="post" action="?/changeEmail" use:enhance>
+	<label>
+		<span>Email</span>
+		<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
+		       disabled={!data.localUser.isAdmin}/>
+	</label>
+	{#if data.localUser.isAdmin}
+		<input class="button self-center mt-2" type='submit' value='Change Email'>
+	{/if}
+</form>
+<form class="p-6 flex flex-col gap-4" method="post" action="?/save" use:enhance>
 	<label>
 		<span>Name</span>
 		<input name="userName" bind:value={data.user.name} class="block w-full" required type="text"
 		       />
-	</label>
-	<label>
-		<span>Email</span>
-		<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
-		       disabled=true/>
 	</label>
 	<div>
 		<span class="text-sm text-gray-800">Created</span>
