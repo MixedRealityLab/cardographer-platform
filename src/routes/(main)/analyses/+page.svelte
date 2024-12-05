@@ -8,7 +8,7 @@
 	let working = false;
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="flex flex-col p-6 w-full text-sm font-medium gap-4">
 	{#each data.analyses as analysis}
@@ -31,10 +31,16 @@
 		<div class="border-red-500 bg-red-300 rounded-md w-full py-2 px-2">{error}</div>
 	{/if}
 
+	{#if data.usageAnalyses >= data.quotaAnalyses}
+	<div class="message-error">Sorry, you have reached your Analysis quota ({data.usageAnalyses}/{data.quotaAnalyses}) - 
+		please ask an administrator if you need to change this.</div>
+
+	{:else}
 	<form method="post" class="self-center">
 		<!--suppress HtmlWrongAttributeValue -->
 		<button disabled={working} class="button">
 			<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Analysis
 		</button>
 	</form>
+	{/if}
 </div>

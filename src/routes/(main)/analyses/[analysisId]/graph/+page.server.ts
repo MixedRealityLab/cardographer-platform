@@ -7,7 +7,7 @@ import {error} from "@sveltejs/kit"
 import type {Actions, PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const analysis = await parent()
 	return {
 		analysis: analysis,
@@ -17,7 +17,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {analysisId} = params
 		const db = await getDb()
 		// permission check

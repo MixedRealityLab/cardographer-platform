@@ -7,7 +7,7 @@ import {error, json} from "@sveltejs/kit";
 import {mkdir, writeFile} from 'fs/promises'
 
 export const GET: RequestHandler = async function ({locals, params, url}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {sessionId} = params;
 	const db = await getDb();
 	// permission check

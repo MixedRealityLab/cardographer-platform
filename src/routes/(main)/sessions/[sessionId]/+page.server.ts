@@ -3,9 +3,10 @@ import {verifyAuthentication} from "$lib/security"
 import type {Session, SessionSnapshot, User} from "$lib/types"
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
+import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const session = await parent()
 	const db = await getDb()
 	const users = await db.collection<User>('Users')
@@ -20,7 +21,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {sessionId} = params
 		const db = await getDb()
 		const session = await db.collection<Session>('Sessions').findOne({
@@ -35,7 +36,10 @@ export const actions: Actions = {
 		if (!owners || owners.length == 0 || owners[0] == '') {
 			owners = session.owners
 		}
-
+		const isPublic = data.get('isPublic') == 'on'
+		if (isPublic) {
+			await verifyLocalUserIsPublisher(locals)
+		}
 		const updateResult = await db.collection<Session>('Sessions').updateOne(
 			{_id: sessionId},
 			{
@@ -45,7 +49,7 @@ export const actions: Actions = {
 					credits: data.get('credits') as string || '',
 					miroDuplicateUrl: data.get('miroDuplicateUrl') as string || '',
 					owners: owners,
-					isPublic: data.get('isPublic') == 'on',
+					isPublic: isPublic,
 					isTemplate: data.get('isTemplate') == 'on',
 					isArchived: data.get('isArchived') == 'on',
 					isConsentForStats: data.get('isConsentForStats') == 'on',

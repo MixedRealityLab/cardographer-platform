@@ -6,9 +6,10 @@ import type {Session} from "$lib/types";
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit";
 import type {PageServerLoad} from "./$types"
+import { getQuotaDetails, getUsageSessions } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb();
 	const sessions = await db.collection<Session>('Sessions')
 		.find({
@@ -25,14 +26,24 @@ export const load: PageServerLoad = async function ({locals}) {
 		.sort({"name": 1, "owners[0]": 1, "created": 1})
 		.toArray()
 	await checkSessionCredits(sessions, db)
+	const usageSessions = await getUsageSessions(locals.email)
+	const quota = await getQuotaDetails(locals.email)
 	return {
-		sessions: sessions
+		sessions: sessions,
+		usageSessions,
+		quotaSessions: quota.quota.sessions,
 	}
 }
 
 export const actions: Actions = {
 	default: async ({locals, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
+		const usageSessions = await getUsageSessions(locals.email)
+		const quota = await getQuotaDetails(locals.email)
+		if (usageSessions >= quota.quota.sessions) {
+			console.log(`Exceeded session quota ${usageSessions}/${quota.quota.sessions} for ${locals.email}`)
+			throw error(422,"Session quota exceeded")
+		}
 		const data = await request.formData()
 		const oldSessionId = data.get('id') as string
 
@@ -90,6 +101,7 @@ export const actions: Actions = {
 		}
 
 		// add
+		session.quotaUser = locals.email
 		const result = await db.collection<Session>('Sessions').insertOne(session);
 		if (!result.acknowledged) {
 			throw error(500, "Error Creating Session");

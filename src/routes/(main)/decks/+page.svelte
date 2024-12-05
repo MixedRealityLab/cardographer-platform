@@ -7,7 +7,7 @@
 	let showAllDecks = true
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.decks.filter((deck) => showAllDecks || deck.isOwnedByUser) as deck}
@@ -50,9 +50,10 @@
 				{/if}
 			</label>
 		{/if}
-
+		{#if data.localUser?.isDeckBuilder}
 		<a class="button mx-2 self-center" href="{base}/decks/new">
 			<img src="{base}/icons/add.svg" class="w-4 mr-1" alt=""/>New Deck
 		</a>
+		{/if}
 	</div>
 </div>

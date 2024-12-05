@@ -7,7 +7,7 @@ import {json} from '@sveltejs/kit';
 const debug = true;
 
 export const GET: RequestHandler = async function ({locals}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	if (debug) console.log(`get decks`);
 	const db = await getDb();
 	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries').find({

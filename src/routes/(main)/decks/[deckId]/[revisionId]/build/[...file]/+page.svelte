@@ -52,7 +52,7 @@
 	{/if}
 	<form action="?/build" class="w-6 h-6" method="post" use:enhance>
 		<!--suppress HtmlWrongAttributeValue -->
-		<button class="iconButton mr-3" disabled={building || data.revision.isLocked}
+		<button class="iconButton mr-3" disabled={building || data.revision.isLocked || data.overQuota}
 		        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 			<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<g>
@@ -75,7 +75,7 @@
 		</a>
 	{/if}
 	<form action="?/upload" enctype="multipart/form-data" method="post" class="w-6 h-6" use:enhance>
-		<UploadButton class="iconButton" disabled={data.revision.isLocked} multiple="true"
+		<UploadButton class="iconButton" disabled={data.revision.isLocked || data.overQuota} multiple="true"
 		              title={data.revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 			<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
@@ -95,6 +95,13 @@
 			{/each}
 		</div>
 	</div>
+{/if}
+
+{#if data.overQuota}
+<div class="flex items-center px-6 py-2">
+	<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK}) - 
+	please ask an administrator if you need to change this.</div>
+</div>
 {/if}
 
 <div class="flex items-center px-6 py-2">
@@ -153,6 +160,7 @@
 					<div>{childFile.name}</div>
 				</a>
 			{/if}
+			<div class="text-sm text-gray-700">{childFile.size} KB</div>
 
 			<button class="opacity-5 transition-opacity duration-500 text-red-500 hover:opacity-100"
 			        on:click={() => {deleteFile(childFile.name)}}>

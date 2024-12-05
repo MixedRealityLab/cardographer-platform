@@ -12,6 +12,7 @@ export const handle: Handle = async function ({event, resolve}) {
 	const cookies = parse(event.request.headers.get('cookie') || '');
 	const userToken = cookies[getCookieName()] || getAuthHeader(event) || '';
 	const token = await checkUserToken(userToken);
+	if (debug) console.log(`- user token: ${userToken} -> ${token.valid} ${token.email}`)
 
 	const locals = event.locals
 	locals.email = token.email

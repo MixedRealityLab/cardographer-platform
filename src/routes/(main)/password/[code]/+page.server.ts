@@ -15,8 +15,7 @@ export const actions: Actions = {
 		}
 		// check password
 		const db = await getDb();
-		const timeoutDate = new Date()
-		timeoutDate.setHours(timeoutDate.getHours() - 2);
+		const timeoutDate = new Date(Date.now() - 2*60*60*1000)
 		const user = await db.collection<User>('Users').findOne({
 			resetCode: code,
 			disabled: false,
@@ -29,12 +28,20 @@ export const actions: Actions = {
 			return fail(404)
 		}
 
-		user.password = await hashPassword(password)
-		delete user.resetCode
-		delete user.resetTime
+		const hash = await hashPassword(password)
 
-		await db.collection<User>('Users').replaceOne({_id: user._id}, user)
-
+		await db.collection<User>('Users').updateOne(
+			{_id: user._id}, {
+			$set: {
+				isVerified: true,
+				password: hash
+			},
+			$unset: {
+				"resetCode" :"", 
+				"resetTime": ""
+			},
+		})
+		console.log(`Reset password for ${user.email}`)
 		return {success: true}
 	}
 }

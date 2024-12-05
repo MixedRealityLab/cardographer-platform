@@ -7,7 +7,7 @@ import {rm} from "fs/promises";
 
 // noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {deckId} = params;
 	const db = await getDb();
 	// permission check
@@ -20,8 +20,13 @@ export const DELETE: RequestHandler = async function ({locals, params}) {
 	await db.collection<CardDeckRevision>('CardDeckRevisions').deleteMany({
 		deckId: deckId
 	})
-
-	await rm('/app/uploads/' + deckId, {recursive: true, force: true})
+	console.log(`Note, deleting deck ${deckId}`)
+	try {
+		await rm('/app/uploads/' + deckId, {recursive: true, force: true})
+	}
+	catch (err){ 
+		console.log(`Possible error deleting deck ${deckId} files: ${err.message}`)
+	}
 
 	return json({success: true})
 }

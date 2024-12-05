@@ -11,7 +11,7 @@
 	let message = ''
 </script>
 
-<UserTabs/>
+<UserTabs user={data.localUser}/>
 
 <div class="w-full flex flex-col mb-4 text-sm font-medium p-6 gap-4">
 	{#each data.sessions as session}
@@ -65,6 +65,7 @@
 			</label>
 		{/if}
 
+		{#if data.usageSessions < data.quotaSessions}
 		<a class="button mx-2 self-center" href="{base}/sessions/new">
 			<img alt="" class="button-icon" src="{base}/icons/add.svg"/>New Session
 		</a>
@@ -79,5 +80,10 @@
 				<img alt="" class="button-icon" src="{base}/icons/upload.svg"/>Upload Sessions
 			</UploadButton>
 		</form>
+		{/if}
 	</div>
+	{#if data.usageSessions >= data.quotaSessions}
+		<div class="message-error">Sorry, you have reached your Session quota ({data.usageSessions}/{data.quotaSessions}) - 
+		please ask an administrator if you need to change this.</div>
+	{/if}
 </div>

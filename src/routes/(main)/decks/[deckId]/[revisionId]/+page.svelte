@@ -3,28 +3,28 @@
 	import type {CardDeckRevision} from "$lib/types"
 	import DeckHeader from "./DeckHeader.svelte";
 
-	export let data: CardDeckRevision
+	export let data
 
 	let error = ''
 	let message = ''
 </script>
 
-<DeckHeader deck={data}/>
+<DeckHeader deck={data.revision}/>
 
 <form class="p-6 flex flex-col gap-4" method="post" use:enhance>
 	<label>
 		<span>Title</span>
-		<input name="deckName" bind:value={data.deckName} class="block w-full" required type="text"
-		       disabled={!data.isOwnedByUser}/>
+		<input name="deckName" bind:value={data.revision.deckName} class="block w-full" required type="text"
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Description</span>
-		<textarea name="deckDescription" bind:value={data.deckDescription} class="block w-full"
-		          rows="3" disabled={!data.isOwnedByUser}></textarea>
+		<textarea name="deckDescription" bind:value={data.revision.deckDescription} class="block w-full"
+		          rows="3" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}></textarea>
 	</label>
 	<div>
 		<span class="text-sm text-gray-800">Created</span>
-		<div class="px-3">{new Date(data.created).toLocaleString('en-gb', {
+		<div class="px-3">{new Date(data.revision.created).toLocaleString('en-gb', {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric',
@@ -34,53 +34,53 @@
 	</div>
 	<label>
 		<span>Credits</span>
-		<input name="deckCredits" bind:value={data.deckCredits} class="block w-full" type="text"
-		       disabled={!data.isOwnedByUser}/>
+		<input name="deckCredits" bind:value={data.revision.deckCredits} class="block w-full" type="text"
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Revision Subtitle</span>
-		<input name="revisionName" bind:value={data.revisionName} class="block w-full" type="text"
-		       disabled={!data.isOwnedByUser}/>
+		<input name="revisionName" bind:value={data.revision.revisionName} class="block w-full" type="text"
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Revision Description</span>
-		<textarea name="revisionDescription" bind:value={data.revisionDescription} class="block w-full"
-		          rows="3" disabled={!data.isOwnedByUser}></textarea>
+		<textarea name="revisionDescription" bind:value={data.revision.revisionDescription} class="block w-full"
+		          rows="3" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}></textarea>
 	</label>
 	<label>
 		<span>Slug (for filenames and URLs)</span>
-		<input name="slug" bind:value={data.slug} class="block w-full" type="text" disabled={!data.isOwnedByUser}/>
+		<input name="slug" bind:value={data.revision.slug} class="block w-full" type="text" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Image DPI (Dots Per Inch)</span>
-		<input name="imageDpi" bind:value={data.imageDpi} class="block w-full" type="number"
-		       disabled={!data.isOwnedByUser}/>
+		<input name="imageDpi" bind:value={data.revision.imageDpi} class="block w-full" type="number"
+		       disabled={!data.revision.isOwnedByUser}/>
 	</label>
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
-			<input name="isUsable" bind:checked={data.isUsable} class="form-checkbox" type="checkbox"
-			       disabled={!data.isOwnedByUser}>
+			<input name="isUsable" bind:checked={data.revision.isUsable} class="form-checkbox" type="checkbox"
+			       disabled={!data.revision.isOwnedByUser}>
 			<span>Usable</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isPublic" bind:checked={data.isPublic} class="form-checkbox" type="checkbox"
-			       disabled={!data.isOwnedByUser}>
+			<input name="isPublic" bind:checked={data.revision.isPublic} class="form-checkbox" type="checkbox"
+			       disabled={(!data.revision.isOwnedByUser || !data.localUser?.isPublisher) && !data.localUser.isAdmin}>
 			<span>Public</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isLocked" bind:checked={data.isLocked} class="form-checkbox" type="checkbox"
-			       disabled={!data.isOwnedByUser}>
+			<input name="isLocked" bind:checked={data.revision.isLocked} class="form-checkbox" type="checkbox"
+			       disabled={!data.revision.isOwnedByUser}>
 			<span>Locked</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isTemplate" bind:checked={data.isTemplate} class="form-checkbox" type="checkbox"
-			       disabled={!data.isOwnedByUser}>
+			<input name="isTemplate" bind:checked={data.revision.isTemplate} class="form-checkbox" type="checkbox"
+			       disabled={!data.revision.isOwnedByUser}>
 			<span>Template</span>
 		</label>
 		{#if data.build}
 			<label class="flex items-center">
-				<input name="buildDisabled" type="checkbox" class="form-checkbox" bind:checked={data.build.isDisabled}
-				       disabled={!data.isOwnedByUser}>
+				<input name="buildDisabled" type="checkbox" class="form-checkbox" bind:checked={data.revision.build.isDisabled}
+				       disabled={!data.revision.isOwnedByUser}>
 				<span class="ml-2">Disable re-build</span>
 			</label>
 		{/if}
@@ -94,5 +94,5 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.isOwnedByUser}>
+	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}>
 </form>

@@ -1,7 +1,9 @@
 import {base} from "$app/paths";
 import {error, redirect} from "@sveltejs/kit";
 import {scrypt} from "crypto";
+import {GUEST_EMAIL} from "$lib/userutils"
 import jwt from 'jsonwebtoken';
+import { isLocalUserDisabled } from "./userutils";
 
 const {sign, verify} = jwt;
 
@@ -27,8 +29,8 @@ export async function hashPassword(password: string): Promise<string> {
 	});
 }
 
-export function verifyAuthentication(locals: App.Locals, shouldRedirect: boolean = true) {
-	if (!locals.authenticated) {
+export async function verifyAuthentication(locals: App.Locals, shouldRedirect: boolean = true, allowGuest: boolean = false) {
+	if (!locals.authenticated || (!allowGuest && locals.email == GUEST_EMAIL) || await isLocalUserDisabled(locals)) {
 		if (shouldRedirect) {
 			throw redirect(302, base + "/")
 		} else {

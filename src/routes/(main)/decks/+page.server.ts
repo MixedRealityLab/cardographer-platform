@@ -5,16 +5,17 @@ import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals, true, true)
 	const db = await getDb();
 	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries')
 		.find({owners: locals.email})
 		.toArray()
 	// current revision of each deck I own
-	const myrevisions = await Promise.all(decks.map((deck) =>
+	let myrevisions = await Promise.all(decks.map((deck) =>
 		db.collection<CardDeckRevision>('CardDeckRevisions')
 			.findOne({deckId: deck._id, revision: deck.currentRevision})
 	));
+	myrevisions = myrevisions.filter((deck) => !!deck)
 	myrevisions.forEach((deck) => deck.isOwnedByUser = true);
 	// public revisions (not including mine)
 	const publicrevisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
@@ -26,7 +27,8 @@ export const load: PageServerLoad = async function ({locals}) {
 				deckDescription: true, deckCredits: true, created: true,
 				lastModified: true, revisionName: true,
 				revisionDescription: true, isUsable: true, isPublic: true,
-				isLocked: true, isTemplate: true, cardCount: true
+				isLocked: true, isTemplate: true, cardCount: true,
+				diskSizeK: true,
 			}
 		})
 		.toArray()

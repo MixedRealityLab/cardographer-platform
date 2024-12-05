@@ -21,7 +21,7 @@ function compareBoards(a, b) {
 
 /** @type {import('./$types').PageServerLoad} */
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const analysis = await parent()
 	const db = await getDb();
     const designs = await readDesigns(analysis)

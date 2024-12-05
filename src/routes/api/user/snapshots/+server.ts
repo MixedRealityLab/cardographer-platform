@@ -6,7 +6,7 @@ import {json} from "@sveltejs/kit";
 import type {Db} from "mongodb";
 
 export const GET: RequestHandler = async function ({locals}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const db = await getDb();
 	const snapshotItems = await db.collection<SessionSnapshot>('SessionSnapshots').find({
 		$or: [{owners: locals.email}, {isPublic: true}]

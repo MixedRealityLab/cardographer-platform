@@ -4,10 +4,17 @@ import {verifyAuthentication} from "$lib/security";
 import type {Session, SessionSnapshot} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit"
+import { getUsageSnapshots, getQuotaDetails } from "$lib/quotas";
 
 // noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
+	const usageSnapshots = await getUsageSnapshots(locals.email)
+	const quota = await getQuotaDetails(locals.email)
+	if (usageSnapshots >= quota.quota.snapshots) {
+		console.log(`Snapshot quota exceeded ${usageSnapshots}/${quota.quota.snapshots} for ${locals.email}`)
+		throw error(422, "Snapshot quote exceeded")
+	}
 	const snapshotData = await request.json()
 
 	let sessionType = guessSessionType(snapshotData);
@@ -38,6 +45,7 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 		throw error(500, "Could Not Detect Client")
 	}
 	const snapshot = client.makeSessionSnapshot(snapshotData, session);
+	snapshot.quotaUser = locals.email
 	const r2 = await db.collection<SessionSnapshot>('SessionSnapshots').insertOne(snapshot);
 	if (!r2.insertedId) {
 		throw error(500, "Upload Failed")

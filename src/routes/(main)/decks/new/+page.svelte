@@ -12,7 +12,25 @@
 <AppBar back="{base}/decks" subtitle="Deck">
 	<div slot="subheader">Create Deck</div>
 </AppBar>
+
 <div class="w-full flex flex-col text-sm font-medium p-6 gap-4">
+
+
+{#if !data.localUser?.isDeckBuilder}
+	<div class="message-error">Sorry, you do not have Deck Builder rights - 
+	please ask an administrator if you need to change this.</div>
+{:else if data.usageDecks >= data.quotaDecks}
+	<div class="message-error">Sorry, you have reached your deck quota ({data.usageDecks}/{data.quotaDecks}) - 
+	please ask an administrator if you need to change this.</div>
+{:else if data.usageRevisions >= data.quotaRevisions}
+	<div class="message-error">Sorry, you have reached your deck revision quota ({data.usageRevisions}/{data.quotaRevisions}) - 
+	please ask an administrator if you need to change this.</div>
+{:else if data.usageDiskSizeK >= data.quotaDiskSizeK}
+	<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK}) - 
+	please ask an administrator if you need to change this.</div>
+
+{:else}
+
 	{#if error}
 		<div class="message-error">{error}</div>
 	{/if}
@@ -44,7 +62,10 @@
 					</div>
 
 					<div class="flex">
-						<div class="flex-1">
+						<div class="flex-1 flex">
+							{#if revision.diskSizeK}
+							<span class="text-gray-600 pr-1">({revision.diskSizeK} KB)</span>
+							{/if}
 							<div class="text-sm font-light">{revision.deckDescription || ''}</div>
 							<div class="text-sm font-light">{revision.revisionDescription || ''}</div>
 						</div>
@@ -54,4 +75,8 @@
 			</button>
 		</form>
 	{/each}
+
+{/if}
+
 </div>
+

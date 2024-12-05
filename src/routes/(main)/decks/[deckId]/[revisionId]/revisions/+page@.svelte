@@ -4,6 +4,7 @@
 	import {page} from "$app/stores"
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
+    import { invalidateAll } from '$app/navigation';
 
 	export let data
 
@@ -14,6 +15,19 @@
 		})
 		if (res.ok) {
 			await goto(`${base}/decks`);
+		}
+	}
+	async function deleteRevision(revisionId) {
+		const {deckId} = $page.params;
+		const res = await fetch(`${base}/decks/${deckId}/${revisionId}`, {
+			method: 'DELETE'
+		})
+		if (res.ok) {
+			invalidateAll()
+			if (data.revisions[data.revisions.length-1].revision == revisionId)
+				await goto(`${base}/decks/${deckId}/${data.revisions[data.revisions.length-2].revision}/revisions`);
+			else
+				await goto(`${base}/decks/${deckId}/${data.revisions[data.revisions.length-1].revision}/revisions`);
 		}
 	}
 
@@ -36,12 +50,15 @@
 		<a class:border-highlight={revision.revision === data.selectedRevision.revision} class="listItem items-center"
 		   href="{base}/decks/{revision.deckId}/{revision.revision}">
 			<img src="{base}/icons/deck.svg" class="w-6 mr-4" alt=""/>
-			<div class="flex-col">
+			<div class="flex-col flex flex-1">
 				<div>{revision.deckName}
-					<span class="text-gray-600">v{revision.revision} <span
-							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span></span>
+					<span class="text-gray-600">v{revision.revision}</span> <span
+							class="font-normal">{revision.revisionName ? ' ' + revision.revisionName : ''}</span>
 				</div>
 				<div class="flex flex-row gap-1">
+				    {#if revision.diskSizeK}
+					<span class="text-gray-600">({revision.diskSizeK} KB)</span>
+					{/if}
 					{#if !revision.isUsable}
 						<div class="chip">Don't Use</div>
 					{/if}
@@ -59,8 +76,30 @@
 					<div class="text-sm font-light">{revision.revisionDescription}</div>
 				{/if}
 			</div>
+			{#if data.revisions.length > 1}
+			<ConfirmDialog
+					cancelTitle="Cancel"
+					confirmTitle="Delete Revision"
+					let:confirm="{confirmThis}"
+					title="Delete {data.selectedRevision.deckName} v{revision.revision}?">
+				<button class="button-delete button" on:click|preventDefault={() => confirmThis(()=>deleteRevision(revision.revision))}>
+					<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>
+				</button>
+			</ConfirmDialog>
+			{/if}
 		</a>
 	{/each}
+
+	{#if data.usageRevisions >= data.quotaRevisions}
+		<div class="message-error">Sorry, you have reached your deck revision quota ({data.usageRevisions}/{data.quotaRevisions}) - 
+		please ask an administrator if you need to change this.</div>
+	{:else if data.usageDiskSizeK >= data.quotaDiskSizeK}
+		<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK}) - 
+		please ask an administrator if you need to change this.</div>
+	{:else if data.revisions.length > 0 && data.revisions[data.revisions.length-1].diskSizeK && data.usageDiskSizeK + data.revisions[data.revisions.length-1].diskSizeK > data.quotaDiskSizeK }
+		<div class="message-error">Warning, this would tak you over your disk quota ({data.usageDiskSizeK}+{data.revisions[data.revisions.length-1].diskSizeK}/{data.quotaDiskSizeK}) - 
+		please ask an administrator if you need to change this.</div>
+	{/if}
 
 	<div class="flex justify-center">
 		<ConfirmDialog
@@ -72,10 +111,12 @@
 				<img alt="" class="w-4 mr-1" src="{base}/icons/delete.svg"/>Delete Deck
 			</button>
 		</ConfirmDialog>
+		{#if data.localUser?.isDeckBuilder && data.usageRevisions < data.quotaRevisions && data.usageDiskSizeK < data.quotaDiskSizeK }
 		<form method="post">
 			<button class="button m-2">
 				<img alt="" class="w-4 mr-1" src="{base}/icons/add.svg"/>New Revision
 			</button>
 		</form>
+		{/if}
 	</div>
 </div>

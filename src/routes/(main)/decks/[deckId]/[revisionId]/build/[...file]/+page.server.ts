@@ -7,16 +7,23 @@ import {DeckBuildStatus} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Db} from "mongodb";
 import type {Actions, PageServerLoad} from './$types'
+import { getDiskSizeK } from "$lib/builders";
+import { getQuotaDetails, getUsageDiskSizeK } from "$lib/quotas";
 
 export const load: PageServerLoad = async function ({locals, params, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {deckId, revisionId, file} = params
-	const revision = await parent()
+	const layout = await parent()
+	const quota = await getQuotaDetails(locals.email)
+	const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
 	try {
 		const files = await getFileInfo(deckId, revisionId, file);
 		return {
-			revision: revision,
-			files: files
+			revision: layout.revision,
+			files: files,
+			overQuota: usageDiskSizeK > quota.quota.diskSizeK,
+			usageDiskSizeK,
+			quotaDiskSizeK: quota.quota.diskSizeK,
 		}
 	} catch (err) {
 		throw error(500, `error getting file ${deckId}/${revisionId}/${file}: ${err.message}`)
@@ -49,6 +56,7 @@ async function build(db: Db, revision: CardDeckRevision) {
 		revision.build.lastBuilt = now
 		revision.lastModified = now
 		revision.output = {isUserModified: false, atlases: result.atlases}
+		revision.diskSizeK = await getDiskSizeK(revision.deckId, String(revision.revision))
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 		console.log(result)
 	} catch (e) {
@@ -59,13 +67,14 @@ async function build(db: Db, revision: CardDeckRevision) {
 		const now = new Date().toISOString();
 		revision.build.lastBuilt = now
 		revision.lastModified = now
+		revision.diskSizeK = await getDiskSizeK(revision.deckId, String(revision.revision))
 		await db.collection<CardDeckRevision>('CardDeckRevisions').replaceOne({_id: revision._id}, revision)
 	}
 }
 
 export const actions: Actions = {
 	upload: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {deckId, revisionId} = params
 		const db = await getDb();
 		// permission check
@@ -80,6 +89,14 @@ export const actions: Actions = {
 		for (const file of files) {
 			await writeToFile(deckId, revisionId, path, file);
 		}
+		const diskSizeK = await getDiskSizeK(deckId, revisionId)
+		await db.collection<CardDeckRevision>("CardDeckRevisions").updateOne({
+			_id: revision._id
+		}, {
+			$set: {
+				diskSizeK: diskSizeK,
+			}
+		})
 		try {
 			return {success: true}
 		} catch (err) {
@@ -87,7 +104,7 @@ export const actions: Actions = {
 		}
 	},
 	build: async ({locals, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {deckId, revisionId} = params
 		const db = await getDb()
 		const revision = await getRevision(db, deckId, Number(revisionId), locals.email)

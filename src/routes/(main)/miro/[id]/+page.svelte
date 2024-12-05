@@ -5,12 +5,15 @@
 	import type {CardDeckRevision, CardInfo, Session} from "$lib/types"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte";
+	import type {ActionData} from "./$types";
+    import { invalidateAll } from '$app/navigation';
 
 	import type {BoardNode, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
 
 	declare const miro: Miro
-	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean }
+	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean, quotaSessions: number, usageSessions: number, quotaSnapshots: number, usageSnapshots: number }
+	export let form: ActionData
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []
 	let error: string
@@ -91,9 +94,10 @@
 					await image.sync()
 				}
 			} catch (e) {
+				console.log(`error doing createImage: ${e.message}`, e)
 				// Compose the message.
 				const errorNotification = {
-					message: `Sorry, that card couldn't be added (${url})`,
+					message: `Sorry, that card couldn't be added.`,
 					type: 'error',
 				};
 
@@ -130,6 +134,7 @@
 		if (response.ok) {
 			success = true
 			error = null
+			invalidateAll()
 		} else {
 			error = (await response.json()).message
 		}
@@ -141,6 +146,8 @@
         @apply bg-yellow-100 py-2 px-4 my-2 mx-4 font-bold rounded-xl;
     }
 </style>
+
+<!-- <div>quota {data.usageSessions}/{data.quotaSessions}, {data.usageSnapshots}/{data.quotaSnapshots}</div> -->
 
 <div class="w-full flex flex-col h-screen">
 	<div class="subheader">
@@ -170,6 +177,7 @@
 				Associate Board with Session
 			{/if}
 		</div>
+		
 		<button class="iconButton" on:click={download} title="Download Board">
 			<svg class="w-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
 			     xmlns="http://www.w3.org/2000/svg">
@@ -186,22 +194,47 @@
 					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
 				</svg>
 			</a>
+		{:else}
+			<a class="iconButton" href="{base}/sessions" title="Open Cardographer" target="_blank"
+				rel="noreferrer">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4" viewBox="0 0 20 20" fill="currentColor">
+					<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+					<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+				</svg>
+			</a>
 		{/if}
 	</div>
 
 	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
 		{#if !data.authenticated}
-			<form method="post" action="?/login" use:enhance>
-				<LoginPanel/>
+			<form method="post" action="?/login" use:enhance={() => {
+				return async ({ result, update }) => {
+					if (result.type="success") {
+						console.log(`log in ok`)
+						invalidateAll()
+					}
+					update()
+				};
+			}}>
+				<LoginPanel  canEmail="{false}" error={form ? form.error : null}/>
 			</form>
 		{:else if !data.session}
-			<form method="post" action="?/select" use:enhance>
+		    {#if data.usageSessions >= data.quotaSessions}
+			    <div class="message-error">You have reached you session quota.</div>
+			{:else}
+			<form method="post" action="?/select" use:enhance={() => {
+				    return async ({ result, update }) => {
+					    invalidateAll()
+						update()
+                    }
+				}}>
 				<button class="listItem flex-col">
 					<div class="flex flex-row gap-1">
 						<div class="font-semibold">Create New Session</div>
 					</div>
 				</button>
 			</form>
+			{/if}
 			{#each data.sessions as session}
 				<form method="post" action="?/select" use:enhance>
 					<input type="hidden" name="id" value="{session._id}"/>
@@ -313,11 +346,15 @@
 				Uploaded
 			</div>
 		{/if}
+		{#if data.usageSnapshots >= data.quotaSnapshots}
+		    <div class="gap-1 m-1 message-error">You have reached you Snapshot quota.</div>
+		{:else}
 		<div class="flex gap-1 m-1 justify-center">
 			<input class="flex-1 p-1" type="text" name="description" placeholder="Snapshot desription" bind:value={description} disabled={!!data.readonly}/>
 			<button class="button m-1" on:click={saveSession} disabled={!!data.readonly}>
 				Save Session
 			</button>
 		</div>
+		{/if}
 	{/if}
 </div>

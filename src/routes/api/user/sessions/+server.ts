@@ -5,7 +5,7 @@ import type {RequestHandler} from '@sveltejs/kit';
 import {json} from '@sveltejs/kit';
 
 export const GET: RequestHandler = async function ({locals}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const db = await getDb();
 	const sessions = await db.collection<Session>('Sessions').find({
 		owners: locals.email

@@ -14,7 +14,7 @@ interface DeckInfo {
 }
 
 export const load: PageServerLoad = async function ({locals, parent}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const session = await parent()
 	const db = await getDb()
 	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries').find({
@@ -29,7 +29,8 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 				deckDescription: true, deckCredits: true, created: true,
 				lastModified: true, revisionName: true,
 				revisionDescription: true, isUsable: true, isPublic: true,
-				isLocked: true, isTemplate: true, cardCount: true
+				isLocked: true, isTemplate: true, cardCount: true,
+				diskSizeK: true,
 			}
 		})
 		.sort({})
@@ -71,7 +72,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const {sessionId} = params
 		const db = await getDb()
 		const session = await db.collection<Session>('Sessions').findOne({

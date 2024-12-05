@@ -1,11 +1,15 @@
 import {getDb} from "$lib/db";
 import {getRevision} from "$lib/decks";
 import {verifyAuthentication} from "$lib/security";
-import type {LayoutServerLoad} from "./$types"
+import { getUser } from "$lib/userutils";
+import type { User } from "$lib/types";
 
 export const load: LayoutServerLoad = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals, true, true)
 	const {deckId, revisionId} = params;
 	const db = await getDb();
-	return await getRevision(db, deckId, Number(revisionId), locals.email)
+	const revision = await getRevision(db, deckId, Number(revisionId), locals.email)
+	return {
+		revision,
+	}
 }

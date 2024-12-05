@@ -4,11 +4,12 @@
 
 export interface CardDeckSummary {
 	_id: string
-	name: string
+	name?: string
 	description?: string
 	credits?: string
 	isPublic: boolean
 	owners: string[]
+	quotaUser?: string
 	currentRevision: number // integer
 }
 
@@ -18,6 +19,7 @@ export interface CardDeckRevisionSummary {
 	_id: string
 	deckId: string
 	revision: number // integer 1..
+	quotaUser?: string
 	slug?: string
 	deckName: string
 	deckDescription?: string
@@ -36,6 +38,7 @@ export interface CardDeckRevisionSummary {
 	isCurrent?: boolean
 	// API/local only
 	isOwnedByUser?: boolean
+	diskSizeK?: number
 }
 
 // full revision data
@@ -221,8 +224,45 @@ export interface User {
 
 	resetCode?: string
 	resetTime?: Date
-}
 
+	isNew?: boolean
+	isVerified?: boolean
+	isAdmin?: boolean
+	isGuest?: boolean
+	isDeckBuilder?: boolean
+	isPublisher?: boolean
+	extraQuota?: Quota
+	usage?: Usage
+
+	lastLogin?: string // ISO date
+	lastLoginFailure?: string // ISO date
+	countLoginFailure?: number
+	lastAccess?: string // ISO date
+
+	// API only
+	localIsAdmin?: boolean
+	quota?: Quota
+}
+export interface Quota {
+	decks?: number
+	revisions?: number
+	sessions?: number
+	snapshots?: number
+	analyses?: number
+	diskSizeK?: number
+}
+export interface QuotaDetails extends Quota {
+	baseQuota: Quota
+	extraQuota: Quota
+}
+export interface Usage {
+	decks: number
+	revisions: number
+	sessions: number
+	snapshots: number
+	analyses: number
+	diskSizeK: number
+}
 // session
 export interface Session {
 	_id: string // mongo-style
@@ -232,6 +272,7 @@ export interface Session {
 	description?: string
 	credits?: string
 	owners: string[] // User emails
+	quotaUser?: string
 	created: string // ISO date
 	lastModified: string // ISO date
 	isPublic: boolean
@@ -260,6 +301,7 @@ export interface SessionDeck {
 // snapshot
 export interface SessionSnapshotSummary {
 	_id: string // mongo-style
+	quotaUser?: string
 	sessionId: string // FK
 	sessionName: string
 	sessionDescription?: string
@@ -297,6 +339,7 @@ export interface Analysis {
 	created: string // ISO date
 	lastModified: string // ISO date
 	owners: string[]
+	quotaUser?: string
 	isPublic: boolean
 	snapshotIds: string[]
 	regions: AnalysisRegion[]
@@ -315,6 +358,40 @@ export enum RegionType {
 	YAxis = "YAxis",
 	SingleColour = "SingleColour",
 	Ignore = "Ignore"
+}
+
+export interface UserAudit {
+	email: string
+	name: string
+	disabled: boolean
+	created: string
+	lastLogin: string // ISO date
+	lastLoginFailure: string // ISO date
+	countLoginFailure: number
+	lastAccess: string // ISO date
+	isNew: boolean
+	isVerified: boolean
+	isAdmin: boolean
+	isGuest: boolean
+	isDeckBuilder: boolean
+	isPublisher: boolean
+	quotaDecks: number
+	quotaRevisions: number
+	quotaSessions: number
+	quotaSnapshots: number
+	quotaAnalyses: number
+	quotaDiskSizeK: number
+	usageDecks: number
+	usageRevisions: number
+	usageSessions: number
+	usageSnapshots: number
+	usageAnalyses: number
+	usageDiskSizeK: number
+	publicRevisions: number
+	publicSessions: number
+	publicSnapshots: number
+	publicAnalyses: number
+	notes: string
 }
 
 //EOF

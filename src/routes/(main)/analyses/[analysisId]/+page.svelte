@@ -29,7 +29,7 @@
 		<UserSelect bind:owners={data.analysis.owners} users={data.users}/>
 		<div class="py-1">
 			<label class="flex justify-center items-center">
-				<input name="isPublic" bind:checked="{data.analysis.isPublic}" class="form-checkbox" type="checkbox">
+				<input name="isPublic" bind:checked="{data.analysis.isPublic}" class="form-checkbox" type="checkbox" disabled={!data.localUser?.isPublisher}>
 				<span class="ml-2">Public</span>
 			</label>
 		</div>

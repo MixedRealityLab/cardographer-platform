@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+	import { HELP_URL } from '$lib/constants'
 	export let title = 'Cardographer'
 	export let subtitle = ''
 	export let back: string = null
 </script>
 
 <div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
-	{#if back}
+	<div class="flex-1 flex items-center">
+		{#if back}
 		<div class="px-2 py-1">
 			<a href="{back}" title="Back">
 				<svg xmlns="http://www.w3.org/2000/svg"
@@ -17,8 +20,12 @@
 				</svg>
 			</a>
 		</div>
-	{/if}
-	<div class="px-2 py-1 font-bold font-title">{title} {subtitle}</div>
+		{/if}
+		<div class="px-2 py-1 font-bold font-title">{title} {subtitle}</div>
+	</div>
+	<a href="{HELP_URL}" title="Help" target="cardo_help">
+		<img src="{base}/icons/help.svg" class="w-6 mr-2" alt=""/>
+	</a>
 </div>
 <div class="w-full pt-2 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
 	<slot/>

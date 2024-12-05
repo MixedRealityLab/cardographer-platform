@@ -94,6 +94,35 @@ async function checkDirectoryExists(file: PathLike) {
 		.then((dir) => dir.isDirectory)
 		.catch(() => false)
 }
+export async function getDiskSizeK(deckId: string, revId: string): Promise<number> {
+	const revPath = `${FILE_PATH}/${deckId}/${revId}`
+	if (!await checkDirectoryExists(revPath)) {
+		return 0
+	}
+	return Math.ceil(await getDirDiskSizeK(revPath) / 1024)
+}
+async function getDirDiskSizeK(path:string) : Promise<number> {
+	const files = await readdir(path, {withFileTypes: true});
+	let size = 0
+	for (const file of files) {
+		const newFile = path + '/' + file.name;
+		if (file.isFile()) {
+			try {
+				const info = await stat(newFile);
+				size += info.size;
+			} catch (err) {
+				console.log(`error getting size of ${newFile}: ${err.mesage}`);
+			}
+		} else if (file.isDirectory()) {
+			try {
+				size += await getDirDiskSizeK(newFile);
+			} catch (err) {
+				console.log(`error getting size of directory ${newFile}: ${err.mesage}`);
+			}
+		}
+	}
+    return size
+}
 
 export async function getFilePath(deckId: string, revId: string, path: string): Promise<string> {
 	const revPath = `${FILE_PATH}/${deckId}/${revId}`
@@ -118,7 +147,7 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	const stats = await stat(relPath);
 	if (stats.isFile()) {
 		if (debug) console.log(`getDirInfo for file ${relPath}`);
-		return [{name: path, path: relPath, isDirectory: false}];
+		return [{name: path, path: relPath, isDirectory: false, size: Math.ceil(stats.size/1024)}];
 	}
 	if (!stats.isDirectory()) {
 		if (debug) console.log(`getDirInfo for non-directory ${relPath}`);
@@ -128,10 +157,12 @@ export async function getFileInfo(deckId: string, revId: string, path: string): 
 	const fis: FileInfo[] = [];
 	for (const file of files) {
 		if (file.isDirectory() || file.isFile()) {
+			let size = file.isDirectory() ? (await getDirDiskSizeK(`${relPath}/${file.name}`)) : (file.isFile() ? (await stat(`${relPath}/${file.name}`))?.size : 0)
 			fis.push({
 				name: file.name,
 				path: `${normalizedPath}/${file.name}`.replace(/^\//, ''),
-				isDirectory: file.isDirectory()
+				isDirectory: file.isDirectory(),
+				size: Math.ceil(size/1024),
 			});
 		}
 	}

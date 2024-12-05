@@ -6,12 +6,14 @@ import type {CardDeckRevision} from "$lib/types";
 import type {Actions} from "@sveltejs/kit";
 import {error} from "@sveltejs/kit";
 import {parse} from "csv";
+import { verifyLocalUserIsDeckBuilder } from "$lib/userutils";
 
 const debug = true
 
 export const actions: Actions = {
 	default: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
+		await verifyLocalUserIsDeckBuilder(locals)
 		const data = await request.formData();
 		const csv = data.get('files') as File
 		const {deckId, revisionId} = params;

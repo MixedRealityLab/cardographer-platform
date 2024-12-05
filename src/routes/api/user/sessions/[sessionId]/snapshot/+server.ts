@@ -5,7 +5,7 @@ import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from '@sveltejs/kit';
 
 export const GET: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals, false)
+	await verifyAuthentication(locals, false)
 	const {sessionId} = params;
 	const db = await getDb();
 	const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').findOne({sessionId: sessionId});

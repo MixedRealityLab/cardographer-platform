@@ -2,17 +2,24 @@
 	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte";
 	import Tab from "$lib/ui/Tab.svelte";
+	import type {User} from "$lib/types";
+	export let user: User|null;
 </script>
 
 <AppBar>
 	<Tab url="{base}/decks">
 		Decks
 	</Tab>
+	{#if !user.isGuest}
 	<Tab url="{base}/sessions">
 		Sessions
 	</Tab>
 	<Tab url="{base}/analyses">
 		Analyses
+	</Tab>
+	{/if}
+	<Tab url="{base}/users">
+		Users
 	</Tab>
 </AppBar>
 

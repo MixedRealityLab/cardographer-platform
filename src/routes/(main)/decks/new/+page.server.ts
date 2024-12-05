@@ -6,9 +6,13 @@ import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types"
+import { verifyLocalUserIsDeckBuilder } from "$lib/userutils"
+import { CHECK_REVISION_DISK_SIZE, getUsageDiskSizeK, getQuotaDetails, getUsageDecks, getUsageRevisions, checkRevisionDiskSizes } from "$lib/quotas"
+
+const debug = false
 
 export const load: PageServerLoad = async function ({locals}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const db = await getDb();
 	const revisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
 		.find({
@@ -19,18 +23,42 @@ export const load: PageServerLoad = async function ({locals}) {
 			deckDescription: true, deckCredits: true, created: true,
 			lastModified: true, revisionName: true,
 			revisionDescription: true, isUsable: true, isPublic: true,
-			isLocked: true, isTemplate: true, cardCount: true
+			isLocked: true, isTemplate: true, cardCount: true,
+			diskSizeK: true,
 		}
 	})
 		.sort({"deckName": 1, "revision": 1, "revisionName": 1})
 		.toArray()
+	await checkRevisionDiskSizes(revisions)
 	await cleanRevisions(revisions, db)
-	return {revisions: revisions}
+	const usageDecks = await getUsageDecks(locals.email)
+	const usageRevisions = await getUsageRevisions(locals.email)
+	const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
+	const quota = await getQuotaDetails(locals.email)
+	if (debug) console.log(`User ${locals.email} deck usage ${usageDecks}/${quota.quota.decks} decks & ${usageRevisions}/${quota.quota.revisions} revisions`)
+	return {
+		revisions: revisions,
+		usageDecks,
+		usageRevisions,
+		usageDiskSizeK,
+		quotaDecks: quota.quota.decks,
+		quotaRevisions: quota.quota.revisions,
+		quotaDiskSizeK: quota.quota.diskSizeK,
+	}
 }
 
 export const actions: Actions = {
 	default: async ({ locals, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
+		await verifyLocalUserIsDeckBuilder(locals)
+		const usageDecks = await getUsageDecks(locals.email)
+		const usageRevisions = await getUsageRevisions(locals.email)
+		const usageDiskSizeK = await getUsageDiskSizeK(locals.email)
+		const quota = await getQuotaDetails(locals.email)
+		if (usageDecks >= quota.quota.decks || usageRevisions >= quota.quota.revisions || usageDiskSizeK >= quota.quota.diskSizeK) {
+			console.log(`Exceeded quota ${usageDecks}/${quota.quota.decks} decks or ${usageRevisions}/${quota.quota.revisions} revisions ${usageDiskSizeK}/${quota.quota.diskSizeK} disk for for ${locals.email}`)
+			throw error(422,"Deck/revision/disk quota exceeded")
+		}
 		const data = await request.formData()
 		const revisionId = data.get('id') as string
 
@@ -87,7 +115,13 @@ export const actions: Actions = {
 			}
 		}
 		await cleanRevision(db, revision, deckId, revId)
-
+		if (CHECK_REVISION_DISK_SIZE && typeof(revision.diskSizeK) == 'number') {
+			if (usageDiskSizeK + revision.diskSizeK > quota.quota.diskSizeK) {
+				console.log(`Will exceed quota ${usageDiskSizeK}+${revision.diskSizeK}/${quota.quota.diskSizeK} disk for for ${locals.email}`)
+				throw error(422,"Disk quota would be exceeded")
+			}
+		}
+		revision.quotaUser = locals.email
 		const revResult = await db.collection<CardDeckRevision>('CardDeckRevisions').insertOne(revision)
 		if (!revResult.insertedId) {
 			console.log(`Error adding revision for new deck ${deckId}`)
@@ -95,12 +129,10 @@ export const actions: Actions = {
 		}
 		const deck: CardDeckSummary = {
 			_id: deckId,
-			name: revision.deckName,
-			description: revision.deckDescription,
 			isPublic: false,
 			owners: [locals.email],
 			currentRevision: revId,
-			credits: revision.deckCredits,
+			quotaUser: locals.email,
 		}
 		// add deck
 		const summaryResult = await db.collection<CardDeckSummary>('CardDeckSummaries').insertOne(deck)

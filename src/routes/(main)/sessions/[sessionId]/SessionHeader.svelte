@@ -3,7 +3,7 @@
 	import {base} from '$app/paths'
 	import type {Session} from "$lib/types"
 	import ConfirmDialog from '$lib/ui/ConfirmDialog.svelte'
-
+	
 	export let session: Session
 
 	async function deleteSession() {

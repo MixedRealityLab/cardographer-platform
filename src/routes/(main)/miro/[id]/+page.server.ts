@@ -5,11 +5,19 @@ import type {CardDeckRevision, Session, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types";
+import { getUsageSnapshots, getQuotaDetails, getUsageSessions } from "$lib/quotas"
+
+const debug = false
 
 export const load = (async ({locals, params}) => {
 	if (!locals.authenticated) {
+		if (debug) console.log(`miro not authenticated`)
 		return {authenticated: false}
 	}
+	const quota = await getQuotaDetails(locals.email)
+	const usageSessions = await getUsageSessions(locals.email)
+	const usageSnapshots = await getUsageSnapshots(locals.email)
+	console.log(`Quotas for ${locals.email}: ${usageSessions}/${quota.quota.sessions}, ${usageSnapshots}/${quota.quota.snapshots}`)
 	const db = await getDb();
 	const url = "https://miro.com/app/board/" + params.id
 	const session = await db.collection<Session>('Sessions').findOne({
@@ -26,7 +34,11 @@ export const load = (async ({locals, params}) => {
 
 		return {
 			authenticated: true,
-			sessions: sessions
+			sessions: sessions,
+			usageSessions,
+			usageSnapshots,
+			quotaSessions: quota.quota.sessions,
+			quotaSnapshots: quota.quota.snapshots,
 		}
 	} else {
 		const deckIds = session.decks.map((deck) => deck.deckId + ':' + deck.revision)
@@ -37,7 +49,11 @@ export const load = (async ({locals, params}) => {
 		return {
 			authenticated: true,
 			session: session,
-			readonly: !session.owners.includes(locals.email)
+			readonly: !session.owners.includes(locals.email),
+			usageSessions,
+			usageSnapshots,
+			quotaSessions: quota.quota.sessions,
+			quotaSnapshots: quota.quota.snapshots,
 		}
 	}
 }) satisfies PageServerLoad;
@@ -65,15 +81,22 @@ export const actions: Actions = {
 			sameSite: 'none',
 			secure: true
 		})
+		if (debug) console.log(`miro logged in and set cookie for ${email}`)
 		return {success: true}
 	},
 	select: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
 		const url = "https://miro.com/app/board/" + params.id
 		const db = await getDb()
 		if (!id) {
+			const usageSessions = await getUsageSessions(locals.email)
+			const quota = await getQuotaDetails(locals.email)
+			if (usageSessions >= quota.quota.sessions) {
+				console.log(`Session quota exceeded ${usageSessions}/${quota.quota.sessions} for ${locals.email}`)
+				return fail(422, "Session quota exceeded")
+			}
 			const now = new Date().toISOString()
 			const insertResult = await db.collection<Session>('Sessions').insertOne({
 				_id: getNewId(),
@@ -95,6 +118,7 @@ export const actions: Actions = {
 				isConsentForRecording: false,
 				isConsentToIdentify: false,
 				isConsentRequiresCredit: false,
+				quotaUser: locals.email,
 			})
 			if (!insertResult.acknowledged) {
 				return fail(500)
@@ -114,11 +138,10 @@ export const actions: Actions = {
 				return fail(404)
 			}
 		}
-
 		return {success: true}
 	},
 	unselect: async ({locals, params, request}) => {
-		verifyAuthentication(locals)
+		await verifyAuthentication(locals)
 		const data = await request.formData()
 		const id = data.get('id') as string
 		if (!id) {

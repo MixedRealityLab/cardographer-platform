@@ -6,7 +6,7 @@ import {error, json} from "@sveltejs/kit";
 
 // noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
 	const {snapshotId} = params;
 	const db = await getDb();
 	const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots').deleteOne({

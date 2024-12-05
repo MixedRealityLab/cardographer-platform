@@ -3,9 +3,11 @@ import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckSummary} from "$lib/types";
 import AdmZip from "adm-zip";
+import { verifyLocalUserIsDeckBuilder } from "$lib/userutils";
 
 export const GET = async function ({locals, params}) {
-	verifyAuthentication(locals)
+	await verifyAuthentication(locals)
+	await verifyLocalUserIsDeckBuilder(locals)
 	const {deckId, revisionId, file} = params;
 	const db = await getDb();
 	const deck = await db.collection<CardDeckSummary>('CardDeckSummaries').findOne({
