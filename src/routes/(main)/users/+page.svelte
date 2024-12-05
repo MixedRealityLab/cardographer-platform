@@ -47,13 +47,20 @@
 		<div class="self-center">No Users Found</div>
 	{/each}
 {/if}
-	<div class="self-center">
+	<div class="self-center flex">
 		<form method="post" action="{base}/logout">
-			<div class="grid grid-cols-1 gap-2">
 				<!--suppress HtmlWrongAttributeValue -->
-				<input class="button" type='submit' value='Log out'>
-			</div>
+				<input class="button m-3" type='submit' value='Log out'>
 		</form>
+		{#if data.localUser.isAdmin}
+			<a class="button m-3" href="{base}/audit.csv">
+				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Check DB and Audit
+			</a>
+			<a class="button m-3" href="{base}/audit.csv?fix">
+				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Fix DB and Audit
+			</a>
+		{/if}
+
 	</div>
 
 </div>

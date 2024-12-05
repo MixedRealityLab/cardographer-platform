@@ -28,6 +28,7 @@ export const actions: Actions = {
 		// check password
 		const db = await getDb();
 		let user = await db.collection<User>('Users').findOne({email: email})
+		const now = new Date().toISOString()
 		// register code
 		if (register) {
 			if (!!REGISTER_CODE) {
@@ -48,7 +49,7 @@ export const actions: Actions = {
 				email: email,
 				password: hash,
 				disabled: false,
-				created: new Date().toISOString(),
+				created: now,
 				isNew: true,
 			}
 			const ar = await db.collection<User>('Users').insertOne(user);
@@ -70,8 +71,25 @@ export const actions: Actions = {
 			const hash = await hashPassword(password)
 			if (user.password != hash) {
 				console.log(`Login failed for user ${email}`)
+				await db.collection<User>("Users").updateOne({ 
+					email: email
+				}, {
+					$set: {  
+						lastLoginFailure: now,
+						countLoginFailure: user.countLoginFailure ? user.countLoginFailure+1 : 1,
+					}
+				})
 				return fail(401, {error: `Login Failed`})
 			}
+			await db.collection<User>("Users").updateOne({ 
+				email: email
+			}, {
+				$set: {  
+					lastLogin: now,
+					lastAccess: now,
+					countLoginFailure: 0,
+				}
+			})
 			const token = await signUserToken(email);
 			cookies.set(getCookieName(), token, {
 				path: '/',

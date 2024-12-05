@@ -4,7 +4,7 @@
 
 export interface CardDeckSummary {
 	_id: string
-	name: string
+	name?: string
 	description?: string
 	credits?: string
 	isPublic: boolean
@@ -233,6 +233,12 @@ export interface User {
 	isPublisher?: boolean
 	extraQuota?: Quota
 	usage?: Usage
+
+	lastLogin?: string // ISO date
+	lastLoginFailure?: string // ISO date
+	countLoginFailure?: number
+	lastAccess?: string // ISO date
+
 	// API only
 	localIsAdmin?: boolean
 	quota?: Quota
@@ -352,6 +358,40 @@ export enum RegionType {
 	YAxis = "YAxis",
 	SingleColour = "SingleColour",
 	Ignore = "Ignore"
+}
+
+export interface UserAudit {
+	email: string
+	name: string
+	disabled: boolean
+	created: string
+	lastLogin: string // ISO date
+	lastLoginFailure: string // ISO date
+	countLoginFailure: number
+	lastAccess: string // ISO date
+	isNew: boolean
+	isVerified: boolean
+	isAdmin: boolean
+	isGuest: boolean
+	isDeckBuilder: boolean
+	isPublisher: boolean
+	quotaDecks: number
+	quotaRevisions: number
+	quotaSessions: number
+	quotaSnapshots: number
+	quotaAnalyses: number
+	quotaDiskSizeK: number
+	usageDecks: number
+	usageRevisions: number
+	usageSessions: number
+	usageSnapshots: number
+	usageAnalyses: number
+	usageDiskSizeK: number
+	publicRevisions: number
+	publicSessions: number
+	publicSnapshots: number
+	publicAnalyses: number
+	notes: string
 }
 
 //EOF

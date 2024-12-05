@@ -129,12 +129,9 @@ export const actions: Actions = {
 		}
 		const deck: CardDeckSummary = {
 			_id: deckId,
-			name: revision.deckName,
-			description: revision.deckDescription,
 			isPublic: false,
 			owners: [locals.email],
 			currentRevision: revId,
-			credits: revision.deckCredits,
 			quotaUser: locals.email,
 		}
 		// add deck

@@ -174,6 +174,15 @@ export async function verifyLocalUserIsPublisher(locals: App.Locals) : Promise<v
         throw error(403, "Forbidden")
     }
 }
+export async function verifyLocalUserIsAdmin(locals: App.Locals) : Promise<void> {
+    if (!locals.authenticated) {
+		throw error(401, "Authentication Required")
+	}
+    const user = await getLocalUser(locals)
+    if (!user.isAdmin) {
+        throw error(403, "Forbidden")
+    }
+}
 export async function getLocalUser(locals: App.Locals) : Promise<User> {
     if (locals.email == GUEST_EMAIL) {
         return getGuestUser()
