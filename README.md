@@ -10,6 +10,7 @@ for user documentation, and [examples]().
 
 Can be used with
 - [miro](docs/miro.md) - working
+- simple built-in web app view of cards
 
 (A prototype [unity](docs/unity.md) client exists but is not integrated or supported: [cardographer virtual tabletop](https://github.com/MixedRealityLab/cardographer-tabletop))
 
@@ -26,9 +27,9 @@ See `Dockerfile` or `src/docker/dev/Dockerfile`.
 
 Copy `server.env` to `server.env.local` (or whatever location you will use for environment vars).
 
-- Set SMTP_ (email) sending settings (unless you are going to use mongo-express to set up users).
-- Set ADMIN_USERS to email address(es) of initial/default admin users.
-- Set REGISTER_CODE if you want new users to have to provide this code in order to register (rather than just validate their email).
+- Set `SMTP_...` (email) sending settings (unless you are going to check the logs for password reset URLs).
+- Set `ADMIN_USERS` to email address(es) of initial/default admin users.
+- Set `REGISTER_CODE` if you want new users to have to provide this code in order to register (rather than just validate their email).
 
 ## Run
 
@@ -39,10 +40,15 @@ Dev build/run (with default docker-compose.yml):
 sudo docker-compose up -d --build
 ```
 Open [http://localhost:3000](http://localhost:3000).
-Registration code is 1234, but can be changed in [docker-compose.yaml](docker-compose.yaml)
+Configuration is loaded from `server.env` as per [docker-compose.yaml](docker-compose.yaml)
 
 Note, the server needs to be able to send (forward) email for password recovery.
 See SMTP_... config in `server.env`
+
+If you start it from the default [docker-compose.yml]() then mongo-express is accessible on [http://localhost:8081]();
+authenticated with username & password 'mongo'. 
+
+See information on user accounts/types below.
 
 ### Testing with Miro locally
 
@@ -65,7 +71,7 @@ As a workaround you can copy the image onto the board and manually change the mi
 
 ### Admins
 
-Note, the pre-configured emails will always automatically be assigned admin status.
+Note, the pre-configured emails (in `ADMIN_USERS`) will always automatically be assigned admin status.
 An admin can set/clear the admin status of other users. 
 
 But note that being admin does to automatically give you "deck builder" and/or "publisher" status (see below).
