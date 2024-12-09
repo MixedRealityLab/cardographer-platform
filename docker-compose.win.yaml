@@ -1,5 +1,3 @@
-version: '3.1'
-
 # Docker compose file for development.
 volumes:
     db: {}
