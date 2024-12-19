@@ -12,6 +12,6 @@ RUN npm run prepare
 RUN npm run build
 EXPOSE 3000
 
-VOLUME /app/static/uploads
+VOLUME /app/uploads
 
-CMD ["node", "build"]
+CMD ["node", "src/myserver.js"]

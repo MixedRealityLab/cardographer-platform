@@ -4,7 +4,7 @@ volumes:
 
 services:
     mongo:
-        image: mongo
+        image: mongo:4
         expose:
             - "27017"
         restart: unless-stopped

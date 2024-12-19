@@ -19,14 +19,14 @@
     "@types/js-yaml": "^4.0.9",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/nodemailer": "^6.4.15",
+    "@vite-pwa/sveltekit": "^0.6.0",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.5",
     "cytoscape": "^3.30.2",
     "cytoscape-cola": "^2.5.1",
-    "@vite-pwa/sveltekit": "^0.6.0",
-    "node-html-parser": "^6.1.13",
     "mime": "^4.0.4",
     "nanoid": "^5.0.7",
+    "node-html-parser": "^6.1.13",
     "postcss": "^8.4.41",
     "postcss-import": "^16.1.0",
     "postcss-load-config": "^6.0.1",
@@ -43,6 +43,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@cgreenhalgh/websocket-room-server": "^1.1.0",
     "adm-zip": "^0.5.15",
     "color": "^4.2.3",
     "cookie": "^0.6.0",
@@ -50,6 +51,8 @@
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
-    "nodemailer": "^6.9.14"
+    "nodemailer": "^6.9.14",
+    "polka": "^0.5.2",
+    "ws": "^8.18.0"
   }
 }
