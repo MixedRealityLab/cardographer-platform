@@ -2,7 +2,6 @@ import {getDb} from '$lib/db';
 import { arrayToCsv } from "./csvutils";
 import { User, Session, SessionSnapshot, Analysis, CardDeckSummary, CardDeckRevision, UserAudit } from "$lib/types"
 import { getQuotaDetails, getUsageAnalyses, getUsageDecks, getUsageDiskSizeK, getUsageRevisions, getUsageSessions, getUsageSnapshots } from './quotas';
-import { CardDeckSummary } from './types';
 import { getDiskSizeK } from './builders';
 
 const HEADERS = [ // ordered
