@@ -1,15 +1,10 @@
 <script lang="ts">
-	import {enhance} from "$app/forms";
-	import type {User} from "$lib/types"
-	import {base} from '$app/paths'
-	import {page} from "$app/stores";
-	import type {CardDeckRevision} from "$lib/types"
-	import AppBar from "$lib/ui/AppBar.svelte"
-	import Tab from "$lib/ui/Tab.svelte"
-	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
+	import {enhance} from "$app/forms"
 	import {goto} from "$app/navigation"
-
-	let {email} = $page.params
+	import {base} from '$app/paths'
+	import {page} from "$app/stores"
+	import AppBar from "$lib/ui/AppBar.svelte"
+	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
 
 	export let data
 
@@ -18,23 +13,19 @@
 
 	async function deleteUser() {
 		const {email} = $page.params;
-		const res = await fetch(`${base}/users/${email}`, {
+		await fetch(`${base}/users/${email}`, {
 			method: 'DELETE'
 		})
 		await goto(`${base}/users`);
 	}
 </script>
 
-<AppBar back="{base}/users" subtitle="User">
-	<Tab url="{base}/users/{email}">
-		Details
-	</Tab>
-</AppBar>
+<AppBar back="{base}/users" subtitle="User"></AppBar>
 
 <div class="subheader">
 	<div class="flex-1">
-		<div class="block inline-flex items-center gap-2">{data.user.name}
-				<span class="opacity-50">&lt;{data.user.email}&gt;</span>
+		<div class="inline-flex items-center gap-2">{data.user.name}
+			<span class="opacity-50">&lt;{data.user.email}&gt;</span>
 		</div>
 	</div>
 </div>
@@ -45,15 +36,23 @@
 		<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
-	{#if data.localUser.isAdmin}
-		<input class="button self-center mt-2" type='submit' value='Change Email'>
-	{/if}
+	<div class="flex gap-2 justify-center">
+		{#if !data.user.isVerified}
+			<form method="post" action="?/verifyEmail" use:enhance>
+				<input class="button self-center mt-2" type='submit' value='Verify Email'>
+			</form>
+		{/if}
+		{#if data.localUser.isAdmin}
+
+			<input class="button self-center mt-2" type='submit' value='Change Email'>
+		{/if}
+	</div>
 </form>
 <form class="p-6 flex flex-col gap-4" method="post" action="?/save" use:enhance>
 	<label>
 		<span>Name</span>
 		<input name="userName" bind:value={data.user.name} class="block w-full" required type="text"
-		       />
+		/>
 	</label>
 	<div>
 		<span class="text-sm text-gray-800">Created</span>
@@ -72,8 +71,8 @@
 			<span>Disabled</span>
 		</label>
 		<label class="flex items-center gap-2">
-			<input name="isVefified" bind:checked={data.user.isVerified} class="form-checkbox" type="checkbox"
-			       disabled=true>
+			<input name="isVerified" bind:checked={data.user.isVerified} class="form-checkbox" type="checkbox"
+			       disabled={true}>
 			<span>Verified</span>
 		</label>
 		<label class="flex items-center gap-2">
@@ -102,35 +101,46 @@
 	{/if}
 
 	<input class="button self-center mt-2" type='submit' value='Save'>
-	
+
 	<label>
 		<span>Quota of extra Decks (using {data.usage.decks}; base quota is {data.quotaDetails.baseQuota.decks})</span>
-		<input name="extraDecks" bind:value={data.quotaDetails.extraQuota.decks} class="block w-full" required type="number" min="0"
+		<input name="extraDecks" bind:value={data.quotaDetails.extraQuota.decks} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Deck Revisions (using {data.usage.revisions}; base quota is {data.quotaDetails.baseQuota.revisions})</span>
-		<input name="extraRevisions" bind:value={data.quotaDetails.extraQuota.revisions} class="block w-full" required type="number" min="0"
+		<span>Quota of extra Deck Revisions (using {data.usage.revisions}
+			; base quota is {data.quotaDetails.baseQuota.revisions})</span>
+		<input name="extraRevisions" bind:value={data.quotaDetails.extraQuota.revisions} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Sessions (using {data.usage.sessions}; base quota is {data.quotaDetails.baseQuota.sessions})</span>
-		<input name="extraSessions" bind:value={data.quotaDetails.extraQuota.sessions} class="block w-full" required type="number" min="0"
+		<span>Quota of extra Sessions (using {data.usage.sessions}; base quota is {data.quotaDetails.baseQuota.sessions}
+			)</span>
+		<input name="extraSessions" bind:value={data.quotaDetails.extraQuota.sessions} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Snapshots (using {data.usage.snapshots}; base quota is {data.quotaDetails.baseQuota.snapshots})</span>
-		<input name="extraSnapshots" bind:value={data.quotaDetails.extraQuota.snapshots} class="block w-full" required type="number" min="0"
+		<span>Quota of extra Snapshots (using {data.usage.snapshots}
+			; base quota is {data.quotaDetails.baseQuota.snapshots})</span>
+		<input name="extraSnapshots" bind:value={data.quotaDetails.extraQuota.snapshots} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra Analyses (using {data.usage.analyses}; base quota is {data.quotaDetails.baseQuota.analyses})</span>
-		<input name="extraAnalyses" bind:value={data.quotaDetails.extraQuota.analyses} class="block w-full" required type="number" min="0"
+		<span>Quota of extra Analyses (using {data.usage.analyses}; base quota is {data.quotaDetails.baseQuota.analyses}
+			)</span>
+		<input name="extraAnalyses" bind:value={data.quotaDetails.extraQuota.analyses} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 	<label>
-		<span>Quota of extra File Space (using {data.usage.diskSizeK} KB; base quota is {data.quotaDetails.baseQuota.diskSizeK})</span>
-		<input name="extraDiskSizeK" bind:value={data.quotaDetails.extraQuota.diskSizeK} class="block w-full" required type="number" min="0"
+		<span>Quota of extra File Space (using {data.usage.diskSizeK}
+			KB; base quota is {data.quotaDetails.baseQuota.diskSizeK})</span>
+		<input name="extraDiskSizeK" bind:value={data.quotaDetails.extraQuota.diskSizeK} class="block w-full" required
+		       type="number" min="0"
 		       disabled={!data.localUser.isAdmin}/>
 	</label>
 

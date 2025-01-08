@@ -44,7 +44,7 @@ label:hover > span {
     @apply text-blue-800;
 }
 
-label:hover > input, label:hover > textarea, label:hover > select, label:hover > .input {
+label:hover > input:enabled, label:hover > textarea:enabled, label:hover > select:enabled, label:hover > .input {
     @apply border-blue-700;
 }
 

@@ -2,11 +2,11 @@ import {base} from "$app/paths";
 import {getDb} from "$lib/db";
 import {getCookieName, hashPassword, REGISTER_CODE, signUserToken} from "$lib/security";
 import type {User} from "$lib/types";
-import type {PageServerLoad} from './$types'
+import {GUEST_EMAIL, sendPasswordResetEmail} from "$lib/userutils";
 import type {Actions} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import {customAlphabet} from "nanoid"
-import { sendPasswordResetEmail, GUEST_EMAIL } from "$lib/userutils";
+import type {PageServerLoad} from './$types'
 
 export const load: PageServerLoad = (async ({}) => {
 	const needCodeToRegister = !!REGISTER_CODE
@@ -57,8 +57,7 @@ export const actions: Actions = {
 				return fail(500)
 			}
 			console.log(`Registered new user ${email} - pending email confirmation`)
-			const res = await sendPasswordResetEmail(email, url)
-			return res
+			return await sendPasswordResetEmail(email, url)
 		} else {
 			if (!user) {
 				console.log(`Login failed unknown user ${email}`)
@@ -71,20 +70,20 @@ export const actions: Actions = {
 			const hash = await hashPassword(password)
 			if (user.password != hash) {
 				console.log(`Login failed for user ${email}`)
-				await db.collection<User>("Users").updateOne({ 
+				await db.collection<User>("Users").updateOne({
 					email: email
 				}, {
-					$set: {  
+					$set: {
 						lastLoginFailure: now,
-						countLoginFailure: user.countLoginFailure ? user.countLoginFailure+1 : 1,
+						countLoginFailure: user.countLoginFailure ? user.countLoginFailure + 1 : 1,
 					}
 				})
 				return fail(401, {error: `Login Failed`})
 			}
-			await db.collection<User>("Users").updateOne({ 
+			await db.collection<User>("Users").updateOne({
 				email: email
 			}, {
-				$set: {  
+				$set: {
 					lastLogin: now,
 					lastAccess: now,
 					countLoginFailure: 0,

@@ -1,14 +1,22 @@
 import {getDb} from "$lib/db"
-import {getUser} from "$lib/userutils";
+import {getUser, sendPasswordResetEmail} from "$lib/userutils";
 import {verifyAuthentication} from "$lib/security";
 import type {User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit"
-import { getUserIsAdmin } from "$lib/userutils";
+import {getUserIsAdmin} from "$lib/userutils";
 import {base} from "$app/paths"
 import type {PageServerLoad, Usage} from "./$types"
-import { getQuotaDetails, getUsageDiskSizeK, getUsageDecks, getUsageRevisions, getUsageSessions, getUsageSnapshots, getUsageAnalyses } from "$lib/quotas";
-import { verifyLocalUserIsAdmin } from "../../../../lib/userutils";
+import {
+	getQuotaDetails,
+	getUsageDiskSizeK,
+	getUsageDecks,
+	getUsageRevisions,
+	getUsageSessions,
+	getUsageSnapshots,
+	getUsageAnalyses
+} from "$lib/quotas";
+import {verifyLocalUserIsAdmin} from "$lib/userutils";
 
 export const load: PageServerLoad = async function ({locals, params}) {
 	await verifyAuthentication(locals)
@@ -16,7 +24,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 	const db = await getDb();
 	const user = await getUser(db, email, locals.email)
 	const quotaDetails = await getQuotaDetails(email)
-	const usage:Usage  = {
+	const usage: Usage = {
 		decks: await getUsageDecks(email),
 		sessions: await getUsageSessions(email),
 		snapshots: await getUsageSnapshots(email),
@@ -37,20 +45,20 @@ export const actions: Actions = {
 		const {email} = params
 		const db = await getDb()
 		let localUser = await db.collection<User>('Users')
-			.findOne({email:locals.email})
+			.findOne({email: locals.email})
 		const isAdmin = getUserIsAdmin(localUser)
 		let user = await db.collection<User>('Users')
-			.findOne({email:email})
-    	if (!user) {
-        	throw error(404, `User ${email} not found`);
-    	}
+			.findOne({email: email})
+		if (!user) {
+			throw error(404, `User ${email} not found`);
+		}
 		if (email != locals.email && !isAdmin) {
 			throw error(401, `User Write Access Not Permitted`);
 		}
 		const data = await request.formData();
 		if (!isAdmin) {
 			// can only change name :-)
-			const updateResult = await db.collection<User>('Users').updateOne({
+			await db.collection<User>('Users').updateOne({
 				email: email
 			}, {
 				$set: {
@@ -59,16 +67,16 @@ export const actions: Actions = {
 			})
 		} else {
 			// admin updates...
-			const updateResult = await db.collection<User>('Users').updateOne({
+			await db.collection<User>('Users').updateOne({
 				email: email
 			}, {
 				// note, cannot disable or un-admin yourself, just in case :-)
 				$set: {
 					name: data.get('userName') as string || user.name,
-					disabled: email!=locals.email && data.get('isDisabled') == 'on',
+					disabled: email != locals.email && data.get('isDisabled') == 'on',
 					isDeckBuilder: data.get('isDeckBuilder') == 'on',
 					isPublisher: data.get('isPublisher') == 'on',
-					isAdmin: (email==locals.email && user.isAdmin) || data.get('isAdmin') == 'on',
+					isAdmin: (email == locals.email && user.isAdmin) || data.get('isAdmin') == 'on',
 					"extraQuota.decks": Number(data.get("extraDecks") as string || "0"),
 					"extraQuota.revisions": Number(data.get("extraRevisions") as string || "0"),
 					"extraQuota.sessions": Number(data.get("extraSessions") as string || "0"),
@@ -85,22 +93,24 @@ export const actions: Actions = {
 		await verifyLocalUserIsAdmin(locals)
 		const {email} = params
 		const db = await getDb()
-		let user = await db.collection<User>('Users')
-			.findOne({email:email})
-    	if (!user) {
-        	throw error(404, `User ${email} not found`);
-    	}
+		let user = await db.collection<User>('Users').findOne({email: email})
+		if (!user) {
+			throw error(404, `User ${email} not found`);
+		}
 		const data = await request.formData();
 		const newEmail = data.get('userEmail') as string
-		if (!newEmail || newEmail.indexOf('@')<=0 || newEmail.indexOf('@')+1 >= newEmail.length) {
+		if (!newEmail || newEmail.indexOf('@') <= 0 || newEmail.indexOf('@') + 1 >= newEmail.length) {
 			throw error(400, `New email not valid (${newEmail})`)
+		}
+		if(user.email === newEmail) {
+			return {success: true}
 		}
 		await changeQuotaUser(db, 'CardDeckRevisions', email, newEmail)
 		await changeQuotaUserAndOwner(db, 'CardDeckSummaries', email, newEmail)
 		await changeQuotaUserAndOwner(db, 'Sessions', email, newEmail)
 		await changeQuotaUserAndOwner(db, 'SessionSnapshots', email, newEmail)
 		await changeQuotaUserAndOwner(db, 'Analyses', email, newEmail)
-		const newUser = await db.collection<User>("Users").findOne({email:newEmail})
+		const newUser = await db.collection<User>("Users").findOne({email: newEmail})
 		if (newUser) {
 			console.log(`Merged old user ${email} into user ${newEmail}`)
 			await db.collection<User>('Users').deleteOne({email})
@@ -116,19 +126,26 @@ export const actions: Actions = {
 			})
 		}
 		throw redirect(302, `${base}/users/${newEmail}`);
+	},
+	verifyEmail: async ({locals, params, url}) => {
+		await verifyAuthentication(locals)
+		const {email} = params
+		await sendPasswordResetEmail(email, url)
 	}
 }
 
-async function changeQuotaUser(db, collection:string, email:string, newEmail:string) : Promise<void> {
+async function changeQuotaUser(db, collection: string, email: string, newEmail: string): Promise<void> {
 	await db.collection(collection).updateMany(
-		{ quotaUser: email },
-		{ $set: { quotaUser: newEmail }
-	})
+		{quotaUser: email},
+		{
+			$set: {quotaUser: newEmail}
+		})
 }
-async function changeQuotaUserAndOwner(db, collection:string, email:string, newEmail:string) : Promise<void> {
+
+async function changeQuotaUserAndOwner(db, collection: string, email: string, newEmail: string): Promise<void> {
 	await changeQuotaUser(db, collection, email, newEmail)
-	let items = await db.collection(collection).find({ owners: email },
-		{ projection: { _id: true, owners: true, quotaUser: true }}
+	let items = await db.collection(collection).find({owners: email},
+		{projection: {_id: true, owners: true, quotaUser: true}}
 	).toArray()
 	for (let item of items) {
 		let owners = item.owners.filter((i) => i != email)
@@ -137,8 +154,8 @@ async function changeQuotaUserAndOwner(db, collection:string, email:string, newE
 		} else {
 			owners.push(newEmail)
 		}
-		await db.collection(collection).updateOne({ _id: item._id },
-			{ $set: { owners: owners } }
+		await db.collection(collection).updateOne({_id: item._id},
+			{$set: {owners: owners}}
 		)
 	}
 }
