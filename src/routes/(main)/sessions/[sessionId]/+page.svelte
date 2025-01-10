@@ -3,6 +3,7 @@
 	import UserSelect from "$lib/ui/UserSelect.svelte"
 	import type {ActionData} from "./$types"
 	import SessionHeader from "./SessionHeader.svelte";
+	import {base} from '$app/paths'
 
 	export let data
 	export let form: ActionData
@@ -36,6 +37,30 @@
 			minute: '2-digit'
 		})}</div>
 	</div>
+	<div>
+		<span class="flex">Live session support</span>
+		<div class="flex justify-left gap-4 px-3">
+			<label class="flex items-center">
+				<input name="isLive" bind:checked="{data.session.isLive}" class="form-checkbox"
+				       type="checkbox">
+				<span class="ml-2">Enable</span>
+			</label>
+			{#if data.session.isLive && !data.session.joiningCode} 
+				<span class="message-error">Save now to generate joining codes</span>
+			{/if}
+			{#if data.session.isLive && data.session.joiningCode}
+				<a target="_blank" href="{base}/sessions/{data.session._id}/live?j={data.session.joiningCode}" class="button flex">
+					Join
+				</a>
+			{/if}
+			{#if data.session.isLive && data.session.joiningCodeReadonly}
+				<a target="_blank" href="{base}/sessions/{data.session._id}/live?j={data.session.joiningCodeReadonly}" class="button flex">
+					Join (Readonly)
+				</a>
+			{/if}
+		</div>
+	</div>
+	
 	<div>
 		<span class="text-sm text-gray-800">Session Type</span>
 		<div class="px-3">{data.session.sessionType || 'Not Defined'}</div>

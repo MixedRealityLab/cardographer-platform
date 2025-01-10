@@ -4,6 +4,7 @@ import type {Session, SessionSnapshot, User} from "$lib/types"
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 import { verifyLocalUserIsPublisher } from "$lib/userutils";
+import { nanoid } from "nanoid"
 
 export const load: PageServerLoad = async function ({locals, parent}) {
 	await verifyAuthentication(locals)
@@ -40,6 +41,9 @@ export const actions: Actions = {
 		if (isPublic) {
 			await verifyLocalUserIsPublisher(locals)
 		}
+		const isLive = data.get('isLive') == 'on'
+		const joiningCode = session.joiningCode ?? (isLive ? nanoid() : null) 
+		const joiningCodeReadonly = session.joiningCodeReadonly ?? (isLive ? nanoid() : null) 
 		const updateResult = await db.collection<Session>('Sessions').updateOne(
 			{_id: sessionId},
 			{
@@ -58,6 +62,9 @@ export const actions: Actions = {
 					isConsentToIdentify: data.get('isConsentToIdentify') == 'on',
 					isConsentRequiresCredit: data.get('isConsentRequiresCredit') == 'on',
 					consentDetails: data.get('consentDetails') as string || '',
+					isLive: isLive,
+					joiningCode,
+					joiningCodeReadonly,
 					lastModified: new Date().toISOString()
 				}
 			})

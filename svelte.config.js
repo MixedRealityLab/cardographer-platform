@@ -11,6 +11,7 @@ const config = {
 
 	kit: {
 		paths: {
+			base: '',
 			assets: ''
 		},
 		adapter: adapter({

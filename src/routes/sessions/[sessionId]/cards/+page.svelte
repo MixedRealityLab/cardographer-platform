@@ -2,7 +2,7 @@
 <script lang="ts">
 	import type {Session} from "$lib/types";
 	import {createMenu} from "svelte-headlessui";
-	import CardList from "./CardList.svelte";
+	import CardList from "$lib/ui/CardList.svelte";
 	import Transition from 'svelte-transition'
 
 	export let data: Session

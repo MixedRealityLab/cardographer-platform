@@ -1,8 +1,10 @@
 import {checkUserToken, getCookieName} from '$lib/security';
 import type {Handle, RequestEvent} from '@sveltejs/kit';
 import {parse} from "cookie";
+import {getWss} from '$lib/liveserver'
 
 const debug = false
+getWss()
 
 // noinspection JSUnusedGlobalSymbols
 export const handle: Handle = async function ({event, resolve}) {
