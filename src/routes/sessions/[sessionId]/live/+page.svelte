@@ -11,9 +11,6 @@
 
 <div class="h-screen w-screen flex flex-col" style="height: 100svh">
 
-    <div>Session {data.session.name} {data.readonly ? '(Readonly)' : ''}</div>
-    <div>{data.session.decks.length} decks, {data.session.decks.flatMap(deck=>deck['cards']).length} cards</div>
-
     <div class="grow">
     <LiveView session={data.session}></LiveView>
     </div>
