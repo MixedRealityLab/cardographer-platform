@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CardList from "$lib/ui/CardList.svelte";
+	import LiveViewHeader from "$lib/ui/LiveViewHeader.svelte";
     import type { Session } from "$lib/types"
 	import {onDestroy, onMount} from "svelte"
 	import { base } from "$app/paths";
@@ -112,38 +113,47 @@
     }
 </style>
 
-<div class="flex flex-col h-full w-full">
 
-  <div class="w-full flex-col" class:overflow-y-scroll={tab!='cards'}>
-    <div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
-        <div class="flex grow justify-center text-ellipsis">
-            {session.name}
+{#if failed} 
+<div class="absolute top-0 bottom-0 left-0 right-0 overflow-y-scroll overflow-x-hidden">
+    <div class="w-full flex flex-col">
+        <LiveViewHeader {session}></LiveViewHeader>
+        <div class="container mx-auto flex flex-col">
+            <div class="text-red-950 bg-red-100 rounded p-4 m-4 text-xl">Sorry, you can't join that session ({failed})</div>
         </div>
     </div>
+</div>
 
-    {#if failed} 
-    <div class="mt-1 text-red-950 bg-red-100 rounded p-4 m-4 text-xl">Sorry, you can't join that session ({failed})</div>
- 
-    {:else if !connected}
-    <div class="flex flex-col p-2">
-        <div class="flex m-2">
-            <input class="flex-grow" type="text" bind:value={nickname} placeholder="Nickname" disabled={connecting}>
-        </div>
-        <div class="flex m-2 self-center w-full p-2">
-            <button class="w-full button self-center" disabled={connecting || nickname==''} on:click={connect}>Join</button>
+{:else if !connected}
+<div class="absolute top-0 bottom-0 left-0 right-0 overflow-y-scroll overflow-x-hidden">
+    <div class="w-full flex flex-col">
+        <LiveViewHeader {session}></LiveViewHeader>
+        <div class="container mx-auto flex flex-col">
+            <div class="flex flex-col p-2">
+                <div class="flex m-2">
+                    <input class="flex-grow" type="text" bind:value={nickname} placeholder="Nickname" disabled={connecting}>
+                </div>
+                <div class="flex m-2 self-center w-full p-2">
+                    <button class="w-full button self-center" disabled={connecting || nickname==''} on:click={connect}>Join</button>
+                </div>
+            </div>
         </div>
     </div>
-    {:else}
-    <div class="flex grow">
-        <div class="flex flex-col w-full">
+</div>
+{:else}
+<div class="absolute top-0 bottom-10 left-0 right-0 overflow-y-scroll">
         {#if tab=='cards'}
-            <CardList cards={cards} bind:this={cardList}></CardList>
+            <div class="flex flex-col h-full w-screen">
+                <CardList cards={cards} bind:this={cardList}></CardList>
+            </div>
         {:else if tab=='people' && isOwner}
+        <div class="flex flex-col">
+            <LiveViewHeader {session}></LiveViewHeader>
             <div class="max-w-screen-md container mx-auto">
-                <form class="p-6 flex flex-col text-sm gap-4">
+                <form class="p-6 flex flex-col gap-4">
                 {#each seats as seat (seat)}
                     <label>
-                        <span>{seat}:</span> <!--bind:value="{data.session.name}"-->
+                        <span class="text-sm">{seat}:</span> <!--bind:value="{data.session.name}"-->
                         <select id="{seat}" bind:value="{players[seat]}" class="mt-1 block w-full" on:change="{changeSeat(seat)}">
                             <option value=""></option>
                             {#each clients as clientInfo (clientInfo.clientId)}
@@ -153,20 +163,17 @@
                     </label>
                 {/each}
                 <label>
-                    <span>All:</span>
+                    <span class="text-sm">All:</span>
                     {#each clients as clientInfo (clientInfo.clientId)}
                     <div class="p-1 m-1 text-base text-black">{clientInfo.clientState?.nickname} <span class="text-sm text-slate-500">({clientInfo.clientId})</span></div>
                     {/each}
                 </label>
                 </form>
             </div>
-        {/if}
         </div>
-    </div>
-    {/if}
-  </div>
-  {#if connected}
-    <div class="absolute bottom-0 max-w-screen-md container mx-auto w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
+        {/if}
+</div>
+<div class="absolute bottom-0 h-10 w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center overflow-x-auto">
         <div class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
             Cards
         </div>
@@ -175,7 +182,5 @@
             People
         </div>
         {/if}
-    </div>
-  {/if}
-
 </div>
+{/if}

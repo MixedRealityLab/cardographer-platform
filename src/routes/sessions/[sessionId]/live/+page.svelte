@@ -9,9 +9,8 @@
 	<title>Cardographer Live: {data.session.name}</title>
 </svelte:head>
 
-<div class="h-screen w-screen flex flex-col" style="height: 100svh">
+<div class="h-screen w-screen flex flex-col position-relative" style="height: 100svh">
 
-    <div class="grow">
     <LiveView session={data.session} isOwner={data.isOwner}></LiveView>
-    </div>
+
 </div>
