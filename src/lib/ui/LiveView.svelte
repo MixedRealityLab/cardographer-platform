@@ -1,11 +1,15 @@
 <script lang="ts">
 	import CardList from "$lib/ui/CardList.svelte";
     import type { Session } from "$lib/types"
-	import {onMount} from "svelte"
+	import {onDestroy, onMount} from "svelte"
 	import { base } from "$app/paths";
     import { page } from '$app/stores';  
+    import { LiveClient } from "$lib/liveclient";
+    import { MESSAGE_TYPE, type HelloSuccessResp, type ChangeNotif } from "$lib/liveclienttypes";
 
     export let session: Session
+    export let isOwner: boolean = false
+
     let connecting = false
     let failed: string|null = null
     let connected = false
@@ -16,11 +20,16 @@
     let cardList: CardList
 
     let clientId: string
+    let client : LiveClient = new LiveClient()
+    let clients = []
+    let seats: string[] = []
+    let ws
+    let players = {} // players[seat] = clientId
     function connect() {
         const wsurl = `${$page.url.protocol == 'https' ? 'wss' : 'ws'}://${$page.url.host}/${base}wss`
         console.log(`connect to ${wsurl}...`)
         connecting = true
-        let ws = new WebSocket(wsurl)
+        ws = new WebSocket(wsurl)
         ws.onerror = (event) => { 
             console.log(`ws error`, event) 
             failed = `websocket error ${event.error}`;
@@ -32,11 +41,18 @@
         ws.onmessage = (event) => {
             console.log(`ws message`, event.data)
             let msg = JSON.parse(event.data)
-            if (msg.type == 1) {
+            if (msg.type == MESSAGE_TYPE.HELLO_SUCCESS_RESP) {
                 clientId = msg.clientId
                 console.log(`Hello resp as ${clientId}`)
                 connected = true
+                client.handleHello(msg as HelloSuccessResp)
+            } else if (msg.type == MESSAGE_TYPE.CHANGE_NOTIF) {
+                console.log(`Change notif`)
+                client.handleNotif(msg as ChangeNotif)
             }
+            clients = client.getClients()
+            seats = client.seats
+            console.log(`clients:`, client.getClients())
         }
         ws.onopen = (event) => { 
             console.log(`ws open`)
@@ -56,7 +72,30 @@
             ws.send(JSON.stringify(helloReq))
         }
     }
+    onDestroy(() => {
+        if(ws) {
+            console.log(`close websocket on destroy`)
+            ws.close()
+            ws = null
+        }
+    })
 
+    function changeSeat(seat) {
+        console.log(`change seat ${seat} -> ${players[seat]}`)
+        for (const s in players) {
+            if (s!==seat && players[s] == players[seat]) {
+                // can't do 2 at once
+                players[s] = ''
+            }
+        }
+        if (connected) {
+            ws.send(JSON.stringify({
+                type: MESSAGE_TYPE.CHANGE_REQ,
+                roomChanges: [
+                    {key:'players', value: JSON.stringify(players)}]
+            }))
+        }
+    }
 </script>
 
 <style>
@@ -74,6 +113,8 @@
 </style>
 
 <div class="flex flex-col h-full w-full">
+
+  <div class="w-full flex-col" class:overflow-y-scroll={tab!='cards'}>
     <div class="w-full py-1 px-2 bg-gray-700 text-2xl text-white flex items-center">
         <div class="flex grow justify-center text-ellipsis">
             {session.name}
@@ -94,15 +135,47 @@
     </div>
     {:else}
     <div class="flex grow">
+        <div class="flex flex-col w-full">
         {#if tab=='cards'}
             <CardList cards={cards} bind:this={cardList}></CardList>
+        {:else if tab=='people' && isOwner}
+            <div class="max-w-screen-md container mx-auto">
+                <form class="p-6 flex flex-col text-sm gap-4">
+                {#each seats as seat (seat)}
+                    <label>
+                        <span>{seat}:</span> <!--bind:value="{data.session.name}"-->
+                        <select id="{seat}" bind:value="{players[seat]}" class="mt-1 block w-full" on:change="{changeSeat(seat)}">
+                            <option value=""></option>
+                            {#each clients as clientInfo (clientInfo.clientId)}
+                            <option value={clientInfo.clientId}>{clientInfo.clientState?.nickname}</option>
+                            {/each}
+                        </select>
+                    </label>
+                {/each}
+                <label>
+                    <span>All:</span>
+                    {#each clients as clientInfo (clientInfo.clientId)}
+                    <div class="p-1 m-1 text-base text-black">{clientInfo.clientState?.nickname} <span class="text-sm text-slate-500">({clientInfo.clientId})</span></div>
+                    {/each}
+                </label>
+                </form>
+            </div>
         {/if}
-    </div>
-    <div class="w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
-        <div class="tab" class:tabSelected={tab=='cards'}>
-            Cards
         </div>
     </div>
     {/if}
+  </div>
+  {#if connected}
+    <div class="absolute bottom-0 max-w-screen-md container mx-auto w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center">
+        <div class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
+            Cards
+        </div>
+        {#if isOwner}
+        <div class="tab" class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
+            People
+        </div>
+        {/if}
+    </div>
+  {/if}
 
 </div>

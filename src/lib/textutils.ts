@@ -1,5 +1,7 @@
 import striptags1 from "striptags" ;
 
 export function striptags(text:string): string {
-	return striptags1(text.replace(/<br/g,' <br'))
+	text = striptags1(text.replace(/<br/g,' <br'))
+	text = text.replace(/&#64;/g, '@')
+	return text
 }

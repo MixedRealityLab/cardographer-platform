@@ -219,11 +219,15 @@ function cardInBounds(c, w) {
 }
 
 function boundify(w, widgets) {
+	// ignore groups for now
+	if (w.type.toLowerCase() == 'group') {
+		return
+	}
 	if (!w.bounds) {
 		let x = w.x
 		let y = w.y
 		let node = w
-		for (let node = w; node.parentId !== null; ) {
+		for (let node = w; node.parentId !== null && node.parentId !== undefined; ) {
 			let parent = widgets.find((w) => w.id == node.parentId)
 			if (!parent) {
 				console.log(`ERROR: miro parent not found: ${node.parentId}`)
@@ -239,7 +243,7 @@ function boundify(w, widgets) {
 			node = parent
 		}
 		if (w.origin != 'center') {
-			console.log(`ERROR: unhandled miro origin: ${w.origin}`)
+			console.log(`ERROR: unhandled miro origin: ${w.origin}`, w)
 		}
 		w.bounds = {
 			left: x - (w.width / 2),

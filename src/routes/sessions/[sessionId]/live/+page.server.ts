@@ -33,10 +33,11 @@ export const load: PageServerLoad = async function ({locals, params, url}) {
 	if (locals.authenticated && locals.email && !(await isLocalUserDisabled(locals))) {
 		localUser = await getUser(db, locals.email, locals.email)
 	}
-
+	const isOwner = session.owners?.indexOf(locals.email) >= 0
 	return {
 		session,
 		readonly,
 		localUser,
+		isOwner,
 	}
 }

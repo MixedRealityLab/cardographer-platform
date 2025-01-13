@@ -12,6 +12,6 @@
 <div class="h-screen w-screen flex flex-col" style="height: 100svh">
 
     <div class="grow">
-    <LiveView session={data.session}></LiveView>
+    <LiveView session={data.session} isOwner={data.isOwner}></LiveView>
     </div>
 </div>
