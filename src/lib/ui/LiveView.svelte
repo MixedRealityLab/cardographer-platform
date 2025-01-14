@@ -5,7 +5,7 @@
 	import {onDestroy} from "svelte"
 	import { base } from "$app/paths";
     import { page } from '$app/stores';  
-    import { LiveClient, getLiveClient } from "$lib/liveclient";
+    import { LiveClient, getLiveClient, SPOTLIGHT_ZONE } from "$lib/liveclient";
     import ZoneSelector from "./ZoneSelector.svelte";
 
     export let session: Session
@@ -39,16 +39,19 @@
     $: failed = client.failed
     $: connected = client.connected
     $: activeZones = client.activeZones
-    $: myActiveZones = activeZones.filter((z) => z.indexOf('@')<0 || z.substring(z.indexOf('@'))==myseat)
+    $: myActiveZones = activeZones.filter((z) => (isOwner || z!=SPOTLIGHT_ZONE) && (z.indexOf('@')<0 || z.substring(z.indexOf('@'))==myseat))
     let myzone:string
     $: zoneCards = client.zoneCards
     $: myZoneCards = cards.filter((c) => (zoneCards[myzone] ?? []).indexOf(c.id)>=0)
+    let mySelectedIds = []
+    $: topZones = isOwner ? activeZones : [SPOTLIGHT_ZONE]
+    let topzone:string
+    $: topZoneCards = cards.filter((c) => (zoneCards[topzone] ?? []).indexOf(c.id)>=0)
 
     function connect() {
         client.connect($page.url, base, session, nickname)
     }
     onDestroy(() => {
-        console.log(`destroyed live view`)// ??
         if (highlightPlayerTimeout) {
             clearTimeout(highlightPlayerTimeout)
             highlightPlayerTimeout = null
@@ -56,6 +59,13 @@
     })
     function changeSeat(seat) {
         client.changeSeat(seat, players[seat])
+    }
+
+    function moveSelectionUp(ev: MouseEvent) {
+        client.moveCards(mySelectedIds, myzone, topzone)
+    }
+    function moveSelectionDown(ev: MouseEvent) {
+        client.moveCards(mySelectedIds, topzone, myzone)
     }
 </script>
 
@@ -86,6 +96,18 @@
 
     .tab:hover:not(.tabSelected) {
         @apply bg-gray-600;
+    }
+
+    .arrow {
+        @apply cursor-pointer text-gray-900 stroke-gray-900;
+    }
+
+    .arrow.disabled {
+        @apply cursor-default text-gray-400 stroke-gray-400;
+    }
+
+    .arrow:hover:not(.disabled) {
+        @apply text-gray-600 stroke-gray-600;
     }
 </style>
 
@@ -120,8 +142,24 @@
 <div class="absolute top-0 bottom-10 left-0 right-0" class:overflow-y-auto={tab!='cards'}>
         {#if tab=='cards'}
             <div class="flex flex-col h-full w-screen">
+                <ZoneSelector zones={topZones} bind:zone={topzone}></ZoneSelector>
+                <div class="w-full h-10 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
+                    <div class="flex justify-center arrow px-2" class:disabled={mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                    on:click={(ev)=>{if(!(mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
+                        <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex justify-center arrow px-2" class:disabled={mySelectedIds.length==0 || myzone==topzone || !topZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                        on:click={(ev)=>{if(!(mySelectedIds.length==0 || myzone==topzone)) { moveSelectionDown(ev) }}}>
+                        <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
                 <ZoneSelector zones={myActiveZones} bind:zone={myzone}></ZoneSelector>
-                <CardList cards={myZoneCards} bind:this={cardList}></CardList>
+                <CardList cards={myZoneCards} bind:this={cardList}
+                allowSelection={true} bind:selectedIds={mySelectedIds}></CardList>
             </div>
         {:else if tab=='people' && isOwner}
         <div class="flex flex-col">

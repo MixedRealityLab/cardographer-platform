@@ -2,6 +2,7 @@
 import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp } from './liveclienttypes'
 import { type Session } from './types'
 
+export const SPOTLIGHT_ZONE = "Spotlight"
 export enum LIVE_CLIENT_STATUS {
     WAITING_FOR_HELLO,
     ACTIVE,
@@ -116,12 +117,25 @@ export class LiveClient {
         this.updated(false)
     }
 
-    changeSeat = function(seat, player) {
+    changeSeat = function(seat:string, player:string) {
         console.log(`change seat ${seat} -> ${player}...`)
         this.ws.send(JSON.stringify({
             type: MESSAGE_TYPE.ACTION_REQ,
             action: 'changeSeat',
             data: JSON.stringify({seat,player}),
+        }))
+    }
+    moveCards = function(cardIds:string[], fromZone:string, toZone:string) {
+        console.log(`move cards ${cardIds} from ${fromZone} to ${toZone}`)
+        this.ws.send(JSON.stringify({
+            type: MESSAGE_TYPE.ACTION_REQ,
+            action: 'moveCards',
+            data: JSON.stringify({
+                cards:cardIds,
+                from:fromZone,
+                to:toZone,
+                autoReturn: toZone=='Spotlight',
+            }),
         }))
     }
 

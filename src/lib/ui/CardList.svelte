@@ -10,6 +10,8 @@
 	export let heightRatio = 3
 
 	export let cards: CardInfo[]
+	export let allowSelection = false
+	export let selectedIds: string[] = []
 
 	let currentCard: CardInfo
 	let cardIndex: number
@@ -100,13 +102,27 @@
 		return Math.floor((cardList.scrollLeft + (clientWidth / 2)) / contentWidth)
 	}
 
-	function handleScrollClick(event: MouseEvent) {
+	function handleScrollClick(event: MouseEvent, card?:CardInfo) {
 		const fraction = event.clientX / clientWidth
 		const page = currentCardIndex()
 		if (fraction > 0.7) {
 			scrollTo(page + 1)
 		} else if (fraction < 0.3) {
 			scrollTo(page - 1)
+		} else if (card && allowSelection) {
+			const multiSelect = event.metaKey || event.ctrlKey || event.shiftKey
+			if (multiSelect) {
+				// toggle
+				if (selectedIds.indexOf(card.id)<0) {
+					selectedIds.push(card.id)
+				} else {
+					selectedIds.splice(selectedIds.indexOf(card.id), 1)
+				}
+				// need to re-assign to pick up change
+				selectedIds = selectedIds
+			} else {
+				selectedIds = [card.id]
+			}
 		}
 	}
 
@@ -132,6 +148,13 @@
 		animation: highlight 10s;
 	}
 
+	.selected {
+		/*outline: 8px solid rgb(145, 145, 145);*/
+		-webkit-box-shadow:0px 0px 10px 5px rgba(144, 144, 144);
+		-moz-box-shadow: 0px 0px 10px 5px rgba(144, 144, 144);
+		box-shadow: 0px 0px  10px 5px rgba(144, 144, 144);
+	}
+
 	ol::-webkit-scrollbar {
 		@apply h-2;
 	}
@@ -154,7 +177,9 @@
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
 					<div class="w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
-					     class:highlight={index === highlight}
+						 class:selected={selectedIds.indexOf(card.id)>=0}
+					     on:click={(ev)=>handleScrollClick(ev,card)}
+						 class:highlight={index === highlight} 
 					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}); border-radius: {contentHeight * 0.05}px;"
 					     id="card{index}"
 					     role="img" aria-describedby="desc{index}" aria-label="{card.name}">
@@ -162,6 +187,8 @@
 					</div>
 				{:else}
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow gap-4"
+						 class:selected={selectedIds.indexOf(card.id)>=0}
+					     on:click={(ev)=>handleScrollClick(ev,card)}
 					     class:highlight={index === highlight}>
 						<h2 class="text-2xl text-center">{card.name}</h2>
 						<p class="text-sm max-h-[50%] overflow-hidden" style="block-ellipsis: auto">{card.content || card.description}</p>

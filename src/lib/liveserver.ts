@@ -5,6 +5,7 @@ import {error} from "@sveltejs/kit";
 import {checkUserToken, getCookieName} from '$lib/security';
 import {parse} from "cookie";
 import { getClient } from './clients';
+import { SPOTLIGHT_ZONE } from './liveclient';
 
 console.log(`customise websocket server`)
 
@@ -68,7 +69,7 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
 		})
 		.sort({created: -1})
 		.toArray()
-    //console.log(`snapshots`, snapshots)
+    //console.log(`${snapshots.length} snapshots for session ${session._id}`, snapshots)
     if (snapshots.length==0) {
         console.log(`Warning: no snapshot exists for this session`)
         // TODO...
@@ -80,6 +81,7 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
         console.log(`Error: could not most recent snapshot (${snapshots[0]._id})`)
         return
     }
+    console.log(`using session ${session._id} snapshot created ${snapshot.created} (originally ${snapshot.originallyCreated})`)
 	const client = getClient(snapshot.sessionType)
     if (!client) {
         console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
@@ -131,7 +133,7 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
     }
     // all zones active for now
     let allZones = info.boards.flatMap((b) => b.zones).map((z) => z.id)
-    allZones.push('Spotlight')
+    allZones.push(SPOTLIGHT_ZONE)
     allZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
     room.state.activeZones = JSON.stringify(allZones)
 
@@ -163,13 +165,20 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
     for (const key of roomKeysToDelete) {
         change.roomChanges.push({key})
         delete room.state[key]
-    }    
+    }
+    //console.log(`initialised room ${session._id} state`, room.state)
     wss.broadcastChange(room, change)
 }
 
 interface ChangeSeatReq {
     player:String
     seat:string
+}
+interface MoveCardsReq {
+    from:string
+    to:string
+    cards:string[]
+    autoReturn?:boolean // move back if client deleted ?! 
 }
 wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< { roomChanges?: KVSet[], clientChanges?: KVSet[], echo?: boolean } > {
     console.log(`vet room changes ${JSON.stringify(req.roomChanges)} & client changes ${JSON.stringify(req.clientChanges)} for ${clientId}`)
@@ -182,6 +191,7 @@ wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId
 }
 wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< ActionResp > {
     console.log(`Action ${req.action}(${req.data}) by ${clientId}`)
+    let error : string|null = null
     if (req.action == 'test') {
         return {
             type: MESSAGE_TYPE.ACTION_RESP,
@@ -223,11 +233,40 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
             wss.broadcastChange(room, change)
         }
     }
+    else if (req.action == 'moveCards') {
+        const move = JSON.parse(req.data) as MoveCardsReq
+        if (typeof(move.from)!=='string' || typeof(move.to)!=='string' || !Array.isArray(move.cards)) {
+            throw new Error(`invalid moveCards data`)
+        }
+        let change:ChangeNotif = {
+            type: MESSAGE_TYPE.CHANGE_NOTIF,
+            roomChanges: [],
+        }
+        // TODO
+        // confirm cards that are in the from zone
+        let fromCards = JSON.parse(room.state[`cards:${move.from}`] ?? "[]")
+        let toCards = JSON.parse(room.state[`cards:${move.to}`] ?? "[]")
+        let moveCards = fromCards.filter((c) => move.cards.indexOf(c)>=0)
+        if (moveCards.length==0) {
+            console.log(`none of the cards ${move.cards} found in ${move.from}`)
+        } else {
+            room.state[`cards:${move.from}`] = JSON.stringify(fromCards.filter((c)=> move.cards.indexOf(c)<0))
+            toCards = toCards.concat(moveCards).filter(function(el,i,a){return i===a.indexOf(el)})
+            room.state[`cards:${move.to}`] = JSON.stringify(toCards)
+            change.roomChanges.push({key:`cards:${move.from}`, value:room.state[`cards:${move.from}`]})
+            change.roomChanges.push({key:`cards:${move.to}`, value:room.state[`cards:${move.to}`]})
+        }
+        if (change.roomChanges.length>0) {
+            wss.broadcastChange(room, change)
+        }
+    } else {
+        error = `unsuppored action ${req.action}`
+    }
     return {
         type: MESSAGE_TYPE.ACTION_RESP,
         id: req.id,
-        success: false,
-        msg: `unsuppored action ${req.action}`
+        success: !error,
+        msg: error
     }
 }
 

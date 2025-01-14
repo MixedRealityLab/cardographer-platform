@@ -36,7 +36,7 @@
     }
 </style>
 
-<div class="w-full py-1 px-2 bg-gray-300 text-gray-900 text-xl flex items-center">
+<div class="w-full py-1 px-2 bg-gray-100 text-gray-900 text-xl flex items-center">
     <div class="flex justify-center arrow" class:disabled={zones.indexOf(zone)<=0}
     class:highlight={!(zones.indexOf(zone)<=0)} 
     on:click={()=>{if(!(zones.indexOf(zone)<=0)) {zone=zones[zones.indexOf(zone)-1]}}}>
