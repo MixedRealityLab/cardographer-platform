@@ -2,100 +2,39 @@
 	import CardList from "$lib/ui/CardList.svelte";
 	import LiveViewHeader from "$lib/ui/LiveViewHeader.svelte";
     import type { Session } from "$lib/types"
-	import {onDestroy, onMount} from "svelte"
+	import {onDestroy} from "svelte"
 	import { base } from "$app/paths";
     import { page } from '$app/stores';  
-    import { LiveClient } from "$lib/liveclient";
-    import { MESSAGE_TYPE, type HelloSuccessResp, type ChangeNotif } from "$lib/liveclienttypes";
+    import { LiveClient, getLiveClient } from "$lib/liveclient";
 
     export let session: Session
     export let isOwner: boolean = false
 
-    let connecting = false
-    let failed: string|null = null
-    let connected = false
     let nickname = ''
     let tab='cards'
 
     $: cards = session?.decks?.flatMap(deck => deck['cards']) ?? []
     let cardList: CardList
 
-    let clientId: string
-    let client : LiveClient = new LiveClient()
-    let clients = []
-    let seats: string[] = []
-    let ws
-    let players = {} // players[seat] = clientId
+    let client : LiveClient = getLiveClient(() => { 
+        console.log(`updated`); 
+        client = client
+    })
+    $: clients = client.clients
+    $: seats = client.seats
+    $: players = client.players
+    $: connecting = client.connecting
+    $: failed = client.failed
+    $: connected = client.connected
+    
     function connect() {
-        const wsurl = `${$page.url.protocol == 'https' ? 'wss' : 'ws'}://${$page.url.host}/${base}wss`
-        console.log(`connect to ${wsurl}...`)
-        connecting = true
-        ws = new WebSocket(wsurl)
-        ws.onerror = (event) => { 
-            console.log(`ws error`, event) 
-            failed = `websocket error ${event.error}`;
-        }
-        ws.onclose = (event) => { 
-            console.log(`ws close`, event) 
-            failed = `websocket closed`
-        }
-        ws.onmessage = (event) => {
-            console.log(`ws message`, event.data)
-            let msg = JSON.parse(event.data)
-            if (msg.type == MESSAGE_TYPE.HELLO_SUCCESS_RESP) {
-                clientId = msg.clientId
-                console.log(`Hello resp as ${clientId}`)
-                connected = true
-                client.handleHello(msg as HelloSuccessResp)
-            } else if (msg.type == MESSAGE_TYPE.CHANGE_NOTIF) {
-                console.log(`Change notif`)
-                client.handleNotif(msg as ChangeNotif)
-            }
-            clients = client.getClients()
-            seats = client.seats
-            console.log(`clients:`, client.getClients())
-        }
-        ws.onopen = (event) => { 
-            console.log(`ws open`)
-            const joiningCode = $page.url.searchParams.get('j')
-            let helloReq = {
-                protocol: 'websocket-room-server:1',
-                // server-specific
-                roomProtocol: 'cardographer:2',
-                roomId: session._id,
-                roomCredential: joiningCode, 
-                //clientCredential?: string
-                clientType: 'live-1',
-                //clientId?: string
-                clientState: { nickname }
-                //readonly?: boolean // default true
-            }
-            ws.send(JSON.stringify(helloReq))
-        }
+        client.connect($page.url, base, session, nickname)
     }
     onDestroy(() => {
-        if(ws) {
-            console.log(`close websocket on destroy`)
-            ws.close()
-            ws = null
-        }
+        console.log(`destroyed live view`)// ??
     })
-
     function changeSeat(seat) {
-        console.log(`change seat ${seat} -> ${players[seat]}`)
-        for (const s in players) {
-            if (s!==seat && players[s] == players[seat]) {
-                // can't do 2 at once
-                players[s] = ''
-            }
-        }
-        if (connected) {
-            ws.send(JSON.stringify({
-                type: MESSAGE_TYPE.CHANGE_REQ,
-                roomChanges: [
-                    {key:'players', value: JSON.stringify(players)}]
-            }))
-        }
+        client.changeSeat(seat, players[seat])
     }
 </script>
 
