@@ -18,8 +18,13 @@ export function getLiveClient(cb:UpdateCallback) {
     }
     return liveClient
 }
-type UpdateCallback = () => void
-
+type UpdateCallback = (c:LiveClient, clientsChanged:boolean) => void
+interface ZoneCardMap {
+    [zone:string]: string[]
+}
+interface PlayerMap {
+    [seat:string]: string // connection
+}
 export class LiveClient {
     state: KVStore = {}
     clients: ClientItem[] = []
@@ -27,18 +32,20 @@ export class LiveClient {
     seats: string[] = []
     status: LIVE_CLIENT_STATUS = LIVE_CLIENT_STATUS.WAITING_FOR_HELLO
     ws: WebSocket|null = null
-    players = {} // players[seat] = clientId
+    players: PlayerMap = {} // players[seat] = clientId
     connecting = false
     failed: string|null = null
     connected = false
     updateCallback: UpdateCallback | null = null
+    activeZones: string[] = []
+    zoneCards: ZoneCardMap = {}
 
     constructor(cb:UpdateCallback) {
         this.updateCallback = cb
     }
-    updated() {
+    updated(clientsChanged:boolean) {
         if (this.updateCallback) {
-            this.updateCallback()
+            this.updateCallback(this, clientsChanged)
         }
     }
     connect = function(url:URL, base:string, session:Session, nickname:string) {
@@ -52,19 +59,20 @@ export class LiveClient {
         const wsurl = `${url.protocol == 'https' ? 'wss' : 'ws'}://${url.host}/${base}wss`
         console.log(`connect to ${wsurl}...`)
         this.connecting = true
-        this.updated()
+        this.updated(false)
         this.ws = new WebSocket(wsurl)
         this.ws.onerror = (event) => { 
             console.log(`ws error`, event) 
             _this.failed = `websocket error ${event.error}`;
-            _this.updated()
+            _this.updated(false)
         }
         this.ws.onclose = (event) => { 
             console.log(`ws close`, event) 
             _this.failed = `websocket closed`
-            _this.updated()
+            _this.updated(false)
         }
         this.ws.onmessage = (event) => {
+            let clientsChanged = false
             console.log(`ws message`, event.data)
             let msg = JSON.parse(event.data)
             if (msg.type == MESSAGE_TYPE.HELLO_SUCCESS_RESP) {
@@ -74,10 +82,10 @@ export class LiveClient {
                 _this.handleHello(msg as HelloSuccessResp)
             } else if (msg.type == MESSAGE_TYPE.CHANGE_NOTIF) {
                 console.log(`Change notif`)
-                _this.handleNotif(msg as ChangeNotif)
+                clientsChanged = _this.handleNotif(msg as ChangeNotif) || clientsChanged
             }
-            console.log(`clients:`, _this.getClients())
-            _this.updated()
+            //console.log(`clients:`, _this.getClients())
+            _this.updated(clientsChanged)
         }
         this.ws.onopen = (event) => { 
             console.log(`ws open`)
@@ -96,7 +104,7 @@ export class LiveClient {
             }
             _this.ws.send(JSON.stringify(helloReq))
         }
-        _this.updated()
+        _this.updated(false)
     }
     close = function()  {
         if(this.ws) {
@@ -105,28 +113,16 @@ export class LiveClient {
             this.ws = null
         }
         this.connected = false
-        this.updated()
+        this.updated(false)
     }
 
     changeSeat = function(seat, player) {
-        console.log(`change seat ${seat} -> ${player}`)
-        for (const s in this.players) {
-            if (s!==seat && this.players[s] == this.players[seat]) {
-                // can't do 2 at once
-                this.players[s] = ''
-            }
-        }
-        // set 
-        this.players[seat] = player
-        if (this.connected) {
-            this.ws.send(JSON.stringify({
-                type: MESSAGE_TYPE.CHANGE_REQ,
-                roomChanges: [
-                    {key:'players', value: JSON.stringify(this.players)}]
-            }))
-        }
-        // ?!
-        this.updated()
+        console.log(`change seat ${seat} -> ${player}...`)
+        this.ws.send(JSON.stringify({
+            type: MESSAGE_TYPE.ACTION_REQ,
+            action: 'changeSeat',
+            data: JSON.stringify({seat,player}),
+        }))
     }
 
     handleHello(msg: HelloSuccessResp) {
@@ -139,9 +135,23 @@ export class LiveClient {
         if (msg.roomState.seats) {
             this.seats = JSON.parse(msg.roomState.seats) as string[]
         }
+        if (msg.roomState.activeZones) {
+            this.activeZones = JSON.parse(msg.roomState.activeZones) as string[]
+        }
+        for (const k of Object.keys(msg.roomState)) {
+            if (k.substring(0,6)=='cards:') {
+                const zone = k.substring(6)
+                this.zoneCards[zone] = JSON.parse(msg.roomState[k])
+            } else if (k.substring(0,7)=='player:') {
+                const seat = k.substring(7)
+                this.players[seat] = msg.roomState[k]
+            }
+        }
         this.status = LIVE_CLIENT_STATUS.ACTIVE
     }
-    handleNotif(msg: ChangeNotif) {
+    // return clients changed
+    handleNotif(msg: ChangeNotif): boolean {
+        let clientsChanged = false
         if (msg.roomChanges) {
             for (const change of msg.roomChanges) {
                 if (change.key == 'seats') {
@@ -149,6 +159,30 @@ export class LiveClient {
                         this.seats = JSON.parse(change.value) as string[]
                     } else {
                         this.seats = []
+                    }
+                    clientsChanged = true
+                }
+                if (change.key == 'activeZones') {
+                    if (change.value) {
+                        this.activeZones = JSON.parse(change.value) as string[]
+                    } else {
+                        this.activeZones = []
+                    }
+                }
+                if (change.key.substring(0,6)=='cards:') {
+                    const zone = change.key.substring(6)
+                    if (change.value) {
+                        this.zoneCards[zone] = JSON.parse(change.value)
+                    } else {
+                        delete this.zoneCards[zone]
+                    }
+                }
+                if (change.key.substring(0,7)=='player:') {
+                    const seat = change.key.substring(7)
+                    if (change.value) {
+                        this.players[seat] = change.value
+                    } else {
+                        delete this.players[seat]
                     }
                 }
             }
@@ -171,6 +205,7 @@ export class LiveClient {
                     this.clients.splice(ix, 1)
                 }
             }
+            clientsChanged = true
         }
         if (msg.addClients) {
             for (const clientId in msg.addClients) {
@@ -188,7 +223,9 @@ export class LiveClient {
                     this.clients.push(client)
                 }
             }
+            clientsChanged = true
         }
+        return clientsChanged
     }
     getRoomState() : KVStore {
         return this.state

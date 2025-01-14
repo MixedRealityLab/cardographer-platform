@@ -6,6 +6,7 @@
 	import { base } from "$app/paths";
     import { page } from '$app/stores';  
     import { LiveClient, getLiveClient } from "$lib/liveclient";
+    import ZoneSelector from "./ZoneSelector.svelte";
 
     export let session: Session
     export let isOwner: boolean = false
@@ -16,22 +17,42 @@
     $: cards = session?.decks?.flatMap(deck => deck['cards']) ?? []
     let cardList: CardList
 
-    let client : LiveClient = getLiveClient(() => { 
-        console.log(`updated`); 
+    let client : LiveClient = getLiveClient((c, clientsChanged) => { 
+        console.log(`updated ${clientsChanged?'- clients changed': ''}`)
+        if (clientsChanged) {
+            doHighlightPlayerTab()
+        }
         client = client
     })
+    let higlightPlayerTab = false
+    let highlightPlayerTimeout = null
+    function doHighlightPlayerTab() {
+        higlightPlayerTab = true
+        highlightPlayerTimeout = setTimeout(() => higlightPlayerTab=false, 3000)
+    }
+    $: clientId = client.clientId
     $: clients = client.clients
     $: seats = client.seats
     $: players = client.players
+    $: myseat = Object.entries(players).find((e)=> clientId && e[1]==clientId)?.at(0)
     $: connecting = client.connecting
     $: failed = client.failed
     $: connected = client.connected
-    
+    $: activeZones = client.activeZones
+    $: myActiveZones = activeZones.filter((z) => z.indexOf('@')<0 || z.substring(z.indexOf('@'))==myseat)
+    let myzone:string
+    $: zoneCards = client.zoneCards
+    $: myZoneCards = cards.filter((c) => (zoneCards[myzone] ?? []).indexOf(c.id)>=0)
+
     function connect() {
         client.connect($page.url, base, session, nickname)
     }
     onDestroy(() => {
         console.log(`destroyed live view`)// ??
+        if (highlightPlayerTimeout) {
+            clearTimeout(highlightPlayerTimeout)
+            highlightPlayerTimeout = null
+        }
     })
     function changeSeat(seat) {
         client.changeSeat(seat, players[seat])
@@ -39,6 +60,22 @@
 </script>
 
 <style>
+	@keyframes highlight {
+		0% {
+			outline: 2px ridge #24F8;
+            @apply bg-gray-500;
+        }
+		25% {
+			outline: 2px ridge #24F8;
+            @apply bg-gray-500;
+		}
+		100% {
+			outline: 2px ridge #24F0;
+		}
+	}
+	.highlight {
+		animation: highlight 3s;
+	}
     .tab {
         @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 text-gray-200;
     }
@@ -80,10 +117,11 @@
     </div>
 </div>
 {:else}
-<div class="absolute top-0 bottom-10 left-0 right-0 overflow-y-scroll">
+<div class="absolute top-0 bottom-10 left-0 right-0" class:overflow-y-auto={tab!='cards'}>
         {#if tab=='cards'}
             <div class="flex flex-col h-full w-screen">
-                <CardList cards={cards} bind:this={cardList}></CardList>
+                <ZoneSelector zones={myActiveZones} bind:zone={myzone}></ZoneSelector>
+                <CardList cards={myZoneCards} bind:this={cardList}></CardList>
             </div>
         {:else if tab=='people' && isOwner}
         <div class="flex flex-col">
@@ -117,7 +155,7 @@
             Cards
         </div>
         {#if isOwner}
-        <div class="tab" class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
+        <div class="tab" class:highlight={higlightPlayerTab} class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
             People
         </div>
         {/if}

@@ -10,6 +10,7 @@ console.log(`customise websocket server`)
 
 const MYPROTOCOL = "cardographer:2"
 
+//wss.debug = true
 // handle new client...
 wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws: SSWebSocket) : Promise<{ clientState: KVStore, readonly: boolean } > {
     console.log(`on hello for ${clientId} in room ${req.roomId} with protocol ${req.roomProtocol}`)
@@ -103,6 +104,7 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
                 }    
             }
         }
+        //console.log(`- board ${board.id} cards:`, JSON.stringify(board.cards))
     }
     //console.log(`Seats: ${seats}`)
     let room: RoomInfo = wss.rooms[session._id]
@@ -116,13 +118,59 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
         wss.rooms[session._id] = room
     }
     room.state.seats = JSON.stringify(seats)
+    let roomKeysToDelete = []
+    // players in seats?
+    for (const key of Object.keys(room.state)) {
+        if (key.substring(0,7)=='player:') {
+            const seat = key.substring(7)
+            if (seats.indexOf(seat)<0) {
+                roomKeysToDelete.push(key)
+                console.log(`remove ${key} for unknown seat`)
+            }
+        }
+    }
+    // all zones active for now
+    let allZones = info.boards.flatMap((b) => b.zones).map((z) => z.id)
+    allZones.push('Spotlight')
+    allZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
+    room.state.activeZones = JSON.stringify(allZones)
+
+    // cards in each zone - merge boards for now
+    let allCards = info.boards.flatMap((b) => b.cards)
+    for (const zone of allZones) {
+        let zoneCards = allCards.filter((c) => c.zones && c.zones.map((cz)=>(cz.zoneId)).indexOf(zone)>=0).map((c) => c.id)
+        room.state[`cards:${zone}`] = JSON.stringify(zoneCards)
+    }
+    for (const key of Object.keys(room.state)) {
+        if (key.substring(0,6)=='cards:') {
+            const zone = key.substring(6)
+            if (allZones.indexOf(zone)<0) {
+                roomKeysToDelete.push(key)
+                console.log(`remove ${key} for unknown zone`)
+            }
+        }
+    }
     let change:ChangeNotif = {
         type: MESSAGE_TYPE.CHANGE_NOTIF,
-        roomChanges: [{key: 'seats', value: room.state.seats}]
+        roomChanges: [
+            {key: 'seats', value: room.state.seats},
+            {key: 'activeZones', value: room.state.activeZones},
+        ]
     }
-    wss.broadcastChange(session._id, change)
+    for (const zone of allZones) {
+        change.roomChanges.push({key: `cards:${zone}`, value: room.state[`cards:${zone}`]})
+    }
+    for (const key of roomKeysToDelete) {
+        change.roomChanges.push({key})
+        delete room.state[key]
+    }    
+    wss.broadcastChange(room, change)
 }
 
+interface ChangeSeatReq {
+    player:String
+    seat:string
+}
 wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< { roomChanges?: KVSet[], clientChanges?: KVSet[], echo?: boolean } > {
     console.log(`vet room changes ${JSON.stringify(req.roomChanges)} & client changes ${JSON.stringify(req.clientChanges)} for ${clientId}`)
     // TODO...?
@@ -142,6 +190,44 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
             data: req.data,
             // msg: 'error...'
         }
+    }
+    else if (req.action == 'changeSeat') {
+        const move = JSON.parse(req.data) as ChangeSeatReq
+        if (typeof(move.player)!=='string' || typeof(move.seat)!=='string') {
+            throw new Error(`invalid changeSeat data`)
+        }
+        let change:ChangeNotif = {
+            type: MESSAGE_TYPE.CHANGE_NOTIF,
+            roomChanges: [],
+        }
+        // already in a seat?
+        for (const key of Object.keys(room.state)) {
+            if (key.substring(0,7)=='player:') {
+                const seat = key.substring(7)
+                if (room.state[key] == move.player && seat != move.seat) {
+                    delete room.state[key]
+                    change.roomChanges.push({key})
+                    console.log(`player ${move.player} has to leave seat ${seat}`)
+                }
+            }
+        }
+        const key = `player:${move.seat}`
+        if (room.state[key] !== move.player) {
+            room.state[key] = move.player
+            change.roomChanges.push({key, value: move.player})
+            console.log(`player ${move.player} moved to seat ${move.seat}`)
+        } else {
+            console.log(`player ${move.player} already in seat ${move.seat}`)
+        }
+        if (change.roomChanges.length>0) {
+            wss.broadcastChange(room, change)
+        }
+    }
+    return {
+        type: MESSAGE_TYPE.ACTION_RESP,
+        id: req.id,
+        success: false,
+        msg: `unsuppored action ${req.action}`
     }
 }
 
