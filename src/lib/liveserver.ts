@@ -1,4 +1,4 @@
-import {wss, type SSWebSocket, type WSS, MESSAGE_TYPE, type HelloReq, type KVStore, type RoomInfo, type ActionReq, type ActionResp, type RoomClientInfo, type ChangeReq, type ChangeNotif } from '@cgreenhalgh/websocket-room-server'
+import {type RoomClientInfo, wss, type SSWebSocket, type WSS, MESSAGE_TYPE, type HelloReq, type KVStore, type RoomInfo, type ActionReq, type ActionResp, type ChangeReq, type ChangeNotif } from '@cgreenhalgh/websocket-room-server'
 import {getDb} from '$lib/db'
 import type { Session, SessionSnapshot } from '$lib/types'
 import {error} from "@sveltejs/kit";
@@ -47,6 +47,32 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
         await initialiseRoomState(wss, session, token.email)
     } else {
         delete clientState.isOwner
+    }
+    // name matches empty seat?
+    const nickname = clientState['nickname']
+    if (nickname) {
+        const room: RoomInfo = wss.rooms[session._id]
+        if (room && room.state['seats']) {
+            const seats:string[] = JSON.parse(room.state['seats']) as string[]
+            let ix = seats.indexOf(nickname)
+            if (ix<0) { ix = seats.indexOf('@'+nickname) }
+            if (ix>=0) {
+                const seat = seats[ix]
+                let player = room.state[`player:${seat}`]
+                if (!player || player=='') {
+                    console.log(`allocate new player ${nickname} to seat ${seat}`)
+                    room.state[`player:${seat}`] = clientId
+                    let change:ChangeNotif = {
+                        type: MESSAGE_TYPE.CHANGE_NOTIF,
+                        roomChanges: [
+                            {key: `player:${seat}`, value: clientId},
+                        ]
+                    }
+                    //console.log(`initialised room ${session._id} state`, room.state)
+                    wss.broadcastChange(room, change)
+                }                   
+            }
+        }
     }
     return {
         clientState,
@@ -279,7 +305,44 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         msg: error
     }
 }
-
+wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) {
+    //console.log(`handle client ${clientId} left room ${room.id} (${JSON.stringify(clientInfo.clientState)})`)
+    // was player in a seat? clear it, offer to new player if same nickname or slot
+    for (const key of Object.keys(room.state)) {
+        if(key.substring(0,7)=='player:') {
+            const player = room.state[key]
+            if (player == clientId) {
+                const seat = key.substring(7)
+                console.log(`player ${clientId} leaves vacating seat ${seat}`)
+                const oldNickname = clientInfo.clientState['nickname']
+                let newClient:string|null = null
+                let newNickname:string|null = null
+                for (const clientId of Object.keys(room.clients)) {
+                    const client = room.clients[clientId]
+                    const nickname = client.clientState['nickname']
+                    if (nickname && (nickname==oldNickname 
+                    || ((nickname==seat || '@'+nickname==seat) && newNickname!=oldNickname))) {
+                        newNickname = nickname
+                        newClient = clientId
+                    }
+                }
+                if(newClient) {
+                    console.log(`allocate existing player ${newNickname} to seat ${seat}`)
+                    room.state[`player:${seat}`] = newClient
+                } else {
+                    room.state[`player:${seat}`] = ''
+                }
+                let change:ChangeNotif = {
+                    type: MESSAGE_TYPE.CHANGE_NOTIF,
+                    roomChanges: [
+                        {key: `player:${seat}`, value: room.state[`player:${seat}`]},
+                    ]
+                }
+                wss.broadcastChange(room, change)
+            }                   
+        }
+    }
+}
 export async function getWss() : Promise<WSS> {
     return wss
 }

@@ -24,7 +24,7 @@
         if (clientsChanged) {
             doHighlightPlayerTab()
         }
-        let newSeat = Object.entries(c.players).find((e)=> clientId && e[1]==clientId)?.at(0) as string
+        let newSeat = Object.entries(c.players).find((e)=> c.clientId && e[1]==c.clientId)?.at(0) as string
         if (newSeat && newSeat != oldSeat) {
             oldSeat = newSeat
             tab = 'hand'
