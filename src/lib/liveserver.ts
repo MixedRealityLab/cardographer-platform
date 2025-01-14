@@ -152,6 +152,7 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
             }
         }
     }
+    // change...
     let change:ChangeNotif = {
         type: MESSAGE_TYPE.CHANGE_NOTIF,
         roomChanges: [
@@ -178,7 +179,8 @@ interface MoveCardsReq {
     from:string
     to:string
     cards:string[]
-    autoReturn?:boolean // move back if client deleted ?! 
+    //autoReturn?:boolean // move back if client deleted ?! 
+    spotlight?:string
 }
 wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< { roomChanges?: KVSet[], clientChanges?: KVSet[], echo?: boolean } > {
     console.log(`vet room changes ${JSON.stringify(req.roomChanges)} & client changes ${JSON.stringify(req.clientChanges)} for ${clientId}`)
@@ -235,14 +237,16 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
     }
     else if (req.action == 'moveCards') {
         const move = JSON.parse(req.data) as MoveCardsReq
-        if (typeof(move.from)!=='string' || typeof(move.to)!=='string' || !Array.isArray(move.cards)) {
+        if (typeof(move.from)!=='string' 
+        || typeof(move.to)!=='string' 
+        || !Array.isArray(move.cards) 
+        || (move.spotlight && typeof(move.spotlight)!=='string')) {
             throw new Error(`invalid moveCards data`)
         }
         let change:ChangeNotif = {
             type: MESSAGE_TYPE.CHANGE_NOTIF,
             roomChanges: [],
         }
-        // TODO
         // confirm cards that are in the from zone
         let fromCards = JSON.parse(room.state[`cards:${move.from}`] ?? "[]")
         let toCards = JSON.parse(room.state[`cards:${move.to}`] ?? "[]")
@@ -255,6 +259,12 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
             room.state[`cards:${move.to}`] = JSON.stringify(toCards)
             change.roomChanges.push({key:`cards:${move.from}`, value:room.state[`cards:${move.from}`]})
             change.roomChanges.push({key:`cards:${move.to}`, value:room.state[`cards:${move.to}`]})
+            if (move.to==SPOTLIGHT_ZONE) {
+                for (const card of moveCards) {
+                    room.state[`spotlight:${card}`] = move.spotlight
+                    change.roomChanges.push({key:`spotlight:${card}`, value:move.spotlight})
+                }
+            }
         }
         if (change.roomChanges.length>0) {
             wss.broadcastChange(room, change)

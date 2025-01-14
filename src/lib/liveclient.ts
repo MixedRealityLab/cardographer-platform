@@ -26,6 +26,9 @@ interface ZoneCardMap {
 interface PlayerMap {
     [seat:string]: string // connection
 }
+interface SpotlightMap {
+    [cardId:string]: string // text, e.g. nickname
+}
 export class LiveClient {
     state: KVStore = {}
     clients: ClientItem[] = []
@@ -40,6 +43,8 @@ export class LiveClient {
     updateCallback: UpdateCallback | null = null
     activeZones: string[] = []
     zoneCards: ZoneCardMap = {}
+    namename: string = 'anon'
+    spotlights: SpotlightMap = {}
 
     constructor(cb:UpdateCallback) {
         this.updateCallback = cb
@@ -51,6 +56,7 @@ export class LiveClient {
     }
     connect = function(url:URL, base:string, session:Session, nickname:string) {
         let _this = this
+        this.nickname = nickname
         if (this.ws) {
             console.log(`liveClient already has websocket; close and re-connect...`)
             try {
@@ -134,7 +140,8 @@ export class LiveClient {
                 cards:cardIds,
                 from:fromZone,
                 to:toZone,
-                autoReturn: toZone=='Spotlight',
+                //autoReturn: toZone==SPOTLIGHT_ZONE, //unsupported
+                spotlight: toZone==SPOTLIGHT_ZONE ? this.nickname : undefined,
             }),
         }))
     }
@@ -159,6 +166,9 @@ export class LiveClient {
             } else if (k.substring(0,7)=='player:') {
                 const seat = k.substring(7)
                 this.players[seat] = msg.roomState[k]
+            } else if (k.substring(0,10)=='spotlight:') {
+                const card = k.substring(10)
+                this.spotlights[card] = msg.roomState[k]
             }
         }
         this.status = LIVE_CLIENT_STATUS.ACTIVE
@@ -197,6 +207,14 @@ export class LiveClient {
                         this.players[seat] = change.value
                     } else {
                         delete this.players[seat]
+                    }
+                }
+                if (change.key.substring(0,10)=='spotlight:') {
+                    const card = change.key.substring(10)
+                    if (change.value) {
+                        this.spotlights[card] = change.value
+                    } else {
+                        delete this.spotlights[card]
                     }
                 }
             }

@@ -12,6 +12,7 @@
 	export let cards: CardInfo[]
 	export let allowSelection = false
 	export let selectedIds: string[] = []
+	export let comments = {} // map cardID -> comment
 
 	let currentCard: CardInfo
 	let cardIndex: number
@@ -163,7 +164,6 @@
 		@apply rounded bg-gray-400 hover:bg-blue-500 transition-colors duration-300;
 	}
 </style>
-
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!--suppress XmlInvalidId -->
 <ol role="list" tabindex="0" aria-activedescendant="card{cardIndex}" aria-live="polite"
@@ -172,7 +172,7 @@
     class="flex-1 snap-x snap-mandatory flex overflow-x-scroll overflow-y-hidden"
     on:click={handleScrollClick} on:scroll={() => updateCurrentCardIndex()}>
 	{#each cards as card, index}
-		<li class="snap-center flex justify-center items-center" class:ml-auto={index === 0}
+		<li class="snap-center flex justify-center items-center relative" class:ml-auto={index === 0}
 		    class:mr-auto={index === (cards.length - 1)}>
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
@@ -196,6 +196,9 @@
 					</div>
 				{/if}
 			</div>
+			{#if comments && comments[card.id]}
+				<div class="absolute drop-shadow-md right-2 top-0 px-4 py-1 text-lg text-gray-900 bg-yellow-200">{comments[card.id]}</div>
+			{/if}
 		</li>
 	{/each}
 </ol>
