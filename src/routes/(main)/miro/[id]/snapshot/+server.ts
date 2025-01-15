@@ -5,6 +5,7 @@ import type {Session, SessionSnapshot} from "$lib/types";
 import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit"
 import { getUsageSnapshots, getQuotaDetails } from "$lib/quotas";
+import { checkNewSnapshot } from "$lib/liveserver";
 
 // noinspection JSUnusedGlobalSymbols
 export const POST: RequestHandler = async function ({locals, request, params}) {
@@ -68,6 +69,7 @@ export const POST: RequestHandler = async function ({locals, request, params}) {
 	if (!upd) {
 		throw error(500, "Upload Failed")
 	}
+	checkNewSnapshot(snapshot)
 
 	return json({success: true})
 }

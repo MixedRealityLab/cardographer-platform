@@ -42,16 +42,20 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
     const token = await checkUserToken(userToken);
 
     console.log(`New ${readonly ? 'readonly ': ''}client ${clientId} in session ${session.name} (${session._id}), ${token.valid ? 'authenticated as '+token.email :'unauthenticated'}`)
+    // make room if not exists
+    let room: RoomInfo = wss.rooms[session._id]
+    if (!room) {
+        await initialiseRoomState(wss, session, token.email)
+        room = wss.rooms[session._id]
+    }
     // owner?
     let clientState = req.clientState
     if (token.valid && session.owners.indexOf(token.email) >= 0) {
         clientState.isOwner = 'true'
-        await initialiseRoomState(wss, session, token.email)
     } else {
         delete clientState.isOwner
     }
     // other updates?
-    const room: RoomInfo = wss.rooms[session._id]
     if (room) {
         let change:ChangeNotif = {
             type: MESSAGE_TYPE.CHANGE_NOTIF,
@@ -82,7 +86,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
             change.roomChanges.push({key:'nro', value:nro})
         }
         // miro bridge?
-        if (clientState.isOwner && !room.state['mirobridge']) {
+        if (clientState.isOwner && clientState.inmiro=='true' && !room.state['mirobridge']) {
             room.state['mirobridge'] = clientId
             change.roomChanges.push({key:'mirobridge', value: clientId})
         }
@@ -354,7 +358,7 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
         // alternative miro bridge?
         for (const cid of Object.keys(room.clients)) {
             const client = room.clients[cid]
-            if (client.clientState.isOwner && !room.state['mirobridge']) {
+            if (client.clientState.isOwner && client.clientState.inmiro=='true' && !room.state['mirobridge']) {
                 room.state['mirobridge'] = cid
             }
         }
@@ -363,7 +367,41 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
     if(change.roomChanges.length>0) {
         wss.broadcastChange(room, change)
     }
+    if (Object.keys(room.clients).length==0) {
+        console.log(`room ${room.id} is now empty - deleting it`)
+        delete wss.rooms[room.id]
+    }
 }
 export async function getWss() : Promise<WSS> {
     return wss
+}
+
+export async function checkNewSnapshot(snapshot:SessionSnapshot) : Promise<void> {
+    console.log(`check new snapshot for session ${snapshot.sessionId}`)
+    let room = wss.rooms[snapshot.sessionId]
+    if (!room) {
+        return
+    }
+    console.log(`update room for session ${snapshot.sessionId} with new snapshot`)
+	const client = getClient(snapshot.sessionType)
+    if (!client) {
+        console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
+        return
+    }
+	const info = client.getSnapshotInfo(snapshot)
+    // change...
+    let change:ChangeNotif = {
+        type: MESSAGE_TYPE.CHANGE_NOTIF,
+        roomChanges: getChangesFromMiroState(info, room.state)
+    }
+    // update room state
+    for (const rc of change.roomChanges) {
+        if (rc.value!==undefined) {
+            room.state[rc.key] = rc.value
+        } else {
+            delete room.state[rc.key]
+        }
+    }
+    //console.log(`initialised room ${session._id} state`, room.state)
+    wss.broadcastChange(room, change)
 }
