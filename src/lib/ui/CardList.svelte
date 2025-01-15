@@ -107,9 +107,9 @@
 	function handleScrollClick(event: MouseEvent, card?:CardInfo) {
 		const fraction = event.clientX / clientWidth
 		const page = currentCardIndex()
-		if (fraction > 0.7) {
+		if (fraction > (allowSelection ? 0.85 : 0.7)) {
 			scrollTo(page + 1)
-		} else if (fraction < 0.3) {
+		} else if (fraction < (allowSelection ? 0.15 : 0.3)) {
 			scrollTo(page - 1)
 		} else if (card && allowSelection) {
 			const multiSelect = event.metaKey || event.ctrlKey || event.shiftKey

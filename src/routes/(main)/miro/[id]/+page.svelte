@@ -150,7 +150,7 @@
 
 <!-- <div>quota {data.usageSessions}/{data.quotaSessions}, {data.usageSnapshots}/{data.quotaSnapshots}</div> -->
 
-<div class="w-full h-screen">
+<div class="w-full h-screen bg-gray-100">
 	<div class="subheader absolute top-0">
 		<div class="flex-1">
 			{#if !data.authenticated}

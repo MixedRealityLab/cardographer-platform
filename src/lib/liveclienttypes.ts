@@ -29,6 +29,13 @@ export interface HelloSuccessResp {
     roomState: KVStore
     readonly: boolean
 }
+// state change request
+export interface ChangeReq {
+    type: MESSAGE_TYPE.CHANGE_REQ
+    roomChanges?: KVSet[]
+    clientChanges?: KVSet[]
+    echo?: boolean // default false
+}
 // change notification - asynchronous
 export interface ChangeNotif {
     type: MESSAGE_TYPE.CHANGE_NOTIF

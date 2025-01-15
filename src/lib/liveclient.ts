@@ -1,6 +1,10 @@
 // live view client utils - NB needs to work in browser so using copies of types :-(
-import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp } from './liveclienttypes'
+import { type SnapshotInfo } from './analysistypes';
+import { getSnapshotInfoFromMiroData } from './clients/miroutils';
+import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp, type ChangeReq } from './liveclienttypes'
+import { getChangesFromMiroState } from './liveutils';
 import { type Session } from './types'
+import type { Miro,ItemsCreateEvent, ItemsDeleteEvent, ItemsUpdateEvent } from "@mirohq/websdk-types";
 
 export const SPOTLIGHT_ZONE = "Spotlight"
 export enum LIVE_CLIENT_STATUS {
@@ -47,6 +51,8 @@ export class LiveClient {
     spotlights: SpotlightMap = {}
     readonly: boolean 
     numberReadonly: number = 0
+    isMirobridge:boolean = false
+    miro: Miro
 
     constructor(cb:UpdateCallback) {
         this.updateCallback = cb
@@ -56,9 +62,11 @@ export class LiveClient {
             this.updateCallback(this, clientsChanged)
         }
     }
-    connect = function(url:URL, base:string, session:Session, nickname:string, joiningCode:string) {
+    connect = function(url:URL, base:string, session:Session, nickname:string, 
+        joiningCode:string, miro: Miro|null) {
         let _this = this
         this.nickname = nickname
+        this.miro = miro
         if (this.ws) {
             console.log(`liveClient already has websocket; close and re-connect...`)
             try {
@@ -95,6 +103,9 @@ export class LiveClient {
             }
             //console.log(`clients:`, _this.getClients())
             _this.updated(clientsChanged)
+            if (_this.isMirobridge) {
+                _this.checkMiroAfterMessage()
+            }
         }
         this.ws.onopen = (event) => { 
             console.log(`ws open`)
@@ -107,7 +118,7 @@ export class LiveClient {
                 //clientCredential?: string
                 clientType: 'live-1',
                 //clientId?: string
-                clientState: { nickname }
+                clientState: { nickname, inmiro: `${miro!=null}` }
                 //readonly?: boolean // default true
             }
             _this.ws.send(JSON.stringify(helloReq))
@@ -176,6 +187,9 @@ export class LiveClient {
         if (msg.roomState.nro) {
             this.numberReadonly = Number(msg.roomState.nro)
         }
+        if (msg.roomState.mirobridge == this.clientId) {
+            this.isMirobridge = true
+        }
         this.status = LIVE_CLIENT_STATUS.ACTIVE
     }
     // return clients changed
@@ -229,6 +243,9 @@ export class LiveClient {
                         this.numberReadonly = 0
                     }
                 }
+                if (change.key=='mirobridge') {
+                    this.isMirobridge = (change.value == this.clientId)
+                }
             }
         }
         applyChanges(this.state, msg.roomChanges)
@@ -279,6 +296,35 @@ export class LiveClient {
     }
     getClients() : ClientItem[] {
         return this.clients
+    }
+    miroStarted = false
+    checkMiroAfterMessage() {
+        let _this = this
+        if (!this.miroStarted) {
+            this.miroStarted = true
+            this.miro.board.ui.on('items:create', 
+                (ev:ItemsCreateEvent) => _this.syncMiro())
+            this.miro.board.ui.on('items:delete', 
+                (ev:ItemsDeleteEvent) => _this.syncMiro())
+            this.miro.board.ui.on('experimental:items:update', 
+                (ev:ItemsUpdateEvent) => _this.syncMiro())
+            this.syncMiro()
+        }
+    }
+    async syncMiro() : Promise<void> {
+        const data: any = await this.miro.board.getInfo()
+        data.widgets = (await this.miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
+        data.widgets.forEach((w) => {if (w.modifiedAt && (w.modifiedAt as string).localeCompare(data.updatedAt)>0) { data.updatedAt = w.modifiedAt }})
+        let info: SnapshotInfo = getSnapshotInfoFromMiroData(data)
+        console.log(`got miro board info:`, info)
+        let changes = getChangesFromMiroState(info, this.state)
+        console.log(`-> changes`, changes)
+        let msg:ChangeReq = {
+            type: MESSAGE_TYPE.CHANGE_REQ,
+            roomChanges: changes,
+            echo: true,
+        }
+        this.ws.send(JSON.stringify(msg))
     }
 }
 

@@ -7,8 +7,9 @@
     import { page } from '$app/stores';  
     import { LiveClient, getLiveClient, SPOTLIGHT_ZONE } from "$lib/liveclient";
     import ZoneSelector from "./ZoneSelector.svelte";
-	import type {BoardNode, Miro} from "@mirohq/websdk-types";
+	import type {Miro} from "@mirohq/websdk-types";
 
+	declare const miro: Miro
     export let session: Session
     export let isOwner: boolean = false
     export let inmiro: boolean = false
@@ -68,7 +69,7 @@
 
     function connect() {
         const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
-        client.connect($page.url, base, session, nickname, joiningCode)
+        client.connect($page.url, base, session, nickname, joiningCode, inmiro ? miro : null)
     }
     onDestroy(() => {
         if (highlightPlayerTimeout) {
@@ -135,7 +136,7 @@
 
 </style>
 
-<div class="absolute top-0 bottom-10 left-0 right-0 overflow-x-hidden" 
+<div class="absolute top-0 bottom-10 left-0 right-0 overflow-x-hidden bg-gray-100" 
 class:overflow-y-auto={failed || !connected || (tab!='cards' && tab!='allcards' && tab!='hand')} 
 class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards' || tab=='hand')}>
 
@@ -282,7 +283,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
     {/if}
     {#if inmiro}
         <div class="tab" class:tabSelected={tab=='miro'} on:click={()=>tab='miro'}>
-            Miro
+            Session
         </div>
     {/if}
 </div>

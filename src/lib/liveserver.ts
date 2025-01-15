@@ -6,6 +6,7 @@ import {checkUserToken, getCookieName} from '$lib/security';
 import {parse} from "cookie";
 import { getClient } from './clients';
 import { SPOTLIGHT_ZONE } from './liveclient';
+import { getChangesFromMiroState } from './liveutils';
 
 console.log(`customise websocket server`)
 
@@ -80,6 +81,11 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
         if (room.state['nro']!=nro) {
             change.roomChanges.push({key:'nro', value:nro})
         }
+        // miro bridge?
+        if (clientState.isOwner && !room.state['mirobridge']) {
+            room.state['mirobridge'] = clientId
+            change.roomChanges.push({key:'mirobridge', value: clientId})
+        }
         if (change.roomChanges.length>0) {
             wss.broadcastChange(room, change)
         }
@@ -124,26 +130,6 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
         return
     }
 	const info = client.getSnapshotInfo(snapshot)
-    let seats : string[] = []
-    for (const board of info.boards) {
-        //console.log(`- board ${board.id}`)
-        if (board.id && board.id.indexOf('@')>=0) {
-            const seat = board.id.substring(board.id.indexOf('@'))
-            if (seats.indexOf(seat)<0) {
-                seats.push(seat)
-            }
-        }
-        for (const zone of board.zones) {
-            //console.log(`  - zone ${zone.id}`)
-            if (zone.id && zone.id.indexOf('@')>=0) {
-                const seat = zone.id.substring(zone.id.indexOf('@'))
-                if (seats.indexOf(seat)<0) {
-                    seats.push(seat)
-                }    
-            }
-        }
-        //console.log(`- board ${board.id} cards:`, JSON.stringify(board.cards))
-    }
     //console.log(`Seats: ${seats}`)
     let room: RoomInfo = wss.rooms[session._id]
     if (!room) {
@@ -155,53 +141,18 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
         }
         wss.rooms[session._id] = room
     }
-    room.state.seats = JSON.stringify(seats)
-    let roomKeysToDelete = []
-    // players in seats?
-    for (const key of Object.keys(room.state)) {
-        if (key.substring(0,7)=='player:') {
-            const seat = key.substring(7)
-            if (seats.indexOf(seat)<0) {
-                roomKeysToDelete.push(key)
-                console.log(`remove ${key} for unknown seat`)
-            }
-        }
-    }
-    // all zones active for now
-    let allZones = info.boards.flatMap((b) => b.zones).map((z) => z.id)
-    allZones.push(SPOTLIGHT_ZONE)
-    allZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
-    room.state.activeZones = JSON.stringify(allZones)
-
-    // cards in each zone - merge boards for now
-    let allCards = info.boards.flatMap((b) => b.cards)
-    for (const zone of allZones) {
-        let zoneCards = allCards.filter((c) => c.zones && c.zones.map((cz)=>(cz.zoneId)).indexOf(zone)>=0).map((c) => c.id)
-        room.state[`cards:${zone}`] = JSON.stringify(zoneCards)
-    }
-    for (const key of Object.keys(room.state)) {
-        if (key.substring(0,6)=='cards:') {
-            const zone = key.substring(6)
-            if (allZones.indexOf(zone)<0) {
-                roomKeysToDelete.push(key)
-                console.log(`remove ${key} for unknown zone`)
-            }
-        }
-    }
     // change...
     let change:ChangeNotif = {
         type: MESSAGE_TYPE.CHANGE_NOTIF,
-        roomChanges: [
-            {key: 'seats', value: room.state.seats},
-            {key: 'activeZones', value: room.state.activeZones},
-        ]
+        roomChanges: getChangesFromMiroState(info, room.state)
     }
-    for (const zone of allZones) {
-        change.roomChanges.push({key: `cards:${zone}`, value: room.state[`cards:${zone}`]})
-    }
-    for (const key of roomKeysToDelete) {
-        change.roomChanges.push({key})
-        delete room.state[key]
+    // update room state
+    for (const rc of change.roomChanges) {
+        if (rc.value!==undefined) {
+            room.state[rc.key] = rc.value
+        } else {
+            delete room.state[rc.key]
+        }
     }
     //console.log(`initialised room ${session._id} state`, room.state)
     wss.broadcastChange(room, change)
@@ -219,8 +170,16 @@ interface MoveCardsReq {
     spotlight?:string
 }
 wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< { roomChanges?: KVSet[], clientChanges?: KVSet[], echo?: boolean } > {
-    console.log(`vet room changes ${JSON.stringify(req.roomChanges)} & client changes ${JSON.stringify(req.clientChanges)} for ${clientId}`)
-    // TODO...?
+    //console.log(`vet room changes ${JSON.stringify(req.roomChanges)} & client changes ${JSON.stringify(req.clientChanges)} for ${clientId}`)
+    if (req.roomChanges && req.roomChanges.length>0) {
+        // only mirobridge can make changes
+        if (room.state['mirobridge'] != clientId) {
+            console.log(`reject changes from non-mirobridge ${clientId}`)
+            req.roomChanges = []
+        } else {
+            console.log(`room changes from mirobridge ${clientId}`)
+        }
+    }
     return {
         roomChanges: req.roomChanges,
         clientChanges: req.clientChanges,
@@ -305,6 +264,8 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         let moveCards = fromCards.filter((c) => move.cards.indexOf(c)>=0)
         if (moveCards.length==0) {
             console.log(`none of the cards ${move.cards} found in ${move.from}`)
+        } else if (room.state['mirobridge']) {
+            // ask mirobridge to actually move the cards?!
         } else {
             room.state[`cards:${move.from}`] = JSON.stringify(fromCards.filter((c)=> move.cards.indexOf(c)<0))
             toCards = toCards.concat(moveCards).filter(function(el,i,a){return i===a.indexOf(el)})
@@ -375,6 +336,18 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
     if (room.state['nro']!=nro) {
         change.roomChanges.push({key:'nro', value:nro})
     }
+    // was client mirobridge?
+    if (room.state['mirobridge']==clientId) {
+        delete room.state['mirobridge']
+        // alternative miro bridge?
+        for (const cid of Object.keys(room.clients)) {
+            const client = room.clients[cid]
+            if (client.clientState.isOwner && !room.state['mirobridge']) {
+                room.state['mirobridge'] = cid
+            }
+        }
+        change.roomChanges.push({key:'mirobridge', value: room.state['mirobridge']})
+    }    
     if(change.roomChanges.length>0) {
         wss.broadcastChange(room, change)
     }
