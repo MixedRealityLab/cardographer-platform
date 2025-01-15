@@ -66,6 +66,8 @@
     let midBarHeight = 32
     let zoneSelectorHeight = 32
     $: spotlight = (tab=='cards'||tab=='hand') && cards.find((c)=>(zoneCards[SPOTLIGHT_ZONE]??[]).indexOf(c.id)>=0)
+    let shuffles = {} // zone -> card id[]
+    let lastHand = -1 // index in activeZones
 
     function connect() {
         const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
@@ -86,6 +88,35 @@
     }
     function moveSelectionDown(ev: MouseEvent) {
         client.moveCards(mySelectedIds, topzone, myzone)
+    }
+    function shuffle(ev: MouseEvent) {
+        let cards = [].concat(myZoneCards.map((c)=>c.id))
+        shuffles[myzone] = []
+        while(cards.length>0) {
+            let ix = Math.floor(Math.random()*cards.length) % cards.length
+            shuffles[myzone].push(cards.splice(ix,1)[0])
+        }
+        console.log(`shuffle zone ${myzone}: ${shuffles[myzone]}`)
+    }
+    function dealOne(ev: MouseEvent) {
+        let hands = activeZones.filter((z)=>z.indexOf('@')>=0).sort()
+        if (hands.length==0) {
+            return
+        }
+        while(shuffles[myzone] && shuffles[myzone].length>0) {
+            let cardId = shuffles[myzone].splice(0,1)[0]
+            if (!myZoneCards.find((c)=>c.id == cardId)) {
+                // already removed
+                continue
+            }
+            lastHand = (lastHand+1) % hands.length
+            let hand = hands[lastHand]
+            topzone = hand
+            console.log(`deal ${cardId} from ${myzone} -> ${hand}`)
+            client.moveCards([cardId], myzone, topzone)
+            break   
+        }
+        shuffles = shuffles
     }
 </script>
 
@@ -183,6 +214,19 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                 class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100" class:relative={split>0} class:split-50={split==50}
                 style:top={split==0 && !spotlight ? '0' : ''+(((bottomDrawerHeight??100)*(spotlight?100:split)/100)-midBarHeight-zoneSelectorHeight)+'px'}>
                 <div bind:clientHeight={midBarHeight} class="relative w-full h-10 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
+                    {#if tab=='allcards'}
+                    <div class="absolute left-0"><div class="flex">
+                        <div class="float-left justify-center arrow px-2"
+                            on:click={(ev)=>shuffle(ev)} class:disabled={myZoneCards.length==0}>
+                            <span class="W-4">S</span>
+                        </div>
+                        <div class="float-left justify-center arrow px-2"
+                            on:click={(ev)=>dealOne(ev)} 
+                            class:disabled={!shuffles[myzone] || myZoneCards.filter((c)=>shuffles[myzone].indexOf(c.id)>=0).length==0 || activeZones.filter((z)=>z.indexOf('@')>=0).length==0}>
+                            <span class="W-4">D</span>
+                        </div>
+                    </div></div>
+                    {/if}
                     <div class="absolute inset-50"><div class="flex">
                         <div class="flex justify-center arrow px-2" class:disabled={readonly ||mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
                         on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
