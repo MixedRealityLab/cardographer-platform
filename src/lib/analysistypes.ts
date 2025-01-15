@@ -11,12 +11,14 @@ export interface BoardInfo {
 	cards: CardSnapshot[];
 	comments?: CommentInfo[];
 	zones?: ZoneInfo[];
+	nativeId?: string
 }
 
 export interface CommonInfo {
 	x?: number
 	y?: number
 	zones?: CardZone[];
+	nativeId?: string
 }
 
 export interface CardSnapshot extends CommonInfo {
@@ -43,6 +45,7 @@ export interface CardScale {
 
 export interface ZoneInfo {
 	id: string
+	nativeId?: string
 }
 
 export enum AnalysisExportTypes {

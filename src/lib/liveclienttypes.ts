@@ -47,6 +47,13 @@ export interface ChangeNotif {
     // finally
     addClients?: ClientMap
 }
+// arbitrary (service-defined) action request
+export interface ActionReq {
+    type: MESSAGE_TYPE.ACTION_REQ
+    action: string
+    data?: string
+    id?: string
+}
 // action response
 export interface ActionResp {
     type: MESSAGE_TYPE.ACTION_RESP

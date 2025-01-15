@@ -32,6 +32,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
                 cards: [],
                 zones: [],
                 comments: [],
+                nativeId: frame.id,
             }
             boards.push(board)
         }
@@ -56,6 +57,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
             if (debug) console.log(`add zone ${zoneId}`);
             board.zones.push({
                 id: zoneId,
+                nativeId: shape.id,
             })
         }
     }
@@ -68,7 +70,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
             if (debug) console.log(`ignore unnamed image`, widget);
             continue;
         }
-        const ci: CardSnapshot = {id, zones: []};
+        const ci: CardSnapshot = {id, nativeId: widget.id, zones: []};
         const {boardId,frames} = findBoardId(widget, ci, data.widgets)
         let board = boards.find((b) => b.id == boardId);
 
@@ -86,7 +88,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
             if (debug) console.log(`ignore empty comment`, widget);
             continue;
         }
-        const ci: CommentInfo = {text, zones: []};
+        const ci: CommentInfo = {text, nativeId: widget.id, zones: []};
         const {boardId,frames} = findBoardId(widget, ci, data.widgets)
         let board = boards.find((b) => b.id == boardId);
         board.comments.push(ci);

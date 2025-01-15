@@ -1,7 +1,7 @@
 // live view client utils - NB needs to work in browser so using copies of types :-(
 import { type SnapshotInfo } from './analysistypes';
 import { getSnapshotInfoFromMiroData } from './clients/miroutils';
-import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp, type ChangeReq } from './liveclienttypes'
+import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp, type ChangeReq, type ActionReq } from './liveclienttypes'
 import { getChangesFromMiroState } from './liveutils';
 import { type Session } from './types'
 import type { Miro,ItemsCreateEvent, ItemsDeleteEvent, ItemsUpdateEvent } from "@mirohq/websdk-types";
@@ -32,6 +32,11 @@ interface PlayerMap {
 }
 interface SpotlightMap {
     [cardId:string]: string // text, e.g. nickname
+}
+interface MoveCardsInMiroReq {
+    from:string
+    to:string
+    cards:string[]
 }
 export class LiveClient {
     state: KVStore = {}
@@ -100,6 +105,15 @@ export class LiveClient {
             } else if (msg.type == MESSAGE_TYPE.CHANGE_NOTIF) {
                 console.log(`Change notif`)
                 clientsChanged = _this.handleNotif(msg as ChangeNotif) || clientsChanged
+            } else if (msg.type == MESSAGE_TYPE.ACTION_REQ) {
+                let action = msg as ActionReq
+                if (action.action == 'moveCardsInMiro' 
+                    && _this.state['mirobridge']==_this.clientId) {
+                    let data = JSON.parse(action.data) as MoveCardsInMiroReq
+                    _this.moveCardsInMiro(data.cards, data.from, data.to)
+                } else {
+                    console.log(`ignored action request ${action.action}`)
+                }
             }
             //console.log(`clients:`, _this.getClients())
             _this.updated(clientsChanged)
@@ -311,20 +325,89 @@ export class LiveClient {
             this.syncMiro()
         }
     }
-    async syncMiro() : Promise<void> {
+    async getMiroSnapshot(): Promise<SnapshotInfo> {
         const data: any = await this.miro.board.getInfo()
         data.widgets = (await this.miro.board.get()).filter((widget) => widget.type !== 'image' || widget.url || widget.title)
         data.widgets.forEach((w) => {if (w.modifiedAt && (w.modifiedAt as string).localeCompare(data.updatedAt)>0) { data.updatedAt = w.modifiedAt }})
         let info: SnapshotInfo = getSnapshotInfoFromMiroData(data)
-        console.log(`got miro board info:`, info)
+        //console.log(`got miro board info:`, info)
+        return info
+    }
+    async syncMiro() : Promise<void> {
+        let info = await this.getMiroSnapshot()
         let changes = getChangesFromMiroState(info, this.state)
-        console.log(`-> changes`, changes)
-        let msg:ChangeReq = {
-            type: MESSAGE_TYPE.CHANGE_REQ,
-            roomChanges: changes,
-            echo: true,
+        if (changes.length>0) {
+            console.log(`Sync miro -> changes`, changes)
+            let msg:ChangeReq = {
+                type: MESSAGE_TYPE.CHANGE_REQ,
+                roomChanges: changes,
+                echo: true,
+            }
+            this.ws.send(JSON.stringify(msg))
         }
-        this.ws.send(JSON.stringify(msg))
+    }
+    async moveCardsInMiro(cards:string[], from:string, to:string) : Promise<void> {
+        console.log(`move cards ${cards} in miro from ${from} -> ${to}`)
+        let changed = false
+        let info = await this.getMiroSnapshot()
+        let allZones = info.boards.flatMap((b) => b.zones)
+        let fromZone = allZones.filter((z) => z.id==from)
+        let toZone = allZones.filter((z) => z.id==to)
+        if (fromZone.length==0) {
+            console.log(`error: cannot find from zone ${from}`)
+            return
+        } else if (fromZone.length>1) {
+            console.log(`warning: from zone ${from} is ambiguous`)
+        }
+        if (toZone.length==0) {
+            console.log(`error: cannot find to zone ${to}`)
+            return
+        } else if (toZone.length>1) {
+            console.log(`warning: to zone ${to} is ambiguous`)
+        }
+        if (!toZone[0].nativeId) {
+            console.log(`error: to zone ${to} has not native ID`)
+            return
+        }
+        let toShape
+        try {
+            toShape = await this.miro.board.getById(toZone[0].nativeId)
+        } catch(err) {
+            console.log(`error: could not get to zone ${to} = miro ID ${toZone[0].nativeId}`)
+        }
+        //console.log(`to zone miro`, toShape)
+        // look for cards in from zone
+        let allCards = info.boards.flatMap((b)=>b.cards)
+        for (let cardId of cards) {
+            let matches = allCards.filter((ci)=> ci.id==cardId && ci.nativeId && ci.zones.find((cz) => cz.zoneId==from && cz.overlap>=0.5))
+            if (matches.length==0) {
+                console.log(`error: could not find card ${cardId} in zone ${from}`)
+                continue
+            } else if (matches.length>1) {
+                console.log(`warning: ambiguous card ${cardId} in zone ${from}`)
+            }
+            console.log(`card ${cardId} is ${from} = miro image ID ${matches[0].nativeId}`)
+            try {
+                let image = await this.miro.board.getById(matches[0].nativeId)
+                //console.log(`card/image`, image)
+                // TODO - organise them more?
+                let xborder = Math.max(0, toShape.width - image.width)
+                let yborder = Math.max(0, toShape.height - image.height)
+                image.x = toShape.x + xborder*(Math.random()-0.5)
+                image.y = toShape.y + yborder*(Math.random()-0.5)
+                image.relativeTo = toShape.relativeTo
+                image.parentId = toShape.parentId
+                await image.sync()
+                await image.bringToFront()
+                changed = true
+            }
+            catch (err) {
+                console.log(`error: could not getcard ${cardId} in ${from} = miro image ID ${matches[0].nativeId}: ${err.msg}`)
+                continue
+            }
+        }
+        if (changed) 
+            this.syncMiro()
     }
 }
 

@@ -264,8 +264,20 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         let moveCards = fromCards.filter((c) => move.cards.indexOf(c)>=0)
         if (moveCards.length==0) {
             console.log(`none of the cards ${move.cards} found in ${move.from}`)
-        } else if (room.state['mirobridge']) {
+        } else if (room.state['mirobridge'] && room.clients[room.state['mirobridge']]) {
             // ask mirobridge to actually move the cards?!
+            const mirobridge = room.clients[room.state['mirobridge']]
+            let breq: ActionReq = {
+                type: MESSAGE_TYPE.ACTION_REQ,
+                action: 'moveCardsInMiro',
+                data: JSON.stringify({from:move.from, to:move.to, cards: moveCards})
+            }
+            try {
+                mirobridge.ws.send(JSON.stringify(breq))
+            }
+            catch (err) {
+                console.log(`Error passing moveCards to mirobridge ${clientId}: ${err.msg}`)
+            }
         } else {
             room.state[`cards:${move.from}`] = JSON.stringify(fromCards.filter((c)=> move.cards.indexOf(c)<0))
             toCards = toCards.concat(moveCards).filter(function(el,i,a){return i===a.indexOf(el)})
