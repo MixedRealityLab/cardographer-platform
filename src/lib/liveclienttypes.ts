@@ -27,6 +27,7 @@ export interface HelloSuccessResp {
     clientId: string
     clients: ClientMap
     roomState: KVStore
+    readonly: boolean
 }
 // change notification - asynchronous
 export interface ChangeNotif {

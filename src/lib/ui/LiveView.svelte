@@ -38,8 +38,10 @@
         higlightPlayerTab = true
         highlightPlayerTimeout = setTimeout(() => higlightPlayerTab=false, 3000)
     }
+    $: readonly = client.readonly
     $: clientId = client.clientId
     $: clients = client.clients
+    $: numberReadonly = client.numberReadonly
     $: seats = client.seats
     $: players = client.players
     $: myseat = Object.entries(players).find((e)=> clientId && e[1]==clientId)?.at(0)
@@ -164,7 +166,7 @@
             <div class="flex flex-col h-full w-screen">
                 <ZoneSelector zones={topZones} bind:zone={topzone}></ZoneSelector>
                 <CardList cards={topZoneCards} bind:this={topCardList}
-                allowSelection={true} bind:selectedIds={mySelectedIds}
+                allowSelection={!readonly} bind:selectedIds={mySelectedIds}
                 comments={topzone==SPOTLIGHT_ZONE ? spotlights : {}}></CardList>
             </div>
         </div>
@@ -174,14 +176,14 @@
                 style:top={split==0 && !spotlight ? '0' : ''+(((bottomDrawerHeight??100)*(spotlight?100:split)/100)-midBarHeight-zoneSelectorHeight)+'px'}>
                 <div bind:clientHeight={midBarHeight} class="relative w-full h-10 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
                     <div class="absolute inset-50"><div class="flex">
-                        <div class="flex justify-center arrow px-2" class:disabled={mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
-                        on:click={(ev)=>{if(!(mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
+                        <div class="flex justify-center arrow px-2" class:disabled={readonly ||mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                        on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
                             <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <div class="flex justify-center arrow px-2" class:disabled={mySelectedIds.length==0 || myzone==topzone || !topZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
-                            on:click={(ev)=>{if(!(mySelectedIds.length==0 || myzone==topzone)) { moveSelectionDown(ev) }}}>
+                        <div class="flex justify-center arrow px-2" class:disabled={readonly || mySelectedIds.length==0 || myzone==topzone || !topZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                            on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionDown(ev) }}}>
                             <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
@@ -189,7 +191,7 @@
                     </div></div>
                     <div class="absolute right-0"><div class="flex">
                         <div class="float-right justify-center arrow px-2"
-                            on:click={()=>{split=0}} class:disabled={split==0}>
+                            on:click={()=>{split=0}} class:disabled={split==0 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="m 172,738 h 656 q 19,0 33,14 14,14 14,34 v 22 q 0,20 -14,33.5 Q 847,855 828,855 H 172 Q 153,855 139,841.5 125,828 125,808 v -22 q 0,-20 14,-34 14,-14 33,-14 z"/>
                                 <path d="m 172,145 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 22 q 0,20 -14,34 -14,14 -33,14 H 172 q -19,0 -33,-14 -14,-14 -14,-34 v -22 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />
@@ -197,13 +199,13 @@
                             </svg>
                         </div>
                         <div class="float-right  justify-center arrow px-2"
-                            on:click={()=>{split=50}} class:disabled={split==50}>
+                            on:click={()=>{split=50}} class:disabled={split==50 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M172 445h656q19 0 33 13.5t14 33.5v16q0 20-14 33.5T828 555H172q-19 0-33-13.5T125 508v-16q0-20 14-33.5t33-13.5zm0-300h656q19 0 33 13.5t14 33.5v22q0 20-14 34t-33 14H172q-19 0-33-14t-14-34v-22q0-20 14-33.5t33-13.5zm0 593h656q19 0 33 14t14 34v22q0 20-14 33.5T828 855H172q-19 0-33-13.5T125 808v-22q0-20 14-34t33-14z"/>
                             </svg>
                         </div>
                         <div class="float-right  justify-center arrow px-2"
-                            on:click={()=>{split=100}} class:disabled={split==100}>
+                            on:click={()=>{split=100}} class:disabled={split==100 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="m 172,738 h 656 q 19,0 33,14 14,14 14,34 v 22 q 0,20 -14,33.5 Q 847,855 828,855 H 172 Q 153,855 139,841.5 125,828 125,808 v -22 q 0,-20 14,-34 14,-14 33,-14 z" />
                             <path d="m 172,145 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 22 q 0,20 -14,34 -14,14 -33,14 H 172 q -19,0 -33,-14 -14,-14 -14,-34 v -22 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />
@@ -215,7 +217,7 @@
                     <ZoneSelector zones={myActiveZones} bind:zone={myzone}></ZoneSelector>
                 </div>
                 <CardList cards={myZoneCards} bind:this={cardList}
-                allowSelection={true} bind:selectedIds={mySelectedIds}
+                allowSelection={!readonly} bind:selectedIds={mySelectedIds}
                 comments={myzone==SPOTLIGHT_ZONE ? spotlights : {}}></CardList>
             </div>
         </div>
@@ -240,6 +242,7 @@
                     {#each clients as clientInfo (clientInfo.clientId)}
                     <div class="p-1 m-1 text-base text-black">{clientInfo.clientState?.nickname} <span class="text-sm text-slate-500">({clientInfo.clientId})</span></div>
                     {/each}
+                    <div class="p-1 m-1 text-sm text-slate-500">Readonly: {numberReadonly}</div>                   
                 </label>
                 </form>
             </div>
@@ -250,9 +253,11 @@
         <div class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
             Cards
         </div>
+        {#if !readonly}
         <div class="tab" class:tabSelected={tab=='hand'} on:click={()=>tab='hand'}>
             Hand
         </div>
+        {/if}
         {#if isOwner}
         <div class="tab" class:tabSelected={tab=='allcards'} on:click={()=>tab='allcards'}>
             All

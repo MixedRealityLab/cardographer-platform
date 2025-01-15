@@ -23,12 +23,13 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
 	if (!session || !session.isLive) {
 		throw error(404, `Session ${req.roomId} not found`)
 	}
+    let readonly = !!req.readonly
     if (session.joiningCode && req.roomCredential == session.joiningCode) {
         // rw access OK
     } else if (session.joiningCodeReadonly && req.roomCredential == session.joiningCodeReadonly) {
-        if (!req.readonly) {
+        if (!readonly) {
             console.log(`Note, client ${clientId} forced readonly by joining code`)
-            req.readonly = true
+            readonly = true
         }
     }
     else {
@@ -39,7 +40,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
     const userToken = cookies[getCookieName()] || '';
     const token = await checkUserToken(userToken);
 
-    console.log(`New ${req.readonly ? 'readonly ': ''}client ${clientId} in session ${session.name} (${session._id}), ${token.valid ? 'authenticated as '+token.email :'unauthenticated'}`)
+    console.log(`New ${readonly ? 'readonly ': ''}client ${clientId} in session ${session.name} (${session._id}), ${token.valid ? 'authenticated as '+token.email :'unauthenticated'}`)
     // owner?
     let clientState = req.clientState
     if (token.valid && session.owners.indexOf(token.email) >= 0) {
@@ -48,35 +49,44 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
     } else {
         delete clientState.isOwner
     }
-    // name matches empty seat?
-    const nickname = clientState['nickname']
-    if (nickname) {
-        const room: RoomInfo = wss.rooms[session._id]
-        if (room && room.state['seats']) {
-            const seats:string[] = JSON.parse(room.state['seats']) as string[]
-            let ix = seats.indexOf(nickname)
-            if (ix<0) { ix = seats.indexOf('@'+nickname) }
-            if (ix>=0) {
-                const seat = seats[ix]
-                let player = room.state[`player:${seat}`]
-                if (!player || player=='') {
-                    console.log(`allocate new player ${nickname} to seat ${seat}`)
-                    room.state[`player:${seat}`] = clientId
-                    let change:ChangeNotif = {
-                        type: MESSAGE_TYPE.CHANGE_NOTIF,
-                        roomChanges: [
-                            {key: `player:${seat}`, value: clientId},
-                        ]
-                    }
-                    //console.log(`initialised room ${session._id} state`, room.state)
-                    wss.broadcastChange(room, change)
-                }                   
+    // other updates?
+    const room: RoomInfo = wss.rooms[session._id]
+    if (room) {
+        let change:ChangeNotif = {
+            type: MESSAGE_TYPE.CHANGE_NOTIF,
+            roomChanges: []
+        }
+        // name matches empty seat?
+        const nickname = clientState['nickname']
+        if (!readonly && nickname) {
+            if (room.state['seats']) {
+                const seats:string[] = JSON.parse(room.state['seats']) as string[]
+                let ix = seats.indexOf(nickname)
+                if (ix<0) { ix = seats.indexOf('@'+nickname) }
+                if (ix>=0) {
+                    const seat = seats[ix]
+                    let player = room.state[`player:${seat}`]
+                    if (!player || player=='') {
+                        console.log(`allocate new player ${nickname} to seat ${seat}`)
+                        room.state[`player:${seat}`] = clientId
+                        change.roomChanges.push({key: `player:${seat}`, value: clientId})
+                    }                   
+                }
             }
+        }
+        // count readers (this client is added to clients after return so +1)
+        const numberReadonly = Object.values(room.clients).filter((c)=>c.readonly).length+(readonly? 1 : 0)
+        const nro = `${numberReadonly}`
+        if (room.state['nro']!=nro) {
+            change.roomChanges.push({key:'nro', value:nro})
+        }
+        if (change.roomChanges.length>0) {
+            wss.broadcastChange(room, change)
         }
     }
     return {
         clientState,
-        readonly: !!req.readonly,
+        readonly,
     }
 }
 
@@ -234,6 +244,14 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         if (typeof(move.player)!=='string' || typeof(move.seat)!=='string') {
             throw new Error(`invalid changeSeat data`)
         }
+        if (clientInfo.clientState['isOwner']!='true') {
+            return {
+                type: MESSAGE_TYPE.ACTION_RESP,
+                id: req.id,
+                success: false,
+                msg: `non-owner cannot request changeSeat`
+            }
+        }
         let change:ChangeNotif = {
             type: MESSAGE_TYPE.CHANGE_NOTIF,
             roomChanges: [],
@@ -268,6 +286,14 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         || !Array.isArray(move.cards) 
         || (move.spotlight && typeof(move.spotlight)!=='string')) {
             throw new Error(`invalid moveCards data`)
+        }
+        if (clientInfo.readonly) {
+            return {
+                type: MESSAGE_TYPE.ACTION_RESP,
+                id: req.id,
+                success: false,
+                msg: `readonly client cannot request moveCards`
+            }
         }
         let change:ChangeNotif = {
             type: MESSAGE_TYPE.CHANGE_NOTIF,
@@ -307,6 +333,11 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
 }
 wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) {
     //console.log(`handle client ${clientId} left room ${room.id} (${JSON.stringify(clientInfo.clientState)})`)
+    let change:ChangeNotif = {
+        type: MESSAGE_TYPE.CHANGE_NOTIF,
+        roomChanges: [
+        ]
+    }
     // was player in a seat? clear it, offer to new player if same nickname or slot
     for (const key of Object.keys(room.state)) {
         if(key.substring(0,7)=='player:') {
@@ -319,6 +350,8 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
                 let newNickname:string|null = null
                 for (const clientId of Object.keys(room.clients)) {
                     const client = room.clients[clientId]
+                    if (client.readonly) 
+                        continue
                     const nickname = client.clientState['nickname']
                     if (nickname && (nickname==oldNickname 
                     || ((nickname==seat || '@'+nickname==seat) && newNickname!=oldNickname))) {
@@ -332,15 +365,18 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
                 } else {
                     room.state[`player:${seat}`] = ''
                 }
-                let change:ChangeNotif = {
-                    type: MESSAGE_TYPE.CHANGE_NOTIF,
-                    roomChanges: [
-                        {key: `player:${seat}`, value: room.state[`player:${seat}`]},
-                    ]
-                }
-                wss.broadcastChange(room, change)
+                change.roomChanges.push({key: `player:${seat}`, value: room.state[`player:${seat}`]})
             }                   
         }
+    }
+    // count readers (this client has been removed already)
+    const numberReadonly = Object.values(room.clients).filter((c)=>c.readonly).length
+    const nro = `${numberReadonly}`
+    if (room.state['nro']!=nro) {
+        change.roomChanges.push({key:'nro', value:nro})
+    }
+    if(change.roomChanges.length>0) {
+        wss.broadcastChange(room, change)
     }
 }
 export async function getWss() : Promise<WSS> {

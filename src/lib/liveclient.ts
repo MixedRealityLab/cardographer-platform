@@ -45,6 +45,8 @@ export class LiveClient {
     zoneCards: ZoneCardMap = {}
     namename: string = 'anon'
     spotlights: SpotlightMap = {}
+    readonly: boolean 
+    numberReadonly: number = 0
 
     constructor(cb:UpdateCallback) {
         this.updateCallback = cb
@@ -148,6 +150,7 @@ export class LiveClient {
 
     handleHello(msg: HelloSuccessResp) {
         this.state = msg.roomState
+        this.readonly = msg.readonly
         this.clients = []
         for (const clientId in msg.clients) {
             this.clients.push({ clientId, ...msg.clients[clientId]})
@@ -170,6 +173,9 @@ export class LiveClient {
                 const card = k.substring(10)
                 this.spotlights[card] = msg.roomState[k]
             }
+        }
+        if (msg.roomState.nro) {
+            this.numberReadonly = Number(msg.roomState.nro)
         }
         this.status = LIVE_CLIENT_STATUS.ACTIVE
     }
@@ -215,6 +221,13 @@ export class LiveClient {
                         this.spotlights[card] = change.value
                     } else {
                         delete this.spotlights[card]
+                    }
+                }
+                if (change.key=='nro') {
+                    if (change.value) {
+                        this.numberReadonly = Number(change.value)
+                    } else {
+                        this.numberReadonly = 0
                     }
                 }
             }
