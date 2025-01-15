@@ -2,7 +2,7 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import type {CardInfo} from "$lib/types";
-	import {afterUpdate} from "svelte";
+	import {afterUpdate, tick} from "svelte";
 
 	//const base = 'https://cardographer.cs.nott.ac.uk'
 
@@ -39,7 +39,8 @@
 		}
 	}
 
-	afterUpdate(() => {
+	afterUpdate(async () => {
+		await tick() // doesn't seem like it should be needed but is (for cards to be set)
 		if (!aspectSet) {
 			const firstCard = cards.find((card) => card.frontUrl)
 			if (firstCard) {

@@ -10,6 +10,7 @@
 
 	import type {BoardNode, Miro} from "@mirohq/websdk-types";
 	import {onMount} from "svelte";
+    import LiveView from "$lib/ui/LiveView.svelte";
 
 	declare const miro: Miro
 	export let data: { authenticated: boolean; session: Session; sessions: Session[], readonly: boolean, quotaSessions: number, usageSessions: number, quotaSnapshots: number, usageSnapshots: number }
@@ -149,18 +150,20 @@
 
 <!-- <div>quota {data.usageSessions}/{data.quotaSessions}, {data.usageSnapshots}/{data.quotaSnapshots}</div> -->
 
-<div class="w-full flex flex-col h-screen">
-	<div class="subheader">
+<div class="w-full h-screen">
+	<div class="subheader absolute top-0">
 		<div class="flex-1">
 			{#if !data.authenticated}
 				Login
 			{:else if data.session}
+				<span class="overflow-elipsis">
 				{#if data.session.name && data.session.name.toLowerCase().indexOf('session') === -1}
 					Session
 				{/if}
 				{data.session.name}
+				</span>
 				{#if !data.readonly}
-				<form method="post" action="?/unselect" use:enhance class="inline">
+				<form method="post" action="?/unselect" use:enhance class="inline float-right">
 					<input type="hidden" name="id" value={data.session._id}/>
 					<button class="ml-1" title="Change Session" disabled={!!data.readonly}>
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-30 hover:opacity-50"
@@ -205,7 +208,11 @@
 		{/if}
 	</div>
 
-	<div class="flex flex-1 flex-col text-sm font-medium gap-4 p-6 overflow-y-auto">
+<div class="absolute top-10 bottom-0 w-full">
+
+	{#if !data.authenticated || !data.session}
+	<div class="w-full h-full overflow-y-auto">
+		<div class="flex flex-col text-sm font-medium gap-4 p-6">
 		{#if !data.authenticated}
 			<form method="post" action="?/login" use:enhance={() => {
 				return async ({ result, update }) => {
@@ -260,77 +267,82 @@
 					</button>
 				</form>
 			{/each}
-		{:else }
-			<div class="flex-1 flex flex-col">
-				<div class="flex-1">
-					{#each widgets as widget (widget.id)}
-						<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
-						        on:click={() => zoomTo(widget)}>
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
-							     viewBox="0 0 24 24"
-							     stroke="#eab308" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round"
-								      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-							</svg>
-							{widget.type} {widget.id}
-						</button>
-					{/each}
-
-					{#each data.session.decks as deck}
-						{#if deck.cards}
-							{#each deck.cards as card, cix}
-								{#if deck.cards.map((c)=> c.category || '').indexOf(card.category||'') == cix}
-									<div class="flex pb-2">
-										<div class="flex-1 text-lg">{deck.deckName}: {card.category||''}</div>
-										<button on:click={(event) => {addCardCategory(deck, card.category||'', event)}}
-												class="button button-slim" style="align-self: end">
-											Add All
-										</button>
-									</div>
-								{/if}
-								{#if card.frontUrl}
-									<ExpandableSection class="py-1">
-										<div slot="title">
-											<div class="flex items-center"
-											     class:text-blue-700={selectedCards.includes(card.id)}>
-												<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
-												<span>{card.name}</span>
-												<span class="text-gray-400 ml-1.5">v{card.revision}</span>
-											</div>
-										</div>
-										<div class="flex flex-col pt-1 pb-2">
-											<div class="flex">
-												{#if card.frontUrl}
-													<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
-													     class="h-24 mr-4" alt="Card"/>
-												{/if}
-												<div class="flex flex-col">
-													{#if card.description}
-														<div class="text-xs">{card.description}</div>
-													{/if}
-													{#if card.content && card.content !== card.description}
-														<div class="text-xs">{card.content}</div>
-													{/if}
-													<div>
-														Type: {card.category}
-													</div>
-													<button on:click={(event) => {addCard(card, event)}}
-													        class="button button-slim" style="align-self: end">
-														Add
-													</button>
-												</div>
-											</div>
-										</div>
-									</ExpandableSection>
-								{/if}
-							{/each}
-						{/if}
-					{/each}
-				</div>
-			</div>
 		{/if}
+		</div>
 	</div>
-	{#if data.session}
+	{:else}
+	<LiveView session={data.session} isOwner={data.readonly===false} inmiro={true}>
+
+	<div class="w-full h-full flex flex-col">
+
+		<div class="flex-1 flex flex-col overflow-y-auto">
+			<div class="flex flex-col text-sm font-medium gap-4 p-6">
+				{#each widgets as widget (widget.id)}
+					<button class="flex py-2 items-center cursor-pointer transition-opacity duration-300 hover:opacity-80"
+							on:click={() => zoomTo(widget)}>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none"
+							 viewBox="0 0 24 24"
+							 stroke="#eab308" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+						</svg>
+						{widget.type} {widget.id}
+					</button>
+				{/each}
+
+				{#each data.session.decks as deck}
+					{#if deck.cards}
+						{#each deck.cards as card, cix}
+							{#if deck.cards.map((c)=> c.category || '').indexOf(card.category||'') == cix}
+								<div class="flex pb-2">
+									<div class="flex-1 text-lg">{deck.deckName}: {card.category||''}</div>
+									<button on:click={(event) => {addCardCategory(deck, card.category||'', event)}}
+											class="button button-slim" style="align-self: end">
+										Add All
+									</button>
+								</div>
+							{/if}
+							{#if card.frontUrl}
+								<ExpandableSection class="py-1">
+									<div slot="title">
+										<div class="flex items-center"
+											 class:text-blue-700={selectedCards.includes(card.id)}>
+											<img src="{base}/icons/card.svg" class="w-5 mr-4" alt=""/>
+											<span>{card.name}</span>
+											<span class="text-gray-400 ml-1.5">v{card.revision}</span>
+										</div>
+									</div>
+									<div class="flex flex-col pt-1 pb-2">
+										<div class="flex">
+											{#if card.frontUrl}
+												<img src={card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}
+													 class="h-24 mr-4" alt="Card"/>
+											{/if}
+											<div class="flex flex-col">
+												{#if card.description}
+													<div class="text-xs">{card.description}</div>
+												{/if}
+												{#if card.content && card.content !== card.description}
+													<div class="text-xs">{card.content}</div>
+												{/if}
+												<div>
+													Type: {card.category}
+												</div>
+												<button on:click={(event) => {addCard(card, event)}}
+														class="button button-slim" style="align-self: end">
+													Add
+												</button>
+											</div>
+										</div>
+									</div>
+								</ExpandableSection>
+							{/if}
+						{/each}
+					{/if}
+				{/each}
+			</div>
+		</div>
+
 		{#if widgets.length !== 0}
 			<div class="warn">
 				{widgets.length} image{widgets.length > 1 ? 's' : ''} will not be saved. Give them titles to include
@@ -349,12 +361,16 @@
 		{#if data.usageSnapshots >= data.quotaSnapshots}
 		    <div class="gap-1 m-1 message-error">You have reached you Snapshot quota.</div>
 		{:else}
-		<div class="flex gap-1 m-1 justify-center">
+		<div class="flex grow-0 gap-1 m-1 justify-center">
 			<input class="flex-1 p-1" type="text" name="description" placeholder="Snapshot desription" bind:value={description} disabled={!!data.readonly}/>
 			<button class="button m-1" on:click={saveSession} disabled={!!data.readonly}>
-				Save Session
+				Save
 			</button>
 		</div>
 		{/if}
+	</div>
+	</LiveView>
 	{/if}
+
+</div>
 </div>

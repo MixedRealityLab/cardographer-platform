@@ -56,7 +56,7 @@ export class LiveClient {
             this.updateCallback(this, clientsChanged)
         }
     }
-    connect = function(url:URL, base:string, session:Session, nickname:string) {
+    connect = function(url:URL, base:string, session:Session, nickname:string, joiningCode:string) {
         let _this = this
         this.nickname = nickname
         if (this.ws) {
@@ -98,7 +98,6 @@ export class LiveClient {
         }
         this.ws.onopen = (event) => { 
             console.log(`ws open`)
-            const joiningCode = url.searchParams.get('j')
             let helloReq = {
                 protocol: 'websocket-room-server:1',
                 // server-specific

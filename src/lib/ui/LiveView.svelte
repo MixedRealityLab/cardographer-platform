@@ -7,9 +7,11 @@
     import { page } from '$app/stores';  
     import { LiveClient, getLiveClient, SPOTLIGHT_ZONE } from "$lib/liveclient";
     import ZoneSelector from "./ZoneSelector.svelte";
+	import type {BoardNode, Miro} from "@mirohq/websdk-types";
 
     export let session: Session
     export let isOwner: boolean = false
+    export let inmiro: boolean = false
 
     let nickname = ''
     let tab='cards'
@@ -65,7 +67,8 @@
     $: spotlight = (tab=='cards'||tab=='hand') && cards.find((c)=>(zoneCards[SPOTLIGHT_ZONE]??[]).indexOf(c.id)>=0)
 
     function connect() {
-        client.connect($page.url, base, session, nickname)
+        const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
+        client.connect($page.url, base, session, nickname, joiningCode)
     }
     onDestroy(() => {
         if (highlightPlayerTimeout) {
@@ -132,21 +135,27 @@
 
 </style>
 
+<div class="absolute top-0 bottom-10 left-0 right-0 overflow-x-hidden" 
+class:overflow-y-auto={failed || !connected || (tab!='cards' && tab!='allcards' && tab!='hand')} 
+class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards' || tab=='hand')}>
 
-{#if failed} 
-<div class="absolute top-0 bottom-0 left-0 right-0 overflow-y-scroll overflow-x-hidden">
+{#if inmiro && tab=='miro'}
+    <slot></slot>
+{:else if failed} 
     <div class="w-full flex flex-col">
+        {#if !inmiro}
         <LiveViewHeader {session}></LiveViewHeader>
+        {/if}
         <div class="container mx-auto flex flex-col">
             <div class="text-red-950 bg-red-100 rounded p-4 m-4 text-xl">Sorry, you can't join that session ({failed})</div>
         </div>
     </div>
-</div>
 
 {:else if !connected}
-<div class="absolute top-0 bottom-0 left-0 right-0 overflow-y-scroll overflow-x-hidden">
     <div class="w-full flex flex-col">
+        {#if !inmiro}
         <LiveViewHeader {session}></LiveViewHeader>
+        {/if}
         <div class="container mx-auto flex flex-col">
             <div class="flex flex-col p-2">
                 <div class="flex m-2">
@@ -158,9 +167,7 @@
             </div>
         </div>
     </div>
-</div>
 {:else}
-<div class="absolute top-0 bottom-10 left-0 right-0" class:overflow-y-auto={tab!='cards' && tab!='allcards' && tab!='hand'} class:overflow-y-hidden={tab=='cards' || tab=='allcards' || tab=='hand'}>
         {#if tab=='cards' || tab=='allcards' || tab=='hand'}
         <div class="absolute top-0 bottom-10 left-0 right-0 z-0">
             <div class="flex flex-col h-full w-screen">
@@ -248,8 +255,10 @@
             </div>
         </div>
         {/if}
+{/if}
 </div>
 <div class="absolute bottom-0 h-10 z-20 w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center overflow-x-auto">
+    {#if !failed && connected}
         <div class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
             Cards
         </div>
@@ -266,5 +275,14 @@
             People
         </div>
         {/if}
+    {:else}
+        <div class="tab" class:tabSelected={tab!='miro'} on:click={()=>tab='cards'}>
+            Live
+        </div>
+    {/if}
+    {#if inmiro}
+        <div class="tab" class:tabSelected={tab=='miro'} on:click={()=>tab='miro'}>
+            Miro
+        </div>
+    {/if}
 </div>
-{/if}
