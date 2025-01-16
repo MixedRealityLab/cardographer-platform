@@ -1,6 +1,6 @@
 import {readDesigns} from '$lib/analysis'
 import {verifyAuthentication} from "$lib/security"
-import { BoardInfo,CardDeckRevision,Session } from '$lib/types';
+import type { BoardInfo,CardDeckRevision,Session } from '$lib/types';
 import type {PageServerLoad} from "./$types"
 import {getDb} from "$lib/db";
 

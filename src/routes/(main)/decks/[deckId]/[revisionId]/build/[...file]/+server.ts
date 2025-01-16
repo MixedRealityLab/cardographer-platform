@@ -6,7 +6,7 @@ import type {RequestHandler} from "@sveltejs/kit"
 import {error, json} from "@sveltejs/kit"
 import { verifyLocalUserIsDeckBuilder } from "$lib/userutils";
 import { getDiskSizeK } from "$lib/builders";
-import { CardDeckRevisionSummary } from "$lib/types";
+import { type CardDeckRevision } from "$lib/types";
 
 // noinspection JSUnusedGlobalSymbols
 export const DELETE: RequestHandler = async function ({locals, params}) {

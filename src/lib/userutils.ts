@@ -1,5 +1,5 @@
 import {getDb} from "./db";
-import {User} from "./types";
+import type {User} from "./types";
 import type {Db} from 'mongodb';
 import {error, fail} from "@sveltejs/kit";
 import {base} from "$app/paths"

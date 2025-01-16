@@ -8,6 +8,7 @@ const webSocketServer = {
 	configureServer(server) {
 		if (!server.httpServer) return
 		if (USE_WEBSOCKETS) {
+			console.log('(vite) set up websockets')
 			wss.addWebsockets(server.httpServer)
 		} else {
 			console.log(`WARNING: not attempting to set up websockets in dev mode`)

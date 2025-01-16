@@ -1,6 +1,6 @@
 import type {Quota,QuotaDetails, Usage} from "$lib/types"
 import { getDb } from "./db";
-import { CardDeckRevision, User } from "./types";
+import { type CardDeckRevision, type User } from "./types";
 import {error} from "@sveltejs/kit";
 import {GUEST_EMAIL} from "$lib/userutils"
 import type {CardDeckSummary, CardDeckRevisionSummary, Analysis, Session, SessionSnapshot } from "$lib/types"

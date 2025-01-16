@@ -1,6 +1,6 @@
 import {getDb} from '$lib/db';
 import { arrayToCsv } from "./csvutils";
-import { User, Session, SessionSnapshot, Analysis, CardDeckSummary, CardDeckRevision, UserAudit } from "$lib/types"
+import type { User, Session, SessionSnapshot, Analysis, CardDeckSummary, CardDeckRevision, UserAudit } from "$lib/types"
 import { getQuotaDetails, getUsageAnalyses, getUsageDecks, getUsageDiskSizeK, getUsageRevisions, getUsageSessions, getUsageSnapshots } from './quotas';
 import { getDiskSizeK } from './builders';
 
