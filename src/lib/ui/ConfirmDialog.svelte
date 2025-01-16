@@ -26,11 +26,11 @@
 <slot confirm={confirm}></slot>
 
 {#if showDialog}
-	<div class="overlay" on:click="{(e) => { showDialog = false; e.preventDefault() } }"
+	<button class="overlay" aria-label="Cancel" on:click="{(e) => { showDialog = false; e.preventDefault() } }"
 	     on:keypress={(e) => { if(e.key === "Escape") { showDialog = false}}}
 	     in:fade="{{ duration: 200 }}"
 	     out:fade="{{ delay: 200, duration: 200 }}">
-	</div>
+	</button>
 	<div class="confirm-dialog" in:fly="{{
       y: -10,
       delay: 200,

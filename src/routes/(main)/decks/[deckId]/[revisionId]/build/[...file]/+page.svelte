@@ -115,12 +115,12 @@
         @apply flex flex-1 items-center py-1.5 transition-colors duration-500 hover:text-blue-700;
     }
 
-    .fileItem:hover + button {
+    .fileSize:hover + button {
         @apply opacity-100;
     }
 
     @media (hover: none) {
-        .fileItem + button {
+        .fileSize + button {
             @apply opacity-60;
         }
     }
@@ -160,7 +160,7 @@
 					<div>{childFile.name}</div>
 				</a>
 			{/if}
-			<div class="text-sm text-gray-700">{childFile.size} KB</div>
+			<div class="fileSize text-sm text-gray-700">{childFile.size} KB</div>
 
 			<button class="opacity-5 transition-opacity duration-500 text-red-500 hover:opacity-100"
 			        on:click={() => {deleteFile(childFile.name)}}>

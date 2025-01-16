@@ -216,53 +216,53 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                 <div bind:clientHeight={midBarHeight} class="relative w-full h-10 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
                     {#if tab=='allcards'}
                     <div class="absolute left-0"><div class="flex">
-                        <div class="float-left justify-center arrow px-2"
+                         <button aria-label="Shuffle" class="float-left justify-center arrow px-2"
                             on:click={(ev)=>shuffle(ev)} class:disabled={myZoneCards.length==0}>
                             <span class="W-4">S</span>
-                        </div>
-                        <div class="float-left justify-center arrow px-2"
+                        </button>
+                        <button aria-label="Deal" class="float-left justify-center arrow px-2"
                             on:click={(ev)=>dealOne(ev)} 
                             class:disabled={!shuffles[myzone] || myZoneCards.filter((c)=>shuffles[myzone].indexOf(c.id)>=0).length==0 || activeZones.filter((z)=>z.indexOf('@')>=0).length==0}>
                             <span class="W-4">D</span>
-                        </div>
+                        </button>
                     </div></div>
                     {/if}
                     <div class="absolute inset-50"><div class="flex">
-                        <div class="flex justify-center arrow px-2" class:disabled={readonly ||mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                        <button aria-label="Move card up" class="flex justify-center arrow px-2" class:disabled={readonly ||mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
                         on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
                             <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
                             </svg>
-                        </div>
-                        <div class="flex justify-center arrow px-2" class:disabled={readonly || mySelectedIds.length==0 || myzone==topzone || !topZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
+                        </button>
+                        <button aria-label="Move card down" class="flex justify-center arrow px-2" class:disabled={readonly || mySelectedIds.length==0 || myzone==topzone || !topZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
                             on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionDown(ev) }}}>
                             <svg class="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                        </div>
+                        </button>
                     </div></div>
                     <div class="absolute right-0"><div class="flex">
-                        <div class="float-right justify-center arrow px-2"
+                        <button aria-label="Show lower cards" class="float-right justify-center arrow px-2"
                             on:click={()=>{split=0}} class:disabled={split==0 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="m 172,738 h 656 q 19,0 33,14 14,14 14,34 v 22 q 0,20 -14,33.5 Q 847,855 828,855 H 172 Q 153,855 139,841.5 125,828 125,808 v -22 q 0,-20 14,-34 14,-14 33,-14 z"/>
                                 <path d="m 172,145 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 22 q 0,20 -14,34 -14,14 -33,14 H 172 q -19,0 -33,-14 -14,-14 -14,-34 v -22 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />
                                 <path d="m 172,277.93839 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 16 q 0,20 -14,33.5 -14,13.5 -33,13.5 H 172 q -19,0 -33,-13.5 -14,-13.5 -14,-33.5 v -16 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />
                             </svg>
-                        </div>
-                        <div class="float-right  justify-center arrow px-2"
+                        </button>
+                        <button aria-label="Show all cards" class="float-right  justify-center arrow px-2"
                             on:click={()=>{split=50}} class:disabled={split==50 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M172 445h656q19 0 33 13.5t14 33.5v16q0 20-14 33.5T828 555H172q-19 0-33-13.5T125 508v-16q0-20 14-33.5t33-13.5zm0-300h656q19 0 33 13.5t14 33.5v22q0 20-14 34t-33 14H172q-19 0-33-14t-14-34v-22q0-20 14-33.5t33-13.5zm0 593h656q19 0 33 14t14 34v22q0 20-14 33.5T828 855H172q-19 0-33-13.5T125 808v-22q0-20 14-34t33-14z"/>
                             </svg>
-                        </div>
-                        <div class="float-right  justify-center arrow px-2"
+                        </button>
+                        <button aria-label="Show upper cards" class="float-right  justify-center arrow px-2"
                             on:click={()=>{split=100}} class:disabled={split==100 || spotlight}>
                             <svg  class="w-6" fill="currentColor" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
                                 <path d="m 172,738 h 656 q 19,0 33,14 14,14 14,34 v 22 q 0,20 -14,33.5 Q 847,855 828,855 H 172 Q 153,855 139,841.5 125,828 125,808 v -22 q 0,-20 14,-34 14,-14 33,-14 z" />
                             <path d="m 172,145 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 22 q 0,20 -14,34 -14,14 -33,14 H 172 q -19,0 -33,-14 -14,-14 -14,-34 v -22 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />
                             <path d="m 167.26066,616.80095 h 656 q 19,0 33,13.5 14,13.5 14,33.5 v 16 q 0,20 -14,33.5 -14,13.5 -33,13.5 h -656 q -19,0 -33,-13.5 -14,-13.5 -14,-33.5 v -16 q 0,-20 14,-33.5 14,-13.5 33,-13.5 z" />                        </svg>
-                        </div>
+                        </button>
                     </div></div>
                 </div>
                 <div bind:clientHeight={zoneSelectorHeight}>
@@ -289,13 +289,13 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                         </select>
                     </label>
                 {/each}
-                <label>
+                <div>
                     <span class="text-sm">All:</span>
                     {#each clients as clientInfo (clientInfo.clientId)}
                     <div class="p-1 m-1 text-base text-black">{clientInfo.clientState?.nickname} <span class="text-sm text-slate-500">({clientInfo.clientId})</span></div>
                     {/each}
                     <div class="p-1 m-1 text-sm text-slate-500">Readonly: {numberReadonly}</div>                   
-                </label>
+                </div>
                 </form>
             </div>
         </div>
@@ -304,30 +304,30 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
 </div>
 <div class="absolute bottom-0 h-10 z-20 w-full pt-1 pb-0 bg-gray-700 flex flex-wrap text-white justify-center text-center overflow-x-auto">
     {#if !failed && connected}
-        <div class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
+        <button aria-pressed="{tab=='cards'}" class="tab" class:tabSelected={tab=='cards'} on:click={()=>tab='cards'}>
             Cards
-        </div>
+        </button>
         {#if !readonly}
-        <div class="tab" class:tabSelected={tab=='hand'} on:click={()=>tab='hand'}>
+        <button aria-pressed="{tab=='hand'}" class="tab" class:tabSelected={tab=='hand'} on:click={()=>tab='hand'}>
             Hand
-        </div>
+        </button>
         {/if}
         {#if isOwner}
-        <div class="tab" class:tabSelected={tab=='allcards'} on:click={()=>tab='allcards'}>
+        <button aria-pressed="{tab=='allcards'}" class="tab" class:tabSelected={tab=='allcards'} on:click={()=>tab='allcards'}>
             All
-        </div>
-        <div class="tab" class:highlight={higlightPlayerTab} class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
+        </button>
+        <button aria-pressed="{tab=='people'}" class="tab" class:highlight={higlightPlayerTab} class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
             People
-        </div>
+        </button>
         {/if}
     {:else}
-        <div class="tab" class:tabSelected={tab!='miro'} on:click={()=>tab='cards'}>
+        <button aria-pressed="{tab!='miro'}" class="tab" class:tabSelected={tab!='miro'} on:click={()=>tab='cards'}>
             Live
-        </div>
+        </button>
     {/if}
     {#if inmiro}
-        <div class="tab" class:tabSelected={tab=='miro'} on:click={()=>tab='miro'}>
+        <button aria-pressed="{tab=='miro'}" class="tab" class:tabSelected={tab=='miro'} on:click={()=>tab='miro'}>
             Session
-        </div>
+        </button>
     {/if}
 </div>

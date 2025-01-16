@@ -165,8 +165,8 @@
 		@apply rounded bg-gray-400 hover:bg-blue-500 transition-colors duration-300;
 	}
 </style>
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <!--suppress XmlInvalidId -->
+<!-- svelte-ignore a11y-positive-tabindex a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 <ol role="list" tabindex="0" aria-activedescendant="card{cardIndex}" aria-live="polite"
     aria-label="{pluralize(cards.length, 'Card')}"
     bind:clientWidth bind:this={cardList} bind:clientHeight
@@ -177,6 +177,7 @@
 		    class:mr-auto={index === (cards.length - 1)}>
 			<div style="width: {contentWidth}px; height: {contentHeight}px; padding: {contentHeight * 0.075}px {contentWidth * 0.075}px;">
 				{#if card.frontUrl}
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 					<div class="w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
 						 class:selected={selectedIds.indexOf(card.id)>=0}
 					     on:click={(ev)=>handleScrollClick(ev,card)}
@@ -187,6 +188,7 @@
 						<div class="hidden" id="desc{index}">{card.description}</div>
 					</div>
 				{:else}
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow gap-4"
 						 class:selected={selectedIds.indexOf(card.id)>=0}
 					     on:click={(ev)=>handleScrollClick(ev,card)}

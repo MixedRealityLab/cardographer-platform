@@ -8,6 +8,7 @@
     .arrow {
         @apply cursor-pointer text-gray-900;
     }
+/*
 	@keyframes highlight {
 		0% {
 			outline: 2px ridge #24F8;
@@ -26,7 +27,7 @@
 	.highlight {
 		animation: highlight 2s;
 	}
-
+*/
     .arrow.disabled {
         @apply cursor-default text-gray-400;
     }
@@ -38,18 +39,18 @@
 
 <div class="w-full py-1 px-2 bg-gray-100 text-gray-900 text-xl flex items-center">
     {#if zones.length>1}
-    <div class="flex justify-center arrow" class:disabled={zones.indexOf(zone)<=0} 
+    <button aria-label="Left" class="flex justify-center arrow" class:disabled={zones.indexOf(zone)<=0} 
     on:click={()=>{if(!(zones.indexOf(zone)<=0)) {zone=zones[zones.indexOf(zone)-1]}}}>
         <span class="text-xl mx-2">&lt;</span>
-    </div>
+    </button>
     {/if}
     <div class="flex justify-center text-ellipsis grow">
         {zone}
     </div>
     {#if zones.length>1}
-    <div class="flex justify-center arrow" class:disabled={zones.indexOf(zone)+1>=zones.length} 
+    <button aria-label="Right" class="flex justify-center arrow" class:disabled={zones.indexOf(zone)+1>=zones.length} 
         on:click={()=>{if(!(zones.indexOf(zone)+1>=zones.length)) {zone=zones[zones.indexOf(zone)+1]}}}>
         <span class="text-xl mx-2">&gt;</span>
-    </div>
+    </button>
     {/if}
 </div>
