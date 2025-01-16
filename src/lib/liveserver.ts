@@ -16,6 +16,15 @@ const inform = true
 
 if (inform) console.log(`customise websocket server`)
 
+interface PendingMove {
+    id:string
+    bridge:string
+    time:number
+}
+interface MyRoomInfo extends RoomInfo {
+    pendingMoves?: PendingMove[]
+}
+
 //wss.debug = true
 // handle new client...
 wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws: SSWebSocket) : Promise<{ clientState: KVStore, readonly: boolean } > {
@@ -90,7 +99,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
             change.roomChanges.push({key:'nro', value:nro})
         }
         // miro bridge?
-        if (clientState.isOwner && clientState.inmiro=='true' && !room.state['mirobridge']) {
+        if (clientState.isOwner && clientState.inmiro=='true') {
             room.state['mirobridge'] = clientId
             change.roomChanges.push({key:'mirobridge', value: clientId})
         }
@@ -277,11 +286,19 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
             const mirobridge = room.clients[room.state['mirobridge']]
             let breq: ActionReq = {
                 type: MESSAGE_TYPE.ACTION_REQ,
+                id: req.id,
                 action: 'moveCardsInMiro',
                 data: JSON.stringify({from:move.from, to:move.to, cards: moveCards})
             }
             try {
                 mirobridge.ws.send(JSON.stringify(breq))
+                let myroom = room as MyRoomInfo
+                if (!myroom.pendingMoves) {
+                    myroom.pendingMoves = []
+                } 
+                myroom.pendingMoves.push({id:req.id, bridge:room.state['mirobridge'], time:Date.now()})
+                // fiddle request ID to suppress client completion
+                req.id = `delegated:${req.id}`
             }
             catch (err) {
                 if (inform) console.log(`Error passing moveCards to mirobridge ${clientId}: ${err.msg}`)
@@ -302,6 +319,9 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         if (change.roomChanges.length>0) {
             wss.broadcastChange(room, change)
         }
+    } else if (req.action=='movedCardsInMiro' && req.id) {
+        if (debug) console.log(`received movedCardsInMiro ${req.id}`)
+        replyPendingMove(room, req.id, req.data=='true', req.msg)
     } else {
         error = `unsuppored action ${req.action}`
     }
@@ -310,6 +330,35 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         id: req.id,
         success: !error,
         msg: error
+    }
+}
+function replyPendingMove(room:RoomInfo, id:string, success:boolean, msg?:string) {
+    let myroom = room as MyRoomInfo
+    if (myroom.pendingMoves) {
+        let pmix = myroom.pendingMoves.findIndex((p)=>p.id == id)
+        if (pmix>=0) {
+            myroom.pendingMoves.splice(myroom.pendingMoves.findIndex((p)=>p.id == id), 1)
+        } else {
+            if (debug) console.log(`could not find pending move on reply ${id}`)
+        }
+    }
+    let clientId = id
+    let lix = clientId.lastIndexOf(':')
+    if (lix>=0) {
+        clientId = clientId.substring(0, lix)
+    }
+    let client = room.clients[clientId]
+    if (client) {
+        let resp:ActionResp = {
+            type: MESSAGE_TYPE.ACTION_RESP,
+            id: id,
+            success,
+            msg,
+        }
+        if (debug) console.log(`reply cardMoveInMiro response to ${clientId}`)
+        client.ws.send(JSON.stringify(resp))
+    } else {
+        if (debug) console.log(`Error: could not find card moving client ${clientId} for reply`)
     }
 }
 wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) {
@@ -367,7 +416,15 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
             }
         }
         change.roomChanges.push({key:'mirobridge', value: room.state['mirobridge']})
-    }    
+    }
+    // were there any pending moves
+    let myroom = room as MyRoomInfo
+    let pms = (myroom.pendingMoves ?? []).filter((pm) => pm.bridge == clientId)
+    for (let pm of pms) {
+        if (debug) console.log(`abandon pending move ${pm.id} on bridge leave`)
+        replyPendingMove(room, pm.id, false, 'bridge left before replying')
+    }
+    myroom.pendingMoves = myroom.pendingMoves.filter((pm) => pm.bridge != clientId)
     if(change.roomChanges.length>0) {
         wss.broadcastChange(room, change)
     }

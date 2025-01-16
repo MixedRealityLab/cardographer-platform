@@ -1,7 +1,7 @@
 // live view client utils - NB needs to work in browser so using copies of types :-(
 import { type SnapshotInfo } from './analysistypes';
 import { getSnapshotInfoFromMiroData } from './clients/miroutils';
-import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp, type ChangeReq, type ActionReq } from './liveclienttypes'
+import { MESSAGE_TYPE, type KVSet, type KVStore, type ClientMap, type ClientInfo, type ChangeNotif, type HelloSuccessResp, type ChangeReq, type ActionReq, type ActionResp } from './liveclienttypes'
 import { getChangesFromMiroState } from './liveutils';
 import { type Session } from './types'
 import type { Miro,ItemsCreateEvent, ItemsDeleteEvent, ItemsUpdateEvent } from "@mirohq/websdk-types";
@@ -58,6 +58,8 @@ export class LiveClient {
     numberReadonly: number = 0
     isMirobridge:boolean = false
     miro: Miro
+    nextMove = 1
+    pendingMoves : string[] = []
 
     constructor(cb:UpdateCallback) {
         this.updateCallback = cb
@@ -110,9 +112,14 @@ export class LiveClient {
                 if (action.action == 'moveCardsInMiro' 
                     && _this.state['mirobridge']==_this.clientId) {
                     let data = JSON.parse(action.data) as MoveCardsInMiroReq
-                    _this.moveCardsInMiro(data.cards, data.from, data.to)
+                    _this.moveCardsInMiroAndReply(data.cards, data.from, data.to, action.id)
                 } else {
                     console.log(`ignored action request ${action.action}`)
+                }
+            } else if (msg.type == MESSAGE_TYPE.ACTION_RESP) {
+                let resp = msg as ActionResp
+                if (resp.id && this.pendingMoves.indexOf(resp.id)>=0) {
+                    this.pendingMoves.splice(this.pendingMoves.indexOf(resp.id), 1)
                 }
             }
             //console.log(`clients:`, _this.getClients())
@@ -158,10 +165,13 @@ export class LiveClient {
         }))
     }
     moveCards = function(cardIds:string[], fromZone:string, toZone:string) {
-        console.log(`move cards ${cardIds} from ${fromZone} to ${toZone}`)
+        console.log(`move cards ${cardIds} from ${fromZone} to ${toZone} (${this.nextMove})`)
+        let move = `${this.clientId}:${this.nextMove++}`
+        this.pendingMoves.push(move)
         this.ws.send(JSON.stringify({
             type: MESSAGE_TYPE.ACTION_REQ,
             action: 'moveCards',
+            id: move,
             data: JSON.stringify({
                 cards:cardIds,
                 from:fromZone,
@@ -346,7 +356,19 @@ export class LiveClient {
             this.ws.send(JSON.stringify(msg))
         }
     }
-    async moveCardsInMiro(cards:string[], from:string, to:string) : Promise<void> {
+    async moveCardsInMiroAndReply(cards:string[], from:string, to:string, id?: string) : Promise<void> {
+        let changed = await this.moveCardsInMiro(cards, from, to)
+        if (this.ws) {
+            let resp:ActionReq = {
+                type: MESSAGE_TYPE.ACTION_REQ,
+                action: 'movedCardsInMiro',
+                id: id,
+                data: JSON.stringify(changed),
+            }
+            this.ws.send(JSON.stringify(resp))
+        }
+    }
+    async moveCardsInMiro(cards:string[], from:string, to:string) : Promise<boolean> {
         console.log(`move cards ${cards} in miro from ${from} -> ${to}`)
         let changed = false
         let info = await this.getMiroSnapshot()
@@ -355,19 +377,19 @@ export class LiveClient {
         let toZone = allZones.filter((z) => z.id==to)
         if (fromZone.length==0) {
             console.log(`error: cannot find from zone ${from}`)
-            return
+            return false
         } else if (fromZone.length>1) {
             console.log(`warning: from zone ${from} is ambiguous`)
         }
         if (toZone.length==0) {
             console.log(`error: cannot find to zone ${to}`)
-            return
+            return false
         } else if (toZone.length>1) {
             console.log(`warning: to zone ${to} is ambiguous`)
         }
         if (!toZone[0].nativeId) {
             console.log(`error: to zone ${to} has not native ID`)
-            return
+            return false
         }
         let toShape
         try {
@@ -407,7 +429,8 @@ export class LiveClient {
             }
         }
         if (changed) 
-            this.syncMiro()
+            await this.syncMiro()
+        return changed
     }
 }
 

@@ -68,6 +68,8 @@
     $: spotlight = (tab=='cards'||tab=='hand') && cards.find((c)=>(zoneCards[SPOTLIGHT_ZONE]??[]).indexOf(c.id)>=0)
     let shuffles = {} // zone -> card id[]
     let lastHand = -1 // index in activeZones
+    $: waiting = client.pendingMoves.length>0
+    $: miroConnected = !!client.state['mirobridge']
 
     function connect() {
         const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
@@ -203,7 +205,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
         {#if tab=='cards' || tab=='allcards' || tab=='hand'}
         <div class="absolute top-0 bottom-10 left-0 right-0 z-0">
             <div class="flex flex-col h-full w-screen">
-                <ZoneSelector zones={topZones} bind:zone={topzone}></ZoneSelector>
+                <ZoneSelector zones={topZones} bind:zone={topzone} cards={topZoneCards}></ZoneSelector>
                 <CardList cards={topZoneCards} bind:this={topCardList}
                 allowSelection={!readonly} bind:selectedIds={mySelectedIds}
                 comments={topzone==SPOTLIGHT_ZONE ? spotlights : {}}></CardList>
@@ -213,9 +215,17 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
             <div id="bottomDrawer" bind:clientHeight={bottomDrawerHeight} 
                 class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100" class:relative={split>0} class:split-50={split==50}
                 style:top={split==0 && !spotlight ? '0' : ''+(((bottomDrawerHeight??100)*(spotlight?100:split)/100)-midBarHeight-zoneSelectorHeight)+'px'}>
-                <div bind:clientHeight={midBarHeight} class="relative w-full h-10 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
-                    {#if tab=='allcards'}
+                <div bind:clientHeight={midBarHeight} class="relative w-full h-12 py-1 px-2 bg-gray-300 text-gray-900 stroke-gray-900 text-xl flex justify-center items-center">
                     <div class="absolute left-0"><div class="flex">
+                        <div aria-label="Connected" class="float-left justify-center arrow pl-1"
+                        class:disabled={!miroConnected}>
+                            <svg fill="currentColor" class="w-6 h-6" viewBox="0 -2.2 16 16" xmlns="http://www.w3.org/2000/svg">
+                                <g id="Layer_1-2" data-name="Layer 1">
+                                    <path d="M8,7.8a2,2,0,1,1,2-2A2,2,0,0,1,8,7.8Zm0-3a1,1,0,1,0,1,1A1,1,0,0,0,8,4.8Zm5.66,6.66a8,8,0,0,0,0-11.31.5.5,0,0,0-.71,0,.48.48,0,0,0,0,.7,7,7,0,0,1,0,9.9.5.5,0,0,0,0,.71.49.49,0,0,0,.35.15A.51.51,0,0,0,13.66,11.46ZM11.54,9.34a5,5,0,0,0,0-7.07.5.5,0,0,0-.71,0,.48.48,0,0,0,0,.7,4,4,0,0,1,0,5.66.5.5,0,0,0,0,.71.49.49,0,0,0,.35.15A.51.51,0,0,0,11.54,9.34Zm-6.37,0a.5.5,0,0,0,0-.71A4,4,0,0,1,5.17,3a.48.48,0,0,0,0-.7.5.5,0,0,0-.71,0,5,5,0,0,0,0,7.07.51.51,0,0,0,.36.15A.49.49,0,0,0,5.17,9.34ZM3.05,11.46a.5.5,0,0,0,0-.71,7,7,0,0,1,0-9.9.48.48,0,0,0,0-.7.5.5,0,0,0-.71,0,8,8,0,0,0,0,11.31.51.51,0,0,0,.36.15A.49.49,0,0,0,3.05,11.46Z" />
+                                </g>
+                            </svg>
+                        </div>
+                        {#if tab=='allcards'}
                          <button aria-label="Shuffle" class="float-left justify-center arrow px-2"
                             on:click={(ev)=>shuffle(ev)} class:disabled={myZoneCards.length==0}>
                             <span class="W-4">S</span>
@@ -225,8 +235,13 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                             class:disabled={!shuffles[myzone] || myZoneCards.filter((c)=>shuffles[myzone].indexOf(c.id)>=0).length==0 || activeZones.filter((z)=>z.indexOf('@')>=0).length==0}>
                             <span class="W-4">D</span>
                         </button>
+                        {/if}
+                        {#if waiting}
+                        <div aria-label="Waiting" class="float-left justify-center arrow px-1">
+                            <img src="{base}/icons/loading.gif" class="w-5 h-5" alt=""/>
+                        </div>
+                        {/if}
                     </div></div>
-                    {/if}
                     <div class="absolute inset-50"><div class="flex">
                         <button aria-label="Move card up" class="flex justify-center arrow px-2" class:disabled={readonly ||mySelectedIds.length==0 || myzone==topzone || !myZoneCards.find((c)=>mySelectedIds.indexOf(c.id)>=0)}
                         on:click={(ev)=>{if(!(readonly || mySelectedIds.length==0 || myzone==topzone)) { moveSelectionUp(ev) }}}>
@@ -266,7 +281,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                     </div></div>
                 </div>
                 <div bind:clientHeight={zoneSelectorHeight}>
-                    <ZoneSelector zones={myActiveZones} bind:zone={myzone}></ZoneSelector>
+                    <ZoneSelector zones={myActiveZones} bind:zone={myzone} cards={myZoneCards}></ZoneSelector>
                 </div>
                 <CardList cards={myZoneCards} bind:this={cardList}
                 allowSelection={!readonly} bind:selectedIds={mySelectedIds}

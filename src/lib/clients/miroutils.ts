@@ -65,11 +65,22 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
         if (widget.type.toLowerCase() != 'image') {
             continue;
         }
-        const id = widget.title || widget.url;
+        let id = widget.title || widget.url;
         if (!id) {
             if (debug) console.log(`ignore unnamed image`, widget);
             continue;
         }
+        // URL or file path?
+        const six = id.lastIndexOf('/');
+        if (six >= 0) {
+            id = id.substring(six + 1);
+        }
+        // extension?
+        const dix = id.lastIndexOf('.');
+        if (dix >= 0) {
+            id = id.substring(0, dix);
+        }
+
         const ci: CardSnapshot = {id, nativeId: widget.id, zones: []};
         const {boardId,frames} = findBoardId(widget, ci, data.widgets)
         let board = boards.find((b) => b.id == boardId);
