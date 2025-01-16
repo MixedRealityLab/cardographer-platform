@@ -2,7 +2,7 @@
   "name": "cardographer-platform",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite dev --host=0.0.0.0 ",
+    "dev": "vite --config vite-dev.config.js dev --host=0.0.0.0 ",
     "build": "vite build",
     "start": "node build",
     "prepare": "svelte-kit sync"

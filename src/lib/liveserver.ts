@@ -8,14 +8,18 @@ import { getClient } from './clients';
 import { SPOTLIGHT_ZONE } from './liveclient';
 import { getChangesFromMiroState } from './liveutils';
 
-console.log(`customise websocket server`)
-
 const MYPROTOCOL = "cardographer:2"
+
+const debug = false
+const chatty = false
+const inform = true
+
+if (inform) console.log(`customise websocket server`)
 
 //wss.debug = true
 // handle new client...
 wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws: SSWebSocket) : Promise<{ clientState: KVStore, readonly: boolean } > {
-    console.log(`on hello for ${clientId} in room ${req.roomId} with protocol ${req.roomProtocol}`)
+    if (debug) console.log(`on hello for ${clientId} in room ${req.roomId} with protocol ${req.roomProtocol}`)
     if (req.roomProtocol !== MYPROTOCOL) {
         throw new Error(`wrong room protocol (${req.roomProtocol} vs ${MYPROTOCOL})`)
     }
@@ -29,7 +33,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
         // rw access OK
     } else if (session.joiningCodeReadonly && req.roomCredential == session.joiningCodeReadonly) {
         if (!readonly) {
-            console.log(`Note, client ${clientId} forced readonly by joining code`)
+            if (chatty) console.log(`Note, client ${clientId} forced readonly by joining code`)
             readonly = true
         }
     }
@@ -41,7 +45,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
     const userToken = cookies[getCookieName()] || '';
     const token = await checkUserToken(userToken);
 
-    console.log(`New ${readonly ? 'readonly ': ''}client ${clientId} in session ${session.name} (${session._id}), ${token.valid ? 'authenticated as '+token.email :'unauthenticated'}`)
+    if (chatty) console.log(`New ${readonly ? 'readonly ': ''}client ${clientId} in session ${session.name} (${session._id}), ${token.valid ? 'authenticated as '+token.email :'unauthenticated'}`)
     // make room if not exists
     let room: RoomInfo = wss.rooms[session._id]
     if (!room) {
@@ -72,7 +76,7 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
                     const seat = seats[ix]
                     let player = room.state[`player:${seat}`]
                     if (!player || player=='') {
-                        console.log(`allocate new player ${nickname} to seat ${seat}`)
+                        if (chatty) console.log(`allocate new player ${nickname} to seat ${seat}`)
                         room.state[`player:${seat}`] = clientId
                         change.roomChanges.push({key: `player:${seat}`, value: clientId})
                     }                   
@@ -117,27 +121,27 @@ async function initialiseRoomState(wss:WSS, session:Session, owner:string) : Pro
 		.toArray()
     //console.log(`${snapshots.length} snapshots for session ${session._id}`, snapshots)
     if (snapshots.length==0) {
-        console.log(`Warning: no snapshot exists for this session`)
+        if (chatty) console.log(`Warning: no snapshot exists for this session`)
         // TODO...
         return
     }
     const snapshot = await db.collection<SessionSnapshot>('SessionSnapshots')
     .findOne({_id: snapshots[0]._id, })
     if (!snapshot) {
-        console.log(`Error: could not most recent snapshot (${snapshots[0]._id})`)
+        console.log(`Error: could not find most recent snapshot (${snapshots[0]._id}) for room/session ${session._id}`)
         return
     }
-    console.log(`using session ${session._id} snapshot created ${snapshot.created} (originally ${snapshot.originallyCreated})`)
 	const client = getClient(snapshot.sessionType)
     if (!client) {
-        console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
+        if (debug) console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
         return
     }
-	const info = client.getSnapshotInfo(snapshot)
+    if (inform) console.log(`init live room/session ${session._id} from snapshot ${snapshots[0]._id} created ${snapshot.created} (originally ${snapshot.originallyCreated})`)
+    const info = client.getSnapshotInfo(snapshot)
     //console.log(`Seats: ${seats}`)
     let room: RoomInfo = wss.rooms[session._id]
     if (!room) {
-        console.log(`creating room ${session._id} (cardographer)`)
+        if (chatty) console.log(`creating room ${session._id} (cardographer)`)
         room = {
             id: session._id,
             clients: {},
@@ -178,10 +182,10 @@ wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId
     if (req.roomChanges && req.roomChanges.length>0) {
         // only mirobridge can make changes
         if (room.state['mirobridge'] != clientId) {
-            console.log(`reject changes from non-mirobridge ${clientId}`)
+            if (debug) console.log(`reject changes from non-mirobridge ${clientId}`)
             req.roomChanges = []
         } else {
-            console.log(`room changes from mirobridge ${clientId}`)
+            if (chatty) console.log(`room changes from mirobridge ${clientId}`)
         }
     }
     return {
@@ -191,7 +195,7 @@ wss.onChangeReq = async function(wss:WSS, req:ChangeReq, room:RoomInfo, clientId
     }
 }
 wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId:string, clientInfo:RoomClientInfo) : Promise< ActionResp > {
-    console.log(`Action ${req.action}(${req.data}) by ${clientId}`)
+    if (debug) console.log(`Action ${req.action}(${req.data}) by ${clientId}`)
     let error : string|null = null
     if (req.action == 'test') {
         return {
@@ -226,7 +230,7 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
                 if (room.state[key] == move.player && seat != move.seat) {
                     delete room.state[key]
                     change.roomChanges.push({key})
-                    console.log(`player ${move.player} has to leave seat ${seat}`)
+                    if (chatty) console.log(`player ${move.player} has to leave seat ${seat}`)
                 }
             }
         }
@@ -234,9 +238,9 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         if (room.state[key] !== move.player) {
             room.state[key] = move.player
             change.roomChanges.push({key, value: move.player})
-            console.log(`player ${move.player} moved to seat ${move.seat}`)
+            if (chatty) console.log(`player ${move.player} moved to seat ${move.seat}`)
         } else {
-            console.log(`player ${move.player} already in seat ${move.seat}`)
+            if (chatty) console.log(`player ${move.player} already in seat ${move.seat}`)
         }
         if (change.roomChanges.length>0) {
             wss.broadcastChange(room, change)
@@ -267,7 +271,7 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
         let toCards = JSON.parse(room.state[`cards:${move.to}`] ?? "[]")
         let moveCards = fromCards.filter((c) => move.cards.indexOf(c)>=0)
         if (moveCards.length==0) {
-            console.log(`none of the cards ${move.cards} found in ${move.from}`)
+            if (chatty) console.log(`none of the cards ${move.cards} found in ${move.from}`)
         } else if (room.state['mirobridge'] && room.clients[room.state['mirobridge']]) {
             // ask mirobridge to actually move the cards?!
             const mirobridge = room.clients[room.state['mirobridge']]
@@ -280,7 +284,7 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
                 mirobridge.ws.send(JSON.stringify(breq))
             }
             catch (err) {
-                console.log(`Error passing moveCards to mirobridge ${clientId}: ${err.msg}`)
+                if (inform) console.log(`Error passing moveCards to mirobridge ${clientId}: ${err.msg}`)
             }
         } else {
             room.state[`cards:${move.from}`] = JSON.stringify(fromCards.filter((c)=> move.cards.indexOf(c)<0))
@@ -321,7 +325,7 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
             const player = room.state[key]
             if (player == clientId) {
                 const seat = key.substring(7)
-                console.log(`player ${clientId} leaves vacating seat ${seat}`)
+                if (chatty) console.log(`player ${clientId} leaves vacating seat ${seat}`)
                 const oldNickname = clientInfo.clientState['nickname']
                 let newClient:string|null = null
                 let newNickname:string|null = null
@@ -337,7 +341,7 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
                     }
                 }
                 if(newClient) {
-                    console.log(`allocate existing player ${newNickname} to seat ${seat}`)
+                    if (chatty) console.log(`allocate existing player ${newNickname} to seat ${seat}`)
                     room.state[`player:${seat}`] = newClient
                 } else {
                     room.state[`player:${seat}`] = ''
@@ -368,7 +372,7 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
         wss.broadcastChange(room, change)
     }
     if (Object.keys(room.clients).length==0) {
-        console.log(`room ${room.id} is now empty - deleting it`)
+        if (inform) console.log(`room ${room.id} is now empty - deleting it`)
         delete wss.rooms[room.id]
     }
 }
@@ -377,18 +381,18 @@ export async function getWss() : Promise<WSS> {
 }
 
 export async function checkNewSnapshot(snapshot:SessionSnapshot) : Promise<void> {
-    console.log(`check new snapshot for session ${snapshot.sessionId}`)
+    if (debug) console.log(`check new snapshot for session ${snapshot.sessionId}`)
     let room = wss.rooms[snapshot.sessionId]
     if (!room) {
         return
     }
-    console.log(`update room for session ${snapshot.sessionId} with new snapshot`)
 	const client = getClient(snapshot.sessionType)
     if (!client) {
-        console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
+        if (debug) console.log(`Error: cannot find client for sessionType ${snapshot.sessionType}`)
         return
     }
-	const info = client.getSnapshotInfo(snapshot)
+    if (inform) console.log(`update room for session ${snapshot.sessionId} with new uploaded snapshot ${snapshot._id}`)
+    const info = client.getSnapshotInfo(snapshot)
     // change...
     let change:ChangeNotif = {
         type: MESSAGE_TYPE.CHANGE_NOTIF,

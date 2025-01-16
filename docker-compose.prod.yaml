@@ -17,12 +17,15 @@ services:
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
             - REGISTER_CODE=1234
+            - ORIGIN=http://localhost
+        env_file: "server.env.local"
         depends_on:
             - 'mongo'
         ports:
             - "3000:3000"
         volumes:
             - uploads:/app/uploads
+        #command: [ "node", "build" ]
 
     squib:
         build:
