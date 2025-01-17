@@ -424,7 +424,7 @@ wss.onLeave = async function(wss:WSS, room:RoomInfo, clientId:string, clientInfo
         if (debug) console.log(`abandon pending move ${pm.id} on bridge leave`)
         replyPendingMove(room, pm.id, false, 'bridge left before replying')
     }
-    myroom.pendingMoves = myroom.pendingMoves.filter((pm) => pm.bridge != clientId)
+    myroom.pendingMoves = (myroom.pendingMoves ?? []).filter((pm) => pm.bridge != clientId)
     if(change.roomChanges.length>0) {
         wss.broadcastChange(room, change)
     }
