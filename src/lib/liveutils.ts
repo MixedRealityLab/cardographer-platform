@@ -23,10 +23,12 @@ export function getSeatsFromMiro(info: SnapshotInfo) : string[] {
         }
         //console.log(`- board ${board.id} cards:`, JSON.stringify(board.cards))
     }
+    seats.sort()
     return seats
 }
 
 export function getChangesFromMiroState(info:SnapshotInfo, roomState:KVStore) : KVSet[] {
+try{
     let roomChanges:KVSet[] = []
     let seats = getSeatsFromMiro(info)
     let seatsValue = JSON.stringify(seats)
@@ -44,29 +46,56 @@ export function getChangesFromMiroState(info:SnapshotInfo, roomState:KVStore) : 
             }
         }
     }
-    // all zones active for now
-    let allZones = info.boards.flatMap((b) => b.zones).map((z) => z.id)
-    allZones.push(SPOTLIGHT_ZONE)
-    allZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
-    let activeZonesValue = JSON.stringify(allZones)
-    if (roomState.activeZones!=activeZonesValue ) {
-        roomChanges.push({key: 'activeZones', value: activeZonesValue})
+    let allBoardsInc = info.boards.map((b) => (b.id ?? b.nativeId))
+    let allBoards = allBoardsInc.filter((id) => id != '(no board)')
+    let allBoardsValue = JSON.stringify(allBoards)
+    if (roomState.boards!=allBoardsValue) {
+        roomChanges.push({key: 'boards', value: allBoardsValue})
     }
-    // cards in each zone - merge boards for now
-    let allCards = info.boards.flatMap((b) => b.cards)
-    for (const zone of allZones) {
-        let zoneCards = allCards.filter((c) => c.zones && c.zones.filter((cz)=>cz.overlap>=0.5).map((cz)=>(cz.zoneId)).indexOf(zone)>=0).map((c) => c.id).sort()
-        let cardsValue = JSON.stringify(zoneCards)
-        if (roomState[`cards:${zone}`] != cardsValue) {
-            roomChanges.push({key: `cards:${zone}`, value: cardsValue})
+    // active board
+    let activeBoard = roomState.activeBoard && allBoards.indexOf(roomState.activeBoard)>=0 ? roomState.activeBoard : (allBoards.length>0 ? allBoards[0] : undefined)
+    if (roomState.activeBoard!=activeBoard) {
+        roomChanges.push({key: 'activeBoard', value: activeBoard})
+    }
+    // all zones in boards for now
+    let allBoardZones : string[] = []
+    for (let board of info.boards) {
+        let boardId = (board.id ?? board.nativeId)
+        let allZones = board.zones.map((z) => z.id).filter((id)=> id && id.length>0)
+        if (boardId != '(no board)') {
+            allZones.push(SPOTLIGHT_ZONE)
+        }
+        allZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
+        let activeZonesValue = JSON.stringify(allZones)
+        if (roomState[`zones:${boardId}`]!=activeZonesValue ) {
+            roomChanges.push({key: `zones:${boardId}`, value: activeZonesValue})
+        }
+        // cards in each zone - separate boards
+        let boardCards = board.cards
+        let boardZones = board.zones.map((z) => z.id).filter((id)=> id && id.length>0)
+        boardZones.push(SPOTLIGHT_ZONE)
+        boardZones = allZones.sort().filter(function(el,i,a){return i===a.indexOf(el)})
+        for (const zone of boardZones) {
+            let zoneCards = boardCards.filter((c) => c.zones && c.zones.filter((cz)=>cz.overlap>=0.5).map((cz)=>(cz.zoneId)).indexOf(zone)>=0).map((c) => c.id).sort()
+            let cardsValue = JSON.stringify(zoneCards)
+            allBoardZones.push(`${boardId}/${zone}`)
+            if (roomState[`cards:${boardId}/${zone}`] != cardsValue) {
+                roomChanges.push({key: `cards:${boardId}/${zone}`, value: cardsValue})
+            }
         }
     }
     for (const key of Object.keys(roomState)) {
         if (key.substring(0,6)=='cards:') {
             const zone = key.substring(6)
-            if (allZones.indexOf(zone)<0) {
+            if (allBoardZones.indexOf(zone)<0) {
                 roomKeysToDelete.push(key)
                 console.log(`remove ${key} for unknown zone`)
+            }
+        } else if (key.substring(0,6)=='zones:') {
+            const board = key.substring(6)
+            if (allBoardsInc.indexOf(board)<0) {
+                roomKeysToDelete.push(key)
+                console.log(`remove ${key} for unknown board`)
             }
         }
     }
@@ -74,4 +103,8 @@ export function getChangesFromMiroState(info:SnapshotInfo, roomState:KVStore) : 
         roomChanges.push({key})
     }    
     return roomChanges
+
+} catch (err) {
+    console.error(`error processing board`, err)
+}
 }

@@ -23,7 +23,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
         if (frame.type.toLowerCase() != 'frame') {
             continue;
         }
-        let boardId = frame.title
+        let boardId = frame.title?.trim()
         let board = boards.find((b) => b.id == boardId);
         if (!board) {
             if (debug) console.log(`add board ${boardId}`);
@@ -41,9 +41,9 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
         if (shape.type.toLowerCase() != 'shape') {
             continue;
         }
-        let zoneId = shape.plainText
+        let zoneId = shape.plainText?.trim()
         if (!zoneId && shape.content) {
-            zoneId = striptags(shape.content);
+            zoneId = striptags(shape.content).trim();
         }
         if (!zoneId) {
             if (debug) console.log(`ignore unnamed shape`, shape);

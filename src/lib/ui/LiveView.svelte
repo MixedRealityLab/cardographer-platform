@@ -34,6 +34,8 @@
         }
         // kick everything...
         client = client
+        boards = client.boards
+        activeBoard = client.activeBoard
     })
     let higlightPlayerTab = false
     let highlightPlayerTimeout = null
@@ -52,20 +54,22 @@
     $: failed = client.failed
     $: connected = client.connected
     $: spotlights = client.spotlights
+    let boards:string[] = []
+    let activeBoard:string = ''
     $: activeZones = client.activeZones
     $: myActiveZones = activeZones.filter((z) => tab=='allcards' ? true : z!=SPOTLIGHT_ZONE && ((tab=='cards' && z.indexOf('@')<0) || (tab=='hand' && z.substring(z.indexOf('@'))==myseat)))
     let myzone:string
     $: zoneCards = client.zoneCards
-    $: myZoneCards = cards.filter((c) => (zoneCards[myzone] ?? []).indexOf(c.id)>=0)
+    $: myZoneCards = cards.filter((c) => (zoneCards[`${activeBoard}/${myzone}`] ?? []).indexOf(c.id)>=0)
     let mySelectedIds = []
     $: topZones = tab=='allcards' ? activeZones : [SPOTLIGHT_ZONE]
     let topzone:string
-    $: topZoneCards = cards.filter((c) => (zoneCards[topzone] ?? []).indexOf(c.id)>=0)
+    $: topZoneCards = cards.filter((c) => (zoneCards[`${activeBoard}/${topzone}`] ?? []).indexOf(c.id)>=0)
     let split = 0
     let bottomDrawerHeight = 100
     let midBarHeight = 32
     let zoneSelectorHeight = 32
-    $: spotlight = (tab=='cards'||tab=='hand') && cards.find((c)=>(zoneCards[SPOTLIGHT_ZONE]??[]).indexOf(c.id)>=0)
+    $: spotlight = (tab=='cards'||tab=='hand') && cards.find((c)=>(zoneCards[`${activeBoard}/${SPOTLIGHT_ZONE}`]??[]).indexOf(c.id)>=0)
     let shuffles = {} // zone -> card id[]
     let lastHand = -1 // index in activeZones
     $: waiting = client.pendingMoves.length>0
@@ -75,6 +79,13 @@
         const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
         client.connect($page.url, base, session, nickname, joiningCode, inmiro ? miro : null)
     }
+    onMount(() => {
+        // liven up for vite dev
+        if (client) {
+            activeBoard = client.activeBoard
+            boards = client.boards
+        }
+    })
     onDestroy(() => {
         if (highlightPlayerTimeout) {
             clearTimeout(highlightPlayerTimeout)
@@ -84,38 +95,43 @@
     function changeSeat(seat) {
         client.changeSeat(seat, players[seat])
     }
+    function changeBoard() {
+        client.changeBoard(activeBoard)
+    }
 
     function moveSelectionUp(ev: MouseEvent) {
-        client.moveCards(mySelectedIds, myzone, topzone)
+        client.moveCards(mySelectedIds, `${activeBoard}/${myzone}`, `${activeBoard}/${topzone}`)
     }
     function moveSelectionDown(ev: MouseEvent) {
-        client.moveCards(mySelectedIds, topzone, myzone)
+        client.moveCards(mySelectedIds, `${activeBoard}/${topzone}`, `${activeBoard}/${myzone}`)
     }
     function shuffle(ev: MouseEvent) {
         let cards = [].concat(myZoneCards.map((c)=>c.id))
-        shuffles[myzone] = []
+        let zone = `${activeBoard}/${myzone}`
+        shuffles[zone] = []
         while(cards.length>0) {
             let ix = Math.floor(Math.random()*cards.length) % cards.length
-            shuffles[myzone].push(cards.splice(ix,1)[0])
+            shuffles[zone].push(cards.splice(ix,1)[0])
         }
-        console.log(`shuffle zone ${myzone}: ${shuffles[myzone]}`)
+        console.log(`shuffle zone ${zone}: ${shuffles[zone]}`)
     }
     function dealOne(ev: MouseEvent) {
         let hands = activeZones.filter((z)=>z.indexOf('@')>=0).sort()
         if (hands.length==0) {
             return
         }
-        while(shuffles[myzone] && shuffles[myzone].length>0) {
-            let cardId = shuffles[myzone].splice(0,1)[0]
+        let zone = `${activeBoard}/${myzone}`
+        while(shuffles[zone] && shuffles[zone].length>0) {
+            let cardId = shuffles[zone].splice(0,1)[0]
             if (!myZoneCards.find((c)=>c.id == cardId)) {
                 // already removed
                 continue
             }
             lastHand = (lastHand+1) % hands.length
             let hand = hands[lastHand]
-            topzone = hand
-            console.log(`deal ${cardId} from ${myzone} -> ${hand}`)
-            client.moveCards([cardId], myzone, topzone)
+            topzone = `${activeBoard}/${hand}`
+            console.log(`deal ${cardId} from ${zone} -> ${topzone}`)
+            client.moveCards([cardId], zone, topzone)
             break   
         }
         shuffles = shuffles
@@ -232,7 +248,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                         </button>
                         <button aria-label="Deal" class="float-left justify-center arrow px-2"
                             on:click={(ev)=>dealOne(ev)} 
-                            class:disabled={!shuffles[myzone] || myZoneCards.filter((c)=>shuffles[myzone].indexOf(c.id)>=0).length==0 || activeZones.filter((z)=>z.indexOf('@')>=0).length==0}>
+                            class:disabled={!shuffles[`${activeBoard}/${myzone}`] || myZoneCards.filter((c)=>shuffles[`${activeBoard}/${myzone}`].indexOf(c.id)>=0).length==0 || activeZones.filter((z)=>z.indexOf('@')>=0).length==0}>
                             <span class="W-4">D</span>
                         </button>
                         {/if}
@@ -293,6 +309,15 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
             <LiveViewHeader {session}></LiveViewHeader>
             <div class="max-w-screen-md container mx-auto">
                 <form class="p-6 flex flex-col gap-4">
+                <label>
+                    <span class="text-sm text-black">Active Board:</span> <!--bind:value="{data.session.name}"-->
+                    <select id="board" bind:value="{activeBoard}" class="mt-1 block w-full" on:change="{()=>{changeBoard()}}">
+                        {#each boards as board}
+                        <option value={board}>{board}</option>
+                        {/each}
+                    </select>
+                </label>
+                <span class="text-sm">Assigned roles:</span>
                 {#each seats as seat (seat)}
                     <label>
                         <span class="text-sm">{seat}:</span> <!--bind:value="{data.session.name}"-->
@@ -305,7 +330,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
                     </label>
                 {/each}
                 <div>
-                    <span class="text-sm">All:</span>
+                    <span class="text-sm">All users:</span>
                     {#each clients as clientInfo (clientInfo.clientId)}
                     <div class="p-1 m-1 text-base text-black">{clientInfo.clientState?.nickname} <span class="text-sm text-slate-500">({clientInfo.clientId})</span></div>
                     {/each}
@@ -332,7 +357,7 @@ class:overflow-y-hidden={!failed && connected && (tab=='cards' || tab=='allcards
             All
         </button>
         <button aria-pressed="{tab=='people'}" class="tab" class:highlight={higlightPlayerTab} class:tabSelected={tab=='people'} on:click={()=>tab='people'}>
-            People
+            Setup
         </button>
         {/if}
     {:else}

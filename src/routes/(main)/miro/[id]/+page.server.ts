@@ -17,7 +17,7 @@ export const load = (async ({locals, params}) => {
 	const quota = await getQuotaDetails(locals.email)
 	const usageSessions = await getUsageSessions(locals.email)
 	const usageSnapshots = await getUsageSnapshots(locals.email)
-	console.log(`Quotas for ${locals.email}: ${usageSessions}/${quota.quota.sessions}, ${usageSnapshots}/${quota.quota.snapshots}`)
+	if (debug) console.log(`Quotas for ${locals.email}: ${usageSessions}/${quota.quota.sessions}, ${usageSnapshots}/${quota.quota.snapshots}`)
 	const db = await getDb();
 	const url = "https://miro.com/app/board/" + params.id
 	const session = await db.collection<Session>('Sessions').findOne({

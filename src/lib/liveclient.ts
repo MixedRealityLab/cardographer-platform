@@ -27,6 +27,9 @@ type UpdateCallback = (c:LiveClient, clientsChanged:boolean) => void
 interface ZoneCardMap {
     [zone:string]: string[]
 }
+interface BoardZoneMap {
+    [board:string]: string[]
+}
 interface PlayerMap {
     [seat:string]: string // connection
 }
@@ -50,6 +53,9 @@ export class LiveClient {
     failed: string|null = null
     connected = false
     updateCallback: UpdateCallback | null = null
+    activeBoard: string | null 
+    boards: string[] = []
+    zones: BoardZoneMap = {}
     activeZones: string[] = []
     zoneCards: ZoneCardMap = {}
     namename: string = 'anon'
@@ -164,6 +170,14 @@ export class LiveClient {
             data: JSON.stringify({seat,player}),
         }))
     }
+    changeBoard = function(board:string) {
+        console.log(`change board -> ${board}...`)
+        this.ws.send(JSON.stringify({
+            type: MESSAGE_TYPE.ACTION_REQ,
+            action: 'changeBoard',
+            data: JSON.stringify({board}),
+        }))
+    }
     moveCards = function(cardIds:string[], fromZone:string, toZone:string) {
         console.log(`move cards ${cardIds} from ${fromZone} to ${toZone} (${this.nextMove})`)
         let move = `${this.clientId}:${this.nextMove++}`
@@ -193,8 +207,9 @@ export class LiveClient {
         if (msg.roomState.seats) {
             this.seats = JSON.parse(msg.roomState.seats) as string[]
         }
-        if (msg.roomState.activeZones) {
-            this.activeZones = JSON.parse(msg.roomState.activeZones) as string[]
+        this.activeBoard = msg.roomState.activeBoard
+        if (msg.roomState.boards) {
+            this.boards = JSON.parse(msg.roomState.boards) as string[]
         }
         for (const k of Object.keys(msg.roomState)) {
             if (k.substring(0,6)=='cards:') {
@@ -206,6 +221,9 @@ export class LiveClient {
             } else if (k.substring(0,10)=='spotlight:') {
                 const card = k.substring(10)
                 this.spotlights[card] = msg.roomState[k]
+            } else if (k.substring(0,6)=='zones:') {
+                const board = k.substring(6)
+                this.zones[board] = JSON.parse(msg.roomState[k])
             }
         }
         if (msg.roomState.nro) {
@@ -214,6 +232,9 @@ export class LiveClient {
         if (msg.roomState.mirobridge == this.clientId) {
             this.isMirobridge = true
         }
+        if (this.activeBoard) {
+            this.activeZones = this.zones[this.activeBoard] ?? []
+        }
         this.status = LIVE_CLIENT_STATUS.ACTIVE
     }
     // return clients changed
@@ -221,7 +242,22 @@ export class LiveClient {
         let clientsChanged = false
         if (msg.roomChanges) {
             for (const change of msg.roomChanges) {
-                if (change.key == 'seats') {
+                if (change.key == 'activeBoard') {
+                    if (change.value) {
+                        this.activeBoard = change.value
+                    } else {
+                        delete this.activeBoard
+                    }
+                    clientsChanged = true
+                }
+                else if (change.key == 'boards') {
+                    if (change.value) {
+                        this.boards = JSON.parse(change.value) as string[]
+                    } else {
+                        this.boards = []
+                    }
+                }
+                else if (change.key == 'seats') {
                     if (change.value) {
                         this.seats = JSON.parse(change.value) as string[]
                     } else {
@@ -229,14 +265,7 @@ export class LiveClient {
                     }
                     clientsChanged = true
                 }
-                if (change.key == 'activeZones') {
-                    if (change.value) {
-                        this.activeZones = JSON.parse(change.value) as string[]
-                    } else {
-                        this.activeZones = []
-                    }
-                }
-                if (change.key.substring(0,6)=='cards:') {
+                else if (change.key.substring(0,6)=='cards:') {
                     const zone = change.key.substring(6)
                     if (change.value) {
                         this.zoneCards[zone] = JSON.parse(change.value)
@@ -244,7 +273,7 @@ export class LiveClient {
                         delete this.zoneCards[zone]
                     }
                 }
-                if (change.key.substring(0,7)=='player:') {
+                else if (change.key.substring(0,7)=='player:') {
                     const seat = change.key.substring(7)
                     if (change.value) {
                         this.players[seat] = change.value
@@ -252,7 +281,7 @@ export class LiveClient {
                         delete this.players[seat]
                     }
                 }
-                if (change.key.substring(0,10)=='spotlight:') {
+                else if (change.key.substring(0,10)=='spotlight:') {
                     const card = change.key.substring(10)
                     if (change.value) {
                         this.spotlights[card] = change.value
@@ -260,16 +289,29 @@ export class LiveClient {
                         delete this.spotlights[card]
                     }
                 }
-                if (change.key=='nro') {
+                else if (change.key=='nro') {
                     if (change.value) {
                         this.numberReadonly = Number(change.value)
                     } else {
                         this.numberReadonly = 0
                     }
                 }
-                if (change.key=='mirobridge') {
+                else if (change.key=='mirobridge') {
                     this.isMirobridge = (change.value == this.clientId)
                 }
+                else if (change.key.substring(0,6)=='zones:') {
+                    const board = change.key.substring(6)
+                    if (change.value) {
+                        this.zones[board] = JSON.parse(change.value)
+                    } else {
+                        delete this.zones[board]
+                    }
+                }
+            }
+            if (this.activeBoard) {
+                this.activeZones = this.zones[this.activeBoard] ?? []
+            } else {
+                this.activeZones = []
             }
         }
         applyChanges(this.state, msg.roomChanges)
@@ -368,63 +410,118 @@ export class LiveClient {
             this.ws.send(JSON.stringify(resp))
         }
     }
-    async moveCardsInMiro(cards:string[], from:string, to:string) : Promise<boolean> {
-        console.log(`move cards ${cards} in miro from ${from} -> ${to}`)
+    async moveCardsInMiro(cards:string[], sfrom:string, sto:string) : Promise<boolean> {
+        console.log(`move cards ${cards} in miro from ${sfrom} -> ${sto}`)
         let changed = false
         let info = await this.getMiroSnapshot()
-        let allZones = info.boards.flatMap((b) => b.zones)
-        let fromZone = allZones.filter((z) => z.id==from)
-        let toZone = allZones.filter((z) => z.id==to)
+        let fromBoardId = sfrom.substring(0, sfrom.indexOf('/'))
+        let fromZoneId = sfrom.substring(sfrom.indexOf('/')+1)
+        let fromBoards = info.boards.filter((b)=> (b.id ?? b.nativeId) == fromBoardId)
+        if (fromBoards.length==0) {
+            console.log(`error: cannot find from board ${fromBoardId}`)
+            return false
+        } else if (fromBoards.length>1) {
+            console.log(`warning: from board ${fromBoardId} is ambiguous `)
+        }
+        let fromZone = fromBoards.flatMap((b) => b.zones).filter((z) => z.id==fromZoneId)
         if (fromZone.length==0) {
-            console.log(`error: cannot find from zone ${from}`)
+            console.log(`error: cannot find from zone ${sfrom}`)
             return false
         } else if (fromZone.length>1) {
-            console.log(`warning: from zone ${from} is ambiguous`)
+            console.log(`warning: from zone ${sfrom} is ambiguous`)
         }
+        let toBoardId = sto.substring(0, sto.indexOf('/'))
+        let toZoneId = sto.substring(sto.indexOf('/')+1)
+        let toBoards = info.boards.filter((b)=> (b.id ?? b.nativeId) == toBoardId)
+        if (toBoards.length==0) {
+            console.log(`error: cannot find to board ${toBoardId}`)
+            return false
+        } else if (toBoards.length>1) {
+            console.log(`warning: to board ${toBoardId} is ambiguous `)
+        }
+        let toZone = toBoards.flatMap((b) => b.zones).filter((z) => z.id==toZoneId)
         if (toZone.length==0) {
-            console.log(`error: cannot find to zone ${to}`)
+            console.log(`error: cannot find to zone ${sto}`)
             return false
         } else if (toZone.length>1) {
-            console.log(`warning: to zone ${to} is ambiguous`)
+            console.log(`warning: to zone ${sto} is ambiguous`)
         }
         if (!toZone[0].nativeId) {
-            console.log(`error: to zone ${to} has not native ID`)
+            console.log(`error: to zone ${sto} has no native ID`)
             return false
         }
         let toShape
         try {
             toShape = await this.miro.board.getById(toZone[0].nativeId)
         } catch(err) {
-            console.log(`error: could not get to zone ${to} = miro ID ${toZone[0].nativeId}`)
+            console.log(`error: could not get to zone ${sto} = miro ID ${toZone[0].nativeId}`)
         }
         //console.log(`to zone miro`, toShape)
         // look for cards in from zone
-        let allCards = info.boards.flatMap((b)=>b.cards)
+        let allCards = fromBoards.flatMap((b)=>b.cards)
         for (let cardId of cards) {
-            let matches = allCards.filter((ci)=> ci.id==cardId && ci.nativeId && ci.zones.find((cz) => cz.zoneId==from && cz.overlap>=0.5))
+            let matches = allCards.filter((ci)=> ci.id==cardId && ci.nativeId && ci.zones.find((cz) => cz.zoneId==fromZoneId && cz.overlap>=0.5))
             if (matches.length==0) {
-                console.log(`error: could not find card ${cardId} in zone ${from}`)
+                console.log(`error: could not find card ${cardId} in zone ${sfrom}`)
                 continue
             } else if (matches.length>1) {
-                console.log(`warning: ambiguous card ${cardId} in zone ${from}`)
+                console.log(`warning: ambiguous card ${cardId} in zone ${sfrom}`)
             }
-            console.log(`card ${cardId} is ${from} = miro image ID ${matches[0].nativeId}`)
+            console.log(`card ${cardId} is ${sfrom} = miro image ID ${matches[0].nativeId}`)
             try {
+                changed = true
                 let image = await this.miro.board.getById(matches[0].nativeId)
-                //console.log(`card/image`, image)
+                // Changing parent?
+                // This doesn't seem to work, failing initially on the .add to the 
+                // new parent (frame). But then every parent manipulation after that
+                // fails too. The error doesn't seem to make sense as it implies it is
+                // trying to become its own child :-(
+                if (image.parentId !== toShape.parentId) {
+                    if (image.parentId) {
+                        let p1 = await this.miro.board.getById(image.parentId)
+                        await p1.remove(image)
+                        // not sure if this helps or not...
+                        await p1.sync()
+                        // not sure if we need this either...force reverse sync
+                        image = await this.miro.board.getById(image.id)
+                    }
+                    // now move it into the parent
+                    if (toShape.parentId) {
+                        let p2 = await this.miro.board.getById(toShape.parentId)
+                        let x = p2.x, y = p2.y
+                        let p3 = p2
+                        // in case there are multiple ancestors (there aren't at the moment)
+                        while(p3.parentId) {
+                            p3 = await this.miro.board.getById(p3.parentId)
+                            if (p3.relativeTo == 'parent_top_left') {
+                                x += p3.x
+                                y += p3.y
+                            } else {
+                                console.log(`warning: unhandled miro relativeTo ${p3.relativeTo}`)
+                            }
+                        }
+                        image.x = x
+                        image.y = y
+                        await image.sync()
+                        await p2.add(image)
+                        // seems to throw (e.g.) cannot set item [p2 id] as a child, because the item isn't inside a parent frame.
+                        // not sure if this helps...
+                        await p2.sync()
+                        // force reverse sync?
+                        image = await this.miro.board.getById(image.id)
+                    }
+                }
                 // TODO - organise them more?
                 let xborder = Math.max(0, toShape.width - image.width)
                 let yborder = Math.max(0, toShape.height - image.height)
                 image.x = toShape.x + xborder*(Math.random()-0.5)
                 image.y = toShape.y + yborder*(Math.random()-0.5)
                 image.relativeTo = toShape.relativeTo
-                image.parentId = toShape.parentId
                 await image.sync()
                 await image.bringToFront()
-                changed = true
             }
             catch (err) {
-                console.log(`error: could not getcard ${cardId} in ${from} = miro image ID ${matches[0].nativeId}: ${err.msg}`)
+                console.log(`error: could not move miro card ${cardId} in ${sfrom} = miro image ID ${matches[0].nativeId}: ${err.msg}`, err)
                 continue
             }
         }

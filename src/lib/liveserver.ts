@@ -179,6 +179,9 @@ interface ChangeSeatReq {
     player:String
     seat:string
 }
+interface ChangeBoardReq {
+    board:String
+}
 interface MoveCardsReq {
     from:string
     to:string
@@ -250,6 +253,32 @@ wss.onActionReq = async function(wss:WSS, req:ActionReq, room:RoomInfo, clientId
             if (chatty) console.log(`player ${move.player} moved to seat ${move.seat}`)
         } else {
             if (chatty) console.log(`player ${move.player} already in seat ${move.seat}`)
+        }
+        if (change.roomChanges.length>0) {
+            wss.broadcastChange(room, change)
+        }
+    }
+    else if (req.action == 'changeBoard') {
+        const move = JSON.parse(req.data) as ChangeBoardReq
+        if (typeof(move.board)!=='string') {
+            throw new Error(`invalid changeBoard data`)
+        }
+        if (clientInfo.clientState['isOwner']!='true') {
+            return {
+                type: MESSAGE_TYPE.ACTION_RESP,
+                id: req.id,
+                success: false,
+                msg: `non-owner cannot request changeBoard`
+            }
+        }
+        let change:ChangeNotif = {
+            type: MESSAGE_TYPE.CHANGE_NOTIF,
+            roomChanges: [],
+        }
+        if (room.state.activeBoard != move.board && move.board) {
+            room.state.activeBoard = move.board
+            change.roomChanges.push({key:'activeBoard', value:move.board})
+            if (chatty) console.log(`board changed to ${move.board}`)
         }
         if (change.roomChanges.length>0) {
             wss.broadcastChange(room, change)
