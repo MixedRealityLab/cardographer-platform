@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+	declare const UnityLoader
+</script>
+
 <script lang="ts">
 	import {base} from "$app/paths";
 	import {page} from "$app/stores"
@@ -9,7 +13,7 @@
 	import SessionHeader from "../SessionHeader.svelte";
 
 	export let data: Session
-	declare const UnityLoader
+
 
 	let unityInstance = null
 	let progress = tweened(0, {
@@ -34,17 +38,18 @@
 </script>
 
 <svelte:head>
-	<script src="{base}/tabletop/Build/UnityLoader.js"/>
+	<script src="{base}/tabletop/Build/UnityLoader.js"></script>
 </svelte:head>
 
 <style>
-    #unityContainer {
-        background: white !important;
-    }
+	#unityContainer {
+		background: white !important;
+	}
 </style>
 
 <SessionHeader session={data}>
-	<button class="iconButton ml-3" on:click={unityInstance.SetFullscreen(1)} title="Fit Graph to Screen">
+	<button class="iconButton ml-3" on:click={unityInstance.SetFullscreen(1)} title="Fit Graph to Screen"
+	        aria-label="Fit Graph to Screen">
 		<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 			<path d="M3 8V4m0 0h4M3 4l4 4m8 0V4m0 0h-4m4 0l-4 4m-8 4v4m0 0h4m-4 0l4-4m8 4l-4-4m4 4v-4m0 4h-4"
 			      stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"

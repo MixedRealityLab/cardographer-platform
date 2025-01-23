@@ -46,7 +46,7 @@
 				</svg>
 				<span class="mr-2">{getUsername(owner)}</span>
 				{#if owners.length > 1}
-					<button type="button"
+					<button type="button" aria-label="Remove"
 					        on:click|preventDefault={() => owners = owners.filter((item) => item !== owner)}
 					        class="p-2 transition-colors duration-500 text-gray-400 hover:text-blue-700">
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"

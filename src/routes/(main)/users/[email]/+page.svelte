@@ -38,6 +38,7 @@
 	</label>
 	<div class="flex gap-2 justify-center">
 		{#if !data.user.isVerified}
+			<!-- svelte-ignore node_invalid_placement_ssr -->
 			<form method="post" action="?/verifyEmail" use:enhance>
 				<input class="button self-center mt-2" type='submit' value='Verify Email'>
 			</form>

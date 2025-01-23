@@ -86,8 +86,7 @@
 	}
 
 	export function updateCurrentCardIndex(newIndex: number = null) {
-		if(newIndex == null)
-		{
+		if (newIndex == null) {
 			newIndex = currentCardIndex()
 		}
 		if (cardIndex != newIndex) {
@@ -104,7 +103,7 @@
 		return Math.floor((cardList.scrollLeft + (clientWidth / 2)) / contentWidth)
 	}
 
-	function handleScrollClick(event: MouseEvent, card?:CardInfo) {
+	function handleScrollClick(event: MouseEvent, card?: CardInfo) {
 		const fraction = event.clientX / clientWidth
 		const page = currentCardIndex()
 		if (fraction > (allowSelection ? 0.85 : 0.7)) {
@@ -115,7 +114,7 @@
 			const multiSelect = event.metaKey || event.ctrlKey || event.shiftKey
 			if (multiSelect) {
 				// toggle
-				if (selectedIds.indexOf(card.id)<0) {
+				if (selectedIds.indexOf(card.id) < 0) {
 					selectedIds.push(card.id)
 				} else {
 					selectedIds.splice(selectedIds.indexOf(card.id), 1)
@@ -152,9 +151,9 @@
 
 	.selected {
 		/*outline: 8px solid rgb(145, 145, 145);*/
-		-webkit-box-shadow:0px 0px 10px 5px rgba(144, 144, 144);
-		-moz-box-shadow: 0px 0px 10px 5px rgba(144, 144, 144);
-		box-shadow: 0px 0px  10px 5px rgba(144, 144, 144);
+		-webkit-box-shadow: 0 0 10px 5px rgba(144, 144, 144);
+		-moz-box-shadow: 0 0 10px 5px rgba(144, 144, 144);
+		box-shadow: 0 0 10px 5px rgba(144, 144, 144);
 	}
 
 	ol::-webkit-scrollbar {
@@ -166,7 +165,7 @@
 	}
 </style>
 <!--suppress XmlInvalidId -->
-<!-- svelte-ignore a11y-positive-tabindex a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
+<!-- svelte-ignore a11y-positive-tabindex a11y_no_noninteractive_tabindex a11y_role_supports_aria_props a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 <ol role="list" tabindex="0" aria-activedescendant="card{cardIndex}" aria-live="polite"
     aria-label="{pluralize(cards.length, 'Card')}"
     bind:clientWidth bind:this={cardList} bind:clientHeight
@@ -179,9 +178,9 @@
 				{#if card.frontUrl}
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 					<div class="w-full h-full bg-white drop-shadow bg-origin-content bg-center bg-contain bg-no-repeat"
-						 class:selected={selectedIds.indexOf(card.id)>=0}
+					     class:selected={selectedIds.indexOf(card.id)>=0}
 					     on:click={(ev)=>handleScrollClick(ev,card)}
-						 class:highlight={index === highlight} 
+					     class:highlight={index === highlight}
 					     style="background-image: url({card.frontUrl.startsWith('/') ? base + card.frontUrl : card.frontUrl}); border-radius: {contentHeight * 0.05}px;"
 					     id="card{index}"
 					     role="img" aria-describedby="desc{index}" aria-label="{card.name}">
@@ -190,11 +189,12 @@
 				{:else}
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow gap-4"
-						 class:selected={selectedIds.indexOf(card.id)>=0}
+					     class:selected={selectedIds.indexOf(card.id)>=0}
 					     on:click={(ev)=>handleScrollClick(ev,card)}
 					     class:highlight={index === highlight}>
 						<h2 class="text-2xl text-center">{card.name}</h2>
-						<p class="text-sm max-h-[50%] overflow-hidden" style="block-ellipsis: auto">{card.content || card.description}</p>
+						<p class="text-sm max-h-[50%] overflow-hidden"
+						   style="block-ellipsis: auto">{card.content || card.description}</p>
 						<p>{card.category}</p>
 					</div>
 				{/if}

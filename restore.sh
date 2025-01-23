@@ -1,0 +1,1 @@
+docker compose exec mongo mongorestore --gzip --archive=/data/backups/backup_mongo_2024-11-25.archive.gz

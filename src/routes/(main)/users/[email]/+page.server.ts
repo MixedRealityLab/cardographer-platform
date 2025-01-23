@@ -1,12 +1,12 @@
 import {getDb} from "$lib/db"
-import {getUser, sendPasswordResetEmail} from "$lib/userutils";
-import {verifyAuthentication} from "$lib/security";
-import type {User} from "$lib/types"
+import {getUser, sendPasswordResetEmail} from "$lib/userutils"
+import {verifyAuthentication} from "$lib/security"
+import type {Usage, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {error, redirect} from "@sveltejs/kit"
-import {getUserIsAdmin} from "$lib/userutils";
+import {getUserIsAdmin} from "$lib/userutils"
 import {base} from "$app/paths"
-import type {PageServerLoad, Usage} from "./$types"
+import type {PageServerLoad} from "./$types"
 import {
 	getQuotaDetails,
 	getUsageDiskSizeK,

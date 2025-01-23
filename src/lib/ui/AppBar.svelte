@@ -10,7 +10,7 @@
 	<div class="flex-1 flex items-center">
 		{#if back}
 		<div class="px-2 py-1">
-			<a href="{back}" title="Back">
+			<a href="{back}" title="Back" aria-label="Back">
 				<svg xmlns="http://www.w3.org/2000/svg"
 				     class="h-6 w-6 text-gray-200 transition-colors duration-500 hover:text-white" viewBox="0 0 20 20"
 				     fill="currentColor">

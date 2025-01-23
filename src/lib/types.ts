@@ -288,9 +288,6 @@ export interface Session {
 	isConsentToIdentify: boolean
 	isConsentRequiresCredit: boolean
 	consentDetails?: string
-	isLive?: boolean // default false
-	joiningCode?: string
-	joiningCodeReadonly?: string
 }
 
 // in SessionStage, a deck to use

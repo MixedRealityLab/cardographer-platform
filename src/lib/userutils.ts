@@ -86,13 +86,13 @@ export async function getUser(db: Db, email: string, authEmail: string): Promise
 
 const RESET_WAIT_MINUTES = 1
 
-export async function sendPasswordResetEmail(email: string, url: string): Promise<any> {
+export async function sendPasswordResetEmail(email: string, url: URL): Promise<any> {
 	if (!email) {
 		return fail(400)
 	}
 	const db = await getDb();
 	const timeoutDate = new Date(Date.now() - RESET_WAIT_MINUTES * 60 * 1000)
-	const inProgress = await db.collection<User>('Users').count({
+	const inProgress = await db.collection<User>('Users').countDocuments({
 		email: email,
 		disabled: false,
 		resetTime: {

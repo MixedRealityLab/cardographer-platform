@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {enhance} from '$app/forms'
-	import type {Css, LayoutOptions} from "cytoscape"
+	import type {LayoutOptions} from "cytoscape"
 	import cytoscape from "cytoscape"
 	import {onMount} from "svelte"
 	import {fly} from 'svelte/transition'
@@ -97,7 +97,7 @@
 						'content': 'data(label)',
 						'transition-property': 'background-opacity',
 						'transition-duration': '0.5s'
-					} as Css.Node
+					}
 				},
 				{
 					selector: 'node.unused',
@@ -113,7 +113,7 @@
 						'curve-style': 'bezier',
 						'transition-property': 'background-opacity',
 						'transition-duration': '0.5s'
-					} as Css.Edge
+					}
 				},
 				{
 					selector: 'edge.unused',
@@ -130,7 +130,7 @@
 						"text-background-padding": 2,
 						"text-margin-y": -2,
 						"text-background-shape": "round-rectangle",
-					} as Css.Node
+					}
 				}
 			],
 		})
@@ -140,14 +140,15 @@
 
 <AnalysisHeader analysis={data}>
 	{#if graph}
-		<button class="iconButton ml-3" on:click={() => fit(true)} title="Fit Graph to Screen">
+		<button class="iconButton ml-3" on:click={() => fit(true)} title="Fit Graph to Screen"
+		        aria-label="Fit Graph to Screen">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path d="M3 8V4m0 0h4M3 4l4 4m8 0V4m0 0h-4m4 0l-4 4m-8 4v4m0 0h4m-4 0l4-4m8 4l-4-4m4 4v-4m0 4h-4"
 				      stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
 				      stroke-width="2"/>
 			</svg>
 		</button>
-		<button class="iconButton" on:click={zoomOut} title="Zoom Out">
+		<button class="iconButton" on:click={zoomOut} title="Zoom Out" aria-label="Zoom Out">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
 				      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -155,7 +156,7 @@
 				<path clip-rule="evenodd" d="M5 8a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z" fill-rule="evenodd"/>
 			</svg>
 		</button>
-		<button class="iconButton" on:click={zoomIn} title="Zoom In">
+		<button class="iconButton" on:click={zoomIn} title="Zoom In" aria-label="Zoom In">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path d="M5 8a1 1 0 011-1h1V6a1 1 0 012 0v1h1a1 1 0 110 2H9v1a1 1 0 11-2 0V9H6a1 1 0 01-1-1z"/>
 				<path clip-rule="evenodd"
@@ -163,7 +164,8 @@
 				      fill-rule="evenodd"/>
 			</svg>
 		</button>
-		<button class="iconButton ml-3" on:click={() => {sidebar = !sidebar}} title="Configure Regions">
+		<button class="iconButton ml-3" on:click={() => {sidebar = !sidebar}} title="Configure Regions"
+		        aria-label="Configure Regions">
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
 				      d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"

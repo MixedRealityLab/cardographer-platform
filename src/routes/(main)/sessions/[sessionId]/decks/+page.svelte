@@ -28,8 +28,7 @@
 						<div class="flex-1 flex items-center gap-1">
 							<span class="font-semibold">{deck.revisions[deck.index].deckName}</span>
 							{#if deck.revisions.length > 1}
-								<!--suppress HtmlWrongAttributeValue -->
-								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0}
+								<button on:click|preventDefault={() => {deck.index--}} disabled={deck.index === 0} aria-label="Previous Revision"
 								        class="disabled:opacity-10 transition-colors transition-opacity duration-500 text-gray-800 hover:text-blue-700 disabled:cursor-default">
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
 									     fill="currentColor">
@@ -39,8 +38,7 @@
 									</svg>
 								</button>
 								<span class="text-gray-600 font-semibold">v{deck.revisions[deck.index].revision}</span>
-								<!--suppress HtmlWrongAttributeValue -->
-								<button on:click|preventDefault={() => {deck.index++}}
+								<button on:click|preventDefault={() => {deck.index++}} aria-label="Next Revision"
 								        class="disabled:opacity-10 transition-all duration-500 text-gray-800 hover:text-blue-700 disabled:cursor-default"
 								        disabled={deck.index >= deck.revisions.length - 1}>
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"

@@ -28,7 +28,7 @@
 			cancelTitle="Cancel"
 			confirmTitle="Delete"
 			let:confirm="{confirmThis}">
-		<button class="iconButton" on:click={() => confirmThis(deleteSession)}
+		<button class="iconButton" on:click={() => confirmThis(deleteSession)} aria-label="Delete Session">
 		        title='Delete Session'>
 			<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"

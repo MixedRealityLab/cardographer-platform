@@ -53,6 +53,7 @@
 	<form action="?/build" class="w-6 h-6" method="post" use:enhance>
 		<!--suppress HtmlWrongAttributeValue -->
 		<button class="iconButton mr-3" disabled={building || data.revision.isLocked || data.overQuota}
+		        aria-label={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}
 		        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
 			<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 				<g>
@@ -66,6 +67,7 @@
 	</form>
 	{#if data.files.length > 0}
 		<a href="{base}/decks/{data.revision.deckId}/{data.revision.revision}/zip/{$page.params.file}"
+		   aria-label="Download Files"
 		   class="iconButton" title="Download Files">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 				<path fill-rule="evenodd"
@@ -75,7 +77,7 @@
 		</a>
 	{/if}
 	<form action="?/upload" enctype="multipart/form-data" method="post" class="w-6 h-6" use:enhance>
-		<UploadButton class="iconButton" disabled={data.revision.isLocked || data.overQuota} multiple="true"
+		<UploadButton class="iconButton" disabled={data.revision.isLocked || data.overQuota} multiple={true}
 		              title={data.revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 			<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
@@ -98,10 +100,12 @@
 {/if}
 
 {#if data.overQuota}
-<div class="flex items-center px-6 py-2">
-	<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK}) - 
-	please ask an administrator if you need to change this.</div>
-</div>
+	<div class="flex items-center px-6 py-2">
+		<div class="message-error">Sorry, you have reached your disk quota ({data.usageDiskSizeK}/{data.quotaDiskSizeK})
+			-
+			please ask an administrator if you need to change this.
+		</div>
+	</div>
 {/if}
 
 <div class="flex items-center px-6 py-2">
@@ -111,19 +115,19 @@
 </div>
 
 <style>
-    .fileItem {
-        @apply flex flex-1 items-center py-1.5 transition-colors duration-500 hover:text-blue-700;
-    }
+	.fileItem {
+		@apply flex flex-1 items-center py-1.5 transition-colors duration-500 hover:text-blue-700;
+	}
 
-    .fileSize:hover + button {
-        @apply opacity-100;
-    }
+	.fileSize:hover + button {
+		@apply opacity-100;
+	}
 
-    @media (hover: none) {
-        .fileSize + button {
-            @apply opacity-60;
-        }
-    }
+	@media (hover: none) {
+		.fileSize + button {
+			@apply opacity-60;
+		}
+	}
 </style>
 
 <div class="p-6">
@@ -163,6 +167,7 @@
 			<div class="fileSize text-sm text-gray-700">{childFile.size} KB</div>
 
 			<button class="opacity-5 transition-opacity duration-500 text-red-500 hover:opacity-100"
+			        aria-label="Delete File"
 			        on:click={() => {deleteFile(childFile.name)}}>
 				<svg xmlns="http://www.w3.org/2000/svg" class="w-5 mx-4 my-2" viewBox="0 0 20 20" fill="currentColor">
 					<path fill-rule="evenodd"
