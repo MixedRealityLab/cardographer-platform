@@ -1,10 +1,17 @@
-import type {Quota,QuotaDetails, Usage} from "$lib/types"
-import { getDb } from "./db";
-import { type CardDeckRevision, type User } from "./types";
-import {error} from "@sveltejs/kit";
+import type {
+	Analysis,
+	CardDeckRevisionSummary,
+	CardDeckSummary,
+	Quota,
+	QuotaDetails,
+	Session,
+	SessionSnapshot
+} from "$lib/types"
 import {GUEST_EMAIL} from "$lib/userutils"
-import type {CardDeckSummary, CardDeckRevisionSummary, Analysis, Session, SessionSnapshot } from "$lib/types"
-import { getDiskSizeK } from "./builders";
+import {error} from "@sveltejs/kit";
+import {getDiskSizeK} from "./builders";
+import {getDb} from "./db";
+import {type CardDeckRevision, type User} from "./types";
 
 const zero_quota: Quota = {
     decks: 0,
@@ -51,7 +58,7 @@ function addQuotas(a:Quota, b:Quota): Quota {
         diskSizeK: (a.diskSizeK ?? 0) + (b.diskSizeK ?? 0),
     }
 }
-export async function getQuotaDetails(email:string): Promise<QuotaDetaila> {
+export async function getQuotaDetails(email:string): Promise<QuotaDetails> {
     if (email == GUEST_EMAIL) {
         return {
             baseQuota: { ...guest_quota },
@@ -82,38 +89,33 @@ export async function getQuotaDetails(email:string): Promise<QuotaDetaila> {
 
 export async function getUsageDecks(email: string) : Promise<number> {
     const db = await getDb()
-    const number = await db.collection<CardDeckSummary>("CardDeckSummaries").count(
-        {quotaUser:email},
+	return await db.collection<CardDeckSummary>("CardDeckSummaries").count(
+	    {quotaUser: email},
     )
-    return number
 }
 export async function getUsageRevisions(email: string) : Promise<number> {
     const db = await getDb()
-    const number = await db.collection<CardDeckRevisionSummary>("CardDeckRevisions").count(
+    return await db.collection<CardDeckRevisionSummary>("CardDeckRevisions").count(
         {quotaUser:email},
     )
-    return number
 }
 export async function getUsageSessions(email: string) : Promise<number> {
     const db = await getDb()
-    const number = await db.collection<Session>("Sessions").count(
-        {quotaUser:email},
+	return await db.collection<Session>("Sessions").count(
+	    {quotaUser: email},
     )
-    return number
 }
 export async function getUsageSnapshots(email: string) : Promise<number> {
     const db = await getDb()
-    const number = await db.collection<SessionSnapshot>("SessionSnapshots").count(
-        {quotaUser:email},
+	return await db.collection<SessionSnapshot>("SessionSnapshots").count(
+	    {quotaUser: email},
     )
-    return number
 }
 export async function getUsageAnalyses(email: string) : Promise<number> {
     const db = await getDb()
-    const number = await db.collection<Analysis>("Analyses").count(
-        {quotaUser:email},
+	return await db.collection<Analysis>("Analyses").count(
+	    {quotaUser: email},
     )
-    return number
 }
 export async function getUsageDiskSizeK(email: string) : Promise<number> {
     const db = await getDb()
@@ -121,12 +123,11 @@ export async function getUsageDiskSizeK(email: string) : Promise<number> {
         { $match: { quotaUser: email } },
         { $group: { _id:'', diskSizeK: { $sum: '$diskSizeK' }}},
     ]).next()
-    const size = sizeRec === null ? 0 : sizeRec.diskSizeK
-    //console.log(`disk usage for ${email}: ${size}`, sizeRec)
-    return size
+	//console.log(`disk usage for ${email}: ${size}`, sizeRec)
+    return sizeRec === null ? 0 : sizeRec.diskSizeK
 }
 
-export async function checkRevisionDiskSizes(revisions: CardDeckRevision[]): Promise<void> {
+export async function checkRevisionDiskSizes(revisions: CardDeckRevisionSummary[]): Promise<void> {
     const db = await getDb()
     for (let revision of revisions) {
         if (revision.diskSizeK === undefined || revision.diskSizeK === null) {

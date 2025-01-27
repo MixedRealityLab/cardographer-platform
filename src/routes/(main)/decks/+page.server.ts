@@ -1,24 +1,24 @@
 import {getDb} from "$lib/db"
 import {cleanRevisions} from "$lib/decks"
 import {verifyAuthentication} from "$lib/security"
-import type {CardDeckRevision, CardDeckRevisionSummary, CardDeckSummary} from "$lib/types"
+import type {CardDeckRevision, CardDeckSummary} from "$lib/types"
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
 	await verifyAuthentication(locals, true, true)
 	const db = await getDb();
-	const decks = await db.collection<CardDeckSummary>('CardDeckSummaries')
+	const decks: CardDeckSummary[] = await db.collection<CardDeckSummary>('CardDeckSummaries')
 		.find({owners: locals.email})
 		.toArray()
 	// current revision of each deck I own
-	let myrevisions = await Promise.all(decks.map((deck) =>
+	let myRevisions: CardDeckRevision[] = await Promise.all(decks.map((deck) =>
 		db.collection<CardDeckRevision>('CardDeckRevisions')
 			.findOne({deckId: deck._id, revision: deck.currentRevision})
 	));
-	myrevisions = myrevisions.filter((deck) => !!deck)
-	myrevisions.forEach((deck) => deck.isOwnedByUser = true);
+	myRevisions = myRevisions.filter((deck) => !!deck)
+	myRevisions.forEach((deck) => deck.isOwnedByUser = true);
 	// public revisions (not including mine)
-	const publicrevisions = await db.collection<CardDeckRevisionSummary>('CardDeckRevisions')
+	const publicRevisions: CardDeckRevision[] = await db.collection<CardDeckRevision>('CardDeckRevisions')
 		.find({
 			isPublic: true, $nor: [{deckId: {$in: decks.map((deck) => deck._id)}}]
 		}, {
@@ -32,9 +32,9 @@ export const load: PageServerLoad = async function ({locals}) {
 			}
 		})
 		.toArray()
-	const revisions = myrevisions.concat(publicrevisions)
+	const revisions = myRevisions.concat(publicRevisions)
 	await cleanRevisions(revisions, db);
-	revisions.sort((revisiona, revisionb) => (revisiona.deckName + revisiona._id).toLowerCase().localeCompare((revisionb.deckName + revisionb._id).toLowerCase()))
+	revisions.sort((revisionA, revisionB) => (revisionA.deckName + revisionA._id).toLowerCase().localeCompare((revisionB.deckName + revisionB._id).toLowerCase()))
 	return {
 		decks: revisions
 	}

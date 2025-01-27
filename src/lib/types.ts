@@ -79,6 +79,7 @@ export interface CardPropertyDef {
 	sortBy?: number
 }
 
+// noinspection JSUnusedGlobalSymbols
 export enum BoardProperty {
 	Id = "id",
 	Name = "name",
@@ -92,6 +93,7 @@ export enum BoardProperty {
 }
 
 // all pre-defined card property types
+// noinspection JSUnusedGlobalSymbols
 export enum CardPropertyUse {
 	Id = "id",
 	Revision = "revision",
@@ -254,6 +256,7 @@ export interface Quota {
 export interface QuotaDetails extends Quota {
 	baseQuota: Quota
 	extraQuota: Quota
+	quota: Quota
 }
 export interface Usage {
 	decks: number
@@ -351,6 +354,7 @@ export interface AnalysisRegion {
 	colour: string
 }
 
+// noinspection JSUnusedGlobalSymbols
 export enum RegionType {
 	SubRegions = "SubRegions",
 	Category = "Category",
