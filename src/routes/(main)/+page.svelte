@@ -44,7 +44,7 @@
 		working = true
 		return async ({ result, update }) => {
 			working = false
-			registered = register && result.type == "success"
+			registered = register && result.type === "success"
 			update()
 	    };
 	}}>

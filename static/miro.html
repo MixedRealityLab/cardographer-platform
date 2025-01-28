@@ -8,7 +8,7 @@
 	<script src="https://miro.com/app/static/sdk/v2/miro.js"></script>
 	<script>
 		async function init() {
-			miro.board.ui.on("icon:click", async () => {
+			await miro.board.ui.on("icon:click", async () => {
 				const info = await miro.board.getInfo()
 				await miro.board.ui.openPanel({
 					url: `miro/${info.id}`,

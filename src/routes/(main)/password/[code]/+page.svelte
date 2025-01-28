@@ -1,7 +1,6 @@
 <script lang="ts">
-	import {base} from '$app/paths'
-	import {page} from '$app/stores'
 	import {enhance} from "$app/forms";
+	import {base} from '$app/paths'
 	import AppBar from "$lib/ui/AppBar.svelte"
 
 	let error = ''
@@ -13,11 +12,11 @@
 <AppBar back="{base}/"/>
 
 <div class="p-12 max-w-md mx-auto">
-	<form method="post"   use:enhance={() => {
+	<form method="post" use:enhance={() => {
 		working = true
 		return async ({ result, update }) => {
-			success = result.type == "success"
-			if (result.type != "success") {
+			success = result.type === "success"
+			if (result.type !== "success") {
 				error = "Sorry, perhaps it is the wrong code or too old"
 			}
 			update()
@@ -27,7 +26,8 @@
 			<label>
 				<span>New Password</span>
 				<!--suppress HtmlWrongAttributeValue -->
-				<input name="password" class="w-full" disabled={working || success} required type="password" autocomplete="new-password"/>
+				<input name="password" class="w-full" disabled={working || success} required type="password"
+				       autocomplete="new-password"/>
 			</label>
 
 			{#if error}

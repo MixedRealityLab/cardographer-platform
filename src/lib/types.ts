@@ -285,12 +285,16 @@ export interface Session {
 	miroDuplicateUrl?: string
 	board?: BoardInfo
 	decks: SessionDeck[]
-	isConsentForStats: boolean
-	isConsentForText: boolean
-	isConsentForRecording: boolean
-	isConsentToIdentify: boolean
-	isConsentRequiresCredit: boolean
+	isConsentForStats?: boolean
+	isConsentForText?: boolean
+	isConsentForRecording?: boolean
+	isConsentToIdentify?: boolean
+	isConsentRequiresCredit?: boolean
 	consentDetails?: string
+
+	isLive?: boolean
+	joiningCode?: string
+	joiningCodeReadonly?: string
 }
 
 // in SessionStage, a deck to use
@@ -299,6 +303,7 @@ export interface SessionDeck {
 	revision: number // FK)
 	deckName: string
 	deckCredits?: string
+	cards?: CardInfo[]
 }
 
 // snapshot

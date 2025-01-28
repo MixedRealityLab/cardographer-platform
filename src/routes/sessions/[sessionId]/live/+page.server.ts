@@ -1,9 +1,9 @@
+import {getDb} from "$lib/db";
+import {cleanRevisions} from "$lib/decks";
+import type {CardDeckRevisionSummary, Session, User} from "$lib/types"
+import {getUser, isLocalUserDisabled} from '$lib/userutils';
 import {error} from "@sveltejs/kit";
 import type {PageServerLoad} from './$types'
-import {getDb} from "$lib/db";
-import type {CardDeckRevisionSummary, Session, User} from "$lib/types"
-import {cleanRevisions} from "$lib/decks";
-import {getUser, isLocalUserDisabled} from '$lib/userutils';
 
 export const load: PageServerLoad = async function ({locals, params, url}) {
 	const {sessionId} = params
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async function ({locals, params, url}) {
 	await cleanRevisions(decks, db)
 	session.decks = decks
 
-	let localUser : User|null = null
+	let localUser: User | null = null
 	if (locals.authenticated && locals.email && !(await isLocalUserDisabled(locals))) {
 		localUser = await getUser(db, locals.email, locals.email)
 	}

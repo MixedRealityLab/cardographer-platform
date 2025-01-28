@@ -308,7 +308,7 @@
 							{#each data.session.decks as deck}
 								{#if deck.cards}
 									{#each deck.cards as card, cix}
-										{#if deck.cards.map((c) => c.category || '').indexOf(card.category || '') == cix}
+										{#if deck.cards.map((c) => c.category || '').indexOf(card.category || '') === cix}
 											<div class="flex pb-2">
 												<div class="flex-1 text-lg">{deck.deckName}: {card.category || ''}</div>
 												<button on:click={(event) => {addCardCategory(deck, card.category||'', event)}}

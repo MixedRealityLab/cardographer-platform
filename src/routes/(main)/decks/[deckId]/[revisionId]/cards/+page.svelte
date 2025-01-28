@@ -1,11 +1,10 @@
 <script lang="ts">
-	import {enhance} from "$app/forms";
-	import {base} from "$app/paths";
-	import type {CardDeckRevision} from "$lib/types"
+	import {enhance} from "$app/forms"
+	import {base} from "$app/paths"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 
-	import UploadButton from "$lib/ui/UploadButton.svelte";
-	import DeckHeader from "../DeckHeader.svelte";
+	import UploadButton from "$lib/ui/UploadButton.svelte"
+	import DeckHeader from "../DeckHeader.svelte"
 
 	export let data
 	let error = ''

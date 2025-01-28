@@ -1,11 +1,10 @@
-import { MiroClient } from "$lib/clients/miro"
 import {getDb, getNewId} from "$lib/db"
+import {getQuotaDetails, getUsageSessions, getUsageSnapshots} from "$lib/quotas"
 import {getCookieName, hashPassword, signUserToken, verifyAuthentication} from "$lib/security"
 import type {CardDeckRevision, Session, User} from "$lib/types"
 import type {Actions} from "@sveltejs/kit"
 import {fail} from "@sveltejs/kit"
 import type {PageServerLoad} from "./$types";
-import { getUsageSnapshots, getQuotaDetails, getUsageSessions } from "$lib/quotas"
 
 const debug = false
 
@@ -27,7 +26,12 @@ export const load = (async ({locals, params}) => {
 	if (!session) {
 		// Not actively linked to a board, and unused, or related to this board
 		const sessions = await db.collection<Session>('Sessions')
-			.find({owners: locals.email, url: null, $or:[{sessionType: ''},{sessionType:'miro',miroId:params.id}], isArchived: false})
+			.find({
+				owners: locals.email,
+				url: null,
+				$or: [{sessionType: ''}, {sessionType: 'miro', miroId: params.id}],
+				isArchived: false
+			})
 			.sort({"lastModified": -1, "name": 1, "owners[0]": 1, "created": 1, "_id": 1})
 			.project({"name": 1, "description": 1, "credits": 1, isPublic: 1, isTemplate: 1})
 			.toArray()
@@ -45,7 +49,10 @@ export const load = (async ({locals, params}) => {
 		session.decks = await db.collection<CardDeckRevision>('CardDeckRevisions')
 			.find({"_id": {$in: deckIds}})
 			.toArray()
-		session.decks.forEach((deck) => deck.cards.forEach((card) => { card.imageDpi = card.imageDpi || deck.imageDpi }))
+		session.decks.forEach((deck) => deck.cards.forEach((card) => {
+			// @ts-ignore
+			card.imageDpi = card.imageDpi || deck.imageDpi
+		}))
 		return {
 			authenticated: true,
 			session: session,
@@ -95,12 +102,12 @@ export const actions: Actions = {
 			const quota = await getQuotaDetails(locals.email)
 			if (usageSessions >= quota.quota.sessions) {
 				console.log(`Session quota exceeded ${usageSessions}/${quota.quota.sessions} for ${locals.email}`)
-				return fail(422, "Session quota exceeded")
+				return fail(422, {error: "Session quota exceeded"})
 			}
 			const now = new Date().toISOString()
 			const insertResult = await db.collection<Session>('Sessions').insertOne({
 				_id: getNewId(),
-				name: 'Miro board '+params.id,
+				name: 'Miro board ' + params.id,
 				description: "Session for Miro board at " + url,
 				owners: [locals.email],
 				url: url,

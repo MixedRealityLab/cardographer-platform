@@ -1,8 +1,7 @@
 import {getDb} from "$lib/db"
-import {cleanRevisions} from "$lib/decks"
 import {verifyAuthentication} from "$lib/security"
 import type {User} from "$lib/types"
-import { getUserIsAdmin, GUEST_EMAIL } from "$lib/userutils"
+import {getUserIsAdmin, GUEST_EMAIL} from "$lib/userutils"
 import type {PageServerLoad} from "./$types"
 
 export const load: PageServerLoad = async function ({locals}) {
@@ -16,9 +15,8 @@ export const load: PageServerLoad = async function ({locals}) {
 	const user = await db.collection<User>('Users')
 		.findOne({email: locals.email})
 	const isAdmin = await getUserIsAdmin(user)
-	let users:User[] = []
-	let filter = isAdmin ? {} : { email: user.email }
-	users = await db.collection<User>('Users')
+	let filter = isAdmin ? {} : {email: user.email}
+	let users = await db.collection<User>('Users')
 		.find(filter, {
 			projection: {
 				email: true, name: true, created: true, disabled: true,

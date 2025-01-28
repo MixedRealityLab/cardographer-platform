@@ -1,6 +1,5 @@
 import {getDb} from "$lib/db";
-import {getRevision, cleanRevisions} from "$lib/decks";
-import { verifyAuthentication } from "$lib/security";
+import {getRevision, cleanRevisions} from "$lib/decks"
 import type {CardDeckRevisionSummary, Session} from "$lib/types"
 import type {PageServerLoad} from './$types'
 
@@ -9,6 +8,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 	const db = await getDb();
 	// deck-pseudo session
 	const deckSession = sessionId.match(/^deck-([^-]+)-([0-9]+)$/);
+	console.log(deckSession)
 	if (deckSession) {
 		const deckId = deckSession[1];
 		const revisionNumber = Number(deckSession[2]);
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 		let decks = [revision];
 		await cleanRevisions(decks, db);
 		const session: Session = {
-			_id: deckSession,
+			_id: deckSession[0],
 			name: `Auto-session for ${revision.deckName}`,
 			//url?: string
 			//description?: string

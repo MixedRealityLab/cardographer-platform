@@ -1,6 +1,6 @@
 import {getDb} from "$lib/db";
 import {verifyAuthentication} from "$lib/security"
-import type {Analysis, SessionSnapshot, Session} from "$lib/types";
+import type {SessionSnapshot, Session} from "$lib/types";
 import {error} from "@sveltejs/kit";
 import type {Actions, PageServerLoad} from './$types'
 
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 			sessionId: session._id, owners: locals.email
 		}, {
 			projection: {
-				_id: true, sessionId: true, 
+				_id: true, sessionId: true,
 				created: true, originallyCreated: true,
 				snapshotDescription: true, isNotForAnalysis: true,
                 sessionStage: true
@@ -28,8 +28,7 @@ export const load: PageServerLoad = async function ({locals, parent}) {
 	}
 }
 
-/** @type {import('./$types').Actions} */
-export const actions = {
+export const actions: Actions = {
 	default: async ({request, locals, params}) => {
         await verifyAuthentication(locals)
 		const {sessionId} = params
@@ -49,7 +48,7 @@ export const actions = {
                 {_id: snapshotId},
                 {
                     $set: {
-                        snapshotDescription: formData.get(`description-${snapshotId}`) as string || '', 
+                        snapshotDescription: formData.get(`description-${snapshotId}`) as string || '',
                         isNotForAnalysis: isNotForAnalysis,
                     }
                 })

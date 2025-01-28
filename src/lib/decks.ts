@@ -76,6 +76,7 @@ export async function getRevision(db: Db, deckId: string, revisionId: number, em
 	if (!revision.isPublic && (!email || !deck.owners.includes(email))) {
 		throw error(401, `Deck Access Not Permitted`);
 	}
+
 	if (email && deck.owners.includes(email)) {
 		revision.isOwnedByUser = true;
 	} else {
