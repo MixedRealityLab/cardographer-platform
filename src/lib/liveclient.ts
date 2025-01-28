@@ -109,7 +109,7 @@ export class LiveClient {
 				this.ws.close()
 			} catch (err) { /* ignore */ }
 		}
-		const wsurl = `${url.protocol == 'https' ? 'wss' : 'ws'}://${url.host}/${base}wss`
+		const wsurl = `${url.protocol == 'https:' ? 'wss' : 'ws'}://${url.host}/${base}wss`
 		console.log(`connect to ${wsurl}...`)
 		this.connecting = true
 		this.updated(false)
