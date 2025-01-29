@@ -88,16 +88,16 @@ export async function exportAuditAsCsv(): Promise<string> {
 			usageSnapshots: await getUsageSnapshots(email),
 			usageAnalyses: await getUsageAnalyses(email),
 			usageDiskSizeK: await getUsageDiskSizeK(email),
-			publicRevisions: await db.collection<CardDeckRevision>("CardDeckRevisions").count({
+			publicRevisions: await db.collection<CardDeckRevision>("CardDeckRevisions").countDocuments({
 				quotaUser: email,
 				isPublic: true
 			}),
-			publicSessions: await db.collection<Session>("Sessions").count({quotaUser: email, isPublic: true}),
-			publicSnapshots: await db.collection<SessionSnapshot>("SessionSnapshots").count({
+			publicSessions: await db.collection<Session>("Sessions").countDocuments({quotaUser: email, isPublic: true}),
+			publicSnapshots: await db.collection<SessionSnapshot>("SessionSnapshots").countDocuments({
 				quotaUser: email,
 				isPublic: true
 			}),
-			publicAnalyses: await db.collection<Analysis>("Analyses").count({quotaUser: email, isPublic: true}),
+			publicAnalyses: await db.collection<Analysis>("Analyses").countDocuments({quotaUser: email, isPublic: true}),
 			notes: '',
 		}
 		let row: string[] = []

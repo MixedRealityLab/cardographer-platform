@@ -89,25 +89,25 @@ export async function getQuotaDetails(email:string): Promise<QuotaDetails> {
 
 export async function getUsageDecks(email: string) : Promise<number> {
     const db = await getDb()
-	return await db.collection<CardDeckSummary>("CardDeckSummaries").count(
+	return await db.collection<CardDeckSummary>("CardDeckSummaries").countDocuments(
 	    {quotaUser: email},
     )
 }
 export async function getUsageRevisions(email: string) : Promise<number> {
     const db = await getDb()
-    return await db.collection<CardDeckRevisionSummary>("CardDeckRevisions").count(
+    return await db.collection<CardDeckRevisionSummary>("CardDeckRevisions").countDocuments(
         {quotaUser:email},
     )
 }
 export async function getUsageSessions(email: string) : Promise<number> {
     const db = await getDb()
-	return await db.collection<Session>("Sessions").count(
+	return await db.collection<Session>("Sessions").countDocuments(
 	    {quotaUser: email},
     )
 }
 export async function getUsageSnapshots(email: string) : Promise<number> {
     const db = await getDb()
-	return await db.collection<SessionSnapshot>("SessionSnapshots").count(
+	return await db.collection<SessionSnapshot>("SessionSnapshots").countDocuments(
 	    {quotaUser: email},
     )
 }

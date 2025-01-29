@@ -5,8 +5,9 @@
 
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import DeckHeader from "../DeckHeader.svelte"
+	import type {LayoutServerData} from '../$types'
 
-	export let data
+	export let data: LayoutServerData
 	let error = ''
 	let message = ''
 </script>
