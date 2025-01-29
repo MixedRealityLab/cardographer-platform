@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+	import type {Miro} from "@mirohq/websdk-types"
+
+	declare const miro: Miro
+</script>
+
 <script lang="ts">
 	import {base} from "$app/paths";
 	import {page} from '$app/stores';
@@ -5,11 +11,9 @@
 	import type {Session} from "$lib/types"
 	import CardList from "$lib/ui/CardList.svelte";
 	import LiveViewHeader from "$lib/ui/LiveViewHeader.svelte";
-	import type {Miro} from "@mirohq/websdk-types";
 	import {onDestroy, onMount} from "svelte"
 	import ZoneSelector from "./ZoneSelector.svelte";
 
-	declare const miro: Miro
 	export let session: Session
 	export let isOwner: boolean = false
 	export let inmiro: boolean = false
@@ -71,7 +75,7 @@
 	let bottomDrawerHeight = 100
 	let midBarHeight = 32
 	let zoneSelectorHeight = 32
-	$: spotlight = (tab == 'cards' || tab == 'hand') && cards.find((c) => (zoneCards[`${activeBoard}/${SPOTLIGHT_ZONE}`] ?? []).indexOf(c.id) >= 0)
+	$: spotlight = (tab == 'cards' || tab == 'hand') && !!cards.find((c) => (zoneCards[`${activeBoard}/${SPOTLIGHT_ZONE}`] ?? []).indexOf(c.id) >= 0)
 	let shuffles = {} // zone -> card id[]
 	let lastHand = -1 // index in activeZones
 	$: waiting = client.pendingMoves.length > 0
@@ -244,7 +248,7 @@
 			</div>
 			<div class="absolute top-10 bottom-0 left-0 right-0 z-10 pointer-events-none">
 				<div id="bottomDrawer" bind:clientHeight={bottomDrawerHeight}
-				     class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100" class:relative={split>0}
+				     class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100" class:relative={split>0 || spotlight}
 				     class:split-50={split===50}
 				     style:top={split===0 && !spotlight ? '0' : ''+(((bottomDrawerHeight??100)*(spotlight?100:split)/100)-midBarHeight-zoneSelectorHeight)+'px'}>
 					<div bind:clientHeight={midBarHeight}

@@ -124,9 +124,9 @@ export async function sendPasswordResetEmail(email: string, url: URL): Promise<a
 		await transport.sendMail({
 			from: process.env['SMTP_email'],
 			to: email,
-			subject: 'Cardographer Password Reset',
+			subject: 'Cardographer Email Verification and Password Reset',
 			text: 'Reset Url: ' + sessionUrl,
-			html: '<div><a href="' + sessionUrl + '">Continue Password Reset</a></div>'
+			html: '<div><a href="' + sessionUrl + '">Continue Email Verification and Password Reset</a></div>'
 		});
 		console.log(`Sent password reset email to ${email}`)
 	} else {

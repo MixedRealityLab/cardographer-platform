@@ -34,6 +34,7 @@ export const load: PageServerLoad = async function ({locals, params}) {
 	}
 	return {
 		user: user,
+		email,
 		quotaDetails,
 		usage,
 	}
@@ -130,6 +131,9 @@ export const actions: Actions = {
 	verifyEmail: async ({locals, params, url}) => {
 		await verifyAuthentication(locals)
 		const {email} = params
+		if (locals.email !== email) {
+			await verifyLocalUserIsAdmin(locals)
+		}
 		await sendPasswordResetEmail(email, url)
 	}
 }

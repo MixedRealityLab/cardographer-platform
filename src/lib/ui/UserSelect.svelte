@@ -23,6 +23,7 @@
 	function addUser(email: string) {
 		owners = [...owners, email]
 		userFilter = ""
+		filter() 
 	}
 
 	function getUsername(email: string): string {
@@ -59,11 +60,13 @@
 				{/if}
 			</div>
 		{/each}
-		<form class="flex-1" on:submit|preventDefault={() => {}}>
+		<div class="flex-1">
 			<input bind:value={userFilter}
 			       class="bg-transparent w-full border-0 focus:outline-none focus:shadow-none focus:ring-0 outline-none focus-within:bg-transparent"
-			       id="userFilter" on:blur={filtered=[]} on:focus={filter} on:input={filter}/>
-		</form>
+			       id="userFilter" 
+				   on:blur={()=>{/* todo fix race with click: filtered=[]*/}}  
+				   on:focus={filter} on:input={filter}/>
+		</div>
 	</div>
 	{#each owners as owner}
 		<input name="{name}" type="hidden" value="{owner}"/>

@@ -10,6 +10,9 @@
 
 	let error = ''
 	let message = ''
+	let emailWorking = false
+	let emailSuccess = ''
+	let emailError = ''
 
 	async function deleteUser() {
 		const {email} = $page.params;
@@ -29,26 +32,39 @@
 		</div>
 	</div>
 </div>
+<div class="gap-4 flex flex-col">
+	<form class="p-6 pb-0 flex flex-col" method="post" action="?/changeEmail" use:enhance>
+		<label>
+			<span>Email</span>
+			<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
+				disabled={!data.localUser.isAdmin}/>
+		</label>
+		<div class="flex pt-2 justify-center">
+			{#if data.localUser.isAdmin}
 
-<form class="p-6 flex flex-col gap-4" method="post" action="?/changeEmail" use:enhance>
-	<label>
-		<span>Email</span>
-		<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
-		       disabled={!data.localUser.isAdmin}/>
-	</label>
-	<div class="flex gap-2 justify-center">
-		{#if !data.user.isVerified}
-			<!-- svelte-ignore node_invalid_placement_ssr -->
-			<form method="post" action="?/verifyEmail" use:enhance>
-				<input class="button self-center mt-2" type='submit' value='Verify Email'>
-			</form>
-		{/if}
-		{#if data.localUser.isAdmin}
-
-			<input class="button self-center mt-2" type='submit' value='Change Email'>
-		{/if}
+				<input disabled={data.user.email===data.email} class="button self-center mt-2" type='submit' value='Change Email'>
+			{/if}
+		</div>
+	</form>
+	<div class="flex gap-0 justify-center">
+		<form method="post" action="?/verifyEmail" use:enhance={() => {
+			emailWorking = true
+			return async ({ result, update }) => {
+				emailWorking = false
+				emailSuccess = result.type === "success" ? 'Done!' : ''
+				update()
+			};
+		}}>
+			<input disabled={emailWorking || data.user.email!==data.email} class="button self-center mt-0" type='submit' value={data.user.isVerified ? "Send Email to Change Password" : "Send Email to Verify User"}>
+		</form>
 	</div>
-</form>
+	{#if emailError}
+		<div class="message-error">{emailError}</div>
+	{/if}
+	{#if emailSuccess}
+		<div class="message-success">{emailSuccess}</div>
+	{/if}
+</div>
 <form class="p-6 flex flex-col gap-4" method="post" action="?/save" use:enhance>
 	<label>
 		<span>Name</span>
