@@ -4,9 +4,9 @@
 	import {formatDate} from "$lib/ui/formatutils";
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
-	import type {PageServerData} from './$types'
+	import type {PageData} from './$types'
 
-	export let data: PageServerData
+	export let data: PageData
 	let showArchived = false
 	let message = ''
 </script>

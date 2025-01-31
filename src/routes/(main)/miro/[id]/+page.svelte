@@ -8,7 +8,7 @@
 <script lang="ts">
 	import {enhance} from "$app/forms";
 	import {base} from "$app/paths"
-	import type {CardDeckRevision, CardInfo, Session} from "$lib/types"
+	import type {CardDeckRevision, CardInfo} from "$lib/types"
 	import ExpandableSection from "$lib/ui/ExpandableSection.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte"
 	import type {ActionData} from "./$types"
@@ -17,17 +17,9 @@
 	import type {BoardNode} from "@mirohq/websdk-types"
 	import {onMount} from "svelte"
 	import LiveView from "$lib/ui/LiveView.svelte"
+	import type {PageData} from './$types'
 
-	export let data: {
-		authenticated: boolean;
-		session: Session;
-		sessions: Session[],
-		readonly: boolean,
-		quotaSessions: number,
-		usageSessions: number,
-		quotaSnapshots: number,
-		usageSnapshots: number
-	}
+	export let data: PageData
 	export let form: ActionData
 	let selectedCards: string[] = []
 	let widgets: BoardNode[] = []

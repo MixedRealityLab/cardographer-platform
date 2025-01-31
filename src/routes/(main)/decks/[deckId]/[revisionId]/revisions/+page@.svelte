@@ -5,8 +5,10 @@
 	import AppBar from '$lib/ui/AppBar.svelte'
 	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
     import { invalidateAll } from '$app/navigation';
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
+
 
 	async function deleteDeck() {
 		const {deckId} = $page.params;

@@ -4,8 +4,9 @@
 	import type {ActionData} from "./$types"
 	import SessionHeader from "./SessionHeader.svelte";
 	import {base} from '$app/paths'
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 	export let form: ActionData
 
 	let error = ''

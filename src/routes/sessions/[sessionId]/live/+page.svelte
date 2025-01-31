@@ -1,8 +1,8 @@
 <script lang="ts">
 	import LiveView from "$lib/ui/LiveView.svelte";
-    import type {PageLoad} from './$types';
+    import type {PageData} from './$types';
 
-    export let data: PageLoad
+    export let data: PageData
 </script>
 
 <svelte:head>

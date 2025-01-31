@@ -1,26 +1,14 @@
 <script lang="ts">
-	import type {BoardInfo} from "$lib/analysistypes"
-	import type {Session} from "$lib/types"
-	import AnalysisHeader from "../AnalysisHeader.svelte";
+	import AnalysisHeader from "../AnalysisHeader.svelte"
+	import type {PageData} from './$types'
 
-	interface Board {
-		session: Session
-		snapshotDescription: string
-		boardId: string
-		board: BoardInfo
-		created: string
-	}
+	export let data: PageData;
 
-	/** @type {import('./$types').PageData} */
-	export let data;
-	//: {analysis:Analysis, designs: DesignInfo[], boardIds: string[], zoneIds: string[],
-	//   boards:Board[], sessionIds:string[], sessions:Session[], decks:CardDeckRevision[]}
-
-	function quote(text) {
+	function quote(text: string): string {
 		return `"${text}"`
 	}
 
-	function onlyUnique(value, index, array) {
+	function onlyUnique(value: string, index: number, array: string[]) {
 		return array.indexOf(value) === index;
 	}
 

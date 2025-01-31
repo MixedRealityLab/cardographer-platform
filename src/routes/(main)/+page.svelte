@@ -2,28 +2,28 @@
 	import {enhance} from "$app/forms"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import LoginPanel from "$lib/ui/LoginPanel.svelte"
-	import type {ActionData} from "./$types";
+	import type {ActionData, PageData} from "./$types";
 
 	let register = false
 	let working = false
 	let registered = false
 
 	export let form: ActionData
-	export let data
+	export let data: PageData
 </script>
 
 <style>
-    .tab {
-        @apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 mx-0;
-    }
+	.tab {
+		@apply px-4 rounded-t py-1 cursor-pointer transition-colors duration-500 mx-0;
+	}
 
-    .tabSelected {
-        @apply bg-gray-300 cursor-default text-gray-900;
-    }
+	.tabSelected {
+		@apply bg-gray-300 cursor-default text-gray-900;
+	}
 
-    .tab:hover:not(.tabSelected) {
-        @apply bg-gray-500;
-    }
+	.tab:hover:not(.tabSelected) {
+		@apply bg-gray-500;
+	}
 </style>
 
 <AppBar>
@@ -49,8 +49,7 @@
 	    };
 	}}>
 		<LoginPanel register={register} error={form ? form.error : null}
-			success={registered ? "Please check your email to set your password." : null}
-			needCode={data.needCodeToRegister}
-			/>
+		            success={registered ? "Please check your email to set your password." : null}
+		            needCode={data.needCodeToRegister}/>
 	</form>
 </div>

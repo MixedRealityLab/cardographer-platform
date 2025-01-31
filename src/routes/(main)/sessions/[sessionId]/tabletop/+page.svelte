@@ -5,15 +5,14 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import {page} from "$app/stores"
-	import type {Session} from "$lib/types"
 	import {onMount} from "svelte";
 	import {cubicOut} from 'svelte/easing'
 	import {tweened} from "svelte/motion";
 	import {fade} from 'svelte/transition'
 	import SessionHeader from "../SessionHeader.svelte";
+	import type {PageData} from './$types'
 
-	export let data: Session
-
+	export let data: PageData
 
 	let unityInstance = null
 	let progress = tweened(0, {

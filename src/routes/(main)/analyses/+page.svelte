@@ -3,7 +3,7 @@
 	import UserTabs from '$lib/ui/UserTabs.svelte'
 	import type {PageData} from './$types';
 
-	export let data: PageData;
+	export let data: PageData
 	let error = '';
 	let working = false;
 </script>

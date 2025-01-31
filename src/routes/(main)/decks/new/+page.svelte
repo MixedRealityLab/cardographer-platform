@@ -1,12 +1,12 @@
 <script lang="ts">
 	import {base} from "$app/paths";
 	import AppBar from '$lib/ui/AppBar.svelte'
-	import type {PageServerData} from './$types'
+	import type {PageData} from './$types'
 	import {formatDate} from "$lib/ui/formatutils";
 
 	let error: string
 
-	export let data: PageServerData
+	export let data: PageData
 </script>
 
 <AppBar back="{base}/decks" subtitle="Deck">

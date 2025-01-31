@@ -1,11 +1,12 @@
 <script lang="ts">
 	import {base} from '$app/paths'
-	import {page} from "$app/stores";
-	import type {CardDeckRevision} from "$lib/types"
+	import {page} from "$app/stores"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import Tab from "$lib/ui/Tab.svelte"
+	import type {LayoutData} from './$types'
 
-	export let data: CardDeckRevision
+	export let data: LayoutData
+
 	let {deckId, revisionId} = $page.params
 </script>
 

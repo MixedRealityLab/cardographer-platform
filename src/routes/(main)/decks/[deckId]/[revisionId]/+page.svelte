@@ -1,8 +1,9 @@
 <script lang="ts">
 	import {enhance} from "$app/forms"
 	import DeckHeader from "./DeckHeader.svelte"
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 
 	let error = ''
 	let message = ''
@@ -48,7 +49,8 @@
 	</label>
 	<label>
 		<span>Slug (for filenames and URLs)</span>
-		<input name="slug" bind:value={data.revision.slug} class="block w-full" type="text" disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
+		<input name="slug" bind:value={data.revision.slug} class="block w-full" type="text"
+		       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}/>
 	</label>
 	<label>
 		<span>Image DPI (Dots Per Inch)</span>
@@ -76,9 +78,10 @@
 			       disabled={!data.revision.isOwnedByUser}>
 			<span>Template</span>
 		</label>
-		{#if data.build}
+		{#if data.revision.build}
 			<label class="flex items-center">
-				<input name="buildDisabled" type="checkbox" class="form-checkbox" bind:checked={data.revision.build.isDisabled}
+				<input name="buildDisabled" type="checkbox" class="form-checkbox"
+				       bind:checked={data.revision.build.isDisabled}
 				       disabled={!data.revision.isOwnedByUser}>
 				<span class="ml-2">Disable re-build</span>
 			</label>
@@ -93,5 +96,6 @@
 		<div class="message-success">{message}</div>
 	{/if}
 
-	<input class="button self-center mt-2" type='submit' value='Save' disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}>
+	<input class="button self-center mt-2" type='submit' value='Save'
+	       disabled={!data.revision.isOwnedByUser && !data.localUser.isAdmin}>
 </form>

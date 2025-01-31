@@ -5,8 +5,9 @@
 	import {page} from "$app/stores"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import ConfirmDialog from "$lib/ui/ConfirmDialog.svelte"
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 
 	let error = ''
 	let message = ''

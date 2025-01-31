@@ -1,12 +1,13 @@
 <script lang="ts">
 	import {base} from '$app/paths'
 	import {page} from '$app/stores'
-	import type {Session} from "$lib/types"
 	import AppBar from "$lib/ui/AppBar.svelte"
 	import Tab from "$lib/ui/Tab.svelte"
 	import {SHOW_TABLETOP} from '$lib/constants'
+	import type {LayoutData} from './$types'
 
-	export let data: Session
+	export let data: LayoutData
+
 	const {sessionId} = $page.params
 </script>
 

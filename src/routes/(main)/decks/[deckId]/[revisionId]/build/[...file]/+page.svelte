@@ -6,8 +6,9 @@
 	import {DeckBuildStatus} from "$lib/types"
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import DeckHeader from "../../DeckHeader.svelte"
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 
 	$: building = data.revision.build && data.revision.build.status === DeckBuildStatus.Building
 
@@ -88,11 +89,11 @@
 	</form>
 </DeckHeader>
 
-{#if data.build && data.build.status === DeckBuildStatus.Failed}
+{#if data.revision.build && data.revision.build.status === DeckBuildStatus.Failed}
 	<div class="message-error mx-6 whitespace-pre-wrap">
 		There was an error building the cards
 		<div class="font-mono text-sm">
-			{#each data.build.messages as message}
+			{#each data.revision.build.messages as message}
 				<p>{message.trimEnd()}</p>
 			{/each}
 		</div>

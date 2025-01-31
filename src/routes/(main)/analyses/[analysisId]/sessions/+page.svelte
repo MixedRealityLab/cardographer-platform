@@ -2,8 +2,9 @@
 	import {enhance} from "$app/forms";
 	import AnalysisHeader from "../AnalysisHeader.svelte";
 	import {formatDate} from "$lib/ui/formatutils";
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 </script>
 
 <style>

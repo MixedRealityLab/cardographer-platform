@@ -2,9 +2,9 @@ import {getDb} from "$lib/db"
 import {getRevision} from "$lib/decks";
 import {verifyAuthentication} from "$lib/security";
 import type {CardDeckRevision} from "$lib/types"
+import {verifyLocalUserIsPublisher} from "$lib/userutils";
 import type {Actions} from "@sveltejs/kit"
 import {error} from "@sveltejs/kit"
-import { verifyLocalUserIsPublisher } from "$lib/userutils";
 
 export const actions: Actions = {
 	default: async ({locals, request, params}) => {
@@ -16,8 +16,8 @@ export const actions: Actions = {
 			throw error(401, `Deck Write Access Not Permitted`);
 		}
 		const data = await request.formData();
-		let imageDpi : Number = revision.imageDpi // default
-		if(data.get('imageDpi')) {
+		let imageDpi: number = revision.imageDpi // default
+		if (data.get('imageDpi')) {
 			try {
 				imageDpi = Number(data.get('imageDpi') as string)
 			} catch (e) {

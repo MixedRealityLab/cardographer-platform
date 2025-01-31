@@ -117,8 +117,8 @@ lower_right:
   font_size: 8
   valign: bottom
   align: right
-ll: # alias
-  extends: lower_left
+lr: # alias
+  extends: lower_right
 
 back_deck_title:
   x: 8mm

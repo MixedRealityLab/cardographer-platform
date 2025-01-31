@@ -2,11 +2,12 @@
 	import {base} from "$app/paths";
 
 	import {page} from '$app/stores'
-	import type {Session} from "$lib/types"
 	import UploadButton from "$lib/ui/UploadButton.svelte"
 	import SessionHeader from "../SessionHeader.svelte";
+	import type {PageData} from './$types'
 
-	export let data: Session
+	export let data: PageData
+
 
 	let working = false
 	let error = ''

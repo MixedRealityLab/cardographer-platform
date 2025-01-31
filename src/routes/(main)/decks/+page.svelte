@@ -2,8 +2,10 @@
 	import {base} from "$app/paths";
 	import {formatDate} from "$lib/ui/formatutils"
 	import UserTabs from '$lib/ui/UserTabs.svelte'
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
+
 	let showAllDecks = true
 </script>
 

@@ -3,8 +3,9 @@
 	import UserSelect from "$lib/ui/UserSelect.svelte"
 	import type {ActionData} from "./$types"
 	import AnalysisHeader from "./AnalysisHeader.svelte";
+	import type {PageData} from './$types'
 
-	export let data
+	export let data: PageData
 	export let form: ActionData
 
 	let error = ''
@@ -20,7 +21,7 @@
 		</label>
 		<label>
 			<span class="font-light">Description</span>
-			<textarea name="description" bind:value="{data.analysis.description}" class="mt-1 block w-full" rows="3" type="text"></textarea>
+			<textarea name="description" bind:value="{data.analysis.description}" class="mt-1 block w-full" rows="3"></textarea>
 		</label>
 		<label>
 			<span class="font-light">Credits</span>

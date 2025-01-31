@@ -1,11 +1,11 @@
 <!--suppress JSUnusedAssignment -->
 <script lang="ts">
-	import type {Session} from "$lib/types";
-	import {createMenu} from "svelte-headlessui";
-	import CardList from "$lib/ui/CardList.svelte";
+	import CardList from "$lib/ui/CardList.svelte"
+	import {createMenu} from "svelte-headlessui"
 	import Transition from 'svelte-transition'
+	import type {PageData} from './$types'
 
-	export let data: Session
+	export let data: PageData
 
 	let cardList: CardList
 	let search = ""
@@ -71,7 +71,8 @@
 				</svg>
 			</button>
 			{#if categories.length > 1}
-				<button use:menu.button on:select={onSelect} class="button button-tool" aria-label="Open Category Filter Menu"
+				<button use:menu.button on:select={onSelect} class="button button-tool"
+				        aria-label="Open Category Filter Menu"
 				        title="Open Category Filter Menu">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" class="h-5 w-5">
 						<path d="M400 816v-60h160v60H400ZM240 606v-60h480v60H240ZM120 396v-60h720v60H120Z"/>

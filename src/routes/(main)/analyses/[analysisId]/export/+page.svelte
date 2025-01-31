@@ -1,10 +1,11 @@
 <script lang="ts">
 	import {base} from "$app/paths"
 	import {AnalysisExportTypes} from '$lib/analysistypes'
-	import type {Analysis} from "$lib/types"
-	import AnalysisHeader from "../AnalysisHeader.svelte";
+	import AnalysisHeader from "../AnalysisHeader.svelte"
+	import type {PageData} from './$types'
 
-	export let data: Analysis
+	export let data: PageData
+
 	let exportOption = [
 		AnalysisExportTypes.CARD_USE,
 		AnalysisExportTypes.CARD_ADJACENCY

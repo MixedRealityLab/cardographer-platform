@@ -27,7 +27,7 @@ export const actions: Actions = {
 		email = email.toLowerCase()
 		// check password
 		const db = await getDb();
-		let user = await db.collection<User>('Users').findOne({email: email})
+		let user: User = await db.collection<User>('Users').findOne({email: email})
 		const now = new Date().toISOString()
 		// register code
 		if (register) {

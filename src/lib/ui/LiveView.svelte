@@ -41,12 +41,12 @@
 		boards = client.boards
 		activeBoard = client.activeBoard
 	})
-	let higlightPlayerTab = false
+	let highlightPlayerTab = false
 	let highlightPlayerTimeout = null
 
 	function doHighlightPlayerTab() {
-		higlightPlayerTab = true
-		highlightPlayerTimeout = setTimeout(() => higlightPlayerTab = false, 3000)
+		highlightPlayerTab = true
+		highlightPlayerTimeout = setTimeout(() => highlightPlayerTab = false, 3000)
 	}
 
 	$: readonly = client.readonly
@@ -248,7 +248,8 @@
 			</div>
 			<div class="absolute top-10 bottom-0 left-0 right-0 z-10 pointer-events-none">
 				<div id="bottomDrawer" bind:clientHeight={bottomDrawerHeight}
-				     class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100" class:relative={split>0 || spotlight}
+				     class="pointer-events-auto flex flex-col h-full w-screen bg-gray-100"
+				     class:relative={split>0 || spotlight}
 				     class:split-50={split===50}
 				     style:top={split===0 && !spotlight ? '0' : ''+(((bottomDrawerHeight??100)*(spotlight?100:split)/100)-midBarHeight-zoneSelectorHeight)+'px'}>
 					<div bind:clientHeight={midBarHeight}
@@ -392,7 +393,8 @@
 			Cards
 		</button>
 		{#if !readonly}
-			<button aria-pressed="{tab==='hand'}" class="tab" class:tabSelected={tab==='hand'} on:click={()=>tab='hand'}>
+			<button aria-pressed="{tab==='hand'}" class="tab" class:tabSelected={tab==='hand'}
+			        on:click={()=>tab='hand'}>
 				Hand
 			</button>
 		{/if}
@@ -401,7 +403,7 @@
 			        on:click={()=>tab='allcards'}>
 				All
 			</button>
-			<button aria-pressed="{tab==='people'}" class="tab" class:highlight={higlightPlayerTab}
+			<button aria-pressed="{tab==='people'}" class="tab" class:highlight={highlightPlayerTab}
 			        class:tabSelected={tab==='people'} on:click={()=>tab='people'}>
 				Setup
 			</button>

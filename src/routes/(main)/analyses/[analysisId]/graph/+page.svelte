@@ -1,23 +1,25 @@
 <script lang="ts">
 	import {enhance} from '$app/forms'
-	import type {LayoutOptions} from "cytoscape"
+	import type {CircleLayoutOptions} from "cytoscape"
 	import cytoscape from "cytoscape"
 	import {onMount} from "svelte"
 	import {fly} from 'svelte/transition'
 	import AnalysisHeader from "../AnalysisHeader.svelte"
-	import RegionOptions from "./RegionOptions.svelte";
+	import type {PageData} from './$types'
+	import RegionOptions from "./RegionOptions.svelte"
 
 	const coolGray = {
 		400: '#9ca3af',
 		900: '#111827',
 	}
 
-	export let data
+	export let data: PageData
+
 	let working = false
 	let selectedCard = null
 	let graphElement: HTMLElement
 	let graph: cytoscape.Core
-	let layout: LayoutOptions = {
+	let layout: CircleLayoutOptions = {
 		name: 'circle',
 		fit: true,
 		//name: 'cose',
@@ -127,9 +129,9 @@
 						"color": coolGray["900"],
 						"text-background-color": "#FFF",
 						"text-background-opacity": 0.5,
-						"text-background-padding": 2,
+						"text-background-padding": "2px",
 						"text-margin-y": -2,
-						"text-background-shape": "round-rectangle",
+						"text-background-shape": "roundrectangle",
 					}
 				}
 			],
