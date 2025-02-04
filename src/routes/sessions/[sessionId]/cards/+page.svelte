@@ -32,7 +32,9 @@
 
 	function onSelect(e: Event) {
 		const category = (e as CustomEvent).detail.selected
-		if (category == 'All') {
+		if (category == null) {
+			return
+		} else if (category == 'All') {
 			updateSelectedCategories([])
 		} else {
 			toggleCategory(category)
@@ -41,7 +43,7 @@
 
 	function updateSelectedCategories(categories: string[]) {
 		cardList.updateCurrentCard()
-		selectedCategories = categories.filter(cat => cat != null)
+		selectedCategories = categories
 	}
 
 	function toggleCategory(category: string) {
