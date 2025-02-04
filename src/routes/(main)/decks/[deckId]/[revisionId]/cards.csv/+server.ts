@@ -11,9 +11,8 @@ export const GET: RequestHandler = async function ({locals, params, url}) {
 	const {deckId, revisionId} = params
 	const db = await getDb()
 	const revision = await getRevision(db, deckId, Number(revisionId), locals.email)
-	const allColumns = url.searchParams.has('allColumns');
 	const withRowTypes = url.searchParams.has('withRowTypes');
-	const csv = await exportCardsAsCsv(revision, allColumns, withRowTypes, null);
+	const csv = await exportCardsAsCsv(revision, withRowTypes, null);
 	return new Response(csv, {headers: {'content-type': 'text/csv; charset=utf-8'}})
 }
 

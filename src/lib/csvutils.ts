@@ -289,12 +289,9 @@ function fixSortBy(i?: number): number {
 	return i;
 }
 
-export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: boolean, withRowTypes: boolean, cards: CardInfo[]): Promise<string> {
-	const rows: string[][] = [];
-	let columns = revision.propertyDefs.slice();
-	if (!allColumns) {
-		columns = columns.filter((c) => c.defaultExport);
-	}
+export async function exportCardsAsCsv(revision: CardDeckRevision, withRowTypes: boolean, cards: CardInfo[]): Promise<string> {
+	const rows: string[][] = []
+	let columns = revision.propertyDefs.slice()
 	columns.sort((a, b) => fixSortBy(a.sortBy) - fixSortBy(b.sortBy));
 	// title
 	let row: string[] = [];
@@ -357,12 +354,12 @@ export async function exportCardsAsCsv(revision: CardDeckRevision, allColumns: b
 	}
 	for(const card of cards) {
 		//console.log(card)
+		//console.log(columns)
 		const row = [];
 		if (withRowTypes) {
 			row.push(ROWTYPE_CARD);
 		}
 		for (const column of columns) {
-			//console.log(column)
 			if (column.customFieldName) {
 				if(card.custom) {
 					row.push(card.custom[column.customFieldName]);
