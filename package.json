@@ -11,7 +11,7 @@
     "@fullhuman/postcss-purgecss": "^7.0.2",
     "@mirohq/websdk-types": "latest",
     "@sveltejs/adapter-node": "^5.2.12",
-    "@sveltejs/kit": "^2.16.1",
+    "@sveltejs/kit": "^2.17.1",
     "@tailwindcss/forms": "^0.5.10",
     "@types/adm-zip": "^0.5.7",
     "@types/cytoscape": "^3.21.8",
