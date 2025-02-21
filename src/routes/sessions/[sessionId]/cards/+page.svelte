@@ -89,7 +89,7 @@
 						leaveTo="transform opacity-0 scale-95"
 				>
 					<div use:menu.items
-					     class="flex flex-col space-y-0.5 absolute p-1 right-3.5 origin-top-right rounded-md bg-white shadow-lg focus:outline-none">
+					     class="flex flex-col space-y-0.5 absolute p-1 right-3.5 rounded-md bg-white shadow-lg focus:outline-none origin-bottom-right md:origin-top-right bottom-3.5 md:bottom-auto">
 						<button use:menu.item
 						        class="flex button !self-stretch {
 							            $menu.active === 'All' ? '!bg-blue-200 !border-blue-500' : selectedCategories.length === 0 ? '!bg-blue-100 !border-blue-100' : '!bg-white !border-white'
