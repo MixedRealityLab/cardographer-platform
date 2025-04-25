@@ -72,12 +72,14 @@ export function getChangesFromMiroState(info: SnapshotInfo, roomState: KVStore):
 			}
 			// cards in each zone - separate boards
 			let boardCards = board.cards
+			let boardComments = board.comments
 			let boardZones = board.zones.map((z) => z.id).filter((id) => id && id.length > 0)
 			boardZones.push(SPOTLIGHT_ZONE)
 			boardZones = allZones.sort().filter(function (el, i, a) {return i === a.indexOf(el)})
 			for (const zone of boardZones) {
 				let zoneCards = boardCards.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => c.id).sort()
-				let cardsValue = JSON.stringify(zoneCards)
+				let zoneComments = boardComments.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => `note:${c.nativeId}:${c.colour}:${c.text}`).sort()
+				let cardsValue = JSON.stringify(zoneCards.concat(zoneComments))
 				allBoardZones.push(`${boardId}/${zone}`)
 				if (roomState[`cards:${boardId}/${zone}`] != cardsValue) {
 					roomChanges.push({key: `cards:${boardId}/${zone}`, value: cardsValue})

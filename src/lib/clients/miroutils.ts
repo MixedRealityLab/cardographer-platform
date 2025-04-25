@@ -99,7 +99,7 @@ export function getSnapshotInfoFromMiroData(data): SnapshotInfo {
             if (debug) console.log(`ignore empty comment`, widget);
             continue;
         }
-        const ci: CommentInfo = {text, nativeId: widget.id, zones: []};
+        const ci: CommentInfo = {text, nativeId: widget.id, colour: widget.style?.fillColor, zones: []};
         const {boardId,frames} = findBoardId(widget, ci, data.widgets)
         let board = boards.find((b) => b.id == boardId);
         board.comments.push(ci);

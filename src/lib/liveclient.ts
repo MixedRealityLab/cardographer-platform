@@ -392,9 +392,9 @@ export class LiveClient {
 		let _this = this
 		if (!this.miroStarted) {
 			this.miroStarted = true
-			this.miro.board.ui.on('items:create', (_ev: ItemsCreateEvent) => _this.syncMiro())
-			this.miro.board.ui.on('items:delete', (_ev: ItemsDeleteEvent) => _this.syncMiro())
-			this.miro.board.ui.on('experimental:items:update', (_ev: ItemsUpdateEvent) => _this.syncMiro())
+			this.miro.board.ui.on('items:create', (_ev: ItemsCreateEvent) => _this.syncMiro(_ev))
+			this.miro.board.ui.on('items:delete', (_ev: ItemsDeleteEvent) => _this.syncMiro(_ev))
+			this.miro.board.ui.on('experimental:items:update', (_ev: ItemsUpdateEvent) => _this.syncMiro(_ev))
 			this.syncMiro()
 		}
 	}
@@ -408,8 +408,11 @@ export class LiveClient {
 		return getSnapshotInfoFromMiroData(data)
 	}
 
-	async syncMiro(): Promise<void> {
+	async syncMiro(event): Promise<void> {
 		let info = await this.getMiroSnapshot()
+		if (event) {
+			console.log('syncMiro', event.items)
+		}
 		let changes = getChangesFromMiroState(info, this.state)
 		if (changes.length > 0) {
 			console.log(`Sync miro -> changes`, changes)

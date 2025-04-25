@@ -31,6 +31,7 @@ export interface CardSnapshot extends CommonInfo {
 export interface CommentInfo extends CommonInfo {
 	text: string;
 	scales?: CardScale[];
+	colour?: string;
 }
 
 export interface CardZone {

@@ -77,7 +77,8 @@ and `http://localhost`
 In your chosen miro team, open your profile settings, select "your apps" tab,
 and "+Create new app" and give it a name (e.g. "cardographer local dev"). 
 Give it permission `board:read` and `board:write`
-and set the "App URL" to [http://localhost:3000/miro.html](http://localhost:3000/miro.html).
+and set the "App URL" to [http://localhost:3000/miro.html](http://localhost:3000/miro.html),
+or [http://localhost/miro.html](http://localhost/miro.html) if using nginx/port 80.
 
 Then "Install app and get OAuth token", or copy and paste the 
 Share app "Installation URL", and agree.
