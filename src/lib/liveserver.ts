@@ -19,7 +19,6 @@ import {
 import {error} from "@sveltejs/kit";
 import {parse} from "cookie";
 import {getClient} from './clients';
-import {SPOTLIGHT_ZONE} from './liveclient';
 import {getChangesFromMiroState} from './liveutils';
 
 const MYPROTOCOL = "cardographer:2"
@@ -329,6 +328,19 @@ wss.onActionReq = async function (wss: WSS, req: ActionReq, room: RoomInfo, clie
 		let fromCards = JSON.parse(room.state[`cards:${move.from}`] ?? "[]")
 		let toCards = JSON.parse(room.state[`cards:${move.to}`] ?? "[]")
 		let moveCards = fromCards.filter((c) => move.cards.indexOf(c) >= 0)
+		if (move.spotlight) {
+			for (const card of moveCards) {
+				room.state[`spotlight:${card}`] = move.spotlight
+				change.roomChanges.push({key: `spotlight:${card}`, value: move.spotlight})
+			}
+		} else {
+			for (const card of moveCards) {
+				if (room.state[`spotlight:${card}`]) {
+					delete room.state[`spotlight:${card}`]
+					change.roomChanges.push({key: `spotlight:${card}`})
+				}
+			}
+		}
 		if (moveCards.length == 0) {
 			if (chatty) console.log(`none of the cards ${move.cards} found in ${move.from}`)
 		} else if (room.state['mirobridge'] && room.clients[room.state['mirobridge']]) {
@@ -358,12 +370,6 @@ wss.onActionReq = async function (wss: WSS, req: ActionReq, room: RoomInfo, clie
 			room.state[`cards:${move.to}`] = JSON.stringify(toCards)
 			change.roomChanges.push({key: `cards:${move.from}`, value: room.state[`cards:${move.from}`]})
 			change.roomChanges.push({key: `cards:${move.to}`, value: room.state[`cards:${move.to}`]})
-			if (move.to == SPOTLIGHT_ZONE) {
-				for (const card of moveCards) {
-					room.state[`spotlight:${card}`] = move.spotlight
-					change.roomChanges.push({key: `spotlight:${card}`, value: move.spotlight})
-				}
-			}
 		}
 		if (change.roomChanges.length > 0) {
 			wss.broadcastChange(room, change)

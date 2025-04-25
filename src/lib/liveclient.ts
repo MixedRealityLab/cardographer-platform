@@ -218,7 +218,7 @@ export class LiveClient {
 				from: fromZone,
 				to: toZone,
 				//autoReturn: toZone==SPOTLIGHT_ZONE, //unsupported
-				spotlight: toZone == SPOTLIGHT_ZONE ? this.nickname : undefined,
+				spotlight: toZone.split('/')[1] == SPOTLIGHT_ZONE ? this.nickname : undefined,
 			}),
 		}))
 	}
