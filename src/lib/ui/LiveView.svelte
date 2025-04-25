@@ -13,12 +13,15 @@
 	import LiveViewHeader from "$lib/ui/LiveViewHeader.svelte";
 	import {onDestroy, onMount} from "svelte"
 	import ZoneSelector from "./ZoneSelector.svelte";
+	import { browser } from '$app/environment';
 
 	export let session: Session
 	export let isOwner: boolean = false
 	export let inmiro: boolean = false
 
 	let nickname = ''
+	let rememberme = false
+	let autoconnect = false
 	let tab = 'cards'
 
 	$: cards = session?.decks?.flatMap(deck => deck['cards']) ?? []
@@ -80,17 +83,43 @@
 	let lastHand = -1 // index in activeZones
 	$: waiting = client.pendingMoves.length > 0
 	$: miroConnected = !!client.state['mirobridge']
+	const REMEMBERME = 'cardographer-nickname'
+	const AUTOCONNECT = 'cardographer-autoconnect'
 
 	function connect() {
+		if (browser) {
+			if (rememberme) {
+				localStorage.setItem(REMEMBERME, nickname)
+			} else {
+				localStorage.removeItem(REMEMBERME)
+			}
+			if (autoconnect) {
+				localStorage.setItem(AUTOCONNECT, 'true')
+			} else {
+				localStorage.removeItem(AUTOCONNECT)
+			}
+		}
 		const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
 		client.connect($page.url, base, session, nickname, joiningCode, inmiro ? miro : null)
 	}
-
+	function onNicknameKeyup(ev) {
+		if (ev.key === 'Enter' && client) {
+			ev.preventDefault()
+			connect()
+		}
+	}
 	onMount(() => {
+		nickname = localStorage.getItem(REMEMBERME) ?? ''
+		rememberme = (nickname !== '')
+		autoconnect = localStorage.getItem(AUTOCONNECT) !== null
 		// liven up for vite dev
 		if (client) {
 			activeBoard = client.activeBoard
 			boards = client.boards
+			if (autoconnect) {
+				console.log(`Auto-connect...`)
+				connect()
+			}
 		}
 	})
 	onDestroy(() => {
@@ -225,8 +254,18 @@
 			<div class="container mx-auto flex flex-col">
 				<div class="flex flex-col p-2">
 					<div class="flex m-2">
-						<input class="flex-grow" type="text" bind:value={nickname} placeholder="Nickname"
+						<input class="flex-grow" type="text" bind:value={nickname} on:keyup={onNicknameKeyup} placeholder="Nickname"
 						       disabled={connecting}>
+					</div>
+					<div class="flex m-2">
+						<label class="flex justify-center items-center">
+							<input name="rememberme" bind:checked="{rememberme}" class="form-checkbox" type="checkbox" disabled={connecting}>
+							<span class="ml-2">Remember me</span>
+						</label>
+						<label class="ml-4 flex justify-center items-center">
+							<input name="autoconnect" bind:checked="{autoconnect}" class="form-checkbox" type="checkbox" disabled={connecting}>
+							<span class="ml-2">Auto-connect</span>
+						</label>
 					</div>
 					<div class="flex m-2 self-center w-full p-2">
 						<button class="w-full button self-center" disabled={connecting || nickname===''}
