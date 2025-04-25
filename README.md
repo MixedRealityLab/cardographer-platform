@@ -31,6 +31,9 @@ Copy `server.env` to `server.env.local` (or whatever location you will use for e
 - Set `ADMIN_USERS` to email address(es) of initial/default admin users.
 - Set `REGISTER_CODE` if you want new users to have to provide this code in order to register (rather than just validate their email).
 
+You may also need to set `ORIGIN` to the external server URL to avoid CSRF errors,
+e.g. `ORIGIN=http://localhost:3000`.
+
 ## Run
 
 ### Running Server Locally
@@ -49,6 +52,25 @@ If you start it from the default [docker-compose.yml]() then mongo-express is ac
 authenticated with username & password 'mongo'. 
 
 See information on user accounts/types below.
+
+### Running production build
+
+With the websocket support, the production build and the dev build integrate
+websockets differently.
+If you want/need to test the production integration version then you can
+build it:
+```
+sudo docker build --tag cardographer .
+```
+And run it for local use (on port 3000):
+```
+sudo docker run --rm --name platform --network cardographer-platform_default -p 3000:3000 --env-file server.env.local -v cardographer-platform_uploads:/app/uploads -e ORIGIN=http://localhost:3000 cardographer
+```
+Or if using via Nginx,
+```
+sudo docker run --rm --name platform --network cardographer-platform_default -p 3000:3000 --env-file server.env.local -v cardographer-platform_uploads:/app/uploads -e ORIGIN=http://localhost cardographer
+```
+and `http://localhost`
 
 ### Testing with Miro locally
 

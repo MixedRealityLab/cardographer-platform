@@ -55,3 +55,14 @@ services:
         volumes:
             - uploads:/root/work/uploads
         restart: unless-stopped
+
+    # just for testing with platform running as platform
+    nginx:
+        build: src/docker/nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        #depends_on:
+        #    - platform
+        volumes:
+            - uploads:/var/www/platform/uploads
