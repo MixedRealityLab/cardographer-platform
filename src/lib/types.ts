@@ -177,6 +177,10 @@ export interface CardInfo {
 	backWidth?: number // pixels
 	frontHeight?: number // pixels
 	backHeight?: number // pixels
+
+	// for note pseudo-card
+	isNote?: boolean
+	colour?: string
 }
 
 // deck build info - to be refined

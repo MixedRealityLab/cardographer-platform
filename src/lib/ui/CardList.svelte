@@ -186,6 +186,18 @@
 					     role="img" aria-describedby="desc{index}" aria-label="{card.name}">
 						<div class="hidden" id="desc{index}">{card.description}</div>
 					</div>
+				{:else if card.isNote}
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
+					<div class="w-full aspect-square drop-shadow gap-4 flex flex-col justify-center content-center"
+					     class:selected={selectedIds.indexOf(card.id)>=0}
+						 style:background-color={card.colour ?? 'yellow'}
+					     on:click={(ev)=>handleScrollClick(ev,card)}
+					     class:highlight={index === highlight}>
+						 <p class="align-middle max-w-full text-center text-ellipsis"
+						    class:text-base={true}>
+							{card.content}
+						 </p>
+					</div>
 				{:else}
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
 					<div class="rounded-3xl w-full h-full bg-white p-6 overflow-clip flex flex-col justify-end drop-shadow gap-4"

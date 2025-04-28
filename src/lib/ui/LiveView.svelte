@@ -24,7 +24,9 @@
 	let autoconnect = false
 	let tab = 'cards'
 
-	$: cards = session?.decks?.flatMap(deck => deck['cards']) ?? []
+	$: notes = (Object.values(client?.zoneCards ?? {})).flat().filter((id:string)=>id.startsWith('note:'))
+	$: noteCards = notes.map((n:string)=> n.split(':')).filter((a)=>a.length>=4).map((a)=>{return {id:a.join(':'),revision:1,category:'Note',isNote:true,colour:a[2],content:a[3]}})
+	$: cards = (session?.decks?.flatMap(deck => deck['cards']) ?? []).concat(noteCards)
 	let cardList: CardList
 	let topCardList: CardList
 

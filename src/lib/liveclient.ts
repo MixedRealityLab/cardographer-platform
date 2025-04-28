@@ -487,8 +487,15 @@ export class LiveClient {
 		//console.log(`to zone miro`, toShape)
 		// look for cards in from zone
 		let allCards = fromBoards.flatMap((b) => b.cards)
+		let allComments = fromBoards.flatMap((b) => b.comments ?? [])
 		for (let cardId of cards) {
-			let matches = allCards.filter((ci) => ci.id == cardId && ci.nativeId && ci.zones.find((cz) => cz.zoneId == fromZoneId && cz.overlap >= 0.5))
+			let matches = []
+			if (cardId.indexOf('note:')==0) {
+				let nativeId = cardId.split(':')[1]
+				matches = allComments.filter((ci) => ci.nativeId == nativeId)
+			} else {
+				matches = allCards.filter((ci) => ci.id == cardId && ci.nativeId && ci.zones.find((cz) => cz.zoneId == fromZoneId && cz.overlap >= 0.5))
+			}
 			if (matches.length == 0) {
 				console.log(`error: could not find card ${cardId} in zone ${sfrom}`)
 				continue
