@@ -8,7 +8,7 @@
 	import {base} from "$app/paths";
 	import {page} from '$app/stores';
 	import {getLiveClient, LiveClient, SPOTLIGHT_ZONE} from "$lib/liveclient";
-	import type {Session} from "$lib/types"
+	import type {Session, CardInfo} from "$lib/types"
 	import CardList from "$lib/ui/CardList.svelte";
 	import LiveViewHeader from "$lib/ui/LiveViewHeader.svelte";
 	import {onDestroy, onMount} from "svelte"
@@ -71,22 +71,35 @@
 	$: myActiveZones = activeZones.filter((z) => tab == 'allcards' ? true : z != SPOTLIGHT_ZONE && ((tab == 'cards' && z.indexOf('@') < 0) || (tab == 'hand' && z.substring(z.indexOf('@')) == myseat)))
 	let myzone: string
 	$: zoneCards = client.zoneCards
-	$: myZoneCards = cards.filter((c) => (zoneCards[`${activeBoard}/${myzone}`] ?? []).indexOf(c.id) >= 0)
+	$: myZoneCards = filterCards(cards, zoneCards[`${activeBoard}/${myzone}`] ?? [])
 	let mySelectedIds = []
 	$: topZones = tab == 'allcards' ? activeZones : [SPOTLIGHT_ZONE]
 	let topzone: string
-	$: topZoneCards = cards.filter((c) => (zoneCards[`${activeBoard}/${topzone}`] ?? []).indexOf(c.id) >= 0)
+	$: topZoneCards = filterCards(cards, zoneCards[`${activeBoard}/${topzone}`] ?? [])
 	let split = 0
 	let bottomDrawerHeight = 100
 	let midBarHeight = 32
 	let zoneSelectorHeight = 32
-	$: spotlight = (tab == 'cards' || tab == 'hand') && !!cards.find((c) => (zoneCards[`${activeBoard}/${SPOTLIGHT_ZONE}`] ?? []).indexOf(c.id) >= 0)
+	$: spotlight = (tab == 'cards' || tab == 'hand') && (zoneCards[`${activeBoard}/${SPOTLIGHT_ZONE}`] ?? []).length > 0
 	let shuffles = {} // zone -> card id[]
 	let lastHand = -1 // index in activeZones
 	$: waiting = client.pendingMoves.length > 0
 	$: miroConnected = !!client.state['mirobridge']
 	const REMEMBERME = 'cardographer-nickname'
 	const AUTOCONNECT = 'cardographer-autoconnect'
+
+	function missingCard(id:string) : CardInfo {
+		return {
+			id: id,
+			revision: 0, //??
+			name: id,
+			content: `Unknown card ${id}`,
+			category: 'Unknown',
+		}
+	}
+	function filterCards(cards:CardList, ids:string[]) : CardList {
+		return (ids ?? []).map((id) => (cards ?? []).find((c) => c.id == id) ?? missingCard(id))
+	}
 
 	function connect() {
 		if (browser) {
@@ -101,8 +114,12 @@
 				localStorage.removeItem(AUTOCONNECT)
 			}
 		}
-		const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
-		client.connect($page.url, base, session, nickname, joiningCode, inmiro ? miro : null)
+		if (!inmiro || session.isLive) {
+			const joiningCode = $page.url.searchParams.get('j') ?? isOwner ? session.joiningCode : session.joiningCodeReadonly
+			client.connect($page.url, base, session, nickname, joiningCode, inmiro ? miro : null)
+		} else {
+			tab = 'miro'
+		}
 	}
 	function onNicknameKeyup(ev) {
 		if (ev.key === 'Enter' && client) {
@@ -236,14 +253,20 @@
 
 	{#if inmiro && tab === 'miro'}
 		<slot></slot>
-	{:else if failed}
+	{:else if failed || (inmiro && !session?.isLive)}
 		<div class="w-full flex flex-col">
 			{#if !inmiro}
 				<LiveViewHeader {session}></LiveViewHeader>
 			{/if}
 			<div class="container mx-auto flex flex-col">
-				<div class="text-red-950 bg-red-100 rounded p-4 m-4 text-xl">Sorry, you can't join that session
-					({failed})
+				<div class="text-red-950 bg-red-100 rounded p-4 m-4 text-xl">
+					{#if inmiro && !session?.isLive}
+						Sorry, live support is currently disabled for this session 
+						(you can change this in Cardographer) 
+					{:else}
+						Sorry, you can't join that session
+						({failed})
+					{/if}
 				</div>
 			</div>
 		</div>

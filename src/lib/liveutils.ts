@@ -77,9 +77,10 @@ export function getChangesFromMiroState(info: SnapshotInfo, roomState: KVStore):
 			boardZones.push(SPOTLIGHT_ZONE)
 			boardZones = allZones.sort().filter(function (el, i, a) {return i === a.indexOf(el)})
 			for (const zone of boardZones) {
-				let zoneCards = boardCards.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => c.id).sort()
-				let zoneComments = boardComments.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => `note:${c.nativeId}:${c.colour}:${c.text}`).sort()
-				let cardsValue = JSON.stringify(zoneCards.concat(zoneComments))
+				// unique??
+				let zoneCards = boardCards.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => ({id:c.id, x:c.x, y:c.y}))
+				let zoneComments = boardComments.filter((c) => c.zones && c.zones.filter((cz) => cz.overlap >= 0.5).map((cz) => (cz.zoneId)).indexOf(zone) >= 0).map((c) => ({id:`note:${c.nativeId}:${c.colour}:${c.text}`, x:c.x, y:c.y}))
+				let cardsValue = JSON.stringify(zoneCards.concat(zoneComments).sort((a,b)=> a.x==b.x ? a.y-b.y : a.x-b.x).map((c)=>c.id))
 				allBoardZones.push(`${boardId}/${zone}`)
 				if (roomState[`cards:${boardId}/${zone}`] != cardsValue) {
 					roomChanges.push({key: `cards:${boardId}/${zone}`, value: cardsValue})

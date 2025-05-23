@@ -130,6 +130,16 @@ wss.onHelloReq = async function (wss: WSS, req: HelloReq, clientId: string, sws:
 }
 
 async function initialiseRoomState(wss: WSS, session: Session, _owner: string): Promise<void> {
+	let room: RoomInfo = wss.rooms[session._id]
+	if (!room) {
+		if (chatty) console.log(`creating room ${session._id} (cardographer)`)
+		room = {
+			id: session._id,
+			clients: {},
+			state: {},
+		}
+		wss.rooms[session._id] = room
+	}
 	// find latest snapshot of session
 	const db = await getDb()
 	let snapshots = await db.collection<SessionSnapshot>('SessionSnapshots')
@@ -164,16 +174,6 @@ async function initialiseRoomState(wss: WSS, session: Session, _owner: string): 
 	if (inform) console.log(`init live room/session ${session._id} from snapshot ${snapshots[0]._id} created ${snapshot.created} (originally ${snapshot.originallyCreated})`)
 	const info = client.getSnapshotInfo(snapshot)
 	//console.log(`Seats: ${seats}`)
-	let room: RoomInfo = wss.rooms[session._id]
-	if (!room) {
-		if (chatty) console.log(`creating room ${session._id} (cardographer)`)
-		room = {
-			id: session._id,
-			clients: {},
-			state: {},
-		}
-		wss.rooms[session._id] = room
-	}
 	// change...
 	let change: ChangeNotif = {
 		type: MESSAGE_TYPE.CHANGE_NOTIF,

@@ -188,13 +188,15 @@
 					</div>
 				{:else if card.isNote}
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events a11y-no-static-element-interactions (click to scroll only) -->
-					<div class="w-full aspect-square drop-shadow gap-4 flex flex-col justify-center content-center"
+					<div class="w-full relative aspect-square drop-shadow gap-4 flex flex-col justify-center content-center"
 					     class:selected={selectedIds.indexOf(card.id)>=0}
-						 style:background-color={card.colour ?? 'yellow'}
 					     on:click={(ev)=>handleScrollClick(ev,card)}
 					     class:highlight={index === highlight}>
-						 <p class="align-middle max-w-full text-center text-ellipsis"
-						    class:text-base={true}>
+						 <div class="absolute opacity-50 top-0 left-0 right-0 bottom-0"
+	 						style:background-color={card.colour ?? 'yellow'}
+						 ></div>
+						 <p class="static z-0 align-middle max-w-full text-center text-ellipsis text-black"
+							class:text-lg={true}>
 							{card.content}
 						 </p>
 					</div>
