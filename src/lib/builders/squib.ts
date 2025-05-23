@@ -86,7 +86,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		// back-specific filename prefix, map ' ' -> '_'
 		const prefix = back.length > 0 ? (back.split(' ').join('_')) + '_' : '';
 		// export cards to .../...card-data.csv (not all columns, no row types, with back)
-		const csv = await exportCardsAsCsv(revision, false, false, cards);
+		const csv = await exportCardsAsCsv(revision, false, cards);
 		const csvFile = `${filePath}/${prefix}card-data.csv`;
 		if (debug) console.log(`write cards to ${csvFile}`);
 		await writeFile(csvFile, csv, {});
@@ -185,7 +185,7 @@ export async function build(revision: CardDeckRevision, config: BuilderConfig): 
 		// back-specific filename prefix, map ' ' -> '_'
 		const prefix = 'ToPrint_';
 		// export cards to .../...card-data.csv (not all columns, no row types, with back)
-		const csv = await exportCardsAsCsv(revision, false, false, pdf_cards);
+		const csv = await exportCardsAsCsv(revision, false, pdf_cards);
 		const csvFile = `${filePath}/${prefix}card-data.csv`;
 		if (debug) console.log(`write cards to ${csvFile}`);
 		await writeFile(csvFile, csv, {});
