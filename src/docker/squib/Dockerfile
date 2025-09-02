@@ -1,4 +1,4 @@
-FROM ruby:3.1-buster
+FROM ruby:3.2-trixie
 
 MAINTAINER chris.greenhalgh@nottingham.ac.uk
 
