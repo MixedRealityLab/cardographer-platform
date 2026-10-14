@@ -14,7 +14,7 @@ Can be used with
 
 (A prototype [unity](docs/unity.md) client exists but is not integrated or supported: [cardographer virtual tabletop](https://github.com/MixedRealityLab/cardographer-tabletop))
 
-There is a public instance currently (December 2024) hosted at [https://cardographer.cs.nott.ac.uk/platform]() for interested researchers, but we would encourage you to set up your own instance for long-term use.
+There is a public instance currently (December 2024) hosted at [https://cardographer.cs.nott.ac.uk/]() for interested researchers, but we would encourage you to set up your own instance for long-term use.
 
 ## Build
 
