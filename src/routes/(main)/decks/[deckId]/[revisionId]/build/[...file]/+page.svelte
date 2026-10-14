@@ -51,21 +51,6 @@
 	{#if building}
 		<div class="loader-small">&nbsp;</div>
 	{/if}
-	<form action="?/build" class="w-6 h-6" method="post" use:enhance>
-		<!--suppress HtmlWrongAttributeValue -->
-		<button class="iconButton mr-3" disabled={building || data.revision.isLocked || data.overQuota}
-		        aria-label={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}
-		        title={data.revision.isLocked ? 'Revision Locked, Building Disabled' : 'Build Cards'}>
-			<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-				<g>
-					<path d="M17.59,3.41L15,6V5c0-1.1-0.9-2-2-2H9C6.24,3,4,5.24,4,8h5v3h6V8l2.59,2.59c0.26,0.26,0.62,0.41,1,0.41h0.01 C19.37,11,20,10.37,20,9.59V4.41C20,3.63,19.37,3,18.59,3h-0.01C18.21,3,17.85,3.15,17.59,3.41z"/>
-				</g>
-				<g>
-					<path d="M9,13v7c0,0.55,0.45,1,1,1h4c0.55,0,1-0.45,1-1v-7H9z"/>
-				</g>
-			</svg>
-		</button>
-	</form>
 	{#if data.files.length > 0}
 		<a href="{base}/decks/{data.revision.deckId}/{data.revision.revision}/zip/{$page.params.file}"
 		   aria-label="Download Files"
@@ -79,6 +64,7 @@
 	{/if}
 	<form action="?/upload" enctype="multipart/form-data" method="post" class="w-6 h-6" use:enhance>
 		<UploadButton class="iconButton" disabled={data.revision.isLocked || data.overQuota} multiple={true}
+		              types="image/*"
 		              title={data.revision.isLocked ? 'Revision Locked, Upload Disabled' : 'Upload Files'}>
 			<svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 				<path clip-rule="evenodd"
@@ -132,14 +118,14 @@
 </style>
 
 <div class="p-6">
-	{#if $page.params.file.length > 0}
+	{#if ($page.params.file?.length ?? 0) > 0}
 		<a class="fileItem"
-		   href="{base}/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{removeLastPathSegment($page.params.file)}">
+		   href="{base}/decks/{$page.params.deckId}/{$page.params.revisionId}/build/{removeLastPathSegment($page.params.file ?? "")}">
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 mx-4"
 			     stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
 			</svg>
-			<div>Back to /{removeLastPathSegment($page.params.file)}</div>
+			<div>Back to /{removeLastPathSegment($page.params.file ?? "")}</div>
 		</a>
 	{/if}
 	{#each data.files as childFile}

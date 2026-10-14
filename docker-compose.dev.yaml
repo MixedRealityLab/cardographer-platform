@@ -1,0 +1,49 @@
+# Docker compose file for development.
+volumes:
+    db: { }
+    uploads: { }
+    sessions: { }
+    static: { }
+    src: { }
+
+services:
+    mongo:
+        # note, problems with mongo v5+ in a VM!
+        image: mongo:4
+        command: --wiredTigerCacheSizeGB 0.5
+        expose:
+            - "27017"
+        restart: unless-stopped
+        volumes:
+            - db:/data/db
+            - ./data/backups:/data/backups
+
+    mongo-express:
+        image: mongo-express
+        restart: unless-stopped
+        depends_on:
+            - mongo
+        ports:
+            - "8081:8081"
+        environment:
+            - ME_CONFIG_BASICAUTH_USERNAME=mongo
+            - ME_CONFIG_BASICAUTH_PASSWORD=mongo
+
+    platform:
+        build:
+            context: .
+            dockerfile: src/docker/dev/Dockerfile
+        environment:
+            - NODE_OPTIONS=--max_old_space_size=2048
+        env_file: "server.env.local"
+        restart: unless-stopped
+        depends_on:
+            - 'mongo'
+        ports:
+            - "3000:3000"
+            - "24678:24678"
+        volumes:
+            - uploads:/app/uploads
+            - ./src:/app/src/:consistent
+            - ./static:/app/static/:ro
+            - sessions:/app/sessions

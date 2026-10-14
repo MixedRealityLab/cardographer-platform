@@ -5,4 +5,4 @@
 
 <AppBar back="javascript:history.back()"/>
 
-<h1 class="p-2">{$page.status}: {$page.error.message}</h1>
+<h1 class="p-2">{$page.status}: {$page.error?.message}</h1>

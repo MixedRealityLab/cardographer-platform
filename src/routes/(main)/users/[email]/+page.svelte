@@ -38,10 +38,10 @@
 		<label>
 			<span>Email</span>
 			<input name="userEmail" bind:value={data.user.email} class="block w-full" required type="text"
-				disabled={!data.localUser.isAdmin}/>
+				disabled={!data.localUser?.isAdmin}/>
 		</label>
 		<div class="flex pt-2 justify-center">
-			{#if data.localUser.isAdmin}
+			{#if data.localUser?.isAdmin}
 
 				<input disabled={data.user.email===data.email} class="button self-center mt-2" type='submit' value='Change Email'>
 			{/if}
@@ -85,7 +85,7 @@
 	<div class="flex flex-wrap justify-center gap-4 py-1">
 		<label class="flex items-center gap-2">
 			<input name="isDisabled" bind:checked={data.user.disabled} class="form-checkbox" type="checkbox"
-			       disabled={!data.localUser.isAdmin}>
+			       disabled={!data.localUser?.isAdmin}>
 			<span>Disabled</span>
 		</label>
 		<label class="flex items-center gap-2">
@@ -95,17 +95,17 @@
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isDeckBuilder" bind:checked={data.user.isDeckBuilder} class="form-checkbox" type="checkbox"
-			       disabled={!data.localUser.isAdmin}>
+			       disabled={!data.localUser?.isAdmin}>
 			<span>DeckBuilder</span>
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isPublisher" bind:checked={data.user.isPublisher} class="form-checkbox" type="checkbox"
-			       disabled={!data.localUser.isAdmin}>
+			       disabled={!data.localUser?.isAdmin}>
 			<span>Publisher</span>
 		</label>
 		<label class="flex items-center gap-2">
 			<input name="isAdmin" bind:checked={data.user.isAdmin} class="form-checkbox" type="checkbox"
-			       disabled={!data.localUser.isAdmin}>
+			       disabled={!data.localUser?.isAdmin}>
 			<span>Admin</span>
 		</label>
 
@@ -124,42 +124,42 @@
 		<span>Quota of extra Decks (using {data.usage.decks}; base quota is {data.quotaDetails.baseQuota.decks})</span>
 		<input name="extraDecks" bind:value={data.quotaDetails.extraQuota.decks} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 	<label>
 		<span>Quota of extra Deck Revisions (using {data.usage.revisions}
 			; base quota is {data.quotaDetails.baseQuota.revisions})</span>
 		<input name="extraRevisions" bind:value={data.quotaDetails.extraQuota.revisions} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 	<label>
 		<span>Quota of extra Sessions (using {data.usage.sessions}; base quota is {data.quotaDetails.baseQuota.sessions}
 			)</span>
 		<input name="extraSessions" bind:value={data.quotaDetails.extraQuota.sessions} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 	<label>
 		<span>Quota of extra Snapshots (using {data.usage.snapshots}
 			; base quota is {data.quotaDetails.baseQuota.snapshots})</span>
 		<input name="extraSnapshots" bind:value={data.quotaDetails.extraQuota.snapshots} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 	<label>
 		<span>Quota of extra Analyses (using {data.usage.analyses}; base quota is {data.quotaDetails.baseQuota.analyses}
 			)</span>
 		<input name="extraAnalyses" bind:value={data.quotaDetails.extraQuota.analyses} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 	<label>
 		<span>Quota of extra File Space (using {data.usage.diskSizeK}
 			KB; base quota is {data.quotaDetails.baseQuota.diskSizeK})</span>
 		<input name="extraDiskSizeK" bind:value={data.quotaDetails.extraQuota.diskSizeK} class="block w-full" required
 		       type="number" min="0"
-		       disabled={!data.localUser.isAdmin}/>
+		       disabled={!data.localUser?.isAdmin}/>
 	</label>
 
 	<ConfirmDialog

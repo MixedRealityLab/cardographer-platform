@@ -49,7 +49,7 @@
 	    };
 	}}>
 		<LoginPanel register={register} error={form ? form.error : null}
-		            success={registered ? "Please check your email to set your password." : null}
+		            success={registered ? "Please check your email to set your password." : undefined}
 		            needCode={data.needCodeToRegister}/>
 	</form>
 </div>

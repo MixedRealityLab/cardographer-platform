@@ -15,7 +15,7 @@
 	<input name="search" placeholder="Email" class="block w-full" type="text" bind:value="{search}">
 	{#if data.users}
 		{#each data.users.filter((user) => search.length === 0 || user.email.indexOf(search) >= 0) as user}
-			<a class="listItem" class:bg-gray-100={user.email === data.localUser.email}
+			<a class="listItem" class:bg-gray-100={user.email === data.localUser?.email}
 			   href="{base}/users/{user.email}">
 				<img src="{base}/icons/person.svg" class="w-6 mr-4" alt=""/>
 				<div class="flex flex-1 flex-col">
@@ -56,7 +56,7 @@
 			<!--suppress HtmlWrongAttributeValue -->
 			<input class="button m-3" type='submit' value='Log out'>
 		</form>
-		{#if data.localUser.isAdmin}
+		{#if data.localUser?.isAdmin}
 			<a class="button m-3" href="{base}/audit.csv">
 				<img src="{base}/icons/download.svg" alt="" class="w-3.5 mr-1"/>Check DB and Audit
 			</a>

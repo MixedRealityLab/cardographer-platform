@@ -1,57 +1,30 @@
-# Docker compose file for development.
 volumes:
-    db: {}
-    uploads: {}
-    sessions: {}
-    static: {}
-    src: {}
+    uploads: { }
+    db: { }
 
 services:
     mongo:
-        # note, problems with mongo v5+ in a VM!
-        image: mongo:4
-        command: --wiredTigerCacheSizeGB 0.5
+        image: mongo
         expose:
             - "27017"
         restart: unless-stopped
         volumes:
             - db:/data/db
-            - ./data/backups:/data/backups
-
-    mongo-express:
-        image: mongo-express
-        restart: unless-stopped
-        depends_on:
-            - mongo
-        ports:
-            - "8081:8081"
-        environment:
-            - ME_CONFIG_BASICAUTH_USERNAME=mongo
-            - ME_CONFIG_BASICAUTH_PASSWORD=mongo 
 
     platform:
-        build:
-            context: .
-            dockerfile: src/docker/dev/Dockerfile
+        build: .
+        restart: unless-stopped
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
         env_file: "server.env.local"
-        restart: unless-stopped
         depends_on:
             - 'mongo'
-        ports:
-            - "3000:3000"
-            - "24678:24678"
+        expose:
+            - "3000"
         volumes:
             - uploads:/app/uploads
-            - ./src:/app/src/:consistent
-            - ./static:/app/static/:ro
-            - sessions:/app/sessions
-
-    squib:
-        build: src/docker/squib
-        expose:
-            - "3001"
-        volumes:
-            - uploads:/root/work/uploads
-        restart: unless-stopped
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.cardographer.rule=Host(`cardographer.cs.nott.ac.uk`)"
+            - "traefik.http.routers.cardographer.tls.certresolver=letsencrypt"
+            - "traefik.http.services.cardographer.loadbalancer.server.port=3000"

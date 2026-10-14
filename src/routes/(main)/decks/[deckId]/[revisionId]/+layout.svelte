@@ -19,7 +19,7 @@
 	</Tab>
 	{#if data.revision.isOwnedByUser && data.revision.cardCount > 0}
 		<Tab url="{base}/decks/{deckId}/{revisionId}/build" checkPath={true}>
-			Build
+			Files
 		</Tab>
 	{/if}
 	{#if data.revision.cardCount > 0}

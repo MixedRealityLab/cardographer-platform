@@ -4,7 +4,7 @@ import {verifyAuthentication} from "$lib/security"
 import type {Session, SessionSnapshot} from '$lib/types'
 import type {RequestHandler} from '@sveltejs/kit'
 import {json} from '@sveltejs/kit'
-import { getUsageSessions, getQuotaDetails, getUsageSnapshots } from '$lib/quotas'
+import {getUsageSessions, getQuotaDetails, getUsageSnapshots} from '$lib/quotas'
 
 const debug = false
 
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async function ({locals, request}) {
 		}
 		// new session
 		if (!session) {
-			const usageSessions = getUsageSessions(locals.email)
+			const usageSessions = await getUsageSessions(locals.email)
 			if (usageSessions > quota.quota.sessions) {
 				console.log(`Session quota exceeded ${usageSessions}/${quota.quota.sessions} for ${locals.email} on API [${si}/${ss.length}]`)
 				message += `Session quota exceeded - ignoring Session ${s.title || s.name || s.id}\n`

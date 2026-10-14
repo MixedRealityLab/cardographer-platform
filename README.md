@@ -1,7 +1,7 @@
 # Cardographer platform components
 
 A web platform for creating, using and analysing pre-defined concept cards, e.g. ideation cards. 
-Developed at the University of Nottingham and supported by UKRI-funded Horizon projects [Grant Numbers EP/T022493/1 and EP/V00784X/1].
+Developed at the University of Nottingham and supported by UKRI-funded Horizon projects \[Grant Numbers EP/T022493/1 and EP/V00784X/1].
 
 Copyright © The University of Nottingham, 2021-2024. [MIT License](LICENSE)
 
@@ -40,7 +40,7 @@ Dev build/run (with default docker-compose.yml):
 sudo docker-compose up -d --build
 ```
 Open [http://localhost:3000](http://localhost:3000).
-Configuration is loaded from `server.env` as per [docker-compose.yaml](docker-compose.yaml)
+Configuration is loaded from `server.env` as per [docker-compose.yaml](docker-compose.dev.yaml)
 
 Note, the server needs to be able to send (forward) email for password recovery.
 See SMTP_... config in `server.env`
