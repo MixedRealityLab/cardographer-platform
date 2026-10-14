@@ -5,6 +5,8 @@ volumes:
 services:
     mongo:
         image: mongo
+        networks:
+            - traefik
         expose:
             - "27017"
         restart: unless-stopped
@@ -14,6 +16,8 @@ services:
     platform:
         build: .
         restart: unless-stopped
+        networks:
+            - traefik
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
         env_file: "server.env.local"
@@ -25,7 +29,10 @@ services:
             - uploads:/app/uploads
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.cardographer.rule=Host(`cardographer.cs.nott.ac.uk`)"
             - "traefik.http.routers.cardographer.entrypoints=websecure"
-            - "traefik.http.routers.cardographer.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.cardographer.rule=Host(`cardographer.cs.nott.ac.uk`)"
             - "traefik.http.services.cardographer.loadbalancer.server.port=3000"
+
+networks:
+    traefik:
+        name: traefik
