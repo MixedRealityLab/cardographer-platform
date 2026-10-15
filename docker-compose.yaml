@@ -27,7 +27,7 @@ services:
         expose:
             - "3000"
         volumes:
-            - uploads:/app/uploads
+            - uploads:/app/static/uploads
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.cardographer.rule=Host(`cardographer.cs.nott.ac.uk`)"
