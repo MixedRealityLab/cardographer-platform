@@ -6,3 +6,4 @@
 node_modules/
 /functions
 server.env.local
+/static/uploads/

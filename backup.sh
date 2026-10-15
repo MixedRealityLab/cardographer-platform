@@ -1,0 +1,1 @@
+sudo docker compose exec mongo mongodump --gzip --archive=/backups/backup_`date +%Y-%m-%d`.archive.gz

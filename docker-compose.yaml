@@ -6,19 +6,19 @@ services:
     mongo:
         image: mongo
         networks:
-            - internal
+            - web
         expose:
             - "27017"
         restart: unless-stopped
         volumes:
             - db:/data/db
+            - ./backups:/backups
 
     platform:
         build: .
         restart: unless-stopped
         networks:
             - web
-            - internal
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
         env_file: "server.env.local"
@@ -39,4 +39,3 @@ services:
 networks:
     web:
         external: true
-    internal:
