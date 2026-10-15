@@ -30,8 +30,10 @@ services:
             - uploads:/app/uploads
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.cardographer.entrypoints=websecure"
             - "traefik.http.routers.cardographer.rule=Host(`cardographer.cs.nott.ac.uk`)"
+            - "traefik.http.routers.cardographer.entrypoints=websecure"
+            - "traefik.http.routers.cardographer.tls=true"
+            - "traefik.http.routers.cardographer.tls.certresolver=letsencrypt"
             - "traefik.http.services.cardographer.loadbalancer.server.port=3000"
 
 networks:

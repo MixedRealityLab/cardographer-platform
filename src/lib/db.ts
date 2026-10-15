@@ -5,7 +5,7 @@ import type {Db} from 'mongodb';
 const {MONGODB} = process.env;
 
 const url = MONGODB ? MONGODB : 'mongodb://mongo:27017';
-const dbname = 'cardographer-platform-1';
+const dbname = 'cardographer';
 const RETRY_DELAY = 3000;
 
 const db: Promise<Db> = new Promise<Db>((resolve, reject) => {

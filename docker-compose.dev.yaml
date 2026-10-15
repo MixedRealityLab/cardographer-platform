@@ -8,8 +8,7 @@ volumes:
 
 services:
     mongo:
-        # note, problems with mongo v5+ in a VM!
-        image: mongo:4
+        image: mongo
         command: --wiredTigerCacheSizeGB 0.5
         expose:
             - "27017"
@@ -43,7 +42,7 @@ services:
             - "3000:3000"
             - "24678:24678"
         volumes:
-            - uploads:/app/uploads
+            - ./uploads:/app/uploads
             - ./src:/app/src/:consistent
             - ./static:/app/static/:ro
             - sessions:/app/sessions
