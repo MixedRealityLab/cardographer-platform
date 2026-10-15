@@ -17,7 +17,7 @@ services:
         build: .
         restart: unless-stopped
         networks:
-            - traefik
+            - web
             - internal
         environment:
             - NODE_OPTIONS=--max_old_space_size=2048
@@ -35,7 +35,6 @@ services:
             - "traefik.http.services.cardographer.loadbalancer.server.port=3000"
 
 networks:
-    traefik:
-        name: traefik
+    web:
         external: true
     internal:
